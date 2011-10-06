@@ -1,0 +1,160 @@
+.Dd July 27, 2011
+.Dt libnk2 3
+.Os libnk2
+.Sh NAME
+.Nm libnk2.h
+.Nd Library to support the Nickfile (NK2) format
+.Sh LIBRARY
+.Lb libnk2
+.Sh SYNOPSIS
+.In libnk2.h
+.Pp
+Support functions
+.Ft const char *
+.Fn libnk2_get_version "void"
+.Ft int
+.Fn libnk2_get_access_flags_read
+.Ft int
+.Fn libnk2_get_codepage "int *codepage, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_set_codepage "int codepage, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_check_file_signature "const char *filename, libnk2_error_t **error"
+.Pp
+Available when compiled with wide character string support:
+.Ft int
+.Fn libnk2_check_file_signature_wide "const wchar_t *filename, libnk2_error_t **error"
+.Pp
+Available when compiled with libbfio support:
+.Ft int
+.Fn libnk2_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle, libnk2_error_t **error"
+.Pp
+Notify functions
+.Ft void
+.Fn libnk2_notify_set_verbose "int verbose"
+.Ft int
+.Fn libnk2_notify_set_stream "FILE *stream, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_notify_stream_open "const char *filename, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_notify_stream_close "libnk2_error_t **error"
+.Pp
+Error functions
+.Ft void 
+.Fn libnk2_error_free "libnk2_error_t **error"
+.Ft int
+.Fn libnk2_error_fprint "libnk2_error_t *error, FILE *stream"
+.Ft int
+.Fn libnk2_error_sprint "libnk2_error_t *error, char *string, size_t size"
+.Ft int 
+.Fn libnk2_error_backtrace_fprint "libnk2_error_t *error, FILE *stream"
+.Ft int
+.Fn libnk2_error_backtrace_sprint "libnk2_error_t *error, char *string, size_t size"
+.Pp
+File functions
+.Ft int
+.Fn libnk2_file_initialize "libnk2_file_t **file, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_free "libnk2_file_t **file, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_open "libnk2_file_t *file, const char *filename, int access_flags, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_close "libnk2_file_t *file, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_get_ascii_codepage "libnk2_file_t *file, int *ascii_codepage, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_set_ascii_codepage "libnk2_file_t *file, int ascii_codepage, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_get_modification_time "libnk2_file_t *file, uint64_t *modification_time, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_get_number_of_items "libnk2_file_t *file, int *number_of_items, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_file_get_item "libnk2_file_t *file, int item_index, libnk2_item_t **item, libnk2_error_t **error"
+.Pp
+Available when compiled with wide character string support:
+.Ft int
+.Fn libnk2_file_open_wide "libnk2_file_t *file, const wchar_t *filename, int access_flags, libnk2_error_t **error"
+.Pp
+Available when compiled with libbfio support:
+.Ft int
+.Fn libnk2_file_open_file_io_handle "libnk2_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libnk2_error_t **error"
+.PP
+Item functions
+.Ft int
+.Fn libnk2_item_free "libnk2_item_t **item, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_identifier "libnk2_item_t *item, uint32_t *identifier, libnk2_error_t **error
+.Ft int
+.Fn libnk2_item_get_number_of_entries "libnk2_item_t *item, uint32_t *number_of_entries, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_type "libnk2_item_t *item, int entry_index, uint32_t *entry_type, uint32_t *value_type, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value "libnk2_item_t *item, uint32_t entry_type, uint32_t *value_type, uint8_t **value_data, size_t *value_data_size, uint8_t flags, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_boolean "libnk2_item_t *item, uint32_t entry_type, uint8_t *value_boolean, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_32bit "libnk2_item_t *item, uint32_t entry_type, uint32_t *value_32bit, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_64bit "libnk2_item_t *item, uint32_t entry_type, uint64_t *value_64bit, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_size "libnk2_item_t *item, uint32_t entry_type, size_t *value_size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_utf8_string_size "libnk2_item_t *item, uint32_t entry_type, size_t *utf8_string_size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_utf8_string "libnk2_item_t *item, uint32_t entry_type, uint8_t *utf8_string, size_t utf8_string_size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_utf16_string_size "libnk2_item_t *item, uint32_t entry_type, size_t *utf16_string_size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_utf16_string "libnk2_item_t *item, uint32_t entry_type, uint8_t *utf16_string, size_t utf16_string_size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_binary_data_size "libnk2_item_t *item, int set_index, uint32_t entry_type, size_t *size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_binary_data "libnk2_item_t *item, uint32_t entry_type, uint8_t *binary_data, size_t size, libnk2_error_t **error"
+.Ft int
+.Fn libnk2_item_get_entry_value_guid "libnk2_item_t *item, uint32_t entry_type, uint8_t *guid, size_t size, libnk2_error_t **error"
+.Sh DESCRIPTION
+The
+.Fn libnk2_get_version
+function is used to retrieve the library version.
+.Sh RETURN VALUES
+Most of the functions return NULL or \-1 on error, dependent on the return type. For the actual return values refer to libnk2.h
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh NOTES
+Internally libnk2 uses both ASCII and Unicode (UTF-16 little-endian) strings, as stored in the NK2 file. ASCII strings in a NK2 file contain an extended ASCII string using the codepage of the system it was created on. The function
+.Ar libnk2_set_ascii_codepage
+ allows to set the required codepage for reading and writing. The default codepage is Windows 1252. Unsupported extended characters are replaced to the Unicode replacement character (U+fffd) when reading and the ASCII substitude character (0x1a) when writing.
+
+Libnk2 uses either the system specific narrow or wide character strings for filenames.
+To compile libnk2 with wide character support use
+.Ar ./configure --enable-wide-character-type=yes
+ or on Windows define
+.Ar WINAPI
+ and either
+.Ar _UNICODE
+ or
+.Ar UNICODE
+
+To have other code to determine if libnk2 was compiled with wide character support it defines
+.Ar LIBNK2_HAVE_WIDE_CHARACTER_TYPE
+ in libnk2/features.h.
+
+libnk2 allows to be compiled with chained IO support using libbfio.
+The libnk2 configure script will automatically detect if a compatible version of libbfio is available.
+
+To have other code to determine if libnk2 was compiled with libbfio support it defines
+.Ar LIBNK2_HAVE_BFIO
+ in libnk2/features.h.
+
+.Sh BUGS
+Please report bugs of any kind to <jbmetz@users.sourceforge.net> or on the project website:
+http://libnk2.sourceforge.net/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright 2009-2011 Joachim Metz <jbmetz@users.sourceforge.net>.
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.Sh SEE ALSO
+the libnk2.h include file

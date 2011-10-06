@@ -1,0 +1,13 @@
+TODO:
+* implement file format support
+* update manuals
+* update msvscpp files
+* debug function for file flags
+* debug function for event type
+* debug function for event category
+* debug function for event flags
+* add API record functions
+
+20111003
+* Created initial version based on libnk2
+

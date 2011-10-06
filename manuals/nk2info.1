@@ -1,0 +1,62 @@
+.Dd July 4, 2011
+.Dt nk2info
+.Os libnk2
+.Sh NAME
+.Nm nk2info
+.Nd determines information about a Nickfile (NK2)
+.Sh SYNOPSIS
+.Nm nk2info
+.Op Fl ahvV
+.Va Ar source
+.Sh DESCRIPTION
+.Nm nk2info
+is a utility to determine information about a Nickfile (NK2)
+.Pp
+.Nm nk2info
+is part of the
+.Nm libnk2
+package.
+.Nm libnk2
+is a library to support the Nickfile (NK2) format
+.Pp
+.Ar source
+is the source file.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl a
+shows allocation information
+.It Fl h
+shows this help
+.It Fl v
+verbose output to stderr
+.It Fl V
+print version
+.El
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh EXAMPLES
+.Bd -literal
+# nk2info Outlook.NK2
+nk2info 20110704
+
+Nickfile information:
+	Last modification time	: Jul 04, 2011 09:56:01.557000 UTC
+	Number of aliases	: 4
+
+.Ed
+.Sh DIAGNOSTICS
+Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Verbose and debug output are only printed when enabled at compilation.
+.Sh BUGS
+Please report bugs of any kind to <jbmetz@users.sourceforge.net> or on the project website:
+http://libnk2.sourceforge.net/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright 2009-2011 Joachim Metz <jbmetz@users.sourceforge.net>.
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.Sh SEE ALSO
+.Xr nk2export 1
