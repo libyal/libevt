@@ -30,7 +30,7 @@
 #include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfvalue.h"
+#include "libevt_record.h"
 #include "libevt_types.h"
 
 #if defined( __cplusplus )
@@ -57,9 +57,9 @@ struct libevt_internal_item
 	 */
 	libbfio_handle_t *file_io_handle;
 
-	/* The values table
+	/* The event record
 	 */
-	libfvalue_table_t *values_table;
+	libevt_record_t *event_record;
 
 	/* The flags
 	 */
@@ -70,7 +70,7 @@ int libevt_item_initialize(
      libevt_item_t **item,
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     libfvalue_table_t *values_table,
+     libevt_record_t *event_record,
      uint8_t flags,
      liberror_error_t **error );
 

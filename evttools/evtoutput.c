@@ -24,34 +24,10 @@
 #include <memory.h>
 #include <types.h>
 
-#if defined( HAVE_LOCAL_LIBUNA )
-#include <libuna_definitions.h>
-#elif defined( HAVE_LIBUNA_H )
-#include <libuna.h>
-#endif
-
 #if defined( HAVE_LOCAL_LIBBFIO )
 #include <libbfio_definitions.h>
 #elif defined( HAVE_LIBBFIO_H )
 #include <libbfio.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFDATETIME )
-#include <libfdatetime_definitions.h>
-#elif defined( HAVE_LIBFDATETIME_H )
-#include <libfdatetime.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFGUID )
-#include <libfguid_definitions.h>
-#elif defined( HAVE_LIBFGUID_H )
-#include <libfguid.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFVALUE )
-#include <libfvalue_definitions.h>
-#elif defined( HAVE_LIBFVALUE_H )
-#include <libfvalue.h>
 #endif
 
 #if defined( HAVE_LOCAL_LIBFWNT )
@@ -61,7 +37,9 @@
 #endif
 
 #include "evtoutput.h"
+#include "evttools_libfdatetime.h"
 #include "evttools_libevt.h"
+#include "evttools_libuna.h"
 
 /* Prints the copyright information
  */
@@ -136,16 +114,6 @@ void evtoutput_version_detailed_fprint(
 	 stream,
 	 ", libfdatetime %s",
 	 LIBFDATETIME_VERSION_STRING );
-
-	fprintf(
-	 stream,
-	 ", libfguid %s",
-	 LIBFGUID_VERSION_STRING );
-
-	fprintf(
-	 stream,
-	 ", libfvalue %s",
-	 LIBFVALUE_VERSION_STRING );
 
 	fprintf(
 	 stream,

@@ -1,7 +1,9 @@
 dnl Functions for libfwnt
+dnl
+dnl Version: 20111005
 
 dnl Function to detect if libfwnt is available
-AC_DEFUN([AC_CHECK_LIBFWNT],
+AC_DEFUN([AX_LIBFWNT_CHECK_LIB],
  [dnl Check if parameters were provided
  AS_IF(
   [test "x$ac_cv_with_libfwnt" != x && test "x$ac_cv_with_libfwnt" != xno && test "x$ac_cv_with_libfwnt" != xauto-detect],
@@ -49,6 +51,57 @@ AC_DEFUN([AC_CHECK_LIBFWNT],
   [AC_SUBST(
    [HAVE_LIBFWNT],
    [0])
+  ])
+ ])
+
+dnl Function to detect how to enable libfwnt
+AC_DEFUN([AX_LIBFWNT_CHECK_ENABLE],
+ [AX_COMMON_ARG_WITH(
+  [libfwnt],
+  [libfwnt],
+  [search for libfwnt in includedir and libdir or in the specified DIR, or no if to use local version],
+  [auto-detect],
+  [DIR])
+
+ AX_LIBFWNT_CHECK_LIB
+
+ AS_IF(
+  [test "x$ac_cv_libfwnt" != xyes],
+  [AC_DEFINE(
+   [HAVE_LOCAL_LIBFWNT],
+   [1],
+   [Define to 1 if the local version of libfwnt is used.])
+  AC_SUBST(
+   [HAVE_LOCAL_LIBFWNT],
+   [1])
+  AC_SUBST(
+   [LIBFWNT_CPPFLAGS],
+   [-I../libfwnt])
+  AC_SUBST(
+   [LIBFWNT_LIBADD],
+   [../libfwnt/libfwnt.la])
+  ac_cv_libfwnt=local
+  ])
+
+ AM_CONDITIONAL(
+  [HAVE_LOCAL_LIBFWNT],
+  [test "x$ac_cv_libfwnt" = xlocal])
+
+ AS_IF(
+  [test "x$ac_cv_libfwnt" = xyes],
+  [AC_SUBST(
+   [ax_libfwnt_pc_libs_private],
+   [-lfvalue])
+  ])
+
+ AS_IF(
+  [test "x$ac_cv_libfwnt" = xyes],
+  [AC_SUBST(
+   [ax_libfwnt_spec_requires],
+   [libfvalue])
+  AC_SUBST(
+   [ax_libfwnt_spec_build_requires],
+   [libfvalue-devel])
   ])
  ])
 

@@ -388,7 +388,7 @@ int info_handle_file_fprint(
 
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tNumber of records\t: %d\n",
+	 "\tNumber of event records\t: %d\n",
 	 number_of_items );
 
 	fprintf(

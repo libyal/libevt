@@ -105,6 +105,16 @@ struct evt_record_event_header
 	 * Consists of 4 bytes
 	 */
 	uint8_t user_sid_offset[ 4 ];
+
+	/* The data size
+	 * Consists of 4 bytes
+	 */
+	uint8_t data_size[ 4 ];
+
+	/* The data offset
+	 * Consists of 4 bytes
+	 */
+	uint8_t data_offset[ 4 ];
 };
 
 typedef struct evt_record_end_of_file evt_record_end_of_file_t;

@@ -29,7 +29,6 @@
 
 #include "libevt_array_type.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfvalue.h"
 
 #if defined( __cplusplus )
 extern "C" {

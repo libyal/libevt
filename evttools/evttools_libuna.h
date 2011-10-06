@@ -1,5 +1,5 @@
 /*
- * The libfdatetime header wrapper
+ * The libuna header wrapper
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,36 +19,42 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_LIBFDATETIME_H )
-#define _LIBEVT_LIBFDATETIME_H
+#if !defined( _EVTTOOLS_LIBUNA_H )
+#define _EVTTOOLS_LIBUNA_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBFDATETIME for local use of libfdatetime
+/* Define HAVE_LOCAL_LIBUNA for local use of libuna
  */
-#if defined( HAVE_LOCAL_LIBFDATETIME )
+#if defined( HAVE_LOCAL_LIBUNA )
 
-#include <libfdatetime_date_time_values.h>
-#include <libfdatetime_definitions.h>
-#include <libfdatetime_fat_date_time.h>
-#include <libfdatetime_filetime.h>
-#include <libfdatetime_nsf_timedate.h>
-#include <libfdatetime_posix_time.h>
-#include <libfdatetime_types.h>
+#include <libuna_base16_stream.h>
+#include <libuna_base64_stream.h>
+#include <libuna_base64url_stream.h>
+#include <libuna_byte_stream.h>
+#include <libuna_unicode_character.h>
+#include <libuna_url_stream.h>
+#include <libuna_utf16_stream.h>
+#include <libuna_utf16_string.h>
+#include <libuna_utf32_stream.h>
+#include <libuna_utf32_string.h>
+#include <libuna_utf8_stream.h>
+#include <libuna_utf8_string.h>
+#include <libuna_types.h>
 
-#elif defined( HAVE_LIBFDATETIME_H )
+#elif defined( HAVE_LIBUNA_H )
 
-/* If libtool DLL support is enabled set LIBFDATETIME_DLL_IMPORT
- * before including libfdatetime.h
+/* If libtool DLL support is enabled set LIBUNA_DLL_IMPORT
+ * before including libuna.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFDATETIME_DLL_IMPORT
+#define LIBUNA_DLL_IMPORT
 #endif
 
-#include <libfdatetime.h>
+#include <libuna.h>
 
 #else
-#error Missing libfdatetime.h
+#error Missing libuna.h
 #endif
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * The libfvalue header wrapper
+ * The libfwnt header wrapper
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,34 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_LIBFVALUE_H )
-#define _LIBEVT_LIBFVALUE_H
+#if !defined( _LIBEVT_LIBFWNT_H )
+#define _LIBEVT_LIBFWNT_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBFVALUE for local use of libfvalue
+/* Define HAVE_LOCAL_LIBFWNT for local use of libfwnt
  */
-#if defined( HAVE_LOCAL_LIBFVALUE )
+#if defined( HAVE_LOCAL_LIBFWNT )
 
-#include <libfvalue_codepage.h>
-#include <libfvalue_definitions.h>
-#include <libfvalue_table.h>
-#include <libfvalue_types.h>
-#include <libfvalue_value.h>
+#include <libfwnt_definitions.h>
+#include <libfwnt_security_identifier.h>
+#include <libfwnt_types.h>
 
-#elif defined( HAVE_LIBFVALUE_H )
+#elif defined( HAVE_LIBFWNT_H )
 
-/* If libtool DLL support is enabled set LIBFVALUE_DLL_IMPORT
- * before including libfvalue.h
+/* If libtool DLL support is enabled set LIBFWNT_DLL_IMPORT
+ * before including libfwnt.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFVALUE_DLL_IMPORT
+#define LIBFWNT_DLL_IMPORT
 #endif
 
-#include <libfvalue.h>
+#include <libfwnt.h>
 
 #else
-#error Missing libfvalue.h
+#error Missing libfwnt.h
 #endif
 
 #endif

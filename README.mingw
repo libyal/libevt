@@ -1,16 +1,15 @@
 Creating a DLL using MinGW
 
 To compile a libevt DLL using MinGW you'll need:
-* MinGW with Windows Crypto API (libadvapi32)
+* MinGW
 
 To build a DLL using MinGW use:
 mingw32-configure --prefix=/opt/local/i386-mingw32 --enable-winapi=yes
 mingw32-make
 
 It is recommended that you use WINAPI support but it is possible to compile 
-libevt without it (--enable-winapi=no). Without WINAPI support libevt will
-need a MinGW build of openssl libcrypto for MD5 and SHA1 support.
-The default behaviour is that libevt will try to auto-detect MinGW and enable WINAPI support.
+libevt without it (--enable-winapi=no). The default behaviour is that libevt
+will try to auto-detect MinGW and enable WINAPI support.
 
 If mingw32-configure and mingw32-make are not available you can build it with:
 ./configure --host=i386-mingw32 --prefix=/opt/local/i386-mingw32 --enable-winapi=yes
@@ -37,7 +36,7 @@ libevt-<version>/libevt/.libs/libevt-1.dll
 
 And the following executables:
 libevt-<version>/evttools/.libs/evtinfo.exe
-libevt-<version>/evttools/.libs/evtmount.exe
+libevt-<version>/evttools/.libs/evtexport.exe
 
 To install the libevt DLL in the MinGW build tree use:
 sudo make install

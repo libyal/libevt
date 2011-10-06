@@ -7,8 +7,6 @@ AM_CPPFLAGS = \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
-	@LIBFGUID_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
@@ -21,11 +19,13 @@ bin_PROGRAMS = \
 
 evtexport_SOURCES = \
 	export_handle.c export_handle.h \
-	log_handle.c log_handle.h \
 	evtexport.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
-	evttools_libevt.h
+	evttools_libfdatetime.h \
+	evttools_libevt.h \
+	evttools_libuna.h \
+	log_handle.c log_handle.h
 
 evtexport_LDADD = \
 	../libcstring/libcstring.la \
@@ -37,12 +37,13 @@ evtexport_LDADD = \
 	@MEMWATCH_LIBADD@
 
 evtinfo_SOURCES = \
-	info_handle.c info_handle.h \
 	evtinfo.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
 	evttools_libfdatetime.h \
-	evttools_libevt.h
+	evttools_libevt.h \
+	evttools_libuna.h \
+	info_handle.c info_handle.h
 
 evtinfo_LDADD = \
 	../libcstring/libcstring.la \

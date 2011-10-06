@@ -329,6 +329,17 @@ int libevt_io_handle_read_file_header(
 		 "\n" );
 	}
 #endif
+	if( size != size_copy )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_INPUT,
+		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
+		 "%s: value mismatch for size and size copy.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 

@@ -29,7 +29,6 @@
 #include "libevt_io_handle.h"
 #include "libevt_item.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfvalue.h"
 
 /* Initializes the item and its values
  * Returns 1 if successful or -1 on error
@@ -38,7 +37,7 @@ int libevt_item_initialize(
      libevt_item_t **item,
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     libfvalue_table_t *values_table,
+     libevt_record_t *event_record,
      uint8_t flags,
      liberror_error_t **error )
 {
@@ -56,13 +55,13 @@ int libevt_item_initialize(
 
 		return( -1 );
 	}
-	if( values_table == NULL )
+	if( event_record == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid values table.",
+		 "%s: invalid event record.",
 		 function );
 
 		return( -1 );
@@ -148,8 +147,8 @@ int libevt_item_initialize(
 			}
 		}
 		internal_item->io_handle    = io_handle;
+		internal_item->event_record = event_record;
 		internal_item->flags        = flags;
-		internal_item->values_table = values_table;
 
 		*item = (libevt_item_t *) internal_item;
 	}
@@ -199,7 +198,7 @@ int libevt_item_free(
 		internal_item = (libevt_internal_item_t *) *item;
 		*item         = NULL;
 
-		/* The io_handle and values_table references are freed elsewhere
+		/* The io_handle and event_record references are freed elsewhere
 		 */
 		if( ( internal_item->flags & LIBEVT_ITEM_FLAG_MANAGED_FILE_IO_HANDLE ) != 0 )
 		{
@@ -276,21 +275,7 @@ int libevt_item_get_number_of_entries(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_number_of_values(
-	     internal_item->values_table,
-	     &number_of_values,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to get number of values from values table.",
-		 function );
-
-		return( -1 );
-	}
-	*number_of_entries = (uint32_t) number_of_values;
+/* TODO */
 
 	return( 1 );
 }
@@ -305,7 +290,6 @@ int libevt_item_get_entry_type(
      uint32_t *value_type,
      liberror_error_t **error )
 {
-	libfvalue_value_t *value              = NULL;
 	libevt_internal_item_t *internal_item = NULL;
 	static char *function                 = "libevt_item_get_entry_type";
 
@@ -341,22 +325,6 @@ int libevt_item_get_entry_type(
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid value type.",
 		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_table_get_value_by_index(
-	     internal_item->values_table,
-	     entry_index,
-	     &value,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %d from values table.",
-		 function,
-		 entry_index );
 
 		return( -1 );
 	}

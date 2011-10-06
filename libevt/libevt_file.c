@@ -35,7 +35,6 @@
 #include "libevt_item.h"
 #include "libevt_file.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfvalue.h"
 #include "libevt_record.h"
 
 /* Initializes a file
@@ -1071,7 +1070,7 @@ int libevt_file_get_item(
      liberror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
-	libfvalue_table_t *values_table       = NULL;
+	libevt_record_t *event_record         = NULL;
 	static char *function                 = "libevt_file_get_item";
 
 	if( file == NULL )
@@ -1101,14 +1100,14 @@ int libevt_file_get_item(
 	if( libevt_array_get_entry_by_index(
 	     internal_file->items_array,
 	     item_index,
-	     (intptr_t **) &values_table,
+	     (intptr_t **) &event_record,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve item values: %d.",
+		 "%s: unable to retrieve event record: %d.",
 		 function,
 		 item_index );
 
@@ -1118,7 +1117,7 @@ int libevt_file_get_item(
 	     item,
 	     internal_file->io_handle,
 	     internal_file->file_io_handle,
-	     values_table,
+	     event_record,
 	     LIBEVT_ITEM_FLAGS_DEFAULT,
 	     error ) != 1 )
 	{

@@ -7,8 +7,6 @@ AM_CPPFLAGS = \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
-	@LIBFGUID_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@
 
@@ -27,7 +25,7 @@ libevt_la_SOURCES = \
 	libevt_io_handle.c libevt_io_handle.h \
 	libevt_libbfio.h \
 	libevt_libfdatetime.h \
-	libevt_libfvalue.h \
+	libevt_libfwnt.h \
 	libevt_libuna.h \
 	libevt_notify.c libevt_notify.h \
 	libevt_record.c libevt_record.h \
@@ -44,8 +42,6 @@ libevt_la_LIBADD = \
 	@LIBUNA_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
-	@LIBFGUID_LIBADD@ \
-	@LIBFVALUE_LIBADD@ \
 	@LIBFWNT_LIBADD@
 
 libevt_la_LDFLAGS = -no-undefined -version-info 1:0:0

@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20111004],
+ [20111005],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -17,70 +17,6 @@ AC_CANONICAL_HOST
 
 dnl Check for large file support
 AC_SYS_LARGEFILE
-
-dnl Check for configure arguments
-COMMON_ARG_ENABLE(
- [wide-character-type],
- [wide_character_type],
- [enable wide character type support],
- [no])
-COMMON_ARG_ENABLE(
- [winapi],
- [winapi],
- [enable WINAPI support for cross-compilation],
- [auto-detect])
-COMMON_ARG_ENABLE(
- [static-executables],
- [static_executables],
- [build the evttools as static executables],
- [no])
-COMMON_ARG_ENABLE(
- [verbose-output],
- [verbose_output],
- [enable verbose output],
- [no])
-COMMON_ARG_ENABLE(
- [debug-output],
- [debug_output],
- [enable debug output],
- [no])
-
-COMMON_ARG_WITH(
- [libuna],
- [libuna],
- [search for libuna in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libbfio],
- [libbfio],
- [search for libbfio in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libfdatetime],
- [libfdatetime],
- [search for libfdatetime in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libfguid],
- [libfguid],
- [search for libfguid in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libfvalue],
- [libfvalue],
- [search for libfvalue in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libfwnt],
- [libfwnt],
- [search for libfwnt in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
 
 dnl Check for libtool DLL support
 AC_LIBTOOL_WIN32_DLL
@@ -100,331 +36,64 @@ dnl Check for compiler language support
 AC_C_CONST
 AC_C_VOLATILE
 
-dnl Automatically enable winapi support for mingw
-AC_CHECK_WINAPI
+dnl Check if WINAPI support should be enabled
+AX_COMMON_CHECK_ENABLE_WINAPI
 
 dnl Check for type definitions
-AC_CHECK_LOCAL_TYPES
+AX_TYPES_CHECK_LOCAL
+
+dnl Check if wide character type should be enabled
+AX_COMMON_CHECK_ENABLE_WIDE_CHARACTER_TYPE
 
 dnl Check for headers
 
 dnl Check for functions
 
-dnl System functions
-
-dnl Check for printf conversion specifier support
-AC_CHECK_FUNC_PRINTF_JD
-AC_CHECK_FUNC_PRINTF_ZD
-
 dnl Checks for libraries and library functions
 dnl ac_libevt_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
-AC_CHECK_LOCAL_COMMON
-AC_CHECK_LOCAL_LIBCSTRING
-AC_CHECK_LOCAL_LIBERROR
-AC_CHECK_LOCAL_LIBNOTIFY
-AC_CHECK_LOCAL_LIBSYSTEM
+AX_COMMON_CHECK_LOCAL
+AX_LIBCSTRING_CHECK_LOCAL
+AX_LIBERROR_CHECK_LOCAL
+AX_LIBNOTIFY_CHECK_LOCAL
+AX_LIBSYSTEM_CHECK_LOCAL
 
 dnl Check for enabling libuna for Unicode string support
-AC_CHECK_LIBUNA
-
-AS_IF(
- [test "x$ac_cv_libuna" = xyes],
- [AC_SUBST(
-  [libbde_pc_libs_private_libuna],
-  [-luna])
- ])
-
-AS_IF(
- [test "x$ac_cv_libuna" = xyes],
- [AC_SUBST(
-  [libbde_spec_requires_libuna],
-  [libuna])
- AC_SUBST(
-  [libbde_spec_build_requires_libuna],
-  [libuna-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libuna" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBUNA],
-  [1],
-  [Define to 1 if the local version of libuna is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBUNA],
-  [1])
- AC_SUBST(
-  [LIBUNA_CPPFLAGS],
-  [-I../libuna])
- AC_SUBST(
-  [LIBUNA_LIBADD],
-  [../libuna/libuna.la])
- ac_cv_libuna=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBUNA],
- [test "x$ac_cv_libuna" = xlocal])
+AX_LIBUNA_CHECK_ENABLE
 
 dnl Check for enabling libbfio for basic file IO support
-AC_CHECK_LIBBFIO
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xyes],
- [AC_SUBST(
-  [libbde_pc_libs_private_libbfio],
-  [-lbfio])
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xyes],
- [AC_SUBST(
-  [libbde_spec_requires_libbfio],
-  [libbfio])
- AC_SUBST(
-  [libbde_spec_build_requires_libbfio],
-  [libbfio-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBBFIO],
-  [1],
-  [Define to 1 if the local version of libbfio is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBBFIO],
-  [1])
- AC_SUBST(
-  [LIBBFIO_CPPFLAGS],
-  [-I../libbfio])
- AC_SUBST(
-  [LIBBFIO_LIBADD],
-  [../libbfio/libbfio.la])
- ac_cv_libbfio=local
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xlocal],
- [AC_CHECK_LOCAL_LIBBFIO])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBBFIO],
- [test "x$ac_cv_libbfio" = xlocal])
+AX_LIBBFIO_CHECK_ENABLE
 
 dnl Check for enabling libfdatetime for file date and time support
-AC_CHECK_LIBFDATETIME
-
-AS_IF(
- [test "x$ac_cv_libfdatetime" = xyes],
- [AC_SUBST(
-  [libbde_pc_libs_private_libfdatetime],
-  [-lfdatetime])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfdatetime" = xyes],
- [AC_SUBST(
-  [libbde_spec_requires_libfdatetime],
-  [libfdatetime])
- AC_SUBST(
-  [libbde_spec_build_requires_libfdatetime],
-  [libfdatetime-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfdatetime" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBFDATETIME],
-  [1],
-  [Define to 1 if the local version of libfdatetime is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBFDATETIME],
-  [1])
- AC_SUBST(
-  [LIBFDATETIME_CPPFLAGS],
-  [-I../libfdatetime])
- AC_SUBST(
-  [LIBFDATETIME_LIBADD],
-  [../libfdatetime/libfdatetime.la])
- ac_cv_libfdatetime=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBFDATETIME],
- [test "x$ac_cv_libfdatetime" = xlocal])
-
-dnl Check for enabling libfguid for file GUID/UUID support
-AC_CHECK_LIBFGUID
-
-AS_IF(
- [test "x$ac_cv_libfguid" = xyes],
- [AC_SUBST(
-  [libbde_pc_libs_private_libfguid],
-  [-lfguid])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfguid" = xyes],
- [AC_SUBST(
-  [libbde_spec_requires_libfguid],
-  [libfguid])
- AC_SUBST(
-  [libbde_spec_build_requires_libfguid],
-  [libfguid-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfguid" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBFGUID],
-  [1],
-  [Define to 1 if the local version of libfguid is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBFGUID],
-  [1])
- AC_SUBST(
-  [LIBFGUID_CPPFLAGS],
-  [-I../libfguid])
- AC_SUBST(
-  [LIBFGUID_LIBADD],
-  [../libfguid/libfguid.la])
- ac_cv_libfguid=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBFGUID],
- [test "x$ac_cv_libfguid" = xlocal])
-
-dnl Check for enabling libfvalue for file value support
-AC_CHECK_LIBFVALUE
-
-AS_IF(
- [test "x$ac_cv_libfvalue" = xyes],
- [AC_SUBST(
-  [libbde_pc_libs_private_libfvalue],
-  [-lfvalue])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfvalue" = xyes],
- [AC_SUBST(
-  [libbde_spec_requires_libfvalue],
-  [libfvalue])
- AC_SUBST(
-  [libbde_spec_build_requires_libfvalue],
-  [libfvalue-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfvalue" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBFVALUE],
-  [1],
-  [Define to 1 if the local version of libfvalue is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBFVALUE],
-  [1])
- AC_SUBST(
-  [LIBFVALUE_CPPFLAGS],
-  [-I../libfvalue])
- AC_SUBST(
-  [LIBFVALUE_LIBADD],
-  [../libfvalue/libfvalue.la])
- ac_cv_libfvalue=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBFVALUE],
- [test "x$ac_cv_libfvalue" = xlocal])
+AX_LIBFDATETIME_CHECK_ENABLE
 
 dnl Check for enabling libfwnt for file Windows NT type support
-AC_CHECK_LIBFWNT
-
-AS_IF(
- [test "x$ac_cv_libfwnt" = xyes],
- [AC_SUBST(
-  [libesedb_spec_requires_libfwnt],
-  [libfwnt])
- AC_SUBST(
-  [libesedb_spec_build_requires_libfwnt],
-  [libfwnt-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfwnt" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBFWNT],
-  [1],
-  [Define to 1 if the local version of libfwnt is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBFWNT],
-  [1])
- AC_SUBST(
-  [LIBFWNT_CPPFLAGS],
-  [-I../libfwnt])
- AC_SUBST(
-  [LIBFWNT_LIBADD],
-  [../libfwnt/libfwnt.la])
- ac_cv_libfwnt=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBFWNT],
- [test "x$ac_cv_libfwnt" = xlocal])
+AX_LIBFWNT_CHECK_ENABLE
 
 dnl Check if evttools should be build as static executables
-AS_IF(
- [test "x$ac_cv_enable_static_executables" != xno],
- [STATIC_LDFLAGS="-all-static";
- AC_SUBST(
-  [STATIC_LDFLAGS])
- AC_DEFINE(
-  [HAVE_STATIC_EXECUTABLES],
-  [1],
-  [Define if executables should be static compiled.])
- ac_cv_enable_static_executables=yes])
+AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
 
 dnl Check if libevt should be build with verbose output
-AS_IF(
- [test "x$ac_cv_enable_verbose_output" != xno ],
- [AC_DEFINE(
-  [HAVE_VERBOSE_OUTPUT],
-  [1],
-  [Define to 1 if verbose output should be used.])
- ac_cv_enable_verbose_output=yes])
+AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
 
 dnl Check if libevt should be build with debug output
-AS_IF(
- [test "x$ac_cv_enable_debug_output" != xno ],
- [AC_DEFINE(
-  [HAVE_DEBUG_OUTPUT],
-  [1],
-  [Define to 1 if debug output should be used.])
- ac_cv_enable_debug_output=yes])
+AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
- [test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfguid" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwnt" = xyes],
+ [test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfwnt" = xyes],
  [AC_SUBST(
   [libevt_spec_requires],
   [Requires:])
  AC_SUBST(
   [libevt_spec_build_requires],
-  [BuildRequires:]) ],
- [AC_SUBST(
-  [libevt_spec_requires],
-  [])
- AC_SUBST(
-  [libevt_spec_build_requires],
-  [])
- ac_libevt_dummy=yes])
+  [BuildRequires:])
+ ])
 
 dnl Set memwatch support
-ac_cv_have_memwatch=no
+ac_cv_enable_memwatch=no
 
 AS_IF(
- [test "x$ac_cv_have_memwatch" != xno ],
+ [test "x$ac_cv_enable_memwatch" != xno ],
  [AC_SUBST(
   [MEMWATCH_CPPFLAGS],
   ["-DMEMWATCH -DMEMWATCH_STDIO"])
@@ -434,7 +103,7 @@ AS_IF(
 
 AM_CONDITIONAL(
  [HAVE_MEMWATCH],
- [test "x$ac_cv_have_memwatch" != xno])
+ [test "x$ac_cv_enable_memwatch" != xno])
 
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
@@ -461,8 +130,6 @@ AC_CONFIG_FILES([libnotify/Makefile])
 AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfdatetime/Makefile])
-AC_CONFIG_FILES([libfguid/Makefile])
-AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([libsystem/Makefile])
@@ -497,8 +164,6 @@ Building:
    libuna support:                           $ac_cv_libuna
    libbfio support:                          $ac_cv_libbfio
    libfdatetime support:                     $ac_cv_libfdatetime
-   libfguid support:                         $ac_cv_libfguid
-   libfvalue support:                        $ac_cv_libfvalue
    libfwnt support:                          $ac_cv_libfwnt
 
 Features:
