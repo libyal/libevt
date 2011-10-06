@@ -33,8 +33,15 @@
 
 /* The following type definitions hide internal data structures
  */
+#if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
+typedef struct libevt_file {}	libevt_file_t;
+typedef struct libevt_item {}	libevt_item_t;
+
+#else
 typedef intptr_t libevt_file_t;
 typedef intptr_t libevt_item_t;
+
+#endif
 
 #endif
 
