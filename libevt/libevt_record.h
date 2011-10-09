@@ -47,6 +47,22 @@ struct libevt_record
 	/* The type
 	 */
 	uint8_t type;
+
+	/* The source name
+	 */
+	uint8_t *source_name;
+
+	/* The source name size
+	 */
+	size_t source_name_size;
+
+	/* The computer name
+	 */
+	uint8_t *computer_name;
+
+	/* The computer name size
+	 */
+	size_t computer_name_size;
 };
 
 int libevt_record_initialize(

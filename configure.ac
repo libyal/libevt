@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20111005],
+ [20111009],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -39,18 +39,13 @@ AC_C_VOLATILE
 dnl Check if WINAPI support should be enabled
 AX_COMMON_CHECK_ENABLE_WINAPI
 
-dnl Check for type definitions
-AX_TYPES_CHECK_LOCAL
-
 dnl Check if wide character type should be enabled
 AX_COMMON_CHECK_ENABLE_WIDE_CHARACTER_TYPE
 
-dnl Check for headers
-
-dnl Check for functions
+dnl Check for type definitions
+AX_TYPES_CHECK_LOCAL
 
 dnl Checks for libraries and library functions
-dnl ac_libevt_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
 AX_COMMON_CHECK_LOCAL
 AX_LIBCSTRING_CHECK_LOCAL
 AX_LIBERROR_CHECK_LOCAL

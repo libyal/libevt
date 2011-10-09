@@ -124,6 +124,16 @@ int libevt_record_free(
 
 		return( 1 );
 	}
+	if( record->source_name != NULL )
+	{
+		memory_free(
+		 record->source_name );
+	}
+	if( record->computer_name != NULL )
+	{
+		memory_free(
+		 record->computer_name );
+	}
 	memory_free(
 	 record );
 
@@ -443,6 +453,7 @@ int libevt_record_read_event(
 	uint32_t size_copy                    = 0;
 	uint32_t strings_offset               = 0;
 	uint32_t strings_size                 = 0;
+	uint32_t unicode_value_size           = 0;
 	uint32_t user_sid_offset              = 0;
 	uint32_t user_sid_size                = 0;
 
@@ -822,7 +833,123 @@ int libevt_record_read_event(
 			 members_data_size );
 		}
 #endif
-		record_data_offset += members_data_size;
+		for( unicode_value_size = 0;
+		     ( unicode_value_size + 1 ) < members_data_size;
+		     unicode_value_size += 2 )
+		{
+			if( ( record_data[ record_data_offset + unicode_value_size ] == 0 )
+			 && ( record_data[ record_data_offset + unicode_value_size + 1 ] == 0 ) )
+			{
+				break;
+			}
+		}
+		unicode_value_size += 2;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libnotify_verbose != 0 )
+		{
+			libnotify_printf(
+			 "%s: source name size\t\t\t\t\t: %" PRIu32 "\n",
+			 function,
+			 unicode_value_size );
+			libnotify_printf(
+			 "%s: source name data:\n",
+			 function );
+			libnotify_print_data(
+			 &( record_data[ record_data_offset ] ),
+			 unicode_value_size );
+		}
+#endif
+		record->source_name = (uint8_t *) memory_allocate(
+		                                   sizeof( uint8_t ) * unicode_value_size );
+
+		if( record->source_name == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create source name.",
+			 function );
+
+			goto on_error;
+		}
+		if( memory_copy(
+		     record->source_name,
+		     &( record_data[ record_data_offset ] ),
+		     unicode_value_size ) == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+			 "%s: unable to copy source name.",
+			 function );
+
+			goto on_error;
+		}
+		record->source_name_size = (size_t) unicode_value_size;
+
+		record_data_offset += unicode_value_size;
+
+		for( unicode_value_size = 0;
+		     ( unicode_value_size + 1 ) < members_data_size;
+		     unicode_value_size += 2 )
+		{
+			if( ( record_data[ record_data_offset + unicode_value_size ] == 0 )
+			 && ( record_data[ record_data_offset + unicode_value_size + 1 ] == 0 ) )
+			{
+				break;
+			}
+		}
+		unicode_value_size += 2;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libnotify_verbose != 0 )
+		{
+			libnotify_printf(
+			 "%s: computer name size\t\t\t\t\t: %" PRIu32 "\n",
+			 function,
+			 unicode_value_size );
+			libnotify_printf(
+			 "%s: computer name data:\n",
+			 function );
+			libnotify_print_data(
+			 &( record_data[ record_data_offset ] ),
+			 unicode_value_size );
+		}
+#endif
+		record->computer_name = (uint8_t *) memory_allocate(
+		                                     sizeof( uint8_t ) * unicode_value_size );
+
+		if( record->computer_name == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create computer name.",
+			 function );
+
+			goto on_error;
+		}
+		if( memory_copy(
+		     record->computer_name,
+		     &( record_data[ record_data_offset ] ),
+		     unicode_value_size ) == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+			 "%s: unable to copy computer name.",
+			 function );
+
+			goto on_error;
+		}
+		record->computer_name_size = (size_t) unicode_value_size;
+
+		record_data_offset += unicode_value_size;
 	}
 	if( user_sid_size != 0 )
 	{
