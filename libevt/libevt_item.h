@@ -80,27 +80,29 @@ int libevt_item_free(
      liberror_error_t **error );
 
 LIBEVT_EXTERN \
-int libevt_item_get_number_of_entries(
+int libevt_item_get_utf8_computer_name_size(
      libevt_item_t *item,
-     uint32_t *number_of_entries,
+     size_t *utf8_string_size,
      liberror_error_t **error );
 
 LIBEVT_EXTERN \
-int libevt_item_get_entry_type(
+int libevt_item_get_utf8_computer_name(
      libevt_item_t *item,
-     int entry_index,
-     uint32_t *entry_type,
-     uint32_t *value_type,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
      liberror_error_t **error );
 
 LIBEVT_EXTERN \
-int libevt_item_get_entry_value(
+int libevt_item_get_utf16_computer_name_size(
      libevt_item_t *item,
-     uint32_t entry_type,
-     uint32_t *value_type,
-     uint8_t **value_data,
-     size_t *value_data_size,
-     uint8_t flags,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_item_get_utf16_computer_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

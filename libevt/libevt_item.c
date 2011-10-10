@@ -238,18 +238,17 @@ int libevt_item_free(
 	return( 1 );
 }
 
-/* Retrieves the number of entries
- * All sets in an item contain the same number of entries
- * Returns 1 if successful or -1 on error
+/* Retrieves the size of the UTF-8 encoded computer name
+ * The string size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libevt_item_get_number_of_entries(
+int libevt_item_get_utf8_computer_name_size(
      libevt_item_t *item,
-     uint32_t *number_of_entries,
+     size_t *utf8_string_size,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_number_of_entries";
-	int number_of_values                  = 0;
+	static char *function                 = "libevt_item_get_utf8_computer_name_size";
 
 	if( item == NULL )
 	{
@@ -263,35 +262,23 @@ int libevt_item_get_number_of_entries(
 		return( -1 );
 	}
 	internal_item = (libevt_internal_item_t *) item;
-
-	if( number_of_entries == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid number of entries.",
-		 function );
-
-		return( -1 );
-	}
 /* TODO */
 
 	return( 1 );
 }
 
-/* Retrieves the entry and value type of a specific entry
- * Returns 1 if successful or -1 on error
+/* Retrieves the UTF-8 encoded header computer name
+ * The string size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libevt_item_get_entry_type(
+int libevt_item_get_utf8_computer_name(
      libevt_item_t *item,
-     int entry_index,
-     uint32_t *entry_type,
-     uint32_t *value_type,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_entry_type";
+	static char *function                 = "libevt_item_get_utf8_computer_name";
 
 	if( item == NULL )
 	{
@@ -305,54 +292,22 @@ int libevt_item_get_entry_type(
 		return( -1 );
 	}
 	internal_item = (libevt_internal_item_t *) item;
-
-	if( entry_type == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid entry type.",
-		 function );
-
-		return( -1 );
-	}
-	if( value_type == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid value type.",
-		 function );
-
-		return( -1 );
-	}
 /* TODO */
 
 	return( 1 );
 }
 
-/* Retrieves the value of a specific entry
- *
- * When the LIBEVT_ENTRY_VALUE_FLAG_MATCH_ANY_VALUE_TYPE is set
- * the value type is ignored and set. The default behavior is a strict
- * matching of the value type. In this case the value type must be filled
- * with the corresponding value type
- *
- * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
+/* Retrieves the size of the UTF-16 encoded computer name
+ * The string size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libevt_item_get_entry_value(
+int libevt_item_get_utf16_computer_name_size(
      libevt_item_t *item,
-     uint32_t entry_type,
-     uint32_t *value_type,
-     uint8_t **value_data, 
-     size_t *value_data_size,
-     uint8_t flags,
+     size_t *utf16_string_size,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_entry_value";
+	static char *function                 = "libevt_item_get_utf16_computer_name_size";
 
 	if( item == NULL )
 	{
@@ -366,19 +321,38 @@ int libevt_item_get_entry_value(
 		return( -1 );
 	}
 	internal_item = (libevt_internal_item_t *) item;
+/* TODO */
 
-	if( value_type == NULL )
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded header computer name
+ * The string size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+int libevt_item_get_utf16_computer_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf16_computer_name";
+
+	if( item == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid value type.",
+		 "%s: invalid item.",
 		 function );
 
 		return( -1 );
 	}
+	internal_item = (libevt_internal_item_t *) item;
 /* TODO */
-	return( -1 );
+
+	return( 1 );
 }
 
