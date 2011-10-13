@@ -28,6 +28,7 @@
 #include <liberror.h>
 #include <libnotify.h>
 
+#include "libevt_debug.h"
 #include "libevt_io_handle.h"
 #include "libevt_libfdatetime.h"
 #include "libevt_libfvalue.h"
@@ -765,14 +766,18 @@ int libevt_record_read_event(
 			goto on_error;
 		}
 		libnotify_printf(
-		 "%s: event identifier\t\t\t\t: %" PRIu32 "\n",
+		 "%s: event identifier\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 record->event_identifier );
 
 		libnotify_printf(
-		 "%s: event type\t\t\t\t\t: %" PRIu16 "\n",
+		 "%s: event type\t\t\t\t\t: %" PRIu16 " (",
 		 function,
 		 record->event_type );
+		libesedb_debug_print_event_type(
+		 record->event_type );
+		libnotify_printf(
+		 ")\n" );
 
 		byte_stream_copy_to_uint16_little_endian(
 		 ( (evt_record_event_header_t *) record_data )->number_of_strings,

@@ -36,6 +36,32 @@
 
 #define EXPORT_HANDLE_NOTIFY_STREAM	stdout
 
+char *export_handle_get_event_type(
+       uint16_t event_type )
+{
+	switch( event_type )
+	{
+		case LIBEVT_EVENT_TYPE_ERROR:
+			return( "Error event" );
+
+		case LIBEVT_EVENT_TYPE_WARNING:
+			return( "Warning event" );
+
+		case LIBEVT_EVENT_TYPE_INFORMATION:
+			return( "Information event" );
+
+		case LIBEVT_EVENT_TYPE_AUDIT_SUCCESS:
+			return( "Success Audit event" );
+
+		case LIBEVT_EVENT_TYPE_AUDIT_FAILURE:
+			return( "Failure Audit event" );
+
+		default:
+			break;
+	}
+	return( "(Unknown)" );
+}
+
 /* Initializes the export handle
  * Returns 1 if successful or -1 on error
  */
@@ -702,7 +728,7 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%" PRIu32 "\t",
+	 "0x%08" PRIx32 "\t",
 	 value_32bit );
 
 	if( libevt_item_get_event_type(
@@ -721,8 +747,9 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%" PRIu16 "\t",
-	 event_type );
+	 "%s\t",
+	 export_handle_get_event_type(
+	  event_type ) );
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_item_get_utf16_source_name_size(

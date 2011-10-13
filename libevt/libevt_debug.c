@@ -26,9 +26,48 @@
 #include <libnotify.h>
 
 #include "libevt_debug.h"
+#include "libevt_definitions.h"
 #include "libevt_libbfio.h"
 
 #if defined( HAVE_DEBUG_OUTPUT )
+
+/* Prints the event type
+ */
+void libesedb_debug_print_event_type(
+      uint16_t event_type )
+{
+	switch( event_type )
+	{
+		case LIBEVT_EVENT_TYPE_ERROR:
+			libnotify_printf(
+			 "Error event" );
+			break;
+
+		case LIBEVT_EVENT_TYPE_WARNING:
+			libnotify_printf(
+			 "Warning event" );
+			break;
+
+		case LIBEVT_EVENT_TYPE_INFORMATION:
+			libnotify_printf(
+			 "Information event" );
+			break;
+
+		case LIBEVT_EVENT_TYPE_AUDIT_SUCCESS:
+			libnotify_printf(
+			 "Success Audit event" );
+			break;
+
+		case LIBEVT_EVENT_TYPE_AUDIT_FAILURE:
+			libnotify_printf(
+			 "Failure Audit event" );
+			break;
+
+		default:
+			libnotify_printf(
+			 "(Unknown)" );
+	}
+}
 
 /* Prints the read offsets
  * Returns 1 if successful or -1 on error

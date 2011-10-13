@@ -3,7 +3,6 @@ TODO:
 * update manuals
 * update msvscpp files
 * debug function for file flags
-* debug function for event type
 * debug function for event category
 * debug function for event flags
 * add API record functions
@@ -19,12 +18,13 @@ Tools:
   - print computer name
   - print strings
   - print data ?
+  - improved version that also can get strings
 * evtinfo
 
 20111013
 * worked on initial version
 * fix for building static executables on Cygwin
-* updated libfvalue
+* updated libfvalue, libfdatetime
 
 20111009
 * worked on initial version
