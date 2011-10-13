@@ -238,18 +238,16 @@ int libevt_item_free(
 	return( 1 );
 }
 
-/* Retrieves the number of entries
- * All sets in an item contain the same number of entries
+/* Retrieves the identifier (record number)
  * Returns 1 if successful or -1 on error
  */
-int libevt_item_get_number_of_entries(
+int libevt_item_get_identifier(
      libevt_item_t *item,
-     uint32_t *number_of_entries,
+     uint32_t *identifier,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_number_of_entries";
-	int number_of_values                  = 0;
+	static char *function                 = "libevt_item_get_identifier";
 
 	if( item == NULL )
 	{
@@ -264,34 +262,44 @@ int libevt_item_get_number_of_entries(
 	}
 	internal_item = (libevt_internal_item_t *) item;
 
-	if( number_of_entries == NULL )
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid number of entries.",
+		 "%s: invalid identifier.",
 		 function );
 
 		return( -1 );
 	}
-/* TODO */
+	*identifier = internal_item->event_record->number;
 
 	return( 1 );
 }
 
-/* Retrieves the entry and value type of a specific entry
+/* Retrieves the creation time
+ * The timestamp is a 32-bit POSIX date and time value
  * Returns 1 if successful or -1 on error
  */
-int libevt_item_get_entry_type(
+int libevt_item_get_creation_time(
      libevt_item_t *item,
-     int entry_index,
-     uint32_t *entry_type,
-     uint32_t *value_type,
+     uint32_t *creation_time,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_entry_type";
+	static char *function                 = "libevt_item_get_creation_time";
 
 	if( item == NULL )
 	{
@@ -306,53 +314,44 @@ int libevt_item_get_entry_type(
 	}
 	internal_item = (libevt_internal_item_t *) item;
 
-	if( entry_type == NULL )
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( creation_time == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid entry type.",
+		 "%s: invalid creation time.",
 		 function );
 
 		return( -1 );
 	}
-	if( value_type == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid value type.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO */
+	*creation_time = internal_item->event_record->creation_time;
 
 	return( 1 );
 }
 
-/* Retrieves the value of a specific entry
- *
- * When the LIBEVT_ENTRY_VALUE_FLAG_MATCH_ANY_VALUE_TYPE is set
- * the value type is ignored and set. The default behavior is a strict
- * matching of the value type. In this case the value type must be filled
- * with the corresponding value type
- *
- * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
+/* Retrieves the written time
+ * The timestamp is a 32-bit POSIX date and time value
+ * Returns 1 if successful or -1 on error
  */
-int libevt_item_get_entry_value(
+int libevt_item_get_written_time(
      libevt_item_t *item,
-     uint32_t entry_type,
-     uint32_t *value_type,
-     uint8_t **value_data, 
-     size_t *value_data_size,
-     uint8_t flags,
+     uint32_t *written_time,
      liberror_error_t **error )
 {
 	libevt_internal_item_t *internal_item = NULL;
-	static char *function                 = "libevt_item_get_entry_value";
+	static char *function                 = "libevt_item_get_written_time";
 
 	if( item == NULL )
 	{
@@ -367,18 +366,573 @@ int libevt_item_get_entry_value(
 	}
 	internal_item = (libevt_internal_item_t *) item;
 
-	if( value_type == NULL )
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( written_time == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid value type.",
+		 "%s: invalid written time.",
 		 function );
 
 		return( -1 );
 	}
-/* TODO */
-	return( -1 );
+	*written_time = internal_item->event_record->written_time;
+
+	return( 1 );
 }
+
+/* Retrieves the event identifier
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_event_identifier(
+     libevt_item_t *item,
+     uint32_t *event_identifier,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_event_identifier";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( event_identifier == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid event identifier.",
+		 function );
+
+		return( -1 );
+	}
+	*event_identifier = internal_item->event_record->event_identifier;
+
+	return( 1 );
+}
+
+/* Retrieves the event type
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_event_type(
+     libevt_item_t *item,
+     uint16_t *event_type,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_event_type";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( event_type == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid event type.",
+		 function );
+
+		return( -1 );
+	}
+	*event_type = internal_item->event_record->event_type;
+
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-8 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf8_source_name_size(
+     libevt_item_t *item,
+     size_t *utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf8_source_name_size";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_item->event_record->source_name,
+	     0,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded source name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf8_source_name(
+     libevt_item_t *item,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf8_source_name";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_item->event_record->source_name,
+	     0,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy source name to UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf16_source_name_size(
+     libevt_item_t *item,
+     size_t *utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf16_source_name_size";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_item->event_record->source_name,
+	     0,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded source name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf16_source_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf16_source_name";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_item->event_record->source_name,
+	     0,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy source name to UTF-16 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-8 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf8_computer_name_size(
+     libevt_item_t *item,
+     size_t *utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf8_computer_name_size";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_item->event_record->computer_name,
+	     0,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded computer name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf8_computer_name(
+     libevt_item_t *item,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf8_computer_name";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_item->event_record->computer_name,
+	     0,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy computer name to UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf16_computer_name_size(
+     libevt_item_t *item,
+     size_t *utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf16_computer_name_size";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_item->event_record->computer_name,
+	     0,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded computer name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_item_get_utf16_computer_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_item_t *internal_item = NULL;
+	static char *function                 = "libevt_item_get_utf16_computer_name";
+
+	if( item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid item.",
+		 function );
+
+		return( -1 );
+	}
+	internal_item = (libevt_internal_item_t *) item;
+
+	if( internal_item->event_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal item - missing event record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_item->event_record->computer_name,
+	     0,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy computer name to UTF-16 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 

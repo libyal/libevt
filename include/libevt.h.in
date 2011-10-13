@@ -312,8 +312,8 @@ int libevt_item_free(
      libevt_item_t **item,
      libevt_error_t **error );
 
-/* Retrieves the identifier of a specific entry
- * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
+/* Retrieves the identifier (record number)
+ * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_item_get_identifier(
@@ -321,45 +321,126 @@ int libevt_item_get_identifier(
      uint32_t *identifier,
      libevt_error_t **error );
 
-/* Retrieves the number of entries
- * All sets in an item contain the same number of entries
+/* Retrieves the creation time
+ * The timestamp is a 32-bit POSIX date and time value
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_number_of_entries(
+int libevt_item_get_creation_time(
      libevt_item_t *item,
-     uint32_t *number_of_entries,
+     uint32_t *creation_time,
      libevt_error_t **error );
 
-/* Retrieves the entry and value type of a specific entry
- * The name to id map entry is set when available
+/* Retrieves the written time
+ * The timestamp is a 32-bit POSIX date and time value
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_entry_type(
+int libevt_item_get_written_time(
      libevt_item_t *item,
-     int entry_index,
-     uint32_t *entry_type,
-     uint32_t *value_type,
+     uint32_t *written_time,
      libevt_error_t **error );
 
-/* Retrieves the value of a specific entry
- *
- * When the LIBEVT_ENTRY_VALUE_FLAG_MATCH_ANY_VALUE_TYPE is set
- * the value type is ignored and set. The default behavior is a strict
- * matching of the value type. In this case the value type must be filled
- * with the corresponding value type
- *
- * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
+/* Retrieves the event identifier
+ * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_entry_value(
+int libevt_item_get_event_identifier(
      libevt_item_t *item,
-     uint32_t entry_type,
-     uint32_t *value_type,
-     uint8_t **value_data,
-     size_t *value_data_size,
-     uint8_t flags,
+     uint32_t *event_identifier,
+     libevt_error_t **error );
+
+/* Retrieves the event type
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_event_type(
+     libevt_item_t *item,
+     uint16_t *event_type,
+     libevt_error_t **error );
+
+/* Retrieves the size of the UTF-8 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf8_source_name_size(
+     libevt_item_t *item,
+     size_t *utf8_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the UTF-8 encoded source name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf8_source_name(
+     libevt_item_t *item,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the size of the UTF-16 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf16_source_name_size(
+     libevt_item_t *item,
+     size_t *utf16_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the UTF-16 encoded source name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf16_source_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the size of the UTF-8 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf8_computer_name_size(
+     libevt_item_t *item,
+     size_t *utf8_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the UTF-8 encoded computer name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf8_computer_name(
+     libevt_item_t *item,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the size of the UTF-16 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf16_computer_name_size(
+     libevt_item_t *item,
+     size_t *utf16_string_size,
+     libevt_error_t **error );
+
+/* Retrieves the UTF-16 encoded computer name value
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_item_get_utf16_computer_name(
+     libevt_item_t *item,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
      libevt_error_t **error );
 
 #if defined( __cplusplus )

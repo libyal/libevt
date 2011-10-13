@@ -49,6 +49,26 @@ struct libevt_record
 	 */
 	uint8_t type;
 
+	/* The (record) number
+	 */
+	uint32_t number;
+
+	/* The creation time
+	 */
+	uint32_t creation_time;
+
+	/* The written time
+	 */
+	uint32_t written_time;
+
+	/* The event identifier
+	 */
+	uint32_t event_identifier;
+
+	/* The event type
+	 */
+	uint32_t event_type;
+
 	/* The source name
 	 */
 	libfvalue_value_t *source_name;
@@ -56,6 +76,14 @@ struct libevt_record
 	/* The computer name
 	 */
 	libfvalue_value_t *computer_name;
+
+	/* The strings
+	 */
+	libfvalue_value_t *strings;
+
+	/* The data
+	 */
+	libfvalue_value_t *data;
 };
 
 int libevt_record_initialize(

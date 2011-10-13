@@ -33,6 +33,8 @@ evtexport_LDADD = \
 	../libevt/libevt.la \
 	../libsystem/libsystem.la \
 	@LIBUNA_LIBADD@ \
+	@LIBFDATETIME_LIBADD@ \
+	@LIBFWNT_LIBADD@ \
 	@LIBINTL@ \
 	@MEMWATCH_LIBADD@
 

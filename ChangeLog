@@ -10,8 +10,21 @@ TODO:
 * add error tollerability
   - sizes and copy
 
+Tools:
+* evtexport
+  - print header
+  - print event identifier ?
+  - print event type description
+  - print source name
+  - print computer name
+  - print strings
+  - print data ?
+* evtinfo
+
 20111013
+* worked on initial version
 * fix for building static executables on Cygwin
+* updated libfvalue
 
 20111009
 * worked on initial version

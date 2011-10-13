@@ -158,6 +158,38 @@ int libevt_record_free(
 			result = -1;
 		}
 	}
+	if( record->strings != NULL )
+	{
+		if( libfvalue_value_free(
+		     &( record->strings ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free strings.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( record->data != NULL )
+	{
+		if( libfvalue_value_free(
+		     &( record->data ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free data.",
+			 function );
+
+			result = -1;
+		}
+	}
 	memory_free(
 	 record );
 
@@ -544,6 +576,26 @@ int libevt_record_read_event(
 	 size );
 
 	byte_stream_copy_to_uint32_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->record_number,
+	 record->number );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->creation_time,
+	 record->creation_time );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->written_time,
+	 record->written_time );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->event_identifier,
+	 record->event_identifier );
+
+	byte_stream_copy_to_uint16_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->event_type,
+	 record->event_type );
+
+	byte_stream_copy_to_uint32_little_endian(
 	 ( (evt_record_event_header_t *) record_data )->strings_offset,
 	 strings_offset );
 
@@ -583,13 +635,10 @@ int libevt_record_read_event(
 		 ( (evt_record_event_header_t *) record_data )->signature[ 2 ],
 		 ( (evt_record_event_header_t *) record_data )->signature[ 3 ] );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->record_number,
-		 value_32bit );
 		libnotify_printf(
 		 "%s: record number\t\t\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 record->number );
 
 		if( libfdatetime_posix_time_initialize(
 		     &posix_time,
@@ -715,21 +764,15 @@ int libevt_record_read_event(
 
 			goto on_error;
 		}
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->event_identifier,
-		 value_32bit );
 		libnotify_printf(
 		 "%s: event identifier\t\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 record->event_identifier );
 
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->event_type,
-		 value_16bit );
 		libnotify_printf(
 		 "%s: event type\t\t\t\t\t: %" PRIu16 "\n",
 		 function,
-		 value_16bit );
+		 record->event_type );
 
 		byte_stream_copy_to_uint16_little_endian(
 		 ( (evt_record_event_header_t *) record_data )->number_of_strings,
@@ -775,35 +818,50 @@ int libevt_record_read_event(
 #endif
 	record_data_offset = sizeof( evt_record_event_header_t );
 
-	if( ( (size_t) user_sid_offset < record_data_offset )
-	 || ( (size_t) user_sid_offset >= ( record_data_size - 4 ) ) )
+	if( ( user_sid_offset == 0 )
+	 && ( user_sid_size != 0 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: user SID offset value out of bounds.",
+		 "%s: user SID offset or size value out of bounds.",
 		 function );
 
 		goto on_error;
 	}
-	if( user_sid_size != 0 )
+	if( user_sid_offset != 0 )
 	{
-		if( (size_t) ( user_sid_offset + user_sid_size ) >= ( record_data_size - 4 ) )
+		if( ( (size_t) user_sid_offset < record_data_offset )
+		 || ( (size_t) user_sid_offset >= ( record_data_size - 4 ) ) )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: user SID size value out of bounds.",
+			 "%s: user SID offset value out of bounds.",
 			 function );
 
 			goto on_error;
 		}
-	}
-	members_data_size = user_sid_offset - record_data_offset;
+		if( user_sid_size != 0 )
+		{
+			if( (size_t) ( user_sid_offset + user_sid_size ) >= ( record_data_size - 4 ) )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: user SID size value out of bounds.",
+				 function );
 
+				goto on_error;
+			}
+		}
+	}
+/* TODO
 	if( strings_offset != 0 )
+*/
 	{
 		if( ( (size_t) strings_offset < user_sid_offset )
 		 || ( (size_t) strings_offset >= ( record_data_size - 4 ) ) )
@@ -829,6 +887,14 @@ int libevt_record_read_event(
 		 function );
 
 		goto on_error;
+	}
+	if( user_sid_offset != 0 )
+	{
+		members_data_size = user_sid_offset - record_data_offset;
+	}
+	else if( strings_offset != 0 )
+	{
+		members_data_size = strings_offset - record_data_offset;
 	}
 	strings_size = data_offset - strings_offset;
 
@@ -862,7 +928,6 @@ int libevt_record_read_event(
 		if( libfvalue_value_initialize(
 		     &( record->source_name ),
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     0,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -879,7 +944,7 @@ int libevt_record_read_event(
 		     &( record_data[ record_data_offset ] ),
 		     members_data_size,
 		     LIBFVALUE_ENDIAN_LITTLE,
-		     0,
+		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -895,7 +960,7 @@ int libevt_record_read_event(
 		if( libnotify_verbose != 0 )
 		{
 			libnotify_printf(
-			 "%s: source name\t\t\t\t\t\t: ",
+			 "%s: source name\t\t\t\t\t: ",
 			 function );
 
 			if( libfvalue_debug_print_value(
@@ -935,6 +1000,7 @@ int libevt_record_read_event(
 
 		if( libfvalue_value_initialize(
 		     &( record->computer_name ),
+		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -950,8 +1016,8 @@ int libevt_record_read_event(
 		     record->computer_name,
 		     &( record_data[ record_data_offset ] ),
 		     members_data_size,
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
+		     LIBFVALUE_ENDIAN_LITTLE,
+		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -967,7 +1033,7 @@ int libevt_record_read_event(
 		if( libnotify_verbose != 0 )
 		{
 			libnotify_printf(
-			 "%s: computer name\t\t\t\t\t\t: ",
+			 "%s: computer name\t\t\t\t\t: ",
 			 function );
 
 			if( libfvalue_debug_print_value(
@@ -1141,6 +1207,37 @@ int libevt_record_read_event(
 			 strings_size );
 		}
 #endif
+		if( libfvalue_value_initialize(
+		     &( record->strings ),
+		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create strings value.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfvalue_value_set_data_strings_array(
+		     record->strings,
+		     &( record_data[ record_data_offset ] ),
+		     strings_size,
+		     LIBFVALUE_ENDIAN_LITTLE,
+		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set data of strings value.",
+			 function );
+
+			goto on_error;
+		}
 		record_data_offset += strings_size;
 	}
 	if( data_size != 0 )
@@ -1156,10 +1253,39 @@ int libevt_record_read_event(
 			 (size_t) data_size );
 		}
 #endif
+		if( libfvalue_value_initialize(
+		     &( record->data ),
+		     LIBFVALUE_VALUE_TYPE_BINARY_DATA,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create data value.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfvalue_value_set_data(
+		     record->data,
+		     &( record_data[ record_data_offset ] ),
+		     (size_t) data_size,
+		     LIBFVALUE_ENDIAN_LITTLE,
+		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set data of data value.",
+			 function );
+
+			goto on_error;
+		}
 		record_data_offset += data_size;
 	}
-/* TODO trailing data */
-
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libnotify_verbose != 0 )
 	{
@@ -1220,6 +1346,30 @@ on_error:
 		 NULL );
 	}
 #endif
+	if( record->data != NULL )
+	{
+		libfvalue_value_free(
+		 &( record->data ),
+		 NULL );
+	}
+	if( record->strings != NULL )
+	{
+		libfvalue_value_free(
+		 &( record->strings ),
+		 NULL );
+	}
+	if( record->computer_name != NULL )
+	{
+		libfvalue_value_free(
+		 &( record->computer_name ),
+		 NULL );
+	}
+	if( record->source_name != NULL )
+	{
+		libfvalue_value_free(
+		 &( record->source_name ),
+		 NULL );
+	}
 	return( -1 );
 }
 

@@ -1,5 +1,5 @@
 /*
- * Shows information obtained from a Nickfile (EVT)
+ * Shows information obtained from a Windows Event Viewer Log (EVT) file
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -53,7 +53,8 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use evtinfo to determine information about a Nickfile (EVT).\n\n" );
+	fprintf( stream, "Use evtinfo to determine information about a Windows Event\n"
+	                 "Viewer Log (EVT) file.\n\n" );
 
 	fprintf( stream, "Usage: evtinfo [ -hvV ] source\n\n" );
 
