@@ -10,6 +10,9 @@ TODO:
 * add error tollerability
   - sizes and copy
 
+20111013
+* fix for building static executables on Cygwin
+
 20111009
 * worked on initial version
 

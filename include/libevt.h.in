@@ -312,46 +312,54 @@ int libevt_item_free(
      libevt_item_t **item,
      libevt_error_t **error );
 
-/* Retrieves the size of the UTF-8 encoded computer name
- * The string size includes the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
+/* Retrieves the identifier of a specific entry
+ * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_computer_name_size(
+int libevt_item_get_identifier(
      libevt_item_t *item,
-     size_t *utf8_string_size,
+     uint32_t *identifier,
      libevt_error_t **error );
 
-/* Retrieves the UTF-8 encoded header computer name
- * The string size should include the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
+/* Retrieves the number of entries
+ * All sets in an item contain the same number of entries
+ * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_computer_name(
+int libevt_item_get_number_of_entries(
      libevt_item_t *item,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
+     uint32_t *number_of_entries,
      libevt_error_t **error );
 
-/* Retrieves the size of the UTF-16 encoded computer name
- * The string size includes the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
+/* Retrieves the entry and value type of a specific entry
+ * The name to id map entry is set when available
+ * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_computer_name_size(
+int libevt_item_get_entry_type(
      libevt_item_t *item,
-     size_t *utf16_string_size,
+     int entry_index,
+     uint32_t *entry_type,
+     uint32_t *value_type,
      libevt_error_t **error );
 
-/* Retrieves the UTF-16 encoded header computer name
- * The string size should include the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
+/* Retrieves the value of a specific entry
+ *
+ * When the LIBEVT_ENTRY_VALUE_FLAG_MATCH_ANY_VALUE_TYPE is set
+ * the value type is ignored and set. The default behavior is a strict
+ * matching of the value type. In this case the value type must be filled
+ * with the corresponding value type
+ *
+ * Returns 1 if successful, 0 if the item does not contain such value or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_computer_name(
+int libevt_item_get_entry_value(
      libevt_item_t *item,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
+     uint32_t entry_type,
+     uint32_t *value_type,
+     uint8_t **value_data,
+     size_t *value_data_size,
+     uint8_t flags,
      libevt_error_t **error );
 
 #if defined( __cplusplus )

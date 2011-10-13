@@ -1,5 +1,5 @@
 /*
- * The internal libevt header
+ * The libfvalue header wrapper
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,19 +19,41 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVTTOOLS_LIBEVT_H )
-#define _EVTTOOLS_LIBEVT_H
+#if !defined( _LIBEVT_LIBFVALUE_H )
+#define _LIBEVT_LIBFVALUE_H
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBEVT_DLL_IMPORT
- * before including libevt.h
+/* Define HAVE_LOCAL_LIBFVALUE for local use of libfvalue
  */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBEVT_DLL_IMPORT
+#if defined( HAVE_LOCAL_LIBFVALUE )
+
+#include <libfvalue_codepage.h>
+#include <libfvalue_definitions.h>
+#include <libfvalue_split_string.h>
+#include <libfvalue_string.h>
+#include <libfvalue_table.h>
+#include <libfvalue_types.h>
+#include <libfvalue_value.h>
+
+#if defined( HAVE_DEBUG_OUTPUT )
+#include <libfvalue_debug.h>
 #endif
 
-#include <libevt.h>
+#elif defined( HAVE_LIBFVALUE_H )
+
+/* If libtool DLL support is enabled set LIBFVALUE_DLL_IMPORT
+ * before including libfvalue.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBFVALUE_DLL_IMPORT
+#endif
+
+#include <libfvalue.h>
+
+#else
+#error Missing libfvalue.h
+#endif
 
 #endif
 

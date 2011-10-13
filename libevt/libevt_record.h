@@ -29,6 +29,7 @@
 
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libfvalue.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -50,19 +51,11 @@ struct libevt_record
 
 	/* The source name
 	 */
-	uint8_t *source_name;
-
-	/* The source name size
-	 */
-	size_t source_name_size;
+	libfvalue_value_t *source_name;
 
 	/* The computer name
 	 */
-	uint8_t *computer_name;
-
-	/* The computer name size
-	 */
-	size_t computer_name_size;
+	libfvalue_value_t *computer_name;
 };
 
 int libevt_record_initialize(

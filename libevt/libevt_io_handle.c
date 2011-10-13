@@ -399,13 +399,13 @@ int libevt_io_handle_read_items(
 	}
 	file_offset = sizeof( evt_file_header_t );
 
-	while( file_offset < file_size )
+	while( (size64_t) file_offset < file_size )
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libnotify_verbose != 0 )
 		{
 			libnotify_printf(
-			 "%s: reading record at offset: %" PRIu64 " (0x%08" PRIx64 ")\n",
+			 "%s: reading record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
 			 file_offset,
 			 file_offset );
