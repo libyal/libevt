@@ -774,7 +774,7 @@ int libevt_record_read_event(
 		 "%s: event type\t\t\t\t\t: %" PRIu16 " (",
 		 function,
 		 record->event_type );
-		libesedb_debug_print_event_type(
+		libevt_debug_print_event_type(
 		 record->event_type );
 		libnotify_printf(
 		 ")\n" );

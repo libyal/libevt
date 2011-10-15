@@ -421,15 +421,15 @@ int export_handle_print_data(
 	return( total_print_count );
 }
 
-/* Opens the export handle
+/* Opens the input
  * Returns 1 if successful or -1 on error
  */
-int export_handle_open(
+int export_handle_open_input(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
 {
-	static char *function = "export_handle_open";
+	static char *function = "export_handle_open_input";
 
 	if( export_handle == NULL )
 	{
@@ -468,14 +468,14 @@ int export_handle_open(
 	return( 1 );
 }
 
-/* Closes the export handle
+/* Closes the input
  * Returns the 0 if succesful or -1 on error
  */
-int export_handle_close(
+int export_handle_close_input(
      export_handle_t *export_handle,
      liberror_error_t **error )
 {
-	static char *function = "export_handle_close";
+	static char *function = "export_handle_close_input";
 
 	if( export_handle == NULL )
 	{

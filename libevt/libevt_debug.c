@@ -33,7 +33,7 @@
 
 /* Prints the event type
  */
-void libesedb_debug_print_event_type(
+void libevt_debug_print_event_type(
       uint16_t event_type )
 {
 	switch( event_type )

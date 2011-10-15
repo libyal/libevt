@@ -72,12 +72,12 @@ int export_handle_print_data(
      size_t data_size,
      liberror_error_t **error );
 
-int export_handle_open(
+int export_handle_open_input(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
      liberror_error_t **error );
 
-int export_handle_close(
+int export_handle_close_input(
      export_handle_t *export_handle,
      liberror_error_t **error );
 

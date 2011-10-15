@@ -68,10 +68,12 @@ void usage_fprint(
 /* Signal handler for evtinfo
  */
 void evtinfo_signal_handler(
-      libsystem_signal_t signal )
+      libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
 {
 	liberror_error_t *error = NULL;
 	static char *function   = "evtinfo_signal_handler";
+
+	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
 
 	evtinfo_abort = 1;
 
@@ -209,7 +211,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( info_handle_open(
+	if( info_handle_open_input(
 	     evtinfo_info_handle,
 	     source,
 	     &error ) != 1 )
@@ -231,7 +233,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( info_handle_close(
+	if( info_handle_close_input(
 	     evtinfo_info_handle,
 	     &error ) != 0 )
 	{

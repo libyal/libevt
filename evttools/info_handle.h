@@ -73,12 +73,12 @@ int info_handle_set_ascii_codepage(
      const libcstring_system_character_t *string,
      liberror_error_t **error );
 
-int info_handle_open(
+int info_handle_open_input(
      info_handle_t *info_handle,
      const libcstring_system_character_t *filename,
      liberror_error_t **error );
 
-int info_handle_close(
+int info_handle_close_input(
      info_handle_t *info_handle,
      liberror_error_t **error );
 

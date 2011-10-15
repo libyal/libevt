@@ -35,8 +35,8 @@ extern "C" {
 
 #if defined( HAVE_DEBUG_OUTPUT )
 
-void *libevt_debug_print_event_type(
-       uint16_t event_type );
+void libevt_debug_print_event_type(
+      uint16_t event_type );
 
 int libevt_debug_print_read_offsets(
      libbfio_handle_t *file_io_handle,

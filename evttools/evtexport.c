@@ -71,10 +71,12 @@ void usage_fprint(
 /* Signal handler for evtexport
  */
 void evtexport_signal_handler(
-      libsystem_signal_t signal )
+      libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
 {
 	liberror_error_t *error = NULL;
 	static char *function   = "evtexport_signal_handler";
+
+	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
 
 	evtexport_abort = 1;
 
@@ -243,7 +245,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( export_handle_open(
+	if( export_handle_open_input(
 	     evtexport_export_handle,
 	     source,
 	     &error ) != 1 )
@@ -268,7 +270,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( export_handle_close(
+	if( export_handle_close_input(
 	     evtexport_export_handle,
 	     &error ) != 0 )
 	{

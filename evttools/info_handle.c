@@ -241,15 +241,15 @@ int info_handle_set_ascii_codepage(
 	return( result );
 }
 
-/* Opens the info handle
+/* Opens the input
  * Returns 1 if successful or -1 on error
  */
-int info_handle_open(
+int info_handle_open_input(
      info_handle_t *info_handle,
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
 {
-	static char *function = "info_handle_open";
+	static char *function = "info_handle_open_input";
 
 	if( info_handle == NULL )
 	{
@@ -288,14 +288,14 @@ int info_handle_open(
 	return( 1 );
 }
 
-/* Closes the info handle
+/* Closes the input
  * Returns the 0 if succesful or -1 on error
  */
-int info_handle_close(
+int info_handle_close_input(
      info_handle_t *info_handle,
      liberror_error_t **error )
 {
-	static char *function = "info_handle_close";
+	static char *function = "info_handle_close_input";
 
 	if( info_handle == NULL )
 	{
