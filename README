@@ -1,5 +1,5 @@
 Solaris
-To build libuna on Solaris make sure that /usr/ccs/bin and /usr/swf/bin are defined in the PATH environment variable
+To build libevt on Solaris make sure that /usr/ccs/bin and /usr/swf/bin are defined in the PATH environment variable
 
 
 Also see:
