@@ -1,5 +1,5 @@
 /*
- * libevt file
+ * File functions
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
