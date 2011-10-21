@@ -549,7 +549,7 @@ int libevt_item_get_utf8_source_name_size(
 	return( 1 );
 }
 
-/* Retrieves the UTF-8 encoded source name value
+/* Retrieves the UTF-8 encoded source name
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -659,7 +659,7 @@ int libevt_item_get_utf16_source_name_size(
 	return( 1 );
 }
 
-/* Retrieves the UTF-16 encoded source name value
+/* Retrieves the UTF-16 encoded source name
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -769,7 +769,7 @@ int libevt_item_get_utf8_computer_name_size(
 	return( 1 );
 }
 
-/* Retrieves the UTF-8 encoded computer name value
+/* Retrieves the UTF-8 encoded computer name
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -879,7 +879,7 @@ int libevt_item_get_utf16_computer_name_size(
 	return( 1 );
 }
 
-/* Retrieves the UTF-16 encoded computer name value
+/* Retrieves the UTF-16 encoded computer name
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */

@@ -30,6 +30,7 @@
 
 #include "libevt_debug.h"
 #include "libevt_io_handle.h"
+#include "libevt_libbfio.h"
 #include "libevt_libfdatetime.h"
 #include "libevt_libfvalue.h"
 #include "libevt_libfwnt.h"
@@ -261,12 +262,7 @@ int libevt_record_clone(
 		 "%s: unable to copy source to destination record.",
 		 function );
 
-		memory_free(
-		 *destination_record );
-
-		*destination_record = NULL;
-
-		return( -1 );
+		goto on_error;
 	}
 	return( 1 );
 
