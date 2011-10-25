@@ -14,6 +14,8 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libevt.la
 
 libevt_la_SOURCES = \
+	evt_file_header.h \
+	evt_record.h \
 	libevt.c \
 	libevt_array_type.c libevt_array_type.h \
 	libevt_codepage.h \
@@ -33,9 +35,7 @@ libevt_la_SOURCES = \
 	libevt_record.c libevt_record.h \
 	libevt_support.c libevt_support.h \
 	libevt_types.h \
-	libevt_unused.h \
-	evt_file_header.h \
-	evt_record.h
+	libevt_unused.h
 
 libevt_la_LIBADD = \
 	../libcstring/libcstring.la \

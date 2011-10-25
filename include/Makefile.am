@@ -7,7 +7,6 @@ pkginclude_HEADERS = \
         libevt/error.h \
         libevt/extern.h \
         libevt/features.h \
-        libevt/mapi.h \
         libevt/types.h
 
 EXTRA_DIST = \

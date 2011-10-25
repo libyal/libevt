@@ -27,7 +27,6 @@
 #include <libevt/error.h>
 #include <libevt/extern.h>
 #include <libevt/features.h>
-#include <libevt/mapi.h>
 #include <libevt/types.h>
 
 #include <stdio.h>

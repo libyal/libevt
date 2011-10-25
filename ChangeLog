@@ -21,6 +21,9 @@ Tools:
   - improved version that also can get strings
 * evtinfo
 
+20111024
+* removed mapi include header
+
 20111018
 * small changes
 
