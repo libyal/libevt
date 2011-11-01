@@ -37,11 +37,11 @@
  * for local use of libevt
  */
 #else
-#define LIBEVT_VERSION					20111024
+#define LIBEVT_VERSION					20111101
 
 /* The version string
  */
-#define LIBEVT_VERSION_STRING				"20111024"
+#define LIBEVT_VERSION_STRING				"20111101"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
@@ -71,10 +71,20 @@ enum LIBEVT_EVENT_TYPES
 	LIBEVT_EVENT_TYPE_WARNING			= 0x0002,
 	LIBEVT_EVENT_TYPE_INFORMATION			= 0x0004,
 	LIBEVT_EVENT_TYPE_AUDIT_SUCCESS			= 0x0008,
-	LIBEVT_EVENT_TYPE_AUDIT_FAILURE			= 0x0010,
+	LIBEVT_EVENT_TYPE_AUDIT_FAILURE			= 0x0010
 };
 
 #endif
+
+/* The event file flags
+ */
+enum LIBEVT_FILE_FLAGS
+{
+	LIBEVT_FILE_FLAG_IS_DIRTY			= 0x00000001UL,
+	LIBEVT_FILE_FLAG_HAS_WRAPPED			= 0x00000002UL,
+	LIBEVT_FILE_FLAG_IS_FULL			= 0x00000004UL,
+	LIBEVT_FILE_FLAG_ARCHIVE			= 0x00000008UL
+};
 
 #endif
 

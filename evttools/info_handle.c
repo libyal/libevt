@@ -324,7 +324,7 @@ int info_handle_close_input(
 	return( 0 );
 }
 
-/* Prints the file information to a stream
+/* Prints the file information
  * Returns 1 if successful or -1 on error
  */
 int info_handle_file_fprint(

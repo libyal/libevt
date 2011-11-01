@@ -1,9 +1,8 @@
 TODO:
+* test wrapped arround event log
 * implement file format support
 * update manuals
 * update msvscpp files
-* debug function for file flags
-* debug function for event category
 * debug function for event flags
 * add API record functions
 * add error tollerability
@@ -20,6 +19,12 @@ Tools:
   - print data ?
   - improved version that also can get strings
 * evtinfo
+
+20111101
+* updated libcstring, libsystem, libuna, libbfio, libfdatetime, libfvalue
+* added windows codepage 932 and 936 support
+* added event id debug function
+* added debug function for file flags
 
 20111024
 * removed mapi include header

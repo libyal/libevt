@@ -617,7 +617,7 @@ int libevt_file_open_file_io_handle(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open file.",
+		 "%s: unable to determine if file IO handle is open.",
 		 function );
 
 		return( -1 );
@@ -932,6 +932,8 @@ int libevt_file_set_ascii_codepage(
 	}
 	if( ( ascii_codepage != LIBEVT_CODEPAGE_ASCII )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_874 )
+	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_932 )
+	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_936 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1250 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1251 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1252 )

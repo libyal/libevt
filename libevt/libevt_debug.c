@@ -31,6 +31,64 @@
 
 #if defined( HAVE_DEBUG_OUTPUT )
 
+/* Prints the file flags
+ */
+void libevt_debug_print_file_flags(
+      uint32_t file_flags )
+{
+	if( ( file_flags & LIBEVT_FILE_FLAG_IS_DIRTY ) != 0 )
+	{
+		libnotify_printf(
+		 "Is dirty (ELF_LOGFILE_HEADER_DIRTY)\n" );
+	}
+	if( ( file_flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) != 0 )
+	{
+		libnotify_printf(
+		 "Has wrapped (ELF_LOGFILE_HEADER_WRAP)\n" );
+	}
+	if( ( file_flags & LIBEVT_FILE_FLAG_IS_FULL ) != 0 )
+	{
+		libnotify_printf(
+		 "Is full (ELF_LOGFILE_LOGFULL_WRITTEN)\n" );
+	}
+	if( ( file_flags & LIBEVT_FILE_FLAG_ARCHIVE ) != 0 )
+	{
+		libnotify_printf(
+		 "Should be archived (ELF_LOGFILE_ARCHIVE_SET)\n" );
+	}
+}
+
+/* Prints the event identifier severity
+ */
+void libevt_debug_print_event_identifier_severity(
+      uint32_t event_identifier_severity )
+{
+	event_identifier_severity >>= 30;
+
+	switch( event_identifier_severity )
+	{
+		case 0:
+			libnotify_printf(
+			 "Success" );
+			break;
+
+		case 1:
+			libnotify_printf(
+			 "Informational" );
+			break;
+
+		case 2:
+			libnotify_printf(
+			 "Warning" );
+			break;
+
+		case 3:
+			libnotify_printf(
+			 "Error" );
+			break;
+	}
+}
+
 /* Prints the event type
  */
 void libevt_debug_print_event_type(

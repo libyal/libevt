@@ -138,7 +138,7 @@ int libevt_record_free(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free source name.",
+			 "%s: unable to free source name value.",
 			 function );
 
 			result = -1;
@@ -154,7 +154,7 @@ int libevt_record_free(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free computer name.",
+			 "%s: unable to free computer name value.",
 			 function );
 
 			result = -1;
@@ -767,6 +767,35 @@ int libevt_record_read_event(
 		 record->event_identifier );
 
 		libnotify_printf(
+		 "%s: event identifier: code\t\t\t: %" PRIu32 "\n",
+		 function,
+		 record->event_identifier & 0x0000ffffUL );
+
+		libnotify_printf(
+		 "%s: event identifier: facility\t\t\t: %" PRIu32 "\n",
+		 function,
+		 ( record->event_identifier & 0x0fff0000UL ) >> 16 );
+
+		libnotify_printf(
+		 "%s: event identifier: reserved\t\t\t: %" PRIu32 "\n",
+		 function,
+		 ( record->event_identifier & 0x10000000UL ) >> 28 );
+
+		libnotify_printf(
+		 "%s: event identifier: customer flags\t\t: %" PRIu32 "\n",
+		 function,
+		 ( record->event_identifier & 0x20000000UL ) >> 29 );
+
+		libnotify_printf(
+		 "%s: event identifier: severity\t\t\t: %" PRIu32 " (",
+		 function,
+		 ( record->event_identifier & 0xc0000000UL ) >> 30 );
+		libevt_debug_print_event_identifier_severity(
+		 record->event_identifier );
+		libnotify_printf(
+		 ")\n" );
+
+		libnotify_printf(
 		 "%s: event type\t\t\t\t\t: %" PRIu16 " (",
 		 function,
 		 record->event_type );
@@ -780,6 +809,22 @@ int libevt_record_read_event(
 		 value_16bit );
 		libnotify_printf(
 		 "%s: number of strings\t\t\t\t: %" PRIu16 "\n",
+		 function,
+		 value_16bit );
+
+		byte_stream_copy_to_uint16_little_endian(
+		 ( (evt_record_event_header_t *) record_data )->event_category,
+		 value_16bit );
+		libnotify_printf(
+		 "%s: event category\t\t\t\t: %" PRIu16 "\n",
+		 function,
+		 value_16bit );
+
+		byte_stream_copy_to_uint16_little_endian(
+		 ( (evt_record_event_header_t *) record_data )->event_flags,
+		 value_16bit );
+		libnotify_printf(
+		 "%s: event flags\t\t\t\t\t: 0x%04" PRIx16 "\n",
 		 function,
 		 value_16bit );
 

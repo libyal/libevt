@@ -133,6 +133,7 @@ int main( int argc, char * const argv[] )
 
 	if( libsystem_initialize(
 	     "evttools",
+	     _IONBF,
 	     &error ) != 1 )
 	{
 		fprintf(

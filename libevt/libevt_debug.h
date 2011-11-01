@@ -35,6 +35,12 @@ extern "C" {
 
 #if defined( HAVE_DEBUG_OUTPUT )
 
+void libevt_debug_print_file_flags(
+      uint32_t file_flags );
+
+void libevt_debug_print_event_identifier_severity(
+      uint32_t event_identifier_severity );
+
 void libevt_debug_print_event_type(
       uint16_t event_type );
 

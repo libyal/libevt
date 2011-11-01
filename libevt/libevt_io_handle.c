@@ -28,6 +28,7 @@
 #include <libnotify.h>
 
 #include "libevt_array_type.h"
+#include "libevt_debug.h"
 #include "libevt_codepage.h"
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
@@ -311,6 +312,10 @@ int libevt_io_handle_read_file_header(
 		 "%s: file flags\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
+		libevt_debug_print_file_flags(
+		 value_32bit );
+		libnotify_printf(
+		 "\n" );
 
 		byte_stream_copy_to_uint32_little_endian(
 		 file_header.retention,
