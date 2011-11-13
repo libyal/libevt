@@ -55,15 +55,26 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use evtexport to export items stored in a Windows Event"
-	                 "Viewer Log (EVT) file.\n\n" );
+	fprintf( stream, "Use evtexport to export items stored in a Windows Event Viewer\n"
+	                 "Log (EVT) file.\n\n" );
 
-	fprintf( stream, "Usage: evtexport [ -l logfile ] [ -hvV ] source\n\n" );
+	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -f log_type ]\n"
+	                 "                 [ -l log_file ] [ -m message_files_path ]\n"
+	                 "                 [ -s system_file ] [ -hvV ] source\n\n" );
 
 	fprintf( stream, "\tsource: the source file\n\n" );
 
+	fprintf( stream, "\t-c:     codepage of ASCII strings, options: ascii, windows-874,\n"
+	                 "\t        windows-932, windows-936, windows-1250, windows-1251,\n"
+	                 "\t        windows-1252 (default), windows-1253, windows-1254,\n"
+	                 "\t        windows-1255, windows-1256, windows-1257 or windows-1258\n" );
+	fprintf( stream, "\t-f:     event log type, options: application, security, system\n"
+	                 "\t        if not specified the event log type is determined based\n"
+	                 "\t        on the filename.\n\n" );
 	fprintf( stream, "\t-h:     shows this help\n" );
 	fprintf( stream, "\t-l:     logs information about the exported items\n" );
+	fprintf( stream, "\t-m:     search PATH for the message files\n" );
+	fprintf( stream, "\t-s:     filename of the SYSTEM (Windows) Registry file\n" );
 	fprintf( stream, "\t-v:     verbose output to stderr\n" );
 	fprintf( stream, "\t-V:     print version\n" );
 }
@@ -115,15 +126,19 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	liberror_error_t *error                     = NULL;
-	log_handle_t *log_handle                    = NULL;
-	libcstring_system_character_t *log_filename = NULL;
-	libcstring_system_character_t *source       = NULL;
-	char *program                               = "evtexport";
-	size_t source_length                        = 0;
-	libcstring_system_integer_t option          = 0;
-	int result                                  = 0;
-	int verbose                                 = 0;
+	liberror_error_t *error                                        = NULL;
+	log_handle_t *log_handle                                       = NULL;
+	libcstring_system_character_t *option_ascii_codepage           = NULL;
+	libcstring_system_character_t *option_event_log_type           = NULL;
+	libcstring_system_character_t *option_log_filename             = NULL;
+	libcstring_system_character_t *option_message_files_path       = NULL;
+	libcstring_system_character_t *option_system_registry_filename = NULL;
+	libcstring_system_character_t *source                          = NULL;
+	char *program                                                  = "evtexport";
+	size_t source_length                                           = 0;
+	libcstring_system_integer_t option                             = 0;
+	int result                                                     = 0;
+	int verbose                                                    = 0;
 
 	libsystem_notify_set_stream(
 	 stderr,
@@ -154,7 +169,7 @@ int main( int argc, char * const argv[] )
 	while( ( option = libsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "hl:vV" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _LIBCSTRING_SYSTEM_STRING( "c:hl:m:s:vV" ) ) ) != (libcstring_system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -170,6 +185,11 @@ int main( int argc, char * const argv[] )
 
 				return( EXIT_FAILURE );
 
+			case (libcstring_system_integer_t) 'c':
+				option_ascii_codepage = optarg;
+
+				break;
+
 			case (libcstring_system_integer_t) 'h':
 				usage_fprint(
 				 stdout );
@@ -177,7 +197,17 @@ int main( int argc, char * const argv[] )
 				return( EXIT_SUCCESS );
 
 			case (libcstring_system_integer_t) 'l':
-				log_filename = optarg;
+				option_log_filename = optarg;
+
+				break;
+
+			case (libcstring_system_integer_t) 'm':
+				option_message_files_path = optarg;
+
+				break;
+
+			case (libcstring_system_integer_t) 's':
+				option_system_registry_filename = optarg;
 
 				break;
 
@@ -234,15 +264,78 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
+	if( option_ascii_codepage != NULL )
+	{
+		result = export_handle_set_ascii_codepage(
+		          evtexport_export_handle,
+		          option_ascii_codepage,
+		          &error );
+
+		if( result == -1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set ASCII codepage in export handle.\n" );
+
+			goto on_error;
+		}
+		else if( result == 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Unsupported ASCII codepage defaulting to: windows-1252.\n" );
+		}
+	}
+	if( option_event_log_type != NULL )
+	{
+		result = export_handle_set_event_log_type(
+		          evtexport_export_handle,
+		          option_event_log_type,
+		          &error );
+
+		if( result == -1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set event log type in export handle.\n" );
+
+			goto on_error;
+		}
+	}
+	if( ( option_event_log_type == NULL )
+	 || ( result == 0 ) )
+	{
+		result = export_handle_set_event_log_type_from_filename(
+			  evtexport_export_handle,
+			  source,
+			  &error );
+
+		if( result == -1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set event log type from filename in export handle.\n" );
+
+			goto on_error;
+		}
+	}
+	if( option_message_files_path != NULL )
+	{
+		evtexport_export_handle->message_files_path = option_message_files_path;
+	}
+	if( option_system_registry_filename != NULL )
+	{
+		evtexport_export_handle->system_registry_filename = option_system_registry_filename;
+	}
 	if( log_handle_open(
 	     log_handle,
-	     log_filename,
+	     option_log_filename,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to open log file: %" PRIs_LIBCSTRING_SYSTEM ".\n",
-		 log_filename );
+		 option_log_filename );
 
 		goto on_error;
 	}

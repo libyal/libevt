@@ -205,7 +205,7 @@ typedef int64_t off64_t;
 /* The following type definitions hide internal data structures
  */
 typedef intptr_t libevt_file_t;
-typedef intptr_t libevt_item_t;
+typedef intptr_t libevt_record_t;
 
 #ifdef __cplusplus
 }

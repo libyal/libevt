@@ -30,6 +30,9 @@
 #include <liberror.h>
 
 #include "evttools_libevt.h"
+#include "evttools_libexe.h"
+#include "evttools_libregf.h"
+#include "evttools_libwrc.h"
 #include "log_handle.h"
 
 #if defined( __cplusplus )
@@ -43,6 +46,34 @@ struct export_handle
 	/* The libevt input file
 	 */
 	libevt_file_t *input_file;
+
+	/* The libregf system registry file
+	 */
+	libregf_file_t *system_registry_file;
+
+	/* The control set 1 key
+	 */
+	libregf_key_t *control_set1_key;
+
+	/* The control set 2 key
+	 */
+	libregf_key_t *control_set2_key;
+
+	/* The event log type
+	 */
+	int event_log_type;
+
+	/* The messages files path
+	 */
+	const libcstring_system_character_t *message_files_path;
+
+	/* The system registry filename
+	 */
+	const libcstring_system_character_t *system_registry_filename;
+
+	/* The ascii codepage
+	 */
+	int ascii_codepage;
 
 	/* The nofication output stream
 	 */
@@ -65,11 +96,19 @@ int export_handle_signal_abort(
      export_handle_t *export_handle,
      liberror_error_t **error );
 
-int export_handle_print_data(
+int export_handle_set_ascii_codepage(
      export_handle_t *export_handle,
-     FILE *stream,
-     const uint8_t *data,
-     size_t data_size,
+     const libcstring_system_character_t *string,
+     liberror_error_t **error );
+
+int export_handle_set_event_log_type(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *string,
+     liberror_error_t **error );
+
+int export_handle_set_event_log_type_from_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
      liberror_error_t **error );
 
 int export_handle_open_input(
@@ -81,17 +120,23 @@ int export_handle_close_input(
      export_handle_t *export_handle,
      liberror_error_t **error );
 
-/* Item specific export functions
+/* Record specific export functions
  */
+int export_handle_get_message_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *event_source,
+     size_t event_source_length,
+     liberror_error_t **error );
+
 int export_handle_export_record(
      export_handle_t *export_handle,
-     libevt_item_t *record,
+     libevt_record_t *record,
      log_handle_t *log_handle,
      liberror_error_t **error );
 
 /* File export functions
  */
-int export_handle_export_items(
+int export_handle_export_records(
      export_handle_t *export_handle,
      libevt_file_t *file,
      log_handle_t *log_handle,

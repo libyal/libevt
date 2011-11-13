@@ -48,6 +48,14 @@ struct libevt_io_handle
 	 */
 	uint32_t minor_version;
 
+	/* The file flags
+	 */
+	uint32_t file_flags;
+
+	/* The file size
+	 */
+	size64_t file_size;
+
 	/* The codepage of the extended ASCII strings
 	 */
 	int ascii_codepage;
@@ -68,12 +76,16 @@ int libevt_io_handle_free(
 int libevt_io_handle_read_file_header(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
+     uint32_t *first_record_offset,
+     uint32_t *end_of_file_record_offset,
      liberror_error_t **error );
 
-int libevt_io_handle_read_items(
+int libevt_io_handle_read_records(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     libevt_array_t *items_array,
+     uint32_t first_record_offset,
+     uint32_t end_of_file_record_offset,
+     libevt_array_t *records_array,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

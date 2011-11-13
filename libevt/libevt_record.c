@@ -9,48 +9,41 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <common.h>
-#include <byte_stream.h>
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
 #include <liberror.h>
-#include <libnotify.h>
 
-#include "libevt_debug.h"
+#include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfdatetime.h"
-#include "libevt_libfvalue.h"
-#include "libevt_libfwnt.h"
 #include "libevt_record.h"
+#include "libevt_record_values.h"
 
-#include "evt_record.h"
-
-const uint8_t evt_end_of_file_record_signature1[ 4 ] = { 0x11, 0x11, 0x11, 0x11 };
-const uint8_t evt_end_of_file_record_signature2[ 4 ] = { 0x22, 0x22, 0x22, 0x22 };
-const uint8_t evt_end_of_file_record_signature3[ 4 ] = { 0x33, 0x33, 0x33, 0x33 };
-const uint8_t evt_end_of_file_record_signature4[ 4 ] = { 0x44, 0x44, 0x44, 0x44 };
-
-/* Initialize the record
+/* Initializes the record and its values
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_initialize(
      libevt_record_t **record,
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     libevt_record_values_t *record_values,
+     uint8_t flags,
      liberror_error_t **error )
 {
-	static char *function = "libevt_record_initialize";
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_initialize";
 
 	if( record == NULL )
 	{
@@ -74,56 +67,130 @@ int libevt_record_initialize(
 
 		return( -1 );
 	}
-	*record = memory_allocate_structure(
-	           libevt_record_t );
-
-	if( *record == NULL )
+	if( record_values == NULL )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create record.",
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( flags & ~( LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) ) != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags: 0x%02" PRIx8 ".",
+		 function,
+		 flags );
+
+		return( -1 );
+	}
+	internal_record = memory_allocate_structure(
+	                 libevt_internal_record_t );
+
+	if( internal_record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create internal record.",
 		 function );
 
 		goto on_error;
 	}
 	if( memory_set(
-	     *record,
+	     internal_record,
 	     0,
-	     sizeof( libevt_record_t ) ) == NULL )
+	     sizeof( libevt_internal_record_t ) ) == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_MEMORY,
 		 LIBERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear record.",
+		 "%s: unable to clear internal record.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 internal_record );
+
+		return( -1 );
 	}
+	if( ( flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) == 0 )
+	{
+		internal_record->file_io_handle = file_io_handle;
+	}
+	else
+	{
+		if( libbfio_handle_clone(
+		     &( internal_record->file_io_handle ),
+		     file_io_handle,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+		if( libbfio_handle_set_open_on_demand(
+		     internal_record->file_io_handle,
+		     1,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to set open on demand in file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	internal_record->io_handle     = io_handle;
+	internal_record->record_values = record_values;
+	internal_record->flags         = flags;
+
+	*record = (libevt_record_t *) internal_record;
+
 	return( 1 );
 
 on_error:
-	if( *record != NULL )
+	if( internal_record != NULL )
 	{
+		if( ( flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) != 0 )
+		{
+			if( internal_record->file_io_handle != NULL )
+			{
+				libbfio_handle_free(
+				 &( internal_record->file_io_handle ),
+				 NULL );
+			}
+		}
 		memory_free(
-		 *record );
-
-		*record = NULL;
+		 internal_record );
 	}
 	return( -1 );
 }
 
-/* Frees the record including elements
+/* Frees a record
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_free(
      libevt_record_t **record,
      liberror_error_t **error )
 {
-	static char *function = "libevt_record_free";
-	int result            = 1;
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_free";
 
 	if( record == NULL )
 	{
@@ -138,403 +205,59 @@ int libevt_record_free(
 	}
 	if( *record != NULL )
 	{
-		if( ( *record )->source_name != NULL )
-		{
-			if( libfvalue_value_free(
-			     &( ( *record )->source_name ),
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free source name value.",
-				 function );
+		internal_record = (libevt_internal_record_t *) *record;
+		*record         = NULL;
 
-				result = -1;
-			}
-		}
-		if( ( *record )->computer_name != NULL )
+		/* The io_handle and record_values references are freed elsewhere
+		 */
+		if( ( internal_record->flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) != 0 )
 		{
-			if( libfvalue_value_free(
-			     &( ( *record )->computer_name ),
-			     error ) != 1 )
+			if( internal_record->file_io_handle != NULL )
 			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free computer name value.",
-				 function );
+				if( libbfio_handle_close(
+				     internal_record->file_io_handle,
+				     error ) != 0 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_IO,
+					 LIBERROR_IO_ERROR_CLOSE_FAILED,
+					 "%s: unable to close file IO handle.",
+					 function );
 
-				result = -1;
-			}
-		}
-		if( ( *record )->strings != NULL )
-		{
-			if( libfvalue_value_free(
-			     &( ( *record )->strings ),
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free strings.",
-				 function );
+					return( -1 );
+				}
+				if( libbfio_handle_free(
+				     &( internal_record->file_io_handle ),
+				     error ) != 1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+					 "%s: unable to free file IO handle.",
+					 function );
 
-				result = -1;
-			}
-		}
-		if( ( *record )->data != NULL )
-		{
-			if( libfvalue_value_free(
-			     &( ( *record )->data ),
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free data.",
-				 function );
-
-				result = -1;
+					return( -1 );
+				}
 			}
 		}
 		memory_free(
-		 *record );
-
-		*record = NULL;
-	}
-	return( result );
-}
-
-/* Clones the record
- * Returns 1 if successful or -1 on error
- */
-int libevt_record_clone(
-     libevt_record_t **destination_record,
-     libevt_record_t *source_record,
-     liberror_error_t **error )
-{
-	static char *function = "libevt_record_clone";
-
-	if( destination_record == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid destination record.",
-		 function );
-
-		return( -1 );
-	}
-	if( *destination_record != NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid destination record value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( source_record == NULL )
-	{
-		*destination_record = NULL;
-
-		return( 1 );
-	}
-	*destination_record = memory_allocate_structure(
-			       libevt_record_t );
-
-	if( *destination_record == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create destination record.",
-		 function );
-
-		goto on_error;
-	}
-	if( memory_copy(
-	     *destination_record,
-	     source_record,
-	     sizeof( libevt_record_t ) ) == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy source to destination record.",
-		 function );
-
-		goto on_error;
+		 internal_record );
 	}
 	return( 1 );
-
-on_error:
-	if( *destination_record != NULL )
-	{
-		memory_free(
-		 *destination_record );
-
-		*destination_record = NULL;
-	}
-	return( -1 );
 }
 
-/* Reads a record
- * Returns the number of bytes read if successful or -1 on error
- */
-ssize_t libevt_record_read(
-         libevt_record_t *record,
-         libevt_io_handle_t *io_handle,
-         libbfio_handle_t *file_io_handle,
-         liberror_error_t **error )
-{
-	uint8_t *record_data     = NULL;
-	static char *function    = "libevt_record_read";
-	void *reallocation       = NULL;
-	ssize_t read_count       = 0;
-	ssize_t total_read_count = 0;
-	uint32_t record_size     = 0;
-
-	if( record == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid record.",
-		 function );
-
-		return( -1 );
-	}
-	if( io_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid IO handle.",
-		 function );
-
-		return( -1 );
-	}
-	record_data = (uint8_t *) memory_allocate(
-	                           sizeof( uint32_t ) );
-
-	if( record_data == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create record data.",
-		 function );
-
-		goto on_error;
-	}
-	read_count = libbfio_handle_read(
-	              file_io_handle,
-	              record_data,
-	              sizeof( uint32_t ),
-	              error );
-
-	if( read_count != (ssize_t) sizeof( uint32_t ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read record size.",
-		 function );
-
-		goto on_error;
-	}
-	total_read_count = read_count;
-
-	byte_stream_copy_to_uint32_little_endian(
-	 record_data,
-	 record_size );
-
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) record_size > (size_t) SSIZE_MAX )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid record size value exceeds maximum.",
-		 function );
-
-		goto on_error;
-	}
-#endif
-	reallocation = memory_reallocate(
-			record_data,
-			(size_t) record_size );
-
-	if( reallocation == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to resize record data.",
-		 function );
-
-		goto on_error;
-	}
-	record_data = (uint8_t *) reallocation;
-
-	read_count = libbfio_handle_read(
-	              file_io_handle,
-	              &( record_data[ 4 ] ),
-	              record_size - 4,
-	              error );
-
-	if( read_count != (ssize_t) ( record_size - 4 ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read record size.",
-		 function );
-
-		goto on_error;
-	}
-	total_read_count += read_count;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
-	{
-		libnotify_printf(
-		 "%s: record data:\n",
-		 function );
-		libnotify_print_data(
-		 record_data,
-		 (size_t) record_size );
-	}
-#endif
-	if( memory_compare(
-	     &( record_data[ 4 ] ),
-	     evt_file_signature,
-	     4 ) == 0 )
-	{
-		record->type = LIBEVT_RECORD_TYPE_EVENT;
-	}
-	else if( memory_compare(
-	          &( record_data[ 4 ] ),
-	          evt_end_of_file_record_signature1,
-	          4 ) == 0 )
-	{
-		record->type = LIBEVT_RECORD_TYPE_END_OF_FILE;
-	}
-	else
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported record signature.",
-		 function );
-
-		goto on_error;
-	}
-	if( record->type == LIBEVT_RECORD_TYPE_EVENT )
-	{
-		if( libevt_record_read_event(
-		     record,
-		     io_handle,
-		     record_data,
-		     (size_t) record_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read event record.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	else if( record->type == LIBEVT_RECORD_TYPE_END_OF_FILE )
-	{
-		if( libevt_record_read_end_of_file(
-		     record,
-		     io_handle,
-		     record_data,
-		     (size_t) record_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read end of file record.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	memory_free(
-	 record_data );
-
-	return( total_read_count );
-
-on_error:
-	if( record_data != NULL )
-	{
-		memory_free(
-		 record_data );
-	}
-	return( -1 );
-}
-
-/* Reads the event record
+/* Retrieves the identifier (record number)
  * Returns 1 if successful or -1 on error
  */
-int libevt_record_read_event(
+int libevt_record_get_identifier(
      libevt_record_t *record,
-     libevt_io_handle_t *io_handle,
-     uint8_t *record_data,
-     size_t record_data_size,
+     uint32_t *identifier,
      liberror_error_t **error )
 {
-	static char *function                 = "libevt_record_read_event";
-	size_t record_data_offset             = 0;
-	size_t value_data_size                = 0;
-	uint32_t data_offset                  = 0;
-	uint32_t data_size                    = 0;
-	uint32_t members_data_size            = 0;
-	uint32_t size                         = 0;
-	uint32_t size_copy                    = 0;
-	uint32_t strings_offset               = 0;
-	uint32_t strings_size                 = 0;
-	uint32_t user_sid_offset              = 0;
-	uint32_t user_sid_size                = 0;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	libcstring_system_character_t posix_time_string[ 32 ];
-	libcstring_system_character_t sid_string[ 128 ];
-
-	libfdatetime_posix_time_t *posix_time = NULL;
-	libfwnt_security_identifier_t *sid    = NULL;
-	size_t sid_string_size                = 0;
-	uint32_t value_32bit                  = 0;
-	uint16_t value_16bit                  = 0;
-	int result                            = 0;
-#endif
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_identifier";
 
 	if( record == NULL )
 	{
@@ -547,907 +270,46 @@ int libevt_record_read_event(
 
 		return( -1 );
 	}
-	if( record_data == NULL )
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( identifier == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid record data.",
+		 "%s: invalid identifier.",
 		 function );
 
 		return( -1 );
 	}
-	if( record_data_size > (size_t) SSIZE_MAX )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid record data size value exceeds maximum.",
-		 function );
+	*identifier = internal_record->record_values->number;
 
-		return( -1 );
-	}
-	if( record_data_size < ( sizeof( evt_record_event_header_t ) + 4 ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: record data size value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->size,
-	 size );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->record_number,
-	 record->number );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->creation_time,
-	 record->creation_time );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->written_time,
-	 record->written_time );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->event_identifier,
-	 record->event_identifier );
-
-	byte_stream_copy_to_uint16_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->event_type,
-	 record->event_type );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->strings_offset,
-	 strings_offset );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->user_sid_size,
-	 user_sid_size );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->user_sid_offset,
-	 user_sid_offset );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->data_size,
-	 data_size );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_event_header_t *) record_data )->data_offset,
-	 data_offset );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 &( record_data[ record_data_size - 4 ] ),
-	 size_copy );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
-	{
-		libnotify_printf(
-		 "%s: size\t\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 size );
-
-		libnotify_printf(
-		 "%s: signature\t\t\t\t\t: %c%c%c%c\n",
-		 function,
-		 ( (evt_record_event_header_t *) record_data )->signature[ 0 ],
-		 ( (evt_record_event_header_t *) record_data )->signature[ 1 ],
-		 ( (evt_record_event_header_t *) record_data )->signature[ 2 ],
-		 ( (evt_record_event_header_t *) record_data )->signature[ 3 ] );
-
-		libnotify_printf(
-		 "%s: record number\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 record->number );
-
-		if( libfdatetime_posix_time_initialize(
-		     &posix_time,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create POSIX time.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfdatetime_posix_time_copy_from_byte_stream(
-		     posix_time,
-		     ( (evt_record_event_header_t *) record_data )->creation_time,
-		     4,
-		     LIBFDATETIME_ENDIAN_LITTLE,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time from byte stream.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libfdatetime_posix_time_copy_to_utf16_string(
-			  posix_time,
-			  (uint16_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
-			  error );
-#else
-		result = libfdatetime_posix_time_copy_to_utf8_string(
-			  posix_time,
-			  (uint8_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
-			  error );
-#endif
-		if( result != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time to string.",
-			 function );
-
-			goto on_error;
-		}
-		libnotify_printf(
-		 "%s: creation time\t\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
-		 function,
-		 posix_time_string );
-
-		if( libfdatetime_posix_time_copy_from_byte_stream(
-		     posix_time,
-		     ( (evt_record_event_header_t *) record_data )->written_time,
-		     4,
-		     LIBFDATETIME_ENDIAN_LITTLE,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time from byte stream.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libfdatetime_posix_time_copy_to_utf16_string(
-			  posix_time,
-			  (uint16_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
-			  error );
-#else
-		result = libfdatetime_posix_time_copy_to_utf8_string(
-			  posix_time,
-			  (uint8_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
-			  error );
-#endif
-		if( result != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time to string.",
-			 function );
-
-			goto on_error;
-		}
-		libnotify_printf(
-		 "%s: written time\t\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
-		 function,
-		 posix_time_string );
-
-		if( libfdatetime_posix_time_free(
-		     &posix_time,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free POSIX time.",
-			 function );
-
-			goto on_error;
-		}
-		libnotify_printf(
-		 "%s: event identifier\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 record->event_identifier );
-
-		libnotify_printf(
-		 "%s: event identifier: code\t\t\t: %" PRIu32 "\n",
-		 function,
-		 record->event_identifier & 0x0000ffffUL );
-
-		libnotify_printf(
-		 "%s: event identifier: facility\t\t\t: %" PRIu32 "\n",
-		 function,
-		 ( record->event_identifier & 0x0fff0000UL ) >> 16 );
-
-		libnotify_printf(
-		 "%s: event identifier: reserved\t\t\t: %" PRIu32 "\n",
-		 function,
-		 ( record->event_identifier & 0x10000000UL ) >> 28 );
-
-		libnotify_printf(
-		 "%s: event identifier: customer flags\t\t: %" PRIu32 "\n",
-		 function,
-		 ( record->event_identifier & 0x20000000UL ) >> 29 );
-
-		libnotify_printf(
-		 "%s: event identifier: severity\t\t\t: %" PRIu32 " (",
-		 function,
-		 ( record->event_identifier & 0xc0000000UL ) >> 30 );
-		libevt_debug_print_event_identifier_severity(
-		 record->event_identifier );
-		libnotify_printf(
-		 ")\n" );
-
-		libnotify_printf(
-		 "%s: event type\t\t\t\t\t: %" PRIu16 " (",
-		 function,
-		 record->event_type );
-		libevt_debug_print_event_type(
-		 record->event_type );
-		libnotify_printf(
-		 ")\n" );
-
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->number_of_strings,
-		 value_16bit );
-		libnotify_printf(
-		 "%s: number of strings\t\t\t\t: %" PRIu16 "\n",
-		 function,
-		 value_16bit );
-
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->event_category,
-		 value_16bit );
-		libnotify_printf(
-		 "%s: event category\t\t\t\t: %" PRIu16 "\n",
-		 function,
-		 value_16bit );
-
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->event_flags,
-		 value_16bit );
-		libnotify_printf(
-		 "%s: event flags\t\t\t\t\t: 0x%04" PRIx16 "\n",
-		 function,
-		 value_16bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->closing_record_number,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: closing record number\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 value_32bit );
-
-		libnotify_printf(
-		 "%s: strings offset\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 strings_offset );
-
-		libnotify_printf(
-		 "%s: user security identifier (SID) size\t\t: %" PRIu32 "\n",
-		 function,
-		 user_sid_size );
-
-		libnotify_printf(
-		 "%s: user security identifier (SID) offset\t\t: %" PRIu32 "\n",
-		 function,
-		 user_sid_offset );
-
-		libnotify_printf(
-		 "%s: data size\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 data_size );
-
-		libnotify_printf(
-		 "%s: data offset\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 data_offset );
-	}
-#endif
-	record_data_offset = sizeof( evt_record_event_header_t );
-
-	if( ( user_sid_offset == 0 )
-	 && ( user_sid_size != 0 ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: user SID offset or size value out of bounds.",
-		 function );
-
-		goto on_error;
-	}
-	if( user_sid_offset != 0 )
-	{
-		if( ( (size_t) user_sid_offset < record_data_offset )
-		 || ( (size_t) user_sid_offset >= ( record_data_size - 4 ) ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: user SID offset value out of bounds.",
-			 function );
-
-			goto on_error;
-		}
-		if( user_sid_size != 0 )
-		{
-			if( (size_t) ( user_sid_offset + user_sid_size ) >= ( record_data_size - 4 ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: user SID size value out of bounds.",
-				 function );
-
-				goto on_error;
-			}
-		}
-	}
-/* TODO
-	if( strings_offset != 0 )
-*/
-	{
-		if( ( (size_t) strings_offset < user_sid_offset )
-		 || ( (size_t) strings_offset >= ( record_data_size - 4 ) ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: strings offset value out of bounds.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	if( ( (size_t) data_offset < strings_offset )
-	 || ( (size_t) data_offset >= ( record_data_size - 4 ) ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: data offset value out of bounds.",
-		 function );
-
-		goto on_error;
-	}
-	if( user_sid_offset != 0 )
-	{
-		members_data_size = user_sid_offset - record_data_offset;
-	}
-	else if( strings_offset != 0 )
-	{
-		members_data_size = strings_offset - record_data_offset;
-	}
-	strings_size = data_offset - strings_offset;
-
-	if( data_size != 0 )
-	{
-		if( (size_t) ( data_offset + data_size ) >= ( record_data_size - 4 ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: data size value out of bounds.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	if( members_data_size != 0 )
-	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			libnotify_printf(
-			 "%s: members data:\n",
-			 function );
-			libnotify_print_data(
-			 &( record_data[ record_data_offset ] ),
-			 members_data_size );
-		}
-#endif
-		if( libfvalue_value_initialize(
-		     &( record->source_name ),
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create source name value.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_value_set_data_string(
-		     record->source_name,
-		     &( record_data[ record_data_offset ] ),
-		     members_data_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data of source name value.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			libnotify_printf(
-			 "%s: source name\t\t\t\t\t: ",
-			 function );
-
-			if( libfvalue_debug_print_value(
-			     record->source_name,
-			     0,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_PRINT_FAILED,
-				 "%s: unable to print source name value.",
-				 function );
-
-				goto on_error;
-			}
-			libnotify_printf(
-			 "\n" );
-		}
-#endif
-		if( libfvalue_value_get_data_size(
-		     record->source_name,
-		     &value_data_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to retrieve data size of source name value.",
-			 function );
-
-			goto on_error;
-		}
-		record_data_offset += value_data_size;
-		members_data_size  -= (uint32_t) value_data_size;
-
-		if( libfvalue_value_initialize(
-		     &( record->computer_name ),
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create computer name value.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_value_set_data_string(
-		     record->computer_name,
-		     &( record_data[ record_data_offset ] ),
-		     members_data_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data of computer name value.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			libnotify_printf(
-			 "%s: computer name\t\t\t\t\t: ",
-			 function );
-
-			if( libfvalue_debug_print_value(
-			     record->computer_name,
-			     0,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_PRINT_FAILED,
-				 "%s: unable to print computer name value.",
-				 function );
-
-				goto on_error;
-			}
-			libnotify_printf(
-			 "\n" );
-		}
-#endif
-		if( libfvalue_value_get_data_size(
-		     record->computer_name,
-		     &value_data_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to retrieve data size of computer name value.",
-			 function );
-
-			goto on_error;
-		}
-		record_data_offset += value_data_size;
-		members_data_size  -= (uint32_t) value_data_size;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			if( members_data_size > 0 )
-			{
-				libnotify_printf(
-				 "%s: members trailing data:\n",
-				 function );
-				libnotify_print_data(
-				 &( record_data[ record_data_offset ] ),
-				 members_data_size );
-			}
-		}
-#endif
-	}
-	if( user_sid_size != 0 )
-	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			if( libfwnt_security_identifier_initialize(
-			     &sid,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create SID.",
-				 function );
-
-				goto on_error;
-			}
-			if( libfwnt_security_identifier_copy_from_byte_stream(
-			     sid,
-			     &( record_data[ user_sid_offset ] ),
-			     (size_t) user_sid_size,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy byte stream to SID.",
-				 function );
-
-				goto on_error;
-			}
-			result = libfwnt_security_identifier_get_string_size(
-				  sid,
-				  &sid_string_size,
-				  error );
-
-			if( result != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve SID string size.",
-				 function );
-
-				goto on_error;
-			}
-			/* It is assumed that the SID string cannot be larger than 127 characters
-			 * otherwise using dynamic allocation is more appropriate
-			 */
-			if( sid_string_size > 128 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: SID string size value exceeds maximum.",
-				 function );
-
-				goto on_error;
-			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			result = libfwnt_security_identifier_copy_to_utf16_string(
-				  sid,
-				  (uint16_t *) sid_string,
-				  128,
-				  error );
-#else
-			result = libfwnt_security_identifier_copy_to_utf8_string(
-				  sid,
-				  (uint8_t *) sid_string,
-				  128,
-				  error );
-#endif
-			if( result != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy SID to string.",
-				 function );
-
-				goto on_error;
-			}
-			if( libfwnt_security_identifier_free(
-			     &sid,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free SID.",
-				 function );
-
-				goto on_error;
-			}
-			libnotify_printf(
-			 "%s: user security identifier (SID)\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-			 function,
-			 sid_string );
-		}
-#endif
-		record_data_offset += user_sid_size;
-	}
-	if( strings_size != 0 )
-	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			libnotify_printf(
-			 "%s: strings data:\n",
-			 function );
-			libnotify_print_data(
-			 &( record_data[ strings_offset ] ),
-			 strings_size );
-		}
-#endif
-		if( libfvalue_value_initialize(
-		     &( record->strings ),
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create strings value.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_value_set_data_strings_array(
-		     record->strings,
-		     &( record_data[ record_data_offset ] ),
-		     strings_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data of strings value.",
-			 function );
-
-			goto on_error;
-		}
-		record_data_offset += strings_size;
-	}
-	if( data_size != 0 )
-	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
-		{
-			libnotify_printf(
-			 "%s: data:\n",
-			 function );
-			libnotify_print_data(
-			 &( record_data[ data_offset ] ),
-			 (size_t) data_size );
-		}
-#endif
-		if( libfvalue_value_initialize(
-		     &( record->data ),
-		     LIBFVALUE_VALUE_TYPE_BINARY_DATA,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create data value.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_value_set_data(
-		     record->data,
-		     &( record_data[ record_data_offset ] ),
-		     (size_t) data_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data of data value.",
-			 function );
-
-			goto on_error;
-		}
-		record_data_offset += data_size;
-	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
-	{
-		if( record_data_offset < ( record_data_size - 4 ) )
-		{
-			libnotify_printf(
-			 "%s: padding:\n",
-			 function );
-			libnotify_print_data(
-			 &( record_data[ record_data_offset ] ),
-			 (size_t) record_data_size - record_data_offset - 4 );
-		}
-		libnotify_printf(
-		 "%s: size copy\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 size_copy );
-
-		libnotify_printf(
-		 "\n" );
-	}
-#endif
-	if( size != size_copy )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_INPUT,
-		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
-		 "%s: value mismatch for size and size copy.",
-		 function );
-
-		goto on_error;
-	}
-	if( record_data_size != (size_t) size )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_INPUT,
-		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
-		 "%s: value mismatch for record data size and size.",
-		 function );
-
-		goto on_error;
-	}
 	return( 1 );
-
-on_error:
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( posix_time != NULL )
-	{
-		libfdatetime_posix_time_free(
-		 &posix_time,
-		 NULL );
-	}
-	if( sid != NULL )
-	{
-		libfwnt_security_identifier_free(
-		 &sid,
-		 NULL );
-	}
-#endif
-	if( record->data != NULL )
-	{
-		libfvalue_value_free(
-		 &( record->data ),
-		 NULL );
-	}
-	if( record->strings != NULL )
-	{
-		libfvalue_value_free(
-		 &( record->strings ),
-		 NULL );
-	}
-	if( record->computer_name != NULL )
-	{
-		libfvalue_value_free(
-		 &( record->computer_name ),
-		 NULL );
-	}
-	if( record->source_name != NULL )
-	{
-		libfvalue_value_free(
-		 &( record->source_name ),
-		 NULL );
-	}
-	return( -1 );
 }
 
-/* Reads the end of file record
+/* Retrieves the creation time
+ * The timestamp is a 32-bit POSIX date and time value
  * Returns 1 if successful or -1 on error
  */
-int libevt_record_read_end_of_file(
+int libevt_record_get_creation_time(
      libevt_record_t *record,
-     libevt_io_handle_t *io_handle,
-     uint8_t *record_data,
-     size_t record_data_size,
+     uint32_t *creation_time,
      liberror_error_t **error )
 {
-	static char *function = "libevt_record_read_event";
-	uint32_t size         = 0;
-	uint32_t size_copy    = 0;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit  = 0;
-#endif
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_creation_time";
 
 	if( record == NULL )
 	{
@@ -1460,164 +322,46 @@ int libevt_record_read_end_of_file(
 
 		return( -1 );
 	}
-	if( record_data == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid record data.",
-		 function );
+	internal_record = (libevt_internal_record_t *) record;
 
-		return( -1 );
-	}
-	if( record_data_size > (size_t) SSIZE_MAX )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid record data size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( record_data_size < sizeof( evt_record_end_of_file_t ) )
+	if( internal_record->record_values == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: record data size value out of bounds.",
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
 		 function );
 
 		return( -1 );
 	}
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_end_of_file_t *) record_data )->size,
-	 size );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (evt_record_end_of_file_t *) record_data )->size_copy,
-	 size_copy );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
-	{
-		libnotify_printf(
-		 "%s: size\t\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 size );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->signature1,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: signature1\t\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->signature2,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: signature2\t\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->signature3,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: signature3\t\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->signature4,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: signature4\t\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->first_record_offset,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: first record offset\t\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->end_of_file_record_offset,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: end of file record offset\t\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->last_record_number,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: last record number\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 value_32bit );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (evt_record_end_of_file_t *) record_data )->first_record_number,
-		 value_32bit );
-		libnotify_printf(
-		 "%s: first record number\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 value_32bit );
-
-		libnotify_printf(
-		 "%s: size copy\t\t\t\t\t: %" PRIu32 "\n",
-		 function,
-		 size_copy );
-
-		libnotify_printf(
-		 "\n" );
-	}
-#endif
-	if( size != size_copy )
+	if( creation_time == NULL )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_INPUT,
-		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
-		 "%s: value mismatch for size and size copy.",
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid creation time.",
 		 function );
 
 		return( -1 );
 	}
-	if( record_data_size != (size_t) size )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_INPUT,
-		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
-		 "%s: value mismatch for record data size and size.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO correct values in IO handle if necessary */
+	*creation_time = internal_record->record_values->creation_time;
 
 	return( 1 );
 }
 
-/* Retrieves the type
+/* Retrieves the written time
+ * The timestamp is a 32-bit POSIX date and time value
  * Returns 1 if successful or -1 on error
  */
-int libevt_record_get_type(
+int libevt_record_get_written_time(
      libevt_record_t *record,
-     uint8_t *type,
+     uint32_t *written_time,
      liberror_error_t **error )
 {
-	static char *function = "libevt_record_get_type";
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_written_time";
 
 	if( record == NULL )
 	{
@@ -1630,19 +374,575 @@ int libevt_record_get_type(
 
 		return( -1 );
 	}
-	if( type == NULL )
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( written_time == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid type.",
+		 "%s: invalid written time.",
 		 function );
 
 		return( -1 );
 	}
-	*type = record->type;
+	*written_time = internal_record->record_values->written_time;
 
 	return( 1 );
 }
+
+/* Retrieves the event identifier
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_event_identifier(
+     libevt_record_t *record,
+     uint32_t *event_identifier,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_event_identifier";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( event_identifier == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid event identifier.",
+		 function );
+
+		return( -1 );
+	}
+	*event_identifier = internal_record->record_values->event_identifier;
+
+	return( 1 );
+}
+
+/* Retrieves the event type
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_event_type(
+     libevt_record_t *record,
+     uint16_t *event_type,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_event_type";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( event_type == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid event type.",
+		 function );
+
+		return( -1 );
+	}
+	*event_type = internal_record->record_values->event_type;
+
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-8 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_source_name_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_source_name_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_record->record_values->source_name,
+	     0,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded source name
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_source_name(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_source_name";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_record->record_values->source_name,
+	     0,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy source name to UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded source name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_source_name_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_source_name_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_record->record_values->source_name,
+	     0,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded source name
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_source_name(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_source_name";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_record->record_values->source_name,
+	     0,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy source name to UTF-16 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-8 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_computer_name_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_computer_name_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_record->record_values->computer_name,
+	     0,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded computer name
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_computer_name(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_computer_name";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_record->record_values->computer_name,
+	     0,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy computer name to UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded computer name
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_computer_name_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_computer_name_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_record->record_values->computer_name,
+	     0,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded computer name
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_computer_name(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_computer_name";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_record->record_values->computer_name,
+	     0,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy computer name to UTF-16 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 

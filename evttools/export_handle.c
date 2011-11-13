@@ -36,8 +36,34 @@
 
 #define EXPORT_HANDLE_NOTIFY_STREAM	stdout
 
-char *export_handle_get_event_type(
-       uint16_t event_type )
+const char *export_handle_get_event_log_type(
+             int event_log_type )
+{
+	switch( event_log_type )
+	{
+		case EVTTOOLS_EVENT_LOG_TYPE_APPLICATION:
+			return( "Application" );
+
+		case EVTTOOLS_EVENT_LOG_TYPE_INTERNET_EXPLORER:
+			return( "Internet Explorer" );
+
+		case EVTTOOLS_EVENT_LOG_TYPE_SECURITY:
+			return( "Security" );
+
+		case EVTTOOLS_EVENT_LOG_TYPE_SYSTEM:
+			return( "System" );
+
+		case EVTTOOLS_EVENT_LOG_TYPE_WINDOWS_POWERSHELL:
+			return( "Windows PowerShell" );
+
+		default:
+			break;
+	}
+	return( "(Unknown)" );
+}
+
+const char *export_handle_get_event_type(
+             uint16_t event_type )
 {
 	switch( event_type )
 	{
@@ -134,7 +160,9 @@ int export_handle_initialize(
 
 		goto on_error;
 	}
-	( *export_handle )->notify_stream = EXPORT_HANDLE_NOTIFY_STREAM;
+	( *export_handle )->event_log_type = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
+	( *export_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+	( *export_handle )->notify_stream  = EXPORT_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
 
@@ -172,6 +200,22 @@ int export_handle_free(
 	}
 	if( *export_handle != NULL )
 	{
+		if( ( *export_handle )->system_registry_file != NULL )
+		{
+			if( libregf_file_free(
+			     &( ( *export_handle )->system_registry_file ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free system registry file.",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( libevt_file_free(
 		     &( ( *export_handle )->input_file ),
 		     error ) != 1 )
@@ -234,21 +278,16 @@ int export_handle_signal_abort(
 	return( 1 );
 }
 
-/* Prints the data on the stream
- * Returns the number of printed characters if successful or -1 on error
+/* Sets the ascii codepage
+ * Returns 1 if successful or -1 on error
  */
-int export_handle_print_data(
+int export_handle_set_ascii_codepage(
      export_handle_t *export_handle,
-     FILE *stream,
-     const uint8_t *data,
-     size_t data_size,
+     const libcstring_system_character_t *string,
      liberror_error_t **error )
 {
-	static char *function = "export_handle_print_data";
-	size_t byte_iterator  = 0;
-	size_t data_iterator  = 0;
-	int print_count       = 0;
-	int total_print_count = 0;
+	static char *function = "export_handle_set_ascii_codepage";
+	int result            = 0;
 
 	if( export_handle == NULL )
 	{
@@ -261,170 +300,105 @@ int export_handle_print_data(
 
 		return( -1 );
 	}
-	if( stream == NULL )
+	result = evtinput_determine_ascii_codepage(
+	          string,
+	          &( export_handle->ascii_codepage ),
+	          error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine ASCII codepage.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
+}
+
+/* Sets the event log type
+ * Returns 1 if successful or -1 on error
+ */
+int export_handle_set_event_log_type(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *string,
+     liberror_error_t **error )
+{
+	static char *function = "export_handle_set_event_log_type";
+	int result            = 0;
+
+	if( export_handle == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid stream.",
+		 "%s: invalid export handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( data == NULL )
+	result = evtinput_determine_event_log_type(
+	          string,
+	          &( export_handle->event_log_type ),
+	          error );
+
+	if( result == -1 )
 	{
-		return( 0 );
-	}
-	while( data_iterator < data_size )
-	{
-		while( byte_iterator < data_size )
-		{
-			if( byte_iterator % 16 == 0 )
-			{
-				print_count = fprintf(
-					       stream,
-					       "%.8" PRIzx ": ",
-					       byte_iterator );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine event log type.",
+		 function );
 
-				if( print_count <= -1 )
-				{
-					return( -1 );
-				}
-				total_print_count += print_count;
-			}
-			print_count = fprintf(
-				       stream,
-				       "%.2" PRIx8 " ",
-				       data[ byte_iterator++ ] );
-
-			if( print_count <= -1 )
-			{
-				return( -1 );
-			}
-			total_print_count += print_count;
-
-			if( byte_iterator % 16 == 0 )
-			{
-				break;
-			}
-			else if( byte_iterator % 8 == 0 )
-			{
-				print_count = fprintf(
-					       stream,
-					       " " );
-
-				if( print_count <= -1 )
-				{
-					return( -1 );
-				}
-				total_print_count += print_count;
-			}
-		}
-		while( byte_iterator % 16 != 0 )
-		{
-			byte_iterator++;
-
-			print_count = fprintf(
-				       stream,
-				       "   " );
-
-			if( print_count <= -1 )
-			{
-				return( -1 );
-			}
-			total_print_count += print_count;
-
-			if( ( byte_iterator % 8 == 0 )
-			 && ( byte_iterator % 16 != 0 ) )
-			{
-				print_count = fprintf(
-					       stream,
-					       " " );
-
-				if( print_count <= -1 )
-				{
-					return( -1 );
-				}
-				total_print_count += print_count;
-			}
-		}
-		print_count = fprintf(
-			       stream,
-			       "  " );
-
-		if( print_count <= -1 )
-		{
-			return( -1 );
-		}
-		total_print_count += print_count;
-
-		byte_iterator = data_iterator;
-
-		while( byte_iterator < data_size )
-		{
-			if( ( data[ byte_iterator ] >= 0x20 )
-			 && ( data[ byte_iterator ] <= 0x7e ) )
-			{
-				print_count = fprintf(
-					       stream,
-					       "%c",
-					       (char) data[ byte_iterator ] );
-			}
-			else
-			{
-				print_count = fprintf(
-					       stream,
-					       "." );
-			}
-			if( print_count <= -1 )
-			{
-				return( -1 );
-			}
-			total_print_count += print_count;
-
-			byte_iterator++;
-
-			if( byte_iterator % 16 == 0 )
-			{
-				break;
-			}
-			else if( byte_iterator % 8 == 0 )
-			{
-				print_count = fprintf(
-					       stream,
-					       " " );
-
-				if( print_count <= -1 )
-				{
-					return( -1 );
-				}
-				total_print_count += print_count;
-			}
-		}
-		print_count = fprintf(
-			       stream,
-			       "\n" );
-
-		if( print_count <= -1 )
-		{
-			return( -1 );
-		}
-		total_print_count += print_count;
-
-		data_iterator = byte_iterator;
-	}
-	print_count = fprintf(
-		       stream,
-		       "\n" );
-
-	if( print_count <= -1 )
-	{
 		return( -1 );
 	}
-	total_print_count += print_count;
+	return( result );
+}
 
-	return( total_print_count );
+/* Sets the event log type from the filename
+ * Returns 1 if successful or -1 on error
+ */
+int export_handle_set_event_log_type_from_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     liberror_error_t **error )
+{
+	static char *function = "export_handle_set_event_log_type_from_filename";
+	int result            = 0;
+
+	if( export_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	result = evtinput_determine_event_log_type_from_filename(
+	          filename,
+	          &( export_handle->event_log_type ),
+	          error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine event log type from filename.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
 }
 
 /* Opens the input
@@ -435,7 +409,11 @@ int export_handle_open_input(
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
 {
-	static char *function = "export_handle_open_input";
+	const char *key_path   = NULL;
+	libregf_key_t *key     = NULL;
+	static char *function  = "export_handle_open_input";
+	size_t key_path_length = 0;
+	int result             = 0;
 
 	if( export_handle == NULL )
 	{
@@ -447,6 +425,175 @@ int export_handle_open_input(
 		 function );
 
 		return( -1 );
+	}
+	if( export_handle->system_registry_filename != NULL )
+	{
+		if( libregf_file_initialize(
+		     &( export_handle->system_registry_file ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to initialize system registry file.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libregf_file_open_wide(
+		     export_handle->system_registry_file,
+		     export_handle->system_registry_filename,
+		     LIBREGF_OPEN_READ,
+		     error ) != 1 )
+#else
+		if( libevt_file_open(
+		     export_handle->system_registry_file,
+		     export_handle->system_registry_filename,
+		     LIBREGF_OPEN_READ,
+		     error ) != 1 )
+#endif
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to open system registry file.",
+			 function );
+
+			goto on_error;
+		}
+		key_path = "\\System\\ControlSet001\\Services\\EventLog";
+
+		key_path_length = libcstring_narrow_string_length(
+		                   key_path );
+
+		result = libregf_file_get_key_by_utf8_path(
+		          export_handle->system_registry_file,
+		          (uint8_t *) key_path,
+		          key_path_length,
+		          &key,
+		          error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve key: %s.",
+			 function,
+			 key_path );
+
+			goto on_error;
+		}
+		else if( result != 0 )
+		{
+			key_path = export_handle_get_event_log_type(
+			            export_handle->event_log_type );
+
+			key_path_length = libcstring_system_string_length(
+					   key_path );
+
+			result = libregf_key_get_sub_key_by_utf8_name(
+				  key,
+				  (uint8_t *) key_path,
+				  key_path_length,
+				  &( export_handle->control_set1_key ),
+				  error );
+
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve sub key: %s.",
+				 function,
+				 key_path );
+
+				goto on_error;
+			}
+		}
+		if( libregf_key_free(
+		     &key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free key.",
+			 function );
+
+			goto on_error;
+		}
+		key_path = "\\System\\ControlSet002\\Services\\EventLog";
+
+		key_path_length = libcstring_system_string_length(
+		                   key_path );
+
+		result = libregf_file_get_key_by_utf8_path(
+		          export_handle->system_registry_file,
+		          (uint8_t *) key_path,
+		          key_path_length,
+		          &key,
+		          error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve key: %s.",
+			 function,
+			 key_path );
+
+			goto on_error;
+		}
+		else if( result != 0 )
+		{
+			key_path = export_handle_get_event_log_type(
+			            export_handle->event_log_type );
+
+			key_path_length = libcstring_system_string_length(
+					   key_path );
+
+			result = libregf_key_get_sub_key_by_utf8_name(
+				  key,
+				  (uint8_t *) key_path,
+				  key_path_length,
+				  &( export_handle->control_set2_key ),
+				  error );
+
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve sub key: %s.",
+				 function,
+				 key_path );
+
+				goto on_error;
+			}
+		}
+		if( libregf_key_free(
+		     &key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free key.",
+			 function );
+
+			goto on_error;
+		}
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libevt_file_open_wide(
@@ -469,9 +616,36 @@ int export_handle_open_input(
 		 "%s: unable to open input file.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	return( 1 );
+
+on_error:
+	if( key != NULL )
+	{
+		libregf_key_free(
+		 &key,
+		 NULL );
+	}
+	if( export_handle->control_set1_key != NULL )
+	{
+		libregf_key_free(
+		 &( export_handle->control_set1_key ),
+		 NULL );
+	}
+	if( export_handle->control_set2_key != NULL )
+	{
+		libregf_key_free(
+		 &( export_handle->control_set2_key ),
+		 NULL );
+	}
+	if( export_handle->system_registry_file != NULL )
+	{
+		libregf_file_free(
+		 &( export_handle->system_registry_file ),
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Closes the input
@@ -482,6 +656,7 @@ int export_handle_close_input(
      liberror_error_t **error )
 {
 	static char *function = "export_handle_close_input";
+	int result            = 0;
 
 	if( export_handle == NULL )
 	{
@@ -494,6 +669,54 @@ int export_handle_close_input(
 
 		return( -1 );
 	}
+	if( export_handle->control_set1_key != NULL )
+	{
+		if( libregf_key_free(
+		     &( export_handle->control_set1_key ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free control set 1 key.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( export_handle->control_set2_key != NULL )
+	{
+		if( libregf_key_free(
+		     &( export_handle->control_set2_key ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free control set 2 key.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( export_handle->system_registry_file != NULL )
+	{
+		if( libregf_file_close(
+		     export_handle->system_registry_file,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close system registry file.",
+			 function );
+
+			result = -1;
+		}
+	}
 	if( libevt_file_close(
 	     export_handle->input_file,
 	     error ) != 0 )
@@ -505,9 +728,252 @@ int export_handle_close_input(
 		 "%s: unable to close input file.",
 		 function );
 
+		result = -1;
+	}
+	return( result );
+}
+
+/* Retrieves the message filename for a specific event source
+ * The message filename is retrieved from the SYSTEM Windows Registry File if available
+ * Returns 1 if successful, 0 if such event source or -1 error
+ */
+int export_handle_get_message_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *event_source,
+     size_t event_source_length,
+     liberror_error_t **error )
+{
+	libcstring_system_character_t *value_string = NULL;
+	size_t value_string_size                    = 0;
+
+	libregf_key_t *key       = NULL;
+	libregf_value_t *value   = NULL;
+	const char *value_name   = NULL;
+	static char *function    = "export_handle_get_message_filename";
+	size_t value_name_length = 0;
+	int result               = 0;
+
+	if( export_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
 		return( -1 );
 	}
-	return( 0 );
+	if( export_handle->control_set1_key != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libregf_key_get_sub_key_by_utf16_name(
+			  export_handle->control_set1_key,
+			  (uint16_t *) event_source,
+			  event_source_length,
+			  &key,
+			  error );
+#else
+		result = libregf_key_get_sub_key_by_utf8_name(
+			  export_handle->control_set1_key,
+			  (uint8_t *) event_source,
+			  event_source_length,
+			  &key,
+			  error );
+#endif
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve sub key: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 function,
+			 event_source );
+
+			goto on_error;
+		}
+	}
+	if( result == 0 )
+	{
+		if( export_handle->control_set2_key != NULL )
+		{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libregf_key_get_sub_key_by_utf16_name(
+				  export_handle->control_set2_key,
+				  (uint16_t *) event_source,
+				  event_source_length,
+				  &key,
+				  error );
+#else
+			result = libregf_key_get_sub_key_by_utf8_name(
+				  export_handle->control_set2_key,
+				  (uint8_t *) event_source,
+				  event_source_length,
+				  &key,
+				  error );
+#endif
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve sub key: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 function,
+				 event_source );
+
+				goto on_error;
+			}
+		}
+	}
+	if( result != 0 )
+	{
+		value_name = "EventMessageFile";
+
+		value_name_length = libcstring_narrow_string_length(
+		                     value_name );
+
+		result = libregf_key_get_value_by_utf8_name(
+			  export_handle->control_set2_key,
+			  (uint8_t *) value_name,
+			  value_name_length,
+			  &value,
+			  error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve value: %s.",
+			 function,
+			 value_name );
+
+			goto on_error;
+		}
+		else if( result != 0 )
+		{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libregf_value_get_value_utf16_string_size(
+			          value,
+			          &value_string_size,
+			          error );
+#else
+			result = libregf_value_get_value_utf8_string_size(
+			          value,
+			          &value_string_size,
+			          error );
+#endif
+			if( result != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve value string size.",
+				 function );
+
+				goto on_error;
+			}
+			value_string = libcstring_system_string_allocate(
+					value_string_size );
+
+			if( value_string == NULL )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_MEMORY,
+				 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+				 "%s: unable to create value string.",
+				 function );
+
+				goto on_error;
+			}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libregf_value_get_value_utf16_string(
+				  value,
+				  (uint16_t *) value_string,
+				  value_string_size,
+				  error );
+#else
+			result = libregf_value_get_value_utf8_string(
+				  value,
+				  (uint8_t *) value_string,
+				  value_string_size,
+				  error );
+#endif
+			if( result != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve value string.",
+				 function );
+
+				goto on_error;
+			}
+			fprintf(
+			 export_handle->notify_stream,
+			 "Message Filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 value_string );
+
+			memory_free(
+			 value_string );
+
+			value_string = NULL;
+
+			if( libregf_value_free(
+			     &value,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free value.",
+				 function );
+
+				goto on_error;
+			}
+		}
+		if( libregf_key_free(
+		     &key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free key.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	return( result );
+
+on_error:
+	if( value_string != NULL )
+	{
+		memory_free(
+		 value_string );
+	}
+	if( value != NULL )
+	{
+		libregf_value_free(
+		 &value,
+		 NULL );
+	}
+	if( key != NULL )
+	{
+		libregf_key_free(
+		 &key,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Exports the record
@@ -515,7 +981,7 @@ int export_handle_close_input(
  */
 int export_handle_export_record(
      export_handle_t *export_handle,
-     libevt_item_t *record,
+     libevt_record_t *record,
      log_handle_t *log_handle,
      liberror_error_t **error )
 {
@@ -564,7 +1030,7 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( libevt_item_get_identifier(
+	if( libevt_record_get_identifier(
 	     record,
 	     &value_32bit,
 	     error ) != 1 )
@@ -580,10 +1046,10 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%" PRIu32 "\t",
+	 "Event number\t\t: %" PRIu32 "\n",
 	 value_32bit );
 
-	if( libevt_item_get_creation_time(
+	if( libevt_record_get_creation_time(
 	     record,
 	     &value_32bit,
 	     error ) != 1 )
@@ -641,10 +1107,10 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%" PRIs_LIBCSTRING_SYSTEM " UTC\t",
+	 "Creation time\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
 	 posix_time_string );
 
-	if( libevt_item_get_written_time(
+	if( libevt_record_get_written_time(
 	     record,
 	     &value_32bit,
 	     error ) != 1 )
@@ -702,7 +1168,7 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%" PRIs_LIBCSTRING_SYSTEM " UTC\t",
+	 "Written time\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
 	 posix_time_string );
 
 	if( libfdatetime_posix_time_free(
@@ -718,7 +1184,9 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( libevt_item_get_event_identifier(
+	posix_time = NULL;
+
+	if( libevt_record_get_event_identifier(
 	     record,
 	     &value_32bit,
 	     error ) != 1 )
@@ -734,10 +1202,10 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "0x%08" PRIx32 "\t",
+	 "Event identifier\t: 0x%08" PRIx32 "\n",
 	 value_32bit );
 
-	if( libevt_item_get_event_type(
+	if( libevt_record_get_event_type(
 	     record,
 	     &event_type,
 	     error ) != 1 )
@@ -753,17 +1221,17 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "%s\t",
+	 "Event type\t\t: %s\n",
 	 export_handle_get_event_type(
 	  event_type ) );
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libevt_item_get_utf16_source_name_size(
+	result = libevt_record_get_utf16_source_name_size(
 	          record,
 	          &value_string_size,
 	          error );
 #else
-	result = libevt_item_get_utf8_source_name_size(
+	result = libevt_record_get_utf8_source_name_size(
 	          record,
 	          &value_string_size,
 	          error );
@@ -796,13 +1264,13 @@ int export_handle_export_record(
 			goto on_error;
 		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libevt_item_get_utf16_source_name(
+		result = libevt_record_get_utf16_source_name(
 		          record,
 		          (uint16_t *) value_string,
 		          value_string_size,
 		          error );
 #else
-		result = libevt_item_get_utf8_source_name(
+		result = libevt_record_get_utf8_source_name(
 		          record,
 		          (uint8_t *) value_string,
 		          value_string_size,
@@ -821,21 +1289,39 @@ int export_handle_export_record(
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "%" PRIs_LIBCSTRING_SYSTEM "\t",
+		 "Source name\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 		 value_string );
 
 		memory_free(
 		 value_string );
 
+		result = export_handle_get_message_filename(
+		          export_handle,
+		          value_string,
+		          value_string_size - 1,
+		          error );
+
+/* TODO fix BUG: result == -1 */
+		if( result != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve message filename.",
+			 function );
+
+			goto on_error;
+		}
 		value_string = NULL;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libevt_item_get_utf16_computer_name_size(
+	result = libevt_record_get_utf16_computer_name_size(
 	          record,
 	          &value_string_size,
 	          error );
 #else
-	result = libevt_item_get_utf8_computer_name_size(
+	result = libevt_record_get_utf8_computer_name_size(
 	          record,
 	          &value_string_size,
 	          error );
@@ -868,13 +1354,13 @@ int export_handle_export_record(
 			goto on_error;
 		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libevt_item_get_utf16_computer_name(
+		result = libevt_record_get_utf16_computer_name(
 		          record,
 		          (uint16_t *) value_string,
 		          value_string_size,
 		          error );
 #else
-		result = libevt_item_get_utf8_computer_name(
+		result = libevt_record_get_utf8_computer_name(
 		          record,
 		          (uint8_t *) value_string,
 		          value_string_size,
@@ -893,7 +1379,7 @@ int export_handle_export_record(
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "%" PRIs_LIBCSTRING_SYSTEM "\t",
+		 "Computer name\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 		 value_string );
 
 		memory_free(
@@ -901,7 +1387,6 @@ int export_handle_export_record(
 
 		value_string = NULL;
 	}
-/* TODO print more values */
 	fprintf(
 	 export_handle->notify_stream,
 	 "\n" );
@@ -923,19 +1408,19 @@ on_error:
 	return( -1 );
 }
 
-/* Exports the items
- * Returns the 1 if succesful, 0 if no items are available or -1 on error
+/* Exports the records
+ * Returns the 1 if succesful, 0 if no records are available or -1 on error
  */
-int export_handle_export_items(
+int export_handle_export_records(
      export_handle_t *export_handle,
      libevt_file_t *file,
      log_handle_t *log_handle,
      liberror_error_t **error )
 {
-	libevt_item_t *item   = NULL;
-	static char *function = "export_handle_export_items";
-	int number_of_items   = 0;
-	int item_index        = 0;
+	libevt_record_t *record = NULL;
+	static char *function   = "export_handle_export_records";
+	int number_of_records   = 0;
+	int record_index        = 0;
 
 	if( export_handle == NULL )
 	{
@@ -959,51 +1444,51 @@ int export_handle_export_items(
 
 		return( -1 );
 	}
-	if( libevt_file_get_number_of_items(
+	if( libevt_file_get_number_of_records(
 	     file,
-	     &number_of_items,
+	     &number_of_records,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of items.",
+		 "%s: unable to retrieve number of records.",
 		 function );
 
 		return( -1 );
 	}
-	if( number_of_items == 0 )
+	if( number_of_records == 0 )
 	{
 		return( 0 );
 	}
-	for( item_index = 0;
-	     item_index < number_of_items;
-	     item_index++ )
+	for( record_index = 0;
+	     record_index < number_of_records;
+	     record_index++ )
 	{
 		if( export_handle->abort != 0 )
 		{
 			return( -1 );
 		}
-		if( libevt_file_get_item(
+		if( libevt_file_get_record(
 		     file,
-		     item_index,
-		     &item,
+		     record_index,
+		     &record,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve item: %d.",
+			 "%s: unable to retrieve record: %d.",
 			 function,
-			 item_index );
+			 record_index );
 
 			return( -1 );
 		}
 		if( export_handle_export_record(
 		     export_handle,
-		     item,
+		     record,
 		     log_handle,
 		     error ) != 1 )
 		{
@@ -1012,23 +1497,23 @@ int export_handle_export_items(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GENERIC,
-			 "%s: unable to export item: %d.",
+			 "%s: unable to export record: %d.",
 			 function,
-			 item_index );
+			 record_index );
 
 			return( -1 );
 		}
-		if( libevt_item_free(
-		     &item,
+		if( libevt_record_free(
+		     &record,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free item: %d.",
+			 "%s: unable to free record: %d.",
 			 function,
-			 item_index );
+			 record_index );
 
 			return( -1 );
 		}
@@ -1036,8 +1521,8 @@ int export_handle_export_items(
 	return( 1 );
 }
 
-/* Exports the items from the file
- * Returns the 1 if succesful, 0 if no items are available or -1 on error
+/* Exports the records from the file
+ * Returns the 1 if succesful, 0 if no records are available or -1 on error
  */
 int export_handle_export_file(
      export_handle_t *export_handle,
@@ -1058,7 +1543,7 @@ int export_handle_export_file(
 
 		return( -1 );
 	}
-	result = export_handle_export_items(
+	result = export_handle_export_records(
 	          export_handle,
 	          export_handle->input_file,
 	          log_handle,
@@ -1070,7 +1555,7 @@ int export_handle_export_file(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GENERIC,
-		 "%s: unable to export items.",
+		 "%s: unable to export records.",
 		 function );
 
 		return( -1 );

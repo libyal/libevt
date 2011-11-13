@@ -1,5 +1,5 @@
 /*
- * The internal type definitions
+ * The libregf header wrapper
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,30 +19,34 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_INTERNAL_TYPES_H )
-#define _LIBEVT_INTERNAL_TYPES_H
+#if !defined( _EVTTOOLS_LIBREGF_H )
+#define _EVTTOOLS_LIBREGF_H
 
 #include <common.h>
-#include <types.h>
 
-/* Define HAVE_LOCAL_LIBEVT for local use of libevt
- * The definitions in <libevt/types.h> are copied here
- * for local use of libevt
+/* Define HAVE_LOCAL_LIBREGF for local use of libregf
  */
-#if defined( HAVE_LOCAL_LIBEVT )
+#if defined( HAVE_LOCAL_LIBREGF )
 
-/* The following type definitions hide internal data structures
+#include <libregf_definitions.h>
+#include <libregf_file.h>
+#include <libregf_key.h>
+#include <libregf_value.h>
+#include <libregf_types.h>
+
+#elif defined( HAVE_LIBREGF_H )
+
+/* If libtool DLL support is enabled set LIBREGF_DLL_IMPORT
+ * before including libregf.h
  */
-#if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libevt_file {}		libevt_file_t;
-typedef struct libevt_record {}		libevt_record_t;
-
-#else
-typedef intptr_t libevt_file_t;
-typedef intptr_t libevt_record_t;
-
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBREGF_DLL_IMPORT
 #endif
 
+#include <libregf.h>
+
+#else
+#error Missing libregf.h
 #endif
 
 #endif

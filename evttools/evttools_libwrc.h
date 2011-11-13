@@ -1,5 +1,5 @@
 /*
- * The internal type definitions
+ * The libwrc header wrapper
  *
  * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,30 +19,35 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_INTERNAL_TYPES_H )
-#define _LIBEVT_INTERNAL_TYPES_H
+#if !defined( _EVTTOOLS_LIBWRC_H )
+#define _EVTTOOLS_LIBWRC_H
 
 #include <common.h>
-#include <types.h>
 
-/* Define HAVE_LOCAL_LIBEVT for local use of libevt
- * The definitions in <libevt/types.h> are copied here
- * for local use of libevt
+/* Define HAVE_LOCAL_LIBWRC for local use of libwrc
  */
-#if defined( HAVE_LOCAL_LIBEVT )
+#if defined( HAVE_LOCAL_LIBWRC )
 
-/* The following type definitions hide internal data structures
+#include <libwrc_definitions.h>
+#include <libwrc_message_table.h>
+#include <libwrc_resource.h>
+#include <libwrc_stream.h>
+#include <libwrc_version.h>
+#include <libwrc_types.h>
+
+#elif defined( HAVE_LIBWRC_H )
+
+/* If libtool DLL support is enabled set LIBWRC_DLL_IMPORT
+ * before including libwrc.h
  */
-#if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libevt_file {}		libevt_file_t;
-typedef struct libevt_record {}		libevt_record_t;
-
-#else
-typedef intptr_t libevt_file_t;
-typedef intptr_t libevt_record_t;
-
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBWRC_DLL_IMPORT
 #endif
 
+#include <libwrc.h>
+
+#else
+#error Missing libwrc.h
 #endif
 
 #endif

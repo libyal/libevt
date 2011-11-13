@@ -33,7 +33,7 @@
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
-#include "libevt_record.h"
+#include "libevt_record_values.h"
 #include "libevt_unused.h"
 
 #include "evt_file_header.h"
@@ -151,6 +151,8 @@ int libevt_io_handle_free(
 int libevt_io_handle_read_file_header(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
+     uint32_t *first_record_offset,
+     uint32_t *end_of_file_record_offset,
      liberror_error_t **error )
 {
 	evt_file_header_t file_header;
@@ -171,6 +173,28 @@ int libevt_io_handle_read_file_header(
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( first_record_offset == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid first record offset.",
+		 function );
+
+		return( -1 );
+	}
+	if( end_of_file_record_offset == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid end of file record offset.",
 		 function );
 
 		return( -1 );
@@ -253,6 +277,18 @@ int libevt_io_handle_read_file_header(
 	 io_handle->minor_version );
 
 	byte_stream_copy_to_uint32_little_endian(
+	 file_header.first_record_offset,
+	 *first_record_offset );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 file_header.end_of_file_record_offset,
+	 *end_of_file_record_offset );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 file_header.file_flags,
+	 io_handle->file_flags );
+
+	byte_stream_copy_to_uint32_little_endian(
 	 file_header.size_copy,
 	 size_copy );
 
@@ -282,21 +318,15 @@ int libevt_io_handle_read_file_header(
 		 function,
 		 io_handle->minor_version );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 file_header.first_record_offset,
-		 value_32bit );
 		libnotify_printf(
 		 "%s: first record offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
-		 value_32bit );
+		 *first_record_offset );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 file_header.end_of_file_record_offset,
-		 value_32bit );
 		libnotify_printf(
 		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
-		 value_32bit );
+		 *end_of_file_record_offset );
 
 		byte_stream_copy_to_uint32_little_endian(
 		 file_header.last_record_number,
@@ -314,15 +344,12 @@ int libevt_io_handle_read_file_header(
 		 function,
 		 value_32bit );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 file_header.file_flags,
-		 value_32bit );
 		libnotify_printf(
 		 "%s: file flags\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
-		 value_32bit );
+		 io_handle->file_flags );
 		libevt_debug_print_file_flags(
-		 value_32bit );
+		 io_handle->file_flags );
 		libnotify_printf(
 		 "\n" );
 
@@ -357,23 +384,24 @@ int libevt_io_handle_read_file_header(
 	return( 1 );
 }
 
-/* Reads the items into the items array
+/* Reads the records into the records array
  * Returns 1 if successful or -1 on error
  */
-int libevt_io_handle_read_items(
+int libevt_io_handle_read_records(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     libevt_array_t *items_array,
+     uint32_t first_record_offset,
+     uint32_t end_of_file_record_offset,
+     libevt_array_t *records_array,
      liberror_error_t **error )
 {
-	libevt_record_t *record = NULL;
-	static char *function   = "libevt_io_handle_read_items";
-	off64_t file_offset     = 0;
-	size64_t file_size      = 0;
-	ssize_t read_count      = 0;
-	uint32_t item_iterator  = 0;
-	uint8_t record_type     = 0;
-	int item_entry_index    = 0;
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_io_handle_read_records";
+	off64_t file_offset                   = 0;
+	ssize_t read_count                    = 0;
+	uint32_t record_iterator              = 0;
+	uint8_t record_type                   = 0;
+	int record_entry_index                = 0;
 
 	if( io_handle == NULL )
 	{
@@ -386,20 +414,20 @@ int libevt_io_handle_read_items(
 
 		return( -1 );
 	}
-	if( items_array == NULL )
+	if( records_array == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid items array.",
+		 "%s: invalid records array.",
 		 function );
 
 		return( -1 );
 	}
 	if( libbfio_handle_get_size(
 	     file_io_handle,
-	     &file_size,
+	     &( io_handle->file_size ),
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -411,37 +439,54 @@ int libevt_io_handle_read_items(
 
 		goto on_error;
 	}
-	file_offset = sizeof( evt_file_header_t );
+	file_offset = (off64_t) first_record_offset;
 
-	while( (size64_t) file_offset < file_size )
+	if( libbfio_handle_seek_offset(
+	     file_io_handle,
+	     file_offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek file header offset: %" PRIi64 ".",
+		 function,
+		 file_offset );
+
+		return( -1 );
+	}
+	do
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libnotify_verbose != 0 )
 		{
 			libnotify_printf(
-			 "%s: reading record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 "%s: reading record: %" PRIu32 " at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
 			 file_offset,
 			 file_offset );
 		}
 #endif
-		if( libevt_record_initialize(
-		     &record,
+		if( libevt_record_values_initialize(
+		     &record_values,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create record.",
+			 "%s: unable to create record values.",
 			 function );
 
 			goto on_error;
 		}
-		read_count = libevt_record_read(
-		              record,
-		              io_handle,
+		read_count = libevt_record_values_read(
+		              record_values,
 		              file_io_handle,
+		              io_handle,
+		              &file_offset,
 		              error );
 
 		if( read_count == -1 )
@@ -450,64 +495,63 @@ int libevt_io_handle_read_items(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_IO,
 			 LIBERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read item: %" PRIu32 ".",
+			 "%s: unable to read record: %" PRIu32 ".",
 			 function,
-			 item_iterator );
+			 record_iterator );
 
 			goto on_error;
 		}
-		file_offset += read_count;
-
-		record_type = record->type;
+		record_type = record_values->type;
 
 		if( record_type == LIBEVT_RECORD_TYPE_EVENT )
 		{
 			if( libevt_array_append_entry(
-			     items_array,
-			     &item_entry_index,
-			     (intptr_t *) record,
+			     records_array,
+			     &record_entry_index,
+			     (intptr_t *) record_values,
 			     error ) != 1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append record to items array.",
+				 "%s: unable to append record values to records array.",
 				 function );
 
 				goto on_error;
 			}
-			record = NULL;
+			record_values = NULL;
 		}
 		else if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 		{
 			break;
 		}
+		record_iterator++;
 	}
-/* TODO print error if record_type != LIBEVT_RECORD_TYPE_END_OF_FILE */
+	while( record_type != LIBEVT_RECORD_TYPE_END_OF_FILE );
 
-	if( libevt_record_free(
-	     &record,
+	if( libevt_record_values_free(
+	     &record_values,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free record.",
+		 "%s: unable to free record values.",
 		 function );
 
-		record = NULL;
+		record_values = NULL;
 
 		goto on_error;
 	}
 	return( 1 );
 
 on_error:
-	if( record != NULL )
+	if( record_values != NULL )
 	{
-		libevt_record_free(
-		 &record,
+		libevt_record_values_free(
+		 &record_values,
 		 NULL );
 	}
 	return( -1 );

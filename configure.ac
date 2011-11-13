@@ -67,6 +67,18 @@ AX_LIBFVALUE_CHECK_ENABLE
 dnl Check for enabling libfwnt for file Windows NT type support
 AX_LIBFWNT_CHECK_ENABLE
 
+dnl Check for enabling libfdata for file and memory data block support
+AX_LIBFDATA_CHECK_ENABLE
+
+dnl Check for enabling libexe for MZ, PE/COFF executable support
+AX_LIBEXE_CHECK_ENABLE
+
+dnl Check for enabling libregf for Windows Registry file support
+AX_LIBREGF_CHECK_ENABLE
+
+dnl Check for enabling libwrc for Windows Resource support
+AX_LIBWRC_CHECK_ENABLE
+
 dnl Check if evttools should be build as static executables
 AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
 
@@ -87,8 +99,15 @@ AS_IF(
   [BuildRequires:])
  ])
 
+AS_IF(
+ [test "x$ac_cv_libexe" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libregf" = xyes || test "x$ac_cv_libwrc" = xyes],
+ [AC_SUBST(
+  [libevt_tools_spec_build_requires],
+  [BuildRequires:])
+ ])
+
 dnl Set memwatch support
-ac_cv_enable_memwatch=no
+ac_cv_enable_memwatch=yes
 
 AS_IF(
  [test "x$ac_cv_enable_memwatch" != xno ],
@@ -108,7 +127,7 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if DLL support is needed in evttools
 AS_IF(
- [test x"$enable_shared" = xyes && test "x$ac_cv_enable_static_executables" = xno],
+ [test "x$enable_shared" = xyes && test "x$ac_cv_enable_static_executables" = xno],
  [AS_CASE(
   [$host],
   [*cygwin* | *mingw*],
@@ -132,6 +151,10 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([libsystem/Makefile])
+AC_CONFIG_FILES([libfdata/Makefile])
+AC_CONFIG_FILES([libexe/Makefile])
+AC_CONFIG_FILES([libregf/Makefile])
+AC_CONFIG_FILES([libwrc/Makefile])
 AC_CONFIG_FILES([evttools/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
@@ -165,6 +188,10 @@ Building:
    libfdatetime support:                     $ac_cv_libfdatetime
    libfvalue support:                        $ac_cv_libfvalue
    libfwnt support:                          $ac_cv_libfwnt
+   libfdata support:                         $ac_cv_libfdata
+   libexe support:                           $ac_cv_libexe
+   libregf support:                          $ac_cv_libregf
+   libwrc support:                           $ac_cv_libwrc
 
 Features:
    Wide character type support:              $ac_cv_enable_wide_character_type

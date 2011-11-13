@@ -9,119 +9,148 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_RECORD_H )
-#define _LIBEVT_RECORD_H
+#if !defined( _LIBEVT_INTERNAL_RECORD_H )
+#define _LIBEVT_INTERNAL_RECORD_H
 
 #include <common.h>
 #include <types.h>
 
 #include <liberror.h>
 
+#include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
-#include "libevt_libfvalue.h"
+#include "libevt_record_values.h"
+#include "libevt_types.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-enum LIBEVT_RECORD_TYPES
+typedef struct libevt_internal_record libevt_internal_record_t;
+
+struct libevt_internal_record
 {
-	LIBEVT_RECORD_TYPE_EVENT,
-	LIBEVT_RECORD_TYPE_END_OF_FILE
-};
-
-typedef struct libevt_record libevt_record_t;
-
-struct libevt_record
-{
-	/* The type
+	/* The IO handle
 	 */
-	uint8_t type;
+	libevt_io_handle_t *io_handle;
 
-	/* The (record) number
+	/* The file IO handle
 	 */
-	uint32_t number;
+	libbfio_handle_t *file_io_handle;
 
-	/* The creation time
+	/* The (event) record values
 	 */
-	uint32_t creation_time;
+	libevt_record_values_t *record_values;
 
-	/* The written time
+	/* The flags
 	 */
-	uint32_t written_time;
-
-	/* The event identifier
-	 */
-	uint32_t event_identifier;
-
-	/* The event type
-	 */
-	uint32_t event_type;
-
-	/* The source name
-	 */
-	libfvalue_value_t *source_name;
-
-	/* The computer name
-	 */
-	libfvalue_value_t *computer_name;
-
-	/* The strings
-	 */
-	libfvalue_value_t *strings;
-
-	/* The data
-	 */
-	libfvalue_value_t *data;
+	uint8_t flags;
 };
 
 int libevt_record_initialize(
      libevt_record_t **record,
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     libevt_record_values_t *record_values,
+     uint8_t flags,
      liberror_error_t **error );
 
+LIBEVT_EXTERN \
 int libevt_record_free(
      libevt_record_t **record,
      liberror_error_t **error );
 
-int libevt_record_clone(
-     libevt_record_t **destination_record,
-     libevt_record_t *source_record,
+LIBEVT_EXTERN \
+int libevt_record_get_identifier(
+     libevt_record_t *record,
+     uint32_t *identifier,
      liberror_error_t **error );
 
-ssize_t libevt_record_read(
-         libevt_record_t *record,
-         libevt_io_handle_t *io_handle,
-         libbfio_handle_t *file_io_handle,
-         liberror_error_t **error );
-
-int libevt_record_read_event(
+LIBEVT_EXTERN \
+int libevt_record_get_creation_time(
      libevt_record_t *record,
-     libevt_io_handle_t *io_handle,
-     uint8_t *record_data,
-     size_t record_data_size,
+     uint32_t *creation_time,
      liberror_error_t **error );
 
-int libevt_record_read_end_of_file(
+LIBEVT_EXTERN \
+int libevt_record_get_written_time(
      libevt_record_t *record,
-     libevt_io_handle_t *io_handle,
-     uint8_t *record_data,
-     size_t record_data_size,
+     uint32_t *written_time,
      liberror_error_t **error );
 
-int libevt_record_get_type(
+LIBEVT_EXTERN \
+int libevt_record_get_event_identifier(
      libevt_record_t *record,
-     uint8_t *type,
+     uint32_t *event_identifier,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_event_type(
+     libevt_record_t *record,
+     uint16_t *event_type,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_source_name_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_source_name(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_source_name_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_source_name(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_computer_name_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_computer_name(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_computer_name_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_computer_name(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

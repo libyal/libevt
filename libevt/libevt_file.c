@@ -32,10 +32,10 @@
 #include "libevt_debug.h"
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
-#include "libevt_item.h"
 #include "libevt_file.h"
 #include "libevt_libbfio.h"
 #include "libevt_record.h"
+#include "libevt_record_values.h"
 
 /* Initializes a file
  * Make sure the value file is pointing to is set to NULL
@@ -102,7 +102,7 @@ int libevt_file_initialize(
 		return( -1 );
 	}
 	if( libevt_array_initialize(
-	     &( internal_file->items_array ),
+	     &( internal_file->records_array ),
 	     0,
 	     error ) != 1 )
 	{
@@ -110,7 +110,7 @@ int libevt_file_initialize(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create items array.",
+		 "%s: unable to create records array.",
 		 function );
 
 		goto on_error;
@@ -135,10 +135,10 @@ int libevt_file_initialize(
 on_error:
 	if( internal_file != NULL )
 	{
-		if( internal_file->items_array != NULL )
+		if( internal_file->records_array != NULL )
 		{
 			libevt_array_free(
-			 &( internal_file->items_array ),
+			 &( internal_file->records_array ),
 			 NULL,
 			 NULL );
 		}
@@ -193,15 +193,15 @@ int libevt_file_free(
 		*file = NULL;
 
 		if( libevt_array_free(
-		     &( internal_file->items_array ),
-		     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_free,
+		     &( internal_file->records_array ),
+		     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_values_free,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free items array.",
+			 "%s: unable to free records array.",
 			 function );
 
 			result = -1;
@@ -750,16 +750,16 @@ int libevt_file_close(
 	internal_file->file_io_handle_created_in_library = 0;
 
 	if( libevt_array_resize(
-	     internal_file->items_array,
+	     internal_file->records_array,
 	     0,
-	     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_free,
+	     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_values_free,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to resize items array.",
+		 "%s: unable to resize records array.",
 		 function );
 
 		result = -1;
@@ -774,8 +774,10 @@ int libevt_file_open_read(
      libevt_internal_file_t *internal_file,
      liberror_error_t **error )
 {
-	static char *function = "libevt_file_open_read";
-	int result            = 1;
+	static char *function              = "libevt_file_open_read";
+	uint32_t end_of_file_record_offset = 0;
+	uint32_t first_record_offset       = 0;
+	int result                         = 1;
 
 	if( internal_file == NULL )
 	{
@@ -813,6 +815,8 @@ int libevt_file_open_read(
 	if( libevt_io_handle_read_file_header(
 	     internal_file->io_handle,
 	     internal_file->file_io_handle,
+	     &first_record_offset,
+	     &end_of_file_record_offset,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -828,13 +832,15 @@ int libevt_file_open_read(
 	if( libnotify_verbose != 0 )
 	{
 		libnotify_printf(
-		 "Reading items:\n" );
+		 "Reading records:\n" );
 	}
 #endif
-	result = libevt_io_handle_read_items(
+	result = libevt_io_handle_read_records(
 	          internal_file->io_handle,
 	          internal_file->file_io_handle,
-	          internal_file->items_array,
+	          first_record_offset,
+	          end_of_file_record_offset,
+	          internal_file->records_array,
 	          error );
 
 	if( result != 1 )
@@ -843,7 +849,7 @@ int libevt_file_open_read(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read items.",
+		 "%s: unable to read records.",
 		 function );
 	}
 	if( internal_file->io_handle->abort != 0 )
@@ -1030,16 +1036,16 @@ int libevt_file_get_version(
 	return( 1 );
 }
 
-/* Retrieves the number of items
+/* Retrieves the number of records
  * Returns 1 if successful or -1 on error
  */
-int libevt_file_get_number_of_items(
+int libevt_file_get_number_of_records(
      libevt_file_t *file,
-     int *number_of_items,
+     int *number_of_records,
      liberror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
-	static char *function                 = "libevt_file_get_number_of_items";
+	static char *function                 = "libevt_file_get_number_of_records";
 
 	if( file == NULL )
 	{
@@ -1055,15 +1061,15 @@ int libevt_file_get_number_of_items(
 	internal_file = (libevt_internal_file_t *) file;
 
 	if( libevt_array_get_number_of_entries(
-	     internal_file->items_array,
-	     number_of_items,
+	     internal_file->records_array,
+	     number_of_records,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of items.",
+		 "%s: unable to retrieve number of records.",
 		 function );
 
 		return( -1 );
@@ -1071,18 +1077,18 @@ int libevt_file_get_number_of_items(
 	return( 1 );
 }
 
-/* Retrieves a specific item
+/* Retrieves a specific record
  * Returns 1 if successful or -1 on error
  */
-int libevt_file_get_item(
+int libevt_file_get_record(
      libevt_file_t *file,
-     int item_index,
-     libevt_item_t **item,
+     int record_index,
+     libevt_record_t **record,
      liberror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
-	libevt_record_t *event_record         = NULL;
-	static char *function                 = "libevt_file_get_item";
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_file_get_record";
 
 	if( file == NULL )
 	{
@@ -1097,46 +1103,46 @@ int libevt_file_get_item(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( item == NULL )
+	if( record == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid item.",
+		 "%s: invalid record.",
 		 function );
 
 		return( -1 );
 	}
 	if( libevt_array_get_entry_by_index(
-	     internal_file->items_array,
-	     item_index,
-	     (intptr_t **) &event_record,
+	     internal_file->records_array,
+	     record_index,
+	     (intptr_t **) &record_values,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve event record: %d.",
+		 "%s: unable to retrieve record values: %d.",
 		 function,
-		 item_index );
+		 record_index );
 
 		return( -1 );
 	}
-	if( libevt_item_initialize(
-	     item,
+	if( libevt_record_initialize(
+	     record,
 	     internal_file->io_handle,
 	     internal_file->file_io_handle,
-	     event_record,
-	     LIBEVT_ITEM_FLAGS_DEFAULT,
+	     record_values,
+	     LIBEVT_RECORD_FLAGS_DEFAULT,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create item.",
+		 "%s: unable to create record.",
 		 function );
 
 		return( -1 );

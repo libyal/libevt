@@ -106,7 +106,9 @@ int info_handle_initialize(
 
 		goto on_error;
 	}
-	( *info_handle )->notify_stream = INFO_HANDLE_NOTIFY_STREAM;
+	( *info_handle )->event_log_type = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
+	( *info_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+	( *info_handle )->notify_stream  = INFO_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
 
@@ -247,6 +249,47 @@ int info_handle_set_ascii_codepage(
 	return( result );
 }
 
+/* Sets the event log type from the filename
+ * Returns 1 if successful or -1 on error
+ */
+int info_handle_set_event_log_type_from_filename(
+     info_handle_t *info_handle,
+     const libcstring_system_character_t *filename,
+     liberror_error_t **error )
+{
+	static char *function = "info_handle_set_event_log_type_from_filename";
+	int result            = 0;
+
+	if( info_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid info handle.",
+		 function );
+
+		return( -1 );
+	}
+	result = evtinput_determine_event_log_type_from_filename(
+	          filename,
+	          &( info_handle->event_log_type ),
+	          error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine event log type from filename.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
+}
+
 /* Opens the input
  * Returns 1 if successful or -1 on error
  */
@@ -337,10 +380,11 @@ int info_handle_file_fprint(
      info_handle_t *info_handle,
      liberror_error_t **error )
 {
-	static char *function  = "info_handle_file_fprint";
-	uint32_t major_version = 0;
-	uint32_t minor_version = 0;
-	int number_of_items    = 0;
+	const libcstring_system_character_t *event_log_type = NULL;
+	static char *function                               = "info_handle_file_fprint";
+	uint32_t major_version                              = 0;
+	uint32_t minor_version                              = 0;
+	int number_of_records                               = 0;
 
 	if( info_handle == NULL )
 	{
@@ -368,16 +412,16 @@ int info_handle_file_fprint(
 
 		return( -1 );
 	}
-	if( libevt_file_get_number_of_items(
+	if( libevt_file_get_number_of_records(
 	     info_handle->input_file,
-	     &number_of_items,
+	     &number_of_records,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of items.",
+		 "%s: unable to retrieve number of records.",
 		 function );
 
 		return( -1 );
@@ -392,10 +436,34 @@ int info_handle_file_fprint(
 	 major_version,
 	 minor_version );
 
+	switch( info_handle->event_log_type )
+	{
+		case EVTTOOLS_EVENT_LOG_TYPE_APPLICATION:
+			event_log_type = _LIBCSTRING_SYSTEM_STRING( "Application" );
+			break;
+
+		case EVTTOOLS_EVENT_LOG_TYPE_SECURITY:
+			event_log_type = _LIBCSTRING_SYSTEM_STRING( "Security" );
+			break;
+
+		case EVTTOOLS_EVENT_LOG_TYPE_SYSTEM:
+			event_log_type = _LIBCSTRING_SYSTEM_STRING( "System" );
+			break;
+
+		default:
+			event_log_type = _LIBCSTRING_SYSTEM_STRING( "(Unknown)" );
+			break;
+
+	}
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tNumber of event records\t: %d\n",
-	 number_of_items );
+	 "\tLog type\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+	 event_log_type );
+
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tNumber of records\t: %d\n",
+	 number_of_records );
 
 	fprintf(
 	 info_handle->notify_stream,

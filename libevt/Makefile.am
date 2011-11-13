@@ -24,7 +24,6 @@ libevt_la_SOURCES = \
 	libevt_error.c libevt_error.h \
 	libevt_extern.h \
 	libevt_file.c libevt_file.h \
-	libevt_item.c libevt_item.h \
 	libevt_io_handle.c libevt_io_handle.h \
 	libevt_libbfio.h \
 	libevt_libfdatetime.h \
@@ -33,6 +32,7 @@ libevt_la_SOURCES = \
 	libevt_libuna.h \
 	libevt_notify.c libevt_notify.h \
 	libevt_record.c libevt_record.h \
+	libevt_record_values.c libevt_record_values.h \
 	libevt_support.c libevt_support.h \
 	libevt_types.h \
 	libevt_unused.h

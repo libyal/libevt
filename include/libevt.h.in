@@ -280,43 +280,43 @@ int libevt_file_get_version(
      uint32_t *minor_version,
      libevt_error_t **error );
 
-/* Retrieves the number of items
+/* Retrieves the number of records
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_file_get_number_of_items(
+int libevt_file_get_number_of_records(
      libevt_file_t *file,
-     int *number_of_items,
+     int *number_of_records,
      libevt_error_t **error );
 
-/* Retrieves a specific item
+/* Retrieves a specific record
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_file_get_item(
+int libevt_file_get_record(
      libevt_file_t *file,
-     int item_index,
-     libevt_item_t **item,
+     int record_index,
+     libevt_record_t **record,
      libevt_error_t **error );
 
 /* -------------------------------------------------------------------------
- * Item functions
+ * Record functions
  * ------------------------------------------------------------------------- */
 
-/* Frees an item
+/* Frees a record
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_free(
-     libevt_item_t **item,
+int libevt_record_free(
+     libevt_record_t **record,
      libevt_error_t **error );
 
 /* Retrieves the identifier (record number)
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_identifier(
-     libevt_item_t *item,
+int libevt_record_get_identifier(
+     libevt_record_t *record,
      uint32_t *identifier,
      libevt_error_t **error );
 
@@ -325,8 +325,8 @@ int libevt_item_get_identifier(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_creation_time(
-     libevt_item_t *item,
+int libevt_record_get_creation_time(
+     libevt_record_t *record,
      uint32_t *creation_time,
      libevt_error_t **error );
 
@@ -335,8 +335,8 @@ int libevt_item_get_creation_time(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_written_time(
-     libevt_item_t *item,
+int libevt_record_get_written_time(
+     libevt_record_t *record,
      uint32_t *written_time,
      libevt_error_t **error );
 
@@ -344,8 +344,8 @@ int libevt_item_get_written_time(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_event_identifier(
-     libevt_item_t *item,
+int libevt_record_get_event_identifier(
+     libevt_record_t *record,
      uint32_t *event_identifier,
      libevt_error_t **error );
 
@@ -353,8 +353,8 @@ int libevt_item_get_event_identifier(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_event_type(
-     libevt_item_t *item,
+int libevt_record_get_event_type(
+     libevt_record_t *record,
      uint16_t *event_type,
      libevt_error_t **error );
 
@@ -363,8 +363,8 @@ int libevt_item_get_event_type(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_source_name_size(
-     libevt_item_t *item,
+int libevt_record_get_utf8_source_name_size(
+     libevt_record_t *record,
      size_t *utf8_string_size,
      libevt_error_t **error );
 
@@ -373,8 +373,8 @@ int libevt_item_get_utf8_source_name_size(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_source_name(
-     libevt_item_t *item,
+int libevt_record_get_utf8_source_name(
+     libevt_record_t *record,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libevt_error_t **error );
@@ -384,8 +384,8 @@ int libevt_item_get_utf8_source_name(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_source_name_size(
-     libevt_item_t *item,
+int libevt_record_get_utf16_source_name_size(
+     libevt_record_t *record,
      size_t *utf16_string_size,
      libevt_error_t **error );
 
@@ -394,8 +394,8 @@ int libevt_item_get_utf16_source_name_size(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_source_name(
-     libevt_item_t *item,
+int libevt_record_get_utf16_source_name(
+     libevt_record_t *record,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      libevt_error_t **error );
@@ -405,8 +405,8 @@ int libevt_item_get_utf16_source_name(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_computer_name_size(
-     libevt_item_t *item,
+int libevt_record_get_utf8_computer_name_size(
+     libevt_record_t *record,
      size_t *utf8_string_size,
      libevt_error_t **error );
 
@@ -415,8 +415,8 @@ int libevt_item_get_utf8_computer_name_size(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf8_computer_name(
-     libevt_item_t *item,
+int libevt_record_get_utf8_computer_name(
+     libevt_record_t *record,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libevt_error_t **error );
@@ -426,8 +426,8 @@ int libevt_item_get_utf8_computer_name(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_computer_name_size(
-     libevt_item_t *item,
+int libevt_record_get_utf16_computer_name_size(
+     libevt_record_t *record,
      size_t *utf16_string_size,
      libevt_error_t **error );
 
@@ -436,8 +436,8 @@ int libevt_item_get_utf16_computer_name_size(
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
-int libevt_item_get_utf16_computer_name(
-     libevt_item_t *item,
+int libevt_record_get_utf16_computer_name(
+     libevt_record_t *record,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      libevt_error_t **error );

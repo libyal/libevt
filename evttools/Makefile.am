@@ -8,6 +8,10 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
+	@LIBFDATA_CPPFLAGS@ \
+	@LIBEXE_CPPFLAGS@ \
+	@LIBREGF_CPPFLAGS@ \
+	@LIBWRC_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
@@ -24,7 +28,10 @@ evtexport_SOURCES = \
 	evtoutput.c evtoutput.h \
 	evttools_libfdatetime.h \
 	evttools_libevt.h \
+	evttools_libexe.h \
+	evttools_libregf.h \
 	evttools_libuna.h \
+	evttools_libwrc.h \
 	log_handle.c log_handle.h
 
 evtexport_LDADD = \
@@ -35,6 +42,9 @@ evtexport_LDADD = \
 	@LIBUNA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFWNT_LIBADD@ \
+	@LIBEXE_LIBADD@ \
+	@LIBREGF_LIBADD@ \
+	@LIBWRC_LIBADD@ \
 	@LIBINTL@ \
 	@MEMWATCH_LIBADD@
 

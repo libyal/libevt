@@ -41,9 +41,9 @@ typedef struct libevt_internal_file libevt_internal_file_t;
 
 struct libevt_internal_file
 {
-	/* The items array
+	/* The records array
 	 */
-	libevt_array_t *items_array;
+	libevt_array_t *records_array;
 
 	/* The IO handle
 	 */
@@ -125,16 +125,16 @@ int libevt_file_get_version(
      liberror_error_t **error );
 
 LIBEVT_EXTERN \
-int libevt_file_get_number_of_items(
+int libevt_file_get_number_of_records(
      libevt_file_t *file,
-     int *number_of_items,
+     int *number_of_records,
      liberror_error_t **error );
 
 LIBEVT_EXTERN \
-int libevt_file_get_item(
+int libevt_file_get_record(
      libevt_file_t *file,
-     int item_index,
-     libevt_item_t **item,
+     int record_index,
+     libevt_record_t **record,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

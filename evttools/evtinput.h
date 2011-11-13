@@ -32,9 +32,29 @@
 extern "C" {
 #endif
 
+enum EVTTOOLS_EVENT_LOG_TYPES
+{
+	EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN,
+	EVTTOOLS_EVENT_LOG_TYPE_APPLICATION,
+	EVTTOOLS_EVENT_LOG_TYPE_INTERNET_EXPLORER,
+	EVTTOOLS_EVENT_LOG_TYPE_SECURITY,
+	EVTTOOLS_EVENT_LOG_TYPE_SYSTEM,
+	EVTTOOLS_EVENT_LOG_TYPE_WINDOWS_POWERSHELL,
+};
+
 int evtinput_determine_ascii_codepage(
      const libcstring_system_character_t *string,
      int *ascii_codepage,
+     liberror_error_t **error );
+
+int evtinput_determine_event_log_type(
+     const libcstring_system_character_t *string,
+     int *event_log_type,
+     liberror_error_t **error );
+
+int evtinput_determine_event_log_type_from_filename(
+     const libcstring_system_character_t *filename,
+     int *event_log_type,
      liberror_error_t **error );
 
 #if defined( __cplusplus )
