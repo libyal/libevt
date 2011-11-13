@@ -55,6 +55,17 @@ int libevt_item_initialize(
 
 		return( -1 );
 	}
+	if( *item != NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid item value already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( event_record == NULL )
 	{
 		liberror_error_set(
@@ -78,80 +89,78 @@ int libevt_item_initialize(
 
 		return( -1 );
 	}
-	if( *item == NULL )
-	{
-		internal_item = memory_allocate_structure(
-		                 libevt_internal_item_t );
+	internal_item = memory_allocate_structure(
+	                 libevt_internal_item_t );
 
-		if( internal_item == NULL )
+	if( internal_item == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create internal item.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_item,
+	     0,
+	     sizeof( libevt_internal_item_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear internal item.",
+		 function );
+
+		memory_free(
+		 internal_item );
+
+		return( -1 );
+	}
+	if( ( flags & LIBEVT_ITEM_FLAG_MANAGED_FILE_IO_HANDLE ) == 0 )
+	{
+		internal_item->file_io_handle = file_io_handle;
+	}
+	else
+	{
+		if( libbfio_handle_clone(
+		     &( internal_item->file_io_handle ),
+		     file_io_handle,
+		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create internal item.",
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy file IO handle.",
 			 function );
 
 			goto on_error;
 		}
-		if( memory_set(
-		     internal_item,
-		     0,
-		     sizeof( libevt_internal_item_t ) ) == NULL )
+		if( libbfio_handle_set_open_on_demand(
+		     internal_item->file_io_handle,
+		     1,
+		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear internal item.",
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to set open on demand in file IO handle.",
 			 function );
 
-			memory_free(
-			 internal_item );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( ( flags & LIBEVT_ITEM_FLAG_MANAGED_FILE_IO_HANDLE ) == 0 )
-		{
-			internal_item->file_io_handle = file_io_handle;
-		}
-		else
-		{
-			if( libbfio_handle_clone(
-			     &( internal_item->file_io_handle ),
-			     file_io_handle,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy file IO handle.",
-				 function );
-
-				goto on_error;
-			}
-			if( libbfio_handle_set_open_on_demand(
-			     internal_item->file_io_handle,
-			     1,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to set open on demand in file IO handle.",
-				 function );
-
-				goto on_error;
-			}
-		}
-		internal_item->io_handle    = io_handle;
-		internal_item->event_record = event_record;
-		internal_item->flags        = flags;
-
-		*item = (libevt_item_t *) internal_item;
 	}
+	internal_item->io_handle    = io_handle;
+	internal_item->event_record = event_record;
+	internal_item->flags        = flags;
+
+	*item = (libevt_item_t *) internal_item;
+
 	return( 1 );
 
 on_error:

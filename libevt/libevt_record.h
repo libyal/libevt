@@ -91,7 +91,7 @@ int libevt_record_initialize(
      liberror_error_t **error );
 
 int libevt_record_free(
-     libevt_record_t *record,
+     libevt_record_t **record,
      liberror_error_t **error );
 
 int libevt_record_clone(

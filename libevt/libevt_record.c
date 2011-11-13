@@ -63,36 +63,44 @@ int libevt_record_initialize(
 
 		return( -1 );
 	}
+	if( *record != NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid record value already set.",
+		 function );
+
+		return( -1 );
+	}
+	*record = memory_allocate_structure(
+	           libevt_record_t );
+
 	if( *record == NULL )
 	{
-		*record = memory_allocate_structure(
-		           libevt_record_t );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create record.",
+		 function );
 
-		if( *record == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create record.",
-			 function );
+		goto on_error;
+	}
+	if( memory_set(
+	     *record,
+	     0,
+	     sizeof( libevt_record_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear record.",
+		 function );
 
-			goto on_error;
-		}
-		if( memory_set(
-		     *record,
-		     0,
-		     sizeof( libevt_record_t ) ) == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear record.",
-			 function );
-
-			goto on_error;
-		}
+		goto on_error;
 	}
 	return( 1 );
 
@@ -111,7 +119,7 @@ on_error:
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_free(
-     libevt_record_t *record,
+     libevt_record_t **record,
      liberror_error_t **error )
 {
 	static char *function = "libevt_record_free";
@@ -128,73 +136,77 @@ int libevt_record_free(
 
 		return( -1 );
 	}
-	if( record->source_name != NULL )
+	if( *record != NULL )
 	{
-		if( libfvalue_value_free(
-		     &( record->source_name ),
-		     error ) != 1 )
+		if( ( *record )->source_name != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free source name value.",
-			 function );
+			if( libfvalue_value_free(
+			     &( ( *record )->source_name ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free source name value.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	if( record->computer_name != NULL )
-	{
-		if( libfvalue_value_free(
-		     &( record->computer_name ),
-		     error ) != 1 )
+		if( ( *record )->computer_name != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free computer name value.",
-			 function );
+			if( libfvalue_value_free(
+			     &( ( *record )->computer_name ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free computer name value.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	if( record->strings != NULL )
-	{
-		if( libfvalue_value_free(
-		     &( record->strings ),
-		     error ) != 1 )
+		if( ( *record )->strings != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free strings.",
-			 function );
+			if( libfvalue_value_free(
+			     &( ( *record )->strings ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free strings.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	if( record->data != NULL )
-	{
-		if( libfvalue_value_free(
-		     &( record->data ),
-		     error ) != 1 )
+		if( ( *record )->data != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free data.",
-			 function );
+			if( libfvalue_value_free(
+			     &( ( *record )->data ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free data.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	memory_free(
-	 record );
+		memory_free(
+		 *record );
 
+		*record = NULL;
+	}
 	return( result );
 }
 

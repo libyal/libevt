@@ -86,21 +86,21 @@ int libevt_array_initialize(
 int libevt_array_free(
      libevt_array_t **array,
      int (*entry_free_function)(
-            intptr_t *entry,
+            intptr_t **entry,
             liberror_error_t **error ),
      liberror_error_t **error );
 
 int libevt_array_empty(
      libevt_array_t *array,
      int (*entry_free_function)(
-            intptr_t *entry,
+            intptr_t **entry,
             liberror_error_t **error ),
      liberror_error_t **error );
 
 int libevt_array_clear(
      libevt_array_t *array,
      int (*entry_free_function)(
-            intptr_t *entry,
+            intptr_t **entry,
             liberror_error_t **error ),
      liberror_error_t **error );
 
@@ -108,7 +108,7 @@ int libevt_array_clone(
      libevt_array_t **destination_array,
      libevt_array_t *source_array,
      int (*entry_free_function)(
-            intptr_t *entry,
+            intptr_t **entry,
             liberror_error_t **error ),
      int (*entry_clone_function)(
             intptr_t **destination,
@@ -120,7 +120,7 @@ int libevt_array_resize(
      libevt_array_t *array,
      int number_of_entries,
      int (*entry_free_function)(
-            intptr_t *entry,
+            intptr_t **entry,
             liberror_error_t **error ),
      liberror_error_t **error );
 

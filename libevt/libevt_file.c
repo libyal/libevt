@@ -59,68 +59,77 @@ int libevt_file_initialize(
 
 		return( -1 );
 	}
-	if( *file == NULL )
+	if( *file != NULL )
 	{
-		internal_file = memory_allocate_structure(
-		                 libevt_internal_file_t );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid file value already set.",
+		 function );
 
-		if( internal_file == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create file.",
-			 function );
-
-			goto on_error;
-		}
-		if( memory_set(
-		     internal_file,
-		     0,
-		     sizeof( libevt_internal_file_t ) ) == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear file.",
-			 function );
-
-			memory_free(
-			 internal_file );
-
-			return( -1 );
-		}
-		if( libevt_array_initialize(
-		     &( internal_file->items_array ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create items array.",
-			 function );
-
-			goto on_error;
-		}
-		if( libevt_io_handle_initialize(
-		     &( internal_file->io_handle ),
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create IO handle.",
-			 function );
-
-			goto on_error;
-		}
-		*file = (libevt_file_t *) internal_file;
+		return( -1 );
 	}
+	internal_file = memory_allocate_structure(
+	                 libevt_internal_file_t );
+
+	if( internal_file == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create file.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_file,
+	     0,
+	     sizeof( libevt_internal_file_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear file.",
+		 function );
+
+		memory_free(
+		 internal_file );
+
+		return( -1 );
+	}
+	if( libevt_array_initialize(
+	     &( internal_file->items_array ),
+	     0,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create items array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libevt_io_handle_initialize(
+	     &( internal_file->io_handle ),
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create IO handle.",
+		 function );
+
+		goto on_error;
+	}
+	*file = (libevt_file_t *) internal_file;
+
 	return( 1 );
 
 on_error:
@@ -185,7 +194,7 @@ int libevt_file_free(
 
 		if( libevt_array_free(
 		     &( internal_file->items_array ),
-		     (int(*)(intptr_t *, liberror_error_t **)) &libevt_record_free,
+		     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_free,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -743,7 +752,7 @@ int libevt_file_close(
 	if( libevt_array_resize(
 	     internal_file->items_array,
 	     0,
-	     (int(*)(intptr_t *, liberror_error_t **)) &libevt_record_free,
+	     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_free,
 	     error ) != 1 )
 	{
 		liberror_error_set(

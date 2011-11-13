@@ -61,38 +61,47 @@ int libevt_io_handle_initialize(
 
 		return( -1 );
 	}
+	if( *io_handle != NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid IO handle value already set.",
+		 function );
+
+		return( -1 );
+	}
+	*io_handle = memory_allocate_structure(
+	              libevt_io_handle_t );
+
 	if( *io_handle == NULL )
 	{
-		*io_handle = memory_allocate_structure(
-		              libevt_io_handle_t );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create IO handle.",
+		 function );
 
-		if( *io_handle == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create IO handle.",
-			 function );
-
-			goto on_error;
-		}
-		if( memory_set(
-		     *io_handle,
-		     0,
-		     sizeof( libevt_io_handle_t ) ) == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear file.",
-			 function );
-
-			goto on_error;
-		}
-		( *io_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+		goto on_error;
 	}
+	if( memory_set(
+	     *io_handle,
+	     0,
+	     sizeof( libevt_io_handle_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear file.",
+		 function );
+
+		goto on_error;
+	}
+	( *io_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+
 	return( 1 );
 
 on_error:
@@ -478,7 +487,7 @@ int libevt_io_handle_read_items(
 /* TODO print error if record_type != LIBEVT_RECORD_TYPE_END_OF_FILE */
 
 	if( libevt_record_free(
-	     record,
+	     &record,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -498,7 +507,7 @@ on_error:
 	if( record != NULL )
 	{
 		libevt_record_free(
-		 record,
+		 &record,
 		 NULL );
 	}
 	return( -1 );
