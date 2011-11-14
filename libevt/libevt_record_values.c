@@ -380,6 +380,17 @@ ssize_t libevt_record_values_read(
 	 record_data,
 	 record_data_size );
 
+	if( record_data_size < 4 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: record data size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 #if SIZEOF_SIZE_T <= 4
 	if( (size_t) record_data_size > (size_t) SSIZE_MAX )
 	{
@@ -403,7 +414,7 @@ ssize_t libevt_record_values_read(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_MEMORY,
 		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to resize record values data.",
+		 "%s: unable to resize record data.",
 		 function );
 
 		goto on_error;
@@ -640,7 +651,7 @@ int libevt_record_values_read_event(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: record values data size value out of bounds.",
+		 "%s: record data size value out of bounds.",
 		 function );
 
 		return( -1 );

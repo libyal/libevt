@@ -441,6 +441,17 @@ int libevt_io_handle_read_records(
 	}
 	file_offset = (off64_t) first_record_offset;
 
+	if( (size64_t) file_offset >= io_handle->file_size )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: file offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	if( libbfio_handle_seek_offset(
 	     file_io_handle,
 	     file_offset,
@@ -465,6 +476,7 @@ int libevt_io_handle_read_records(
 			libnotify_printf(
 			 "%s: reading record: %" PRIu32 " at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
+			 record_iterator,
 			 file_offset,
 			 file_offset );
 		}

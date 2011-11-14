@@ -259,6 +259,22 @@ int export_handle_signal_abort(
 	}
 	export_handle->abort = 1;
 
+	if( export_handle->system_registry_file != NULL )
+	{
+		if( libregf_file_signal_abort(
+		     export_handle->system_registry_file,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to signal system registry file to abort.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	if( export_handle->input_file != NULL )
 	{
 		if( libevt_file_signal_abort(
@@ -1301,8 +1317,7 @@ int export_handle_export_record(
 		          value_string_size - 1,
 		          error );
 
-/* TODO fix BUG: result == -1 */
-		if( result != 1 )
+		if( result == -1 )
 		{
 			liberror_error_set(
 			 error,
