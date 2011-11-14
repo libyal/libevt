@@ -41,6 +41,11 @@ enum LIBEVT_RECORD_TYPES
 	LIBEVT_RECORD_TYPE_END_OF_FILE
 };
 
+extern const uint8_t evt_end_of_file_record_signature1[ 4 ];
+extern const uint8_t evt_end_of_file_record_signature2[ 4 ];
+extern const uint8_t evt_end_of_file_record_signature3[ 4 ];
+extern const uint8_t evt_end_of_file_record_signature4[ 4 ];
+
 typedef struct libevt_record_values libevt_record_values_t;
 
 struct libevt_record_values

@@ -851,6 +851,49 @@ int libevt_file_open_read(
 		 LIBERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read records.",
 		 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( ( error != NULL )
+		 && ( *error != NULL ) )
+		{
+			libnotify_print_error_backtrace(
+			 *error );
+		}
+#endif
+		liberror_error_free(
+		 error );
+	}
+	if( ( result != 1 )
+	 && ( internal_file->io_handle->abort == 0 ) )
+	{
+		result = libevt_io_handle_read_recover_records(
+		          internal_file->io_handle,
+		          internal_file->file_io_handle,
+		          first_record_offset,
+		          end_of_file_record_offset,
+		          internal_file->records_array,
+		          error );
+
+		if( result != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read recover records.",
+			 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( ( error != NULL )
+			 && ( *error != NULL ) )
+			{
+				libnotify_print_error_backtrace(
+				 *error );
+			}
+#endif
+			liberror_error_free(
+			 error );
+		}
 	}
 	if( internal_file->io_handle->abort != 0 )
 	{

@@ -199,6 +199,20 @@ int libevt_io_handle_read_file_header(
 
 		return( -1 );
 	}
+	if( libbfio_handle_get_size(
+	     file_io_handle,
+	     &( io_handle->file_size ),
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve file size.",
+		 function );
+
+		return( -1 );
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libnotify_verbose != 0 )
 	{
@@ -414,34 +428,10 @@ int libevt_io_handle_read_records(
 
 		return( -1 );
 	}
-	if( records_array == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid records array.",
-		 function );
-
-		return( -1 );
-	}
-	if( libbfio_handle_get_size(
-	     file_io_handle,
-	     &( io_handle->file_size ),
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file size.",
-		 function );
-
-		goto on_error;
-	}
 	file_offset = (off64_t) first_record_offset;
 
-	if( (size64_t) file_offset >= io_handle->file_size )
+	if( ( file_offset < (off64_t) sizeof( evt_file_header_t ) )
+	 || ( (size64_t) file_offset >= io_handle->file_size ) )
 	{
 		liberror_error_set(
 		 error,
@@ -450,7 +440,7 @@ int libevt_io_handle_read_records(
 		 "%s: file offset value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( libbfio_handle_seek_offset(
 	     file_io_handle,
@@ -462,11 +452,11 @@ int libevt_io_handle_read_records(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file header offset: %" PRIi64 ".",
+		 "%s: unable to seek record offset: %" PRIi64 ".",
 		 function,
 		 file_offset );
 
-		return( -1 );
+		goto on_error;
 	}
 	do
 	{
@@ -538,6 +528,13 @@ int libevt_io_handle_read_records(
 		{
 			break;
 		}
+		if( ( (off64_t) end_of_file_record_offset >= file_offset )
+		 && ( (off64_t) end_of_file_record_offset < ( file_offset + read_count ) ) )
+		{
+/* TODO */
+fprintf( stderr, "EMERGENCY BREAK\n" );
+			break;
+		}
 		record_iterator++;
 	}
 	while( record_type != LIBEVT_RECORD_TYPE_END_OF_FILE );
@@ -565,6 +562,215 @@ on_error:
 		libevt_record_values_free(
 		 &record_values,
 		 NULL );
+	}
+	return( -1 );
+}
+
+/* Reads the records using the recovery method into the records array
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_io_handle_read_recover_records(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     uint32_t first_record_offset,
+     uint32_t end_of_file_record_offset,
+     libevt_array_t *recovered_records_array,
+     liberror_error_t **error )
+{
+	uint8_t *scan_block      = NULL;
+	static char *function    = "libevt_io_handle_read_recover_records";
+	off64_t file_offset      = 0;
+	size_t read_size         = 0;
+	size_t scan_block_offset = 0;
+	size_t scan_block_size   = 8192;
+	ssize_t read_count       = 0;
+	uint8_t scan_state       = LIBEVT_RECOVER_SCAN_STATE_START;
+
+	if( io_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	scan_block = (uint8_t *) memory_allocate(
+	                          sizeof( uint8_t ) * scan_block_size );
+
+	if( scan_block == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create scan block.",
+		 function );
+
+		goto on_error;
+	}
+	file_offset = (off64_t) end_of_file_record_offset;
+
+	if( ( file_offset < (off64_t) sizeof( evt_file_header_t ) )
+	 || ( (size64_t) file_offset >= io_handle->file_size ) )
+	{
+		file_offset = (off64_t) sizeof( evt_file_header_t );
+	}
+	if( libbfio_handle_seek_offset(
+	     file_io_handle,
+	     file_offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek scan block offset: %" PRIi64 ".",
+		 function,
+		 file_offset );
+
+		goto on_error;
+	}
+	while( (size64_t) file_offset < io_handle->file_size )
+	{
+		if( ( (size64_t) file_offset + scan_block_size ) > io_handle->file_size )
+		{
+			read_size = (size_t) ( io_handle->file_size - file_offset );
+		}
+		else
+		{
+			read_size = scan_block_size;
+		}
+		read_count = libbfio_handle_read(
+		              file_io_handle,
+		              scan_block,
+		              read_size,
+		              error );
+
+		if( read_count != (ssize_t) read_size )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read scan block at offset: %" PRIi64 ".",
+			 function,
+			 file_offset );
+
+			goto on_error;
+		}
+		file_offset += read_count;
+
+		for( scan_block_offset = 0;
+		     scan_block_offset < read_size;
+		     scan_block_offset += 4 )
+		{
+			if( scan_state == LIBEVT_RECOVER_SCAN_STATE_START )
+			{
+				if( memory_compare(
+				     &( scan_block[ scan_block_offset ] ),
+				     evt_end_of_file_record_signature1,
+				     4 ) == 0 )
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1;
+				}
+			}
+			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1 )
+			{
+				if( memory_compare(
+				     &( scan_block[ scan_block_offset ] ),
+				     evt_end_of_file_record_signature2,
+				     4 ) == 0 )
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2;
+				}
+				else
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+				}
+			}
+			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2 )
+			{
+				if( memory_compare(
+				     &( scan_block[ scan_block_offset ] ),
+				     evt_end_of_file_record_signature3,
+				     4 ) == 0 )
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3;
+				}
+				else
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+				}
+			}
+			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3 )
+			{
+				if( memory_compare(
+				     &( scan_block[ scan_block_offset ] ),
+				     evt_end_of_file_record_signature4,
+				     4 ) == 0 )
+				{
+					end_of_file_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 16 );
+
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4;
+				}
+				else
+				{
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+				}
+			}
+			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4 )
+			{
+				if( memory_compare(
+				     &( scan_block[ scan_block_offset ] ),
+				     evt_file_signature,
+				     4 ) == 0 )
+				{
+					first_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 4 );
+
+					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE;
+
+					break;
+				}
+			}
+		}
+		if( scan_state == 4 )
+		{
+			break;
+		}
+	}
+	memory_free(
+	 scan_block );
+
+	scan_block = NULL;
+
+	if( libevt_io_handle_read_records(
+	     io_handle,
+	     file_io_handle,
+	     first_record_offset,
+	     end_of_file_record_offset,
+	     recovered_records_array,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read records.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+
+on_error:
+	if( scan_block != NULL )
+	{
+		memory_free(
+		 scan_block );
 	}
 	return( -1 );
 }

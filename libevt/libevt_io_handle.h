@@ -88,6 +88,14 @@ int libevt_io_handle_read_records(
      libevt_array_t *records_array,
      liberror_error_t **error );
 
+int libevt_io_handle_read_recover_records(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     uint32_t first_record_offset,
+     uint32_t end_of_file_record_offset,
+     libevt_array_t *recovered_records_array,
+     liberror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif
