@@ -528,8 +528,8 @@ int libevt_io_handle_read_records(
 		{
 			break;
 		}
-		if( ( (off64_t) end_of_file_record_offset >= file_offset )
-		 && ( (off64_t) end_of_file_record_offset < ( file_offset + read_count ) ) )
+		if( ( file_offset > (off64_t) end_of_file_record_offset )
+		 && ( file_offset < (off64_t) ( end_of_file_record_offset + read_count ) ) )
 		{
 /* TODO */
 fprintf( stderr, "EMERGENCY BREAK\n" );

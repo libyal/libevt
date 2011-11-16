@@ -300,9 +300,10 @@ ssize_t libevt_record_values_read(
          off64_t *file_offset,
          liberror_error_t **error )
 {
+	uint8_t record_size_data[ 4 ];
+
 	uint8_t *record_data      = NULL;
 	static char *function     = "libevt_record_values_read";
-	void *reallocation        = NULL;
 	size_t read_size          = 0;
 	size_t record_data_offset = 0;
 	ssize_t read_count        = 0;
@@ -342,23 +343,9 @@ ssize_t libevt_record_values_read(
 
 		return( -1 );
 	}
-	record_data = (uint8_t *) memory_allocate(
-	                           sizeof( uint32_t ) );
-
-	if( record_data == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create record data.",
-		 function );
-
-		goto on_error;
-	}
 	read_count = libbfio_handle_read(
 	              file_io_handle,
-	              record_data,
+	              record_size_data,
 	              sizeof( uint32_t ),
 	              error );
 
@@ -368,7 +355,7 @@ ssize_t libevt_record_values_read(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read record data.",
+		 "%s: unable to read record size data.",
 		 function );
 
 		goto on_error;
@@ -377,7 +364,7 @@ ssize_t libevt_record_values_read(
 	total_read_count = read_count;
 
 	byte_stream_copy_to_uint32_little_endian(
-	 record_data,
+	 record_size_data,
 	 record_data_size );
 
 	if( record_data_size < 4 )
@@ -389,7 +376,7 @@ ssize_t libevt_record_values_read(
 		 "%s: record data size value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 #if SIZEOF_SIZE_T <= 4
 	if( (size_t) record_data_size > (size_t) SSIZE_MAX )
@@ -404,22 +391,26 @@ ssize_t libevt_record_values_read(
 		goto on_error;
 	}
 #endif
-	reallocation = memory_reallocate(
-			record_data,
-			(size_t) record_data_size );
+	/* Allocating record data as 4 bytes and then using realloc here
+	 * corrupts the memory
+	 */
+	record_data = (uint8_t *) memory_allocate(
+	                           sizeof( uint8_t ) * record_data_size );
 
-	if( reallocation == NULL )
+	if( record_data == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_MEMORY,
 		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to resize record data.",
+		 "%s: unable to create record data.",
 		 function );
 
 		goto on_error;
 	}
-	record_data = (uint8_t *) reallocation;
+	byte_stream_copy_from_uint32_little_endian(
+	 record_data,
+	 record_data_size );
 
 	record_data_offset = 4;
 

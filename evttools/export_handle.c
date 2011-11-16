@@ -425,11 +425,14 @@ int export_handle_open_input(
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
 {
-	const char *key_path   = NULL;
-	libregf_key_t *key     = NULL;
-	static char *function  = "export_handle_open_input";
-	size_t key_path_length = 0;
-	int result             = 0;
+	const char *key_path    = NULL;
+	libregf_key_t *base_key = NULL;
+	libregf_key_t *key      = NULL;
+	libregf_key_t *root_key = NULL;
+	static char *function   = "export_handle_open_input";
+	size_t key_path_length  = 0;
+	int number_of_sub_keys  = 0;
+	int result              = 0;
 
 	if( export_handle == NULL )
 	{
@@ -464,7 +467,7 @@ int export_handle_open_input(
 		     LIBREGF_OPEN_READ,
 		     error ) != 1 )
 #else
-		if( libevt_file_open(
+		if( libregf_file_open(
 		     export_handle->system_registry_file,
 		     export_handle->system_registry_filename,
 		     LIBREGF_OPEN_READ,
@@ -480,13 +483,63 @@ int export_handle_open_input(
 
 			goto on_error;
 		}
-		key_path = "\\System\\ControlSet001\\Services\\EventLog";
+		if( libregf_file_get_root_key(
+		     export_handle->system_registry_file,
+		     &root_key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve root key.",
+			 function );
+
+			goto on_error;
+		}
+		if( libregf_key_get_number_of_sub_keys(
+		     root_key,
+		     &number_of_sub_keys,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of sub keys.",
+			 function );
+
+			goto on_error;
+		}
+		if( number_of_sub_keys == 1 )
+		{
+			if( libregf_key_get_sub_key(
+			     root_key,
+			     0,
+			     &base_key,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve base key.",
+				 function );
+
+				goto on_error;
+			}
+		}
+		else if( number_of_sub_keys > 1 )
+		{
+			base_key = root_key;
+		}
+		key_path = "ControlSet001\\Services\\Eventlog";
 
 		key_path_length = libcstring_narrow_string_length(
 		                   key_path );
 
-		result = libregf_file_get_key_by_utf8_path(
-		          export_handle->system_registry_file,
+		result = libregf_key_get_sub_key_by_utf8_path(
+		          base_key,
 		          (uint8_t *) key_path,
 		          key_path_length,
 		          &key,
@@ -498,7 +551,7 @@ int export_handle_open_input(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve key: %s.",
+			 "%s: unable to retrieve sub key: %s.",
 			 function,
 			 key_path );
 
@@ -545,13 +598,13 @@ int export_handle_open_input(
 
 			goto on_error;
 		}
-		key_path = "\\System\\ControlSet002\\Services\\EventLog";
+		key_path = "ControlSet002\\Services\\Eventlog";
 
 		key_path_length = libcstring_system_string_length(
 		                   key_path );
 
-		result = libregf_file_get_key_by_utf8_path(
-		          export_handle->system_registry_file,
+		result = libregf_key_get_sub_key_by_utf8_path(
+		          base_key,
 		          (uint8_t *) key_path,
 		          key_path_length,
 		          &key,
@@ -563,7 +616,7 @@ int export_handle_open_input(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve key: %s.",
+			 "%s: unable to retrieve sub key: %s.",
 			 function,
 			 key_path );
 
@@ -641,6 +694,19 @@ on_error:
 	{
 		libregf_key_free(
 		 &key,
+		 NULL );
+	}
+	if( ( base_key != NULL )
+	 && ( base_key != root_key ) )
+	{
+		libregf_key_free(
+		 &base_key,
+		 NULL );
+	}
+	if( root_key != NULL )
+	{
+		libregf_key_free(
+		 &root_key,
 		 NULL );
 	}
 	if( export_handle->control_set1_key != NULL )
@@ -851,7 +917,7 @@ int export_handle_get_message_filename(
 		                     value_name );
 
 		result = libregf_key_get_value_by_utf8_name(
-			  export_handle->control_set2_key,
+			  key,
 			  (uint8_t *) value_name,
 			  value_name_length,
 			  &value,
@@ -933,7 +999,7 @@ int export_handle_get_message_filename(
 			}
 			fprintf(
 			 export_handle->notify_stream,
-			 "Message Filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "Message Filename\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 			 value_string );
 
 			memory_free(
@@ -1003,9 +1069,11 @@ int export_handle_export_record(
 {
 	libcstring_system_character_t posix_time_string[ 32 ];
 
+	libcstring_system_character_t *event_source = NULL;
 	libcstring_system_character_t *value_string = NULL;
 	libfdatetime_posix_time_t *posix_time       = NULL;
 	static char *function                       = "export_handle_export_record";
+	size_t event_source_size                    = 0;
 	size_t value_string_size                    = 0;
 	uint32_t value_32bit                        = 0;
 	uint16_t event_type                         = 0;
@@ -1244,12 +1312,12 @@ int export_handle_export_record(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_source_name_size(
 	          record,
-	          &value_string_size,
+	          &event_source_size,
 	          error );
 #else
 	result = libevt_record_get_utf8_source_name_size(
 	          record,
-	          &value_string_size,
+	          &event_source_size,
 	          error );
 #endif
 	if( result != 1 )
@@ -1263,18 +1331,18 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( value_string_size > 0 )
+	if( event_source_size > 0 )
 	{
-		value_string = libcstring_system_string_allocate(
-		                value_string_size );
+		event_source = libcstring_system_string_allocate(
+		                event_source_size );
 
-		if( value_string == NULL )
+		if( event_source == NULL )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_MEMORY,
 			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create value string.",
+			 "%s: unable to create event source.",
 			 function );
 
 			goto on_error;
@@ -1282,14 +1350,14 @@ int export_handle_export_record(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_source_name(
 		          record,
-		          (uint16_t *) value_string,
-		          value_string_size,
+		          (uint16_t *) event_source,
+		          event_source_size,
 		          error );
 #else
 		result = libevt_record_get_utf8_source_name(
 		          record,
-		          (uint8_t *) value_string,
-		          value_string_size,
+		          (uint8_t *) event_source,
+		          event_source_size,
 		          error );
 #endif
 		if( result != 1 )
@@ -1306,29 +1374,7 @@ int export_handle_export_record(
 		fprintf(
 		 export_handle->notify_stream,
 		 "Source name\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-		 value_string );
-
-		memory_free(
-		 value_string );
-
-		result = export_handle_get_message_filename(
-		          export_handle,
-		          value_string,
-		          value_string_size - 1,
-		          error );
-
-		if( result == -1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve message filename.",
-			 function );
-
-			goto on_error;
-		}
-		value_string = NULL;
+		 event_source );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_computer_name_size(
@@ -1402,6 +1448,30 @@ int export_handle_export_record(
 
 		value_string = NULL;
 	}
+	if( event_source != NULL )
+	{
+		result = export_handle_get_message_filename(
+		          export_handle,
+		          event_source,
+		          event_source_size - 1,
+		          error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve message filename.",
+			 function );
+
+			goto on_error;
+		}
+		memory_free(
+		 event_source );
+
+		event_source = NULL;
+	}
 	fprintf(
 	 export_handle->notify_stream,
 	 "\n" );
@@ -1409,6 +1479,11 @@ int export_handle_export_record(
 	return( 1 );
 
 on_error:
+	if( event_source != NULL )
+	{
+		memory_free(
+		 event_source );
+	}
 	if( value_string != NULL )
 	{
 		memory_free(

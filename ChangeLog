@@ -28,6 +28,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20111116
+* updated libwrc
+
 20111114
 * worked on dirty file support
 
