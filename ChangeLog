@@ -1,4 +1,5 @@
 TODO:
+* Handle dirty flag. What about recovered records ?
 * add function to scan for records
 * detect if wrapped flag is not set but file is wrapped
 * handle gap between first record and end of file record ?
