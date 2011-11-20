@@ -29,6 +29,10 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20111120
+* updated log handle
+* update libfdata, libfvalue, libfwnt, libregf
+
 20111116
 * updated libwrc
 
