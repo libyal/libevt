@@ -417,10 +417,10 @@ int export_handle_set_event_log_type_from_filename(
 	return( result );
 }
 
-/* Opens the input
+/* Opens the system registry file
  * Returns 1 if successful or -1 on error
  */
-int export_handle_open_input(
+int export_handle_open_system_registry_file(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
@@ -429,7 +429,7 @@ int export_handle_open_input(
 	libregf_key_t *base_key = NULL;
 	libregf_key_t *key      = NULL;
 	libregf_key_t *root_key = NULL;
-	static char *function   = "export_handle_open_input";
+	static char *function   = "export_handle_open_system_registry_file";
 	size_t key_path_length  = 0;
 	int number_of_sub_keys  = 0;
 	int result              = 0;
@@ -445,236 +445,30 @@ int export_handle_open_input(
 
 		return( -1 );
 	}
-	if( export_handle->system_registry_filename != NULL )
+	if( libregf_file_initialize(
+	     &( export_handle->system_registry_file ),
+	     error ) != 1 )
 	{
-		if( libregf_file_initialize(
-		     &( export_handle->system_registry_file ),
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to initialize system registry file.",
-			 function );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize system registry file.",
+		 function );
 
-			goto on_error;
-		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		if( libregf_file_open_wide(
-		     export_handle->system_registry_file,
-		     export_handle->system_registry_filename,
-		     LIBREGF_OPEN_READ,
-		     error ) != 1 )
-#else
-		if( libregf_file_open(
-		     export_handle->system_registry_file,
-		     export_handle->system_registry_filename,
-		     LIBREGF_OPEN_READ,
-		     error ) != 1 )
-#endif
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
-			 "%s: unable to open system registry file.",
-			 function );
-
-			goto on_error;
-		}
-		if( libregf_file_get_root_key(
-		     export_handle->system_registry_file,
-		     &root_key,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve root key.",
-			 function );
-
-			goto on_error;
-		}
-		if( libregf_key_get_number_of_sub_keys(
-		     root_key,
-		     &number_of_sub_keys,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve number of sub keys.",
-			 function );
-
-			goto on_error;
-		}
-		if( number_of_sub_keys == 1 )
-		{
-			if( libregf_key_get_sub_key(
-			     root_key,
-			     0,
-			     &base_key,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve base key.",
-				 function );
-
-				goto on_error;
-			}
-		}
-		else if( number_of_sub_keys > 1 )
-		{
-			base_key = root_key;
-		}
-		key_path = "ControlSet001\\Services\\Eventlog";
-
-		key_path_length = libcstring_narrow_string_length(
-		                   key_path );
-
-		result = libregf_key_get_sub_key_by_utf8_path(
-		          base_key,
-		          (uint8_t *) key_path,
-		          key_path_length,
-		          &key,
-		          error );
-
-		if( result == -1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve sub key: %s.",
-			 function,
-			 key_path );
-
-			goto on_error;
-		}
-		else if( result != 0 )
-		{
-			key_path = export_handle_get_event_log_type(
-			            export_handle->event_log_type );
-
-			key_path_length = libcstring_system_string_length(
-					   key_path );
-
-			result = libregf_key_get_sub_key_by_utf8_name(
-				  key,
-				  (uint8_t *) key_path,
-				  key_path_length,
-				  &( export_handle->control_set1_key ),
-				  error );
-
-			if( result == -1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve sub key: %s.",
-				 function,
-				 key_path );
-
-				goto on_error;
-			}
-		}
-		if( libregf_key_free(
-		     &key,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free key.",
-			 function );
-
-			goto on_error;
-		}
-		key_path = "ControlSet002\\Services\\Eventlog";
-
-		key_path_length = libcstring_system_string_length(
-		                   key_path );
-
-		result = libregf_key_get_sub_key_by_utf8_path(
-		          base_key,
-		          (uint8_t *) key_path,
-		          key_path_length,
-		          &key,
-		          error );
-
-		if( result == -1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve sub key: %s.",
-			 function,
-			 key_path );
-
-			goto on_error;
-		}
-		else if( result != 0 )
-		{
-			key_path = export_handle_get_event_log_type(
-			            export_handle->event_log_type );
-
-			key_path_length = libcstring_system_string_length(
-					   key_path );
-
-			result = libregf_key_get_sub_key_by_utf8_name(
-				  key,
-				  (uint8_t *) key_path,
-				  key_path_length,
-				  &( export_handle->control_set2_key ),
-				  error );
-
-			if( result == -1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve sub key: %s.",
-				 function,
-				 key_path );
-
-				goto on_error;
-			}
-		}
-		if( libregf_key_free(
-		     &key,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free key.",
-			 function );
-
-			goto on_error;
-		}
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libevt_file_open_wide(
-	     export_handle->input_file,
+	if( libregf_file_open_wide(
+	     export_handle->system_registry_file,
 	     filename,
-	     LIBEVT_OPEN_READ,
+	     LIBREGF_OPEN_READ,
 	     error ) != 1 )
 #else
-	if( libevt_file_open(
-	     export_handle->input_file,
+	if( libregf_file_open(
+	     export_handle->system_registry_file,
 	     filename,
-	     LIBEVT_OPEN_READ,
+	     LIBREGF_OPEN_READ,
 	     error ) != 1 )
 #endif
 	{
@@ -682,7 +476,187 @@ int export_handle_open_input(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open input file.",
+		 "%s: unable to open system registry file.",
+		 function );
+
+		goto on_error;
+	}
+	if( libregf_file_get_root_key(
+	     export_handle->system_registry_file,
+	     &root_key,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve root key.",
+		 function );
+
+		goto on_error;
+	}
+	if( libregf_key_get_number_of_sub_keys(
+	     root_key,
+	     &number_of_sub_keys,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of sub keys.",
+		 function );
+
+		goto on_error;
+	}
+	if( number_of_sub_keys == 1 )
+	{
+		if( libregf_key_get_sub_key(
+		     root_key,
+		     0,
+		     &base_key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve base key.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	else if( number_of_sub_keys > 1 )
+	{
+		base_key = root_key;
+	}
+	key_path = "ControlSet001\\Services\\Eventlog";
+
+	key_path_length = libcstring_narrow_string_length(
+			   key_path );
+
+	result = libregf_key_get_sub_key_by_utf8_path(
+		  base_key,
+		  (uint8_t *) key_path,
+		  key_path_length,
+		  &key,
+		  error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub key: %s.",
+		 function,
+		 key_path );
+
+		goto on_error;
+	}
+	else if( result != 0 )
+	{
+		key_path = export_handle_get_event_log_type(
+			    export_handle->event_log_type );
+
+		key_path_length = libcstring_system_string_length(
+				   key_path );
+
+		result = libregf_key_get_sub_key_by_utf8_name(
+			  key,
+			  (uint8_t *) key_path,
+			  key_path_length,
+			  &( export_handle->control_set1_key ),
+			  error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve sub key: %s.",
+			 function,
+			 key_path );
+
+			goto on_error;
+		}
+	}
+	if( libregf_key_free(
+	     &key,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free key.",
+		 function );
+
+		goto on_error;
+	}
+	key_path = "ControlSet002\\Services\\Eventlog";
+
+	key_path_length = libcstring_system_string_length(
+			   key_path );
+
+	result = libregf_key_get_sub_key_by_utf8_path(
+		  base_key,
+		  (uint8_t *) key_path,
+		  key_path_length,
+		  &key,
+		  error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve sub key: %s.",
+		 function,
+		 key_path );
+
+		goto on_error;
+	}
+	else if( result != 0 )
+	{
+		key_path = export_handle_get_event_log_type(
+			    export_handle->event_log_type );
+
+		key_path_length = libcstring_system_string_length(
+				   key_path );
+
+		result = libregf_key_get_sub_key_by_utf8_name(
+			  key,
+			  (uint8_t *) key_path,
+			  key_path_length,
+			  &( export_handle->control_set2_key ),
+			  error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve sub key: %s.",
+			 function,
+			 key_path );
+
+			goto on_error;
+		}
+	}
+	if( libregf_key_free(
+	     &key,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free key.",
 		 function );
 
 		goto on_error;
@@ -728,6 +702,77 @@ on_error:
 		 NULL );
 	}
 	return( -1 );
+}
+
+/* Opens the input
+ * Returns 1 if successful or -1 on error
+ */
+int export_handle_open_input(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     liberror_error_t **error )
+{
+	const char *key_path    = NULL;
+	libregf_key_t *base_key = NULL;
+	libregf_key_t *key      = NULL;
+	libregf_key_t *root_key = NULL;
+	static char *function   = "export_handle_open_input";
+	size_t key_path_length  = 0;
+	int number_of_sub_keys  = 0;
+	int result              = 0;
+
+	if( export_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( export_handle->system_registry_filename != NULL )
+	{
+		if( export_handle_open_system_registry_file(
+		     export_handle->input_file,
+		     export_handle->system_registry_filename,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to open system registry file.",
+			 function );
+
+			return( -1 );
+		}
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libevt_file_open_wide(
+	     export_handle->input_file,
+	     filename,
+	     LIBEVT_OPEN_READ,
+	     error ) != 1 )
+#else
+	if( libevt_file_open(
+	     export_handle->input_file,
+	     filename,
+	     LIBEVT_OPEN_READ,
+	     error ) != 1 )
+#endif
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open input file.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
 }
 
 /* Closes the input

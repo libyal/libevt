@@ -111,6 +111,11 @@ int export_handle_set_event_log_type_from_filename(
      const libcstring_system_character_t *filename,
      liberror_error_t **error );
 
+int export_handle_open_system_registry_file(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     liberror_error_t **error );
+
 int export_handle_open_input(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
