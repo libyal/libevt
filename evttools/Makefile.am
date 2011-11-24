@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
 	@LIBEXE_CPPFLAGS@ \
 	@LIBREGF_CPPFLAGS@ \
@@ -26,6 +27,7 @@ evtexport_SOURCES = \
 	evtexport.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
+	evttools_libfcache.h \
 	evttools_libfdatetime.h \
 	evttools_libevt.h \
 	evttools_libexe.h \

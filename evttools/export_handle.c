@@ -30,7 +30,10 @@
 
 #include "evtinput.h"
 #include "evttools_libevt.h"
+#include "evttools_libexe.h"
+#include "evttools_libfcache.h"
 #include "evttools_libfdatetime.h"
+#include "evttools_libregf.h"
 #include "export_handle.h"
 #include "log_handle.h"
 
@@ -712,14 +715,7 @@ int export_handle_open_input(
      const libcstring_system_character_t *filename,
      liberror_error_t **error )
 {
-	const char *key_path    = NULL;
-	libregf_key_t *base_key = NULL;
-	libregf_key_t *key      = NULL;
-	libregf_key_t *root_key = NULL;
-	static char *function   = "export_handle_open_input";
-	size_t key_path_length  = 0;
-	int number_of_sub_keys  = 0;
-	int result              = 0;
+	static char *function = "export_handle_open_input";
 
 	if( export_handle == NULL )
 	{
@@ -735,7 +731,7 @@ int export_handle_open_input(
 	if( export_handle->system_registry_filename != NULL )
 	{
 		if( export_handle_open_system_registry_file(
-		     export_handle->input_file,
+		     export_handle,
 		     export_handle->system_registry_filename,
 		     error ) != 1 )
 		{

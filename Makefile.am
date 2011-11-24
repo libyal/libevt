@@ -13,6 +13,7 @@ SUBDIRS = \
 	libfwnt \
 	libevt \
 	libsystem \
+	libfcache \
 	libfdata \
 	libexe \
 	libregf \
@@ -94,6 +95,7 @@ splint:
 	(cd $(srcdir)/libfwnt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libevt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsystem && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfcache && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libexe && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libregf && $(MAKE) splint $(AM_MAKEFLAGS))

@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20111121],
+ [20111124],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -67,7 +67,10 @@ AX_LIBFVALUE_CHECK_ENABLE
 dnl Check for enabling libfwnt for file Windows NT type support
 AX_LIBFWNT_CHECK_ENABLE
 
-dnl Check for enabling libfdata for file and memory data block support
+dnl Check for enabling libfcache for file value cache support
+AX_LIBFCACHE_CHECK_ENABLE
+
+dnl Check for enabling libfdata for file data types support
 AX_LIBFDATA_CHECK_ENABLE
 
 dnl Check for enabling libexe for MZ, PE/COFF executable support
@@ -100,7 +103,7 @@ AS_IF(
  ])
 
 AS_IF(
- [test "x$ac_cv_libexe" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libregf" = xyes || test "x$ac_cv_libwrc" = xyes],
+ [test "x$ac_cv_libexe" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libregf" = xyes || test "x$ac_cv_libwrc" = xyes],
  [AC_SUBST(
   [libevt_tools_spec_build_requires],
   [BuildRequires:])
@@ -151,6 +154,7 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([libsystem/Makefile])
+AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libexe/Makefile])
 AC_CONFIG_FILES([libregf/Makefile])
@@ -188,6 +192,7 @@ Building:
    libfdatetime support:                     $ac_cv_libfdatetime
    libfvalue support:                        $ac_cv_libfvalue
    libfwnt support:                          $ac_cv_libfwnt
+   libfcache support:                        $ac_cv_libfcache
    libfdata support:                         $ac_cv_libfdata
    libexe support:                           $ac_cv_libexe
    libregf support:                          $ac_cv_libregf

@@ -29,6 +29,11 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20111124
+* worked on cache handle
+* added libfcache
+* updated libfdata, libexe, libwrc
+
 20111120
 * updated log handle
 * update libfdata, libfvalue, libfwnt, libregf

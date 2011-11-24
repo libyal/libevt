@@ -31,6 +31,7 @@
 
 #include "evttools_libevt.h"
 #include "evttools_libexe.h"
+#include "evttools_libfcache.h"
 #include "evttools_libregf.h"
 #include "evttools_libwrc.h"
 #include "log_handle.h"
@@ -58,6 +59,10 @@ struct export_handle
 	/* The control set 2 key
 	 */
 	libregf_key_t *control_set2_key;
+
+	/* The message file cache
+	 */
+	libfcache_cache_t *message_file_cache;
 
 	/* The event log type
 	 */
