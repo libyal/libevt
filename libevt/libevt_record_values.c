@@ -1,7 +1,7 @@
 /*
  * Record values functions
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -491,7 +491,8 @@ ssize_t libevt_record_values_read(
 		 function );
 		libnotify_print_data(
 		 record_data,
-		 (size_t) record_data_size );
+		 (size_t) record_data_size,
+		 0 );
 	}
 #endif
 	if( memory_compare(
@@ -1047,7 +1048,8 @@ int libevt_record_values_read_event(
 			 function );
 			libnotify_print_data(
 			 &( record_data[ record_data_offset ] ),
-			 members_data_size );
+			 members_data_size,
+			 0 );
 		}
 #endif
 		if( libfvalue_value_initialize(
@@ -1206,7 +1208,8 @@ int libevt_record_values_read_event(
 				 function );
 				libnotify_print_data(
 				 &( record_data[ record_data_offset ] ),
-				 members_data_size );
+				 members_data_size,
+				 0 );
 			}
 		}
 #endif
@@ -1329,7 +1332,8 @@ int libevt_record_values_read_event(
 			 function );
 			libnotify_print_data(
 			 &( record_data[ strings_offset ] ),
-			 strings_size );
+			 strings_size,
+			 0 );
 		}
 #endif
 		if( libfvalue_value_initialize(
@@ -1375,7 +1379,8 @@ int libevt_record_values_read_event(
 			 function );
 			libnotify_print_data(
 			 &( record_data[ data_offset ] ),
-			 (size_t) data_size );
+			 (size_t) data_size,
+			 0 );
 		}
 #endif
 		if( libfvalue_value_initialize(
@@ -1421,7 +1426,8 @@ int libevt_record_values_read_event(
 			 function );
 			libnotify_print_data(
 			 &( record_data[ record_data_offset ] ),
-			 (size_t) record_data_size - record_data_offset - 4 );
+			 (size_t) record_data_size - record_data_offset - 4,
+			 0 );
 		}
 		libnotify_printf(
 		 "%s: size copy\t\t\t\t: %" PRIu32 "\n",

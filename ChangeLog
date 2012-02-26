@@ -1,4 +1,7 @@
 TODO:
+* export handle
+  - handle directory and file names case insensitive
+  - use current control set nr?
 * Handle dirty flag. What about recovered records ?
 * add function to scan for records
 * detect if wrapped flag is not set but file is wrapped
@@ -28,6 +31,12 @@ Tools:
   - cache event source filenames
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120226
+* worked on formatted strings
+
+20120225
+* 2012 update
 
 20111124
 * worked on cache handle

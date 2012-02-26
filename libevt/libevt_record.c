@@ -1,7 +1,7 @@
 /*
  * Record functions
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -945,4 +945,283 @@ int libevt_record_get_utf16_computer_name(
 	return( 1 );
 }
 
+/* Retrieves the number of strings
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_number_of_strings(
+     libevt_record_t *record,
+     int *number_of_strings,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_number_of_strings";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_number_of_value_entries(
+	     internal_record->record_values->strings,
+	     number_of_strings,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of strings value entries.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of a specific UTF-8 encoded string
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_string_size(
+     libevt_record_t *record,
+     int string_index,
+     size_t *utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_string_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_record->record_values->strings,
+	     string_index,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size of strings value entry: %d.",
+		 function,
+		 string_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specifig UTF-8 encoded string
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_string(
+     libevt_record_t *record,
+     int string_index,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_string";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_record->record_values->strings,
+	     string_index,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy strings value entry: %d to UTF-8 string.",
+		 function,
+		 string_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of a specific UTF-16 encoded string
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_string_size(
+     libevt_record_t *record,
+     int string_index,
+     size_t *utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_string_size";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_record->record_values->strings,
+	     string_index,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size of strings value entry: %d.",
+		 function,
+		 string_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specifig UTF-16 encoded string
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_string(
+     libevt_record_t *record,
+     int string_index,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_string";
+
+	if( record == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_record->record_values->strings,
+	     string_index,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy strings value entry: %d to UTF-16 string.",
+		 function,
+		 string_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
 

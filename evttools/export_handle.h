@@ -1,7 +1,7 @@
 /* 
  * Export handle
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -51,6 +51,10 @@ struct export_handle
 	/* The libregf system registry file
 	 */
 	libregf_file_t *system_registry_file;
+
+	/* The current control set
+	 */
+	uint32_t current_control_set;
 
 	/* The control set 1 key
 	 */
@@ -136,6 +140,32 @@ int export_handle_get_message_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *event_source,
      size_t event_source_length,
+     libcstring_system_character_t **message_filename,
+     size_t *message_filename_size,
+     liberror_error_t **error );
+
+int export_handle_get_message_file_path(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     libcstring_system_character_t **message_file_path,
+     size_t *message_file_path_size,
+     liberror_error_t **error );
+
+int export_handle_get_message_string(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     uint32_t message_identifier,
+     libcstring_system_character_t **message_string,
+     size_t *message_string_size,
+     liberror_error_t **error );
+
+int export_handle_message_string_fprint(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *message_string,
+     size_t message_string_length,
+     libevt_record_t *record,
      liberror_error_t **error );
 
 int export_handle_export_record(

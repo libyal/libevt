@@ -1,7 +1,7 @@
 /*
  * Record functions
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -149,6 +149,42 @@ int libevt_record_get_utf16_computer_name_size(
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name(
      libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_number_of_strings(
+     libevt_record_t *record,
+     int *number_of_strings,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_string_size(
+     libevt_record_t *record,
+     int string_index,
+     size_t *utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_string(
+     libevt_record_t *record,
+     int string_index,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_string_size(
+     libevt_record_t *record,
+     int string_index,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_string(
+     libevt_record_t *record,
+     int string_index,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      liberror_error_t **error );

@@ -1,7 +1,7 @@
 /*
  * Input/Output (IO) handle functions
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -261,7 +261,8 @@ int libevt_io_handle_read_file_header(
 		 function );
 		libnotify_print_data(
 		 (uint8_t *) &file_header,
-		 sizeof( evt_file_header_t ) );
+		 sizeof( evt_file_header_t ),
+		 0 );
 	}
 #endif
 	if( memory_compare(

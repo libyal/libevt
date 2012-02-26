@@ -1,7 +1,7 @@
 /*
  * File functions
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -612,7 +612,7 @@ int libevt_file_open_file_io_handle(
 	}
 	if( ( access_flags & LIBEVT_ACCESS_FLAG_READ ) != 0 )
 	{
-		bfio_access_flags = LIBBFIO_FLAG_READ;
+		bfio_access_flags = LIBBFIO_ACCESS_FLAG_READ;
 	}
 	internal_file->file_io_handle = file_io_handle;
 

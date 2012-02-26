@@ -1,7 +1,7 @@
 /* 
  * Info handle
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,10 +27,10 @@
 #include <libcstring.h>
 #include <liberror.h>
 
-#include "info_handle.h"
 #include "evtinput.h"
 #include "evttools_libfdatetime.h"
 #include "evttools_libevt.h"
+#include "info_handle.h"
 
 #define INFO_HANDLE_NOTIFY_STREAM	stdout
 

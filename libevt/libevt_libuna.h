@@ -1,7 +1,7 @@
 /*
  * The libuna header wrapper
  *
- * Copyright (c) 2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -28,6 +28,9 @@
  */
 #if defined( HAVE_LOCAL_LIBUNA )
 
+#include <libuna_base16_stream.h>
+#include <libuna_base32_stream.h>
+#include <libuna_base64_stream.h>
 #include <libuna_byte_stream.h>
 #include <libuna_error.h>
 #include <libuna_unicode_character.h>

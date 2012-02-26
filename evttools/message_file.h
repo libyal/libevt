@@ -1,5 +1,5 @@
 /* 
- * Info handle
+ * Message file
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,80 +19,69 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _INFO_HANDLE_H )
-#define _INFO_HANDLE_H
+#if !defined( _MESSAGE_FILE_H )
+#define _MESSAGE_FILE_H
 
 #include <common.h>
-#include <file_stream.h>
 #include <types.h>
 
 #include <libcstring.h>
 #include <liberror.h>
 
-#include "evttools_libevt.h"
+#include "evttools_libexe.h"
+#include "evttools_libwrc.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-typedef struct info_handle info_handle_t;
+typedef struct message_file message_file_t;
 
-struct info_handle
+struct message_file
 {
-	/* The libevt input file
+	/* The libexe file
 	 */
-	libevt_file_t *input_file;
+	libexe_file_t *exe_file;
 
-	/* The event log type
+	/* The libexe resource (.rsrc) section
 	 */
-	int event_log_type;
+	libexe_section_t *resource_section;
 
-	/* The ascii codepage
+	/* The resource (.rsrc) section file IO handle
 	 */
-	int ascii_codepage;
+	libbfio_handle_t *resource_section_file_io_handle;
 
-	/* The nofication output stream
+	/* The libwrc resource stream
 	 */
-	FILE *notify_stream;
+	libwrc_stream_t *resource_stream;
 
-	/* Value to indicate if abort was signalled
+	/* The libwrc message table resource
 	 */
-	int abort;
+	libwrc_resource_t *message_table_resource;
 };
 
-int info_handle_initialize(
-     info_handle_t **info_handle,
+int message_file_initialize(
+     message_file_t **message_file,
      liberror_error_t **error );
 
-int info_handle_free(
-     info_handle_t **info_handle,
+int message_file_free(
+     message_file_t **message_file,
      liberror_error_t **error );
 
-int info_handle_signal_abort(
-     info_handle_t *info_handle,
-     liberror_error_t **error );
-
-int info_handle_set_ascii_codepage(
-     info_handle_t *info_handle,
-     const libcstring_system_character_t *string,
-     liberror_error_t **error );
-
-int info_handle_set_event_log_type_from_filename(
-     info_handle_t *info_handle,
+int message_file_open(
+     message_file_t *message_file,
      const libcstring_system_character_t *filename,
      liberror_error_t **error );
 
-int info_handle_open_input(
-     info_handle_t *info_handle,
-     const libcstring_system_character_t *filename,
+int message_file_close(
+     message_file_t *message_file,
      liberror_error_t **error );
 
-int info_handle_close_input(
-     info_handle_t *info_handle,
-     liberror_error_t **error );
-
-int info_handle_file_fprint(
-     info_handle_t *info_handle,
+int message_file_get_string(
+     message_file_t *message_file,
+     uint32_t message_identifier,
+     libcstring_system_character_t **message_string,
+     size_t *message_string_size,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

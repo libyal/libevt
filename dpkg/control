@@ -1,0 +1,29 @@
+Source: libevt
+Section: unknown
+Priority: extra
+Maintainer: Joachim Metz <jbmetz@users.sourceforge.net>
+Build-Depends: debhelper (>= 7), autotools-dev
+Standards-Version: 3.8.3
+Homepage: https://sourceforge.net/projects/libevt/
+
+Package: libevt
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library to support the Windows Event Viewer Log (EVT) format
+ libevt is a library to support the Windows Event Viewer Log (EVT) format.
+
+Package: libevt-dev
+Section: libdevel
+Architecture: any
+Depends: libevt (= ${Source-Version})
+Description: Header files and libraries for developing applications for libevt
+ Header files and libraries for developing applications for libevt.
+
+Package: libevt-tools
+Section: utils
+Architecture: any
+Depends: libevt (= ${Source-Version}), ${shlibs:Depends}
+Description: Several tools for reading Windows Event Viewer Log (EVT) files
+ Several tools for reading Windows Event Viewer Log (EVT) files.
+
