@@ -980,19 +980,37 @@ int libevt_record_get_number_of_strings(
 
 		return( -1 );
 	}
-	if( libfvalue_value_get_number_of_value_entries(
-	     internal_record->record_values->strings,
-	     number_of_strings,
-	     error ) != 1 )
+	if( internal_record->record_values->strings == NULL )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of strings value entries.",
-		 function );
+		if( number_of_strings == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+			 "%s: invalid number of strings.",
+			 function );
 
-		return( -1 );
+			return( -1 );
+		}
+		*number_of_strings = 0;
+	}
+	else
+	{
+		if( libfvalue_value_get_number_of_value_entries(
+		     internal_record->record_values->strings,
+		     number_of_strings,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of strings value entries.",
+			 function );
+
+			return( -1 );
+		}
 	}
 	return( 1 );
 }
@@ -1030,6 +1048,17 @@ int libevt_record_get_utf8_string_size(
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_record->record_values->strings == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid string index value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1091,6 +1120,17 @@ int libevt_record_get_utf8_string(
 
 		return( -1 );
 	}
+	if( internal_record->record_values->strings == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid string index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	if( libfvalue_value_copy_to_utf8_string(
 	     internal_record->record_values->strings,
 	     string_index,
@@ -1148,6 +1188,17 @@ int libevt_record_get_utf16_string_size(
 
 		return( -1 );
 	}
+	if( internal_record->record_values->strings == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid string index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	if( libfvalue_value_get_utf16_string_size(
 	     internal_record->record_values->strings,
 	     string_index,
@@ -1201,6 +1252,17 @@ int libevt_record_get_utf16_string(
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_record->record_values->strings == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid string index value out of bounds.",
 		 function );
 
 		return( -1 );

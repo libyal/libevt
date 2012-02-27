@@ -1,4 +1,6 @@
 TODO:
+* windows directory example
+  http://msdn.microsoft.com/en-us/library/aa365200%28VS.85%29.aspx
 * export handle
   - handle directory and file names case insensitive
   - use current control set nr?
@@ -32,8 +34,12 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120227
+* worked on case insensitive path handling
+
 20120226
 * worked on formatted strings
+* worked on case insensitive path handling
 
 20120225
 * 2012 update

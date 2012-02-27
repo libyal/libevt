@@ -1256,15 +1256,21 @@ int export_handle_get_message_file_path(
      size_t *message_file_path_size,
      liberror_error_t **error )
 {
+	libsystem_directory_entry_t *directory_entry                   = NULL;
+	libsystem_directory_handle_t *directory_handle                 = NULL;
 	libsystem_split_string_t *message_filename_split_string        = NULL;
 	libcstring_system_character_t *message_filename_string_segment = NULL;
 	static char *function                                          = "export_handle_get_message_file_path";
+	size_t directory_entry_name_length                             = 0;
 	size_t message_file_path_index                                 = 0;
 	size_t message_files_path_length                               = 0;
 	size_t message_filename_directory_name_index                   = 0;
 	size_t message_filename_string_segment_size                    = 0;
+	int directory_entry_found                                      = 0;
+	int match                                                      = 0;
 	int message_filename_number_of_segments                        = 0;
 	int message_filename_segment_index                             = 0;
+	int result                                                     = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1552,35 +1558,213 @@ int export_handle_get_message_file_path(
 /* TODO
  * expand %SystemRoot% to WINDOWS
  */
-			message_filename_string_segment      = _LIBCSTRING_SYSTEM_STRING( "WINDOWS" );
+			message_filename_string_segment      = _LIBCSTRING_SYSTEM_STRING( "Windows" );
 			message_filename_string_segment_size = 8;
 		}
-		if( ( message_filename_string_segment[ 0 ] == (libcstring_system_character_t) 'S' )
-		 && ( message_filename_string_segment[ 1 ] == (libcstring_system_character_t) 'y' ) )
-		{
-/* TODO deal with casing differences */
-			message_filename_string_segment[ 0 ] = (libcstring_system_character_t) 's';
-		}
-		if( libcstring_system_string_copy(
-		     &( ( *message_file_path )[ message_file_path_index ] ),
-		     message_filename_string_segment,
-		     message_filename_string_segment_size - 1 ) == NULL )
+		/* Terminate the path string we currently have
+		 */
+		( *message_file_path )[ message_file_path_index ] = 0;
+
+/* TODO refactor to function */
+		if( libsystem_directory_initialize(
+		     &directory_handle,
+		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set message filename string segment: %d in message file path.",
-			 function,
-			 message_filename_segment_index );
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create directory handle.",
+			 function );
 
 			goto on_error;
+		}
+		if( libsystem_directory_open(
+		     directory_handle,
+		     *message_file_path,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to open directory: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 function,
+			 message_file_path );
+
+			goto on_error;
+		}
+		if( libsystem_directory_entry_initialize(
+		     &directory_entry,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create directory entry.",
+			 function );
+
+			goto on_error;
+		}
+		directory_entry_found = 0;
+
+		do
+		{
+			result = libsystem_directory_read_entry(
+			          directory_handle,
+			          directory_entry,
+			          error );
+
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read directory entry.",
+				 function,
+				 message_file_path );
+
+				goto on_error;
+			}
+			else if( result == 0 )
+			{
+				break;
+			}
+/* TODO abstract to functions */
+			if( ( ( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
+			  &&  ( directory_entry->entry.d_type == DT_DIR ) )
+			 || ( ( message_filename_segment_index == ( message_filename_number_of_segments - 1 ) )
+			  &&  ( directory_entry->entry.d_type == DT_REG ) ) )
+			{
+				directory_entry_name_length = libcstring_narrow_string_length(
+				                               directory_entry->entry.d_name );
+
+				if( ( directory_entry_name_length + 1 ) == message_filename_string_segment_size )
+				{
+					/* If there is an exact match we're done searching
+					 */
+					match = libcstring_narrow_string_compare(
+					         directory_entry->entry.d_name,
+					         message_filename_string_segment,
+					         message_filename_string_segment_size - 1 );
+
+					if( match == 0 )
+					{
+						if( libcstring_system_string_copy(
+						     &( ( *message_file_path )[ message_file_path_index ] ),
+						     message_filename_string_segment,
+						     message_filename_string_segment_size - 1 ) == NULL )
+						{
+							liberror_error_set(
+							 error,
+							 LIBERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+							 "%s: unable to set message filename string segment: %d in message file path.",
+							 function,
+							 message_filename_segment_index );
+
+							goto on_error;
+						}
+						directory_entry_found = 1;
+
+						break;
+					}
+					match = libcstring_narrow_string_compare_no_case(
+					         directory_entry->entry.d_name,
+					         message_filename_string_segment,
+					         message_filename_string_segment_size - 1 );
+
+					if( match == 0 )
+					{
+/* TODO ignore successive caseless matches */
+						if( libcstring_system_string_copy(
+						     &( ( *message_file_path )[ message_file_path_index ] ),
+						     directory_entry->entry.d_name,
+						     message_filename_string_segment_size - 1 ) == NULL )
+						{
+							liberror_error_set(
+							 error,
+							 LIBERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+							 "%s: unable to set message filename string segment: %d in message file path.",
+							 function,
+							 message_filename_segment_index );
+
+							goto on_error;
+						}
+						directory_entry_found = 1;
+					}
+				}
+			}
+		}
+		while( result != 0 );
+
+		if( directory_entry_found == 0 )
+		{
+			if( libcstring_system_string_copy(
+			     &( ( *message_file_path )[ message_file_path_index ] ),
+			     message_filename_string_segment,
+			     message_filename_string_segment_size - 1 ) == NULL )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set message filename string segment: %d in message file path.",
+				 function,
+				 message_filename_segment_index );
+
+				goto on_error;
+			}
 		}
 		message_file_path_index += message_filename_string_segment_size - 1;
 
 		( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBSYSTEM_PATH_SEPARATOR;
 
 		message_file_path_index += 1;
+
+		if( libsystem_directory_entry_free(
+		     &directory_entry,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free directory entry.",
+			 function );
+
+			goto on_error;
+		}
+		if( libsystem_directory_close(
+		     directory_handle,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close directory.",
+			 function,
+			 message_file_path );
+
+			goto on_error;
+		}
+		if( libsystem_directory_free(
+		     &directory_handle,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free directory handle.",
+			 function );
+
+			goto on_error;
+		}
 	}
 	( *message_file_path )[ message_file_path_index - 1 ] = 0;
 
@@ -1837,6 +2021,7 @@ int export_handle_message_string_fprint(
 {
 	libcstring_system_character_t *value_string = NULL;
 	static char *function                       = "export_handle_message_string_fprint";
+	size_t conversion_specifier_length          = 0;
 	size_t message_string_index                 = 0;
 	size_t value_string_size                    = 0;
 	int number_of_strings                       = 0;
@@ -1906,34 +2091,60 @@ int export_handle_message_string_fprint(
 	 export_handle->notify_stream,
 	 "Message string\t\t: " );
 
-	for( message_string_index = 0;
-	     message_string_index < message_string_length;
-	     message_string_index++ )
+	message_string_index = 0;
+
+	while( message_string_index < message_string_length )
 	{
 		if( ( message_string[ message_string_index ] == (libcstring_system_character_t) '%' )
-		 && ( ( message_string_index + 4 ) < message_string_length ) )
+		 && ( ( message_string_index + 1 ) < message_string_length ) )
 		{
-/* TODO add support for more conversoin specifiers */
+/* TODO add support for more conversion specifiers */
+			/* Ignore %0 = end of string, %r = cariage return */
+			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
+			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
+			{
+				message_string_index += 2;
+
+				continue;
+			}
 			if( ( message_string[ message_string_index + 1 ] < (libcstring_system_character_t) '1' )
-			 || ( message_string[ message_string_index + 1 ] > (libcstring_system_character_t) '9' )
-			 || ( message_string[ message_string_index + 2 ] != (libcstring_system_character_t) '!' )
-			 || ( message_string[ message_string_index + 3 ] != (libcstring_system_character_t) 's' )
-			 || ( message_string[ message_string_index + 4 ] != (libcstring_system_character_t) '!' ) )
+			 || ( message_string[ message_string_index + 1 ] > (libcstring_system_character_t) '9' ) )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
 				 "%s: unsupported conversion specifier: %%"
-				 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM
-				 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM ".",
+				 "%" PRIc_LIBCSTRING_SYSTEM ".",
 				 function,
-				 message_string[ message_string_index + 1 ],
-				 message_string[ message_string_index + 2 ],
-				 message_string[ message_string_index + 3 ],
-				 message_string[ message_string_index + 4 ] );
+				 message_string[ message_string_index + 1 ] );
 
 				goto on_error;
+			}
+			conversion_specifier_length = 2;
+
+		 	if( ( ( message_string_index + 4 ) < message_string_length )
+			 && ( message_string[ message_string_index + 2 ] == (libcstring_system_character_t) '!' ) )
+			{
+				if( ( message_string[ message_string_index + 3 ] != (libcstring_system_character_t) 's' )
+				 || ( message_string[ message_string_index + 4 ] != (libcstring_system_character_t) '!' ) )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+					 "%s: unsupported conversion specifier: %%"
+					 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM
+					 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM ".",
+					 function,
+					 message_string[ message_string_index + 1 ],
+					 message_string[ message_string_index + 2 ],
+					 message_string[ message_string_index + 3 ],
+					 message_string[ message_string_index + 4 ] );
+
+					goto on_error;
+				}
+				conversion_specifier_length = 5;
 			}
 			value_string_index = (int) message_string[ message_string_index + 1 ]
 			                   - (int) '0'
@@ -2017,14 +2228,18 @@ int export_handle_message_string_fprint(
 
 				value_string = NULL;
 			}
-			message_string_index += 4;
+			message_string_index += conversion_specifier_length;
 		}
 		else
 		{
-			fprintf(
-			 export_handle->notify_stream,
-			 "%" PRIc_LIBCSTRING_SYSTEM "",
-			 message_string[ message_string_index ] );
+			if( message_string[ message_string_index ] != 0 )
+			{
+				fprintf(
+				 export_handle->notify_stream,
+				 "%" PRIc_LIBCSTRING_SYSTEM "",
+				 message_string[ message_string_index ] );
+			}
+			message_string_index += 1;
 		}
 	}
 	fprintf(
