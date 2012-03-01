@@ -1256,8 +1256,8 @@ int export_handle_get_message_file_path(
      size_t *message_file_path_size,
      liberror_error_t **error )
 {
+	libsystem_directory_t *directory                               = NULL;
 	libsystem_directory_entry_t *directory_entry                   = NULL;
-	libsystem_directory_handle_t *directory_handle                 = NULL;
 	libsystem_split_string_t *message_filename_split_string        = NULL;
 	libcstring_system_character_t *message_filename_string_segment = NULL;
 	static char *function                                          = "export_handle_get_message_file_path";
@@ -1567,20 +1567,20 @@ int export_handle_get_message_file_path(
 
 /* TODO refactor to function */
 		if( libsystem_directory_initialize(
-		     &directory_handle,
+		     &directory,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create directory handle.",
+			 "%s: unable to create directory.",
 			 function );
 
 			goto on_error;
 		}
 		if( libsystem_directory_open(
-		     directory_handle,
+		     directory,
 		     *message_file_path,
 		     error ) != 1 )
 		{
@@ -1612,7 +1612,7 @@ int export_handle_get_message_file_path(
 		do
 		{
 			result = libsystem_directory_read_entry(
-			          directory_handle,
+			          directory,
 			          directory_entry,
 			          error );
 
@@ -1739,7 +1739,7 @@ int export_handle_get_message_file_path(
 			goto on_error;
 		}
 		if( libsystem_directory_close(
-		     directory_handle,
+		     directory,
 		     error ) != 0 )
 		{
 			liberror_error_set(
@@ -1753,14 +1753,14 @@ int export_handle_get_message_file_path(
 			goto on_error;
 		}
 		if( libsystem_directory_free(
-		     &directory_handle,
+		     &directory,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free directory handle.",
+			 "%s: unable to free directory.",
 			 function );
 
 			goto on_error;
