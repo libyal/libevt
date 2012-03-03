@@ -168,6 +168,22 @@ int message_file_free(
 	}
 	if( *message_file != NULL )
 	{
+		if( ( *message_file )->is_open != 0 )
+		{
+			if( message_file_close(
+			     *message_file,
+			     error ) != 0 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 "%s: unable to close message file.",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( ( *message_file )->message_table_resource != NULL )
 		{
 			if( libwrc_resource_free(
@@ -253,6 +269,17 @@ int message_file_open(
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid message file.",
+		 function );
+
+		return( -1 );
+	}
+	if( message_file->is_open != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid message file already open.",
 		 function );
 
 		return( -1 );
@@ -374,6 +401,7 @@ int message_file_open(
 
 			goto on_error;
 		}
+		message_file->is_open = 1;
 	}
 	return( result );
 
@@ -405,6 +433,7 @@ int message_file_close(
      liberror_error_t **error )
 {
 	static char *function = "message_file_close";
+	int result            = 0;
 
 	if( message_file == NULL )
 	{
@@ -417,33 +446,69 @@ int message_file_close(
 
 		return( -1 );
 	}
-	if( libwrc_stream_close(
-	     message_file->resource_stream,
-	     error ) != 0 )
+	if( message_file->is_open != 0 )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
-		 "%s: unable to close resource stream.",
-		 function );
+		if( libwrc_stream_close(
+		     message_file->resource_stream,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close resource stream.",
+			 function );
 
-		return( -1 );
-	}
-	if( libexe_file_close(
-	     message_file->exe_file,
-	     error ) != 0 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
-		 "%s: unable to close EXE file.",
-		 function );
+			result = -1;
+		}
+		if( message_file->resource_section_file_io_handle != NULL )
+		{
+			if( libbfio_handle_free(
+			     &( message_file->resource_section_file_io_handle ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free resource section file IO handle.",
+				 function );
 
-		return( -1 );
+				result = -1;
+			}
+		}
+		if( message_file->resource_section != NULL )
+		{
+			if( libexe_section_free(
+			     &( message_file->resource_section ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free resource section.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( libexe_file_close(
+		     message_file->exe_file,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close EXE file.",
+			 function );
+
+			result = -1;
+		}
+		message_file->is_open = 0;
 	}
-	return( 0 );
+	return( result );
 }
 
 /* Retrieves a specific message string

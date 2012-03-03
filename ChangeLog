@@ -34,6 +34,10 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120302
+* fixed multiple memory leaks
+* added support for multi message file registy values
+
 20120227
 * worked on case insensitive path handling
 

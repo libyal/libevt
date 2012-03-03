@@ -58,6 +58,10 @@ struct message_file
 	/* The libwrc message table resource
 	 */
 	libwrc_resource_t *message_table_resource;
+
+	/* Value to indicate if the message file is open
+	 */
+	int is_open;
 };
 
 int message_file_initialize(

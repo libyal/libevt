@@ -204,6 +204,22 @@ int export_handle_free(
 	}
 	if( *export_handle != NULL )
 	{
+		if( ( *export_handle )->input_is_open != 0 )
+		{
+			if( export_handle_close_input(
+			     *export_handle,
+			     error ) != 0 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 "%s: unable to close export handle.",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( ( *export_handle )->system_registry_file != NULL )
 		{
 			if( libregf_file_free(
@@ -778,6 +794,35 @@ int export_handle_open_system_registry_file(
 
 		goto on_error;
 	}
+	if( base_key != root_key )
+	{
+		if( libregf_key_free(
+		     &base_key,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free base key.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	if( libregf_key_free(
+	     &root_key,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free root key.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
@@ -848,6 +893,17 @@ int export_handle_open_input(
 
 		return( -1 );
 	}
+	if( export_handle->input_is_open != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid export handle input is already open.",
+		 function );
+
+		return( -1 );
+	}
 	if( export_handle->system_registry_filename != NULL )
 	{
 		if( export_handle_open_system_registry_file(
@@ -888,6 +944,8 @@ int export_handle_open_input(
 
 		return( -1 );
 	}
+	export_handle->input_is_open = 1;
+
 	return( 1 );
 }
 
@@ -912,66 +970,70 @@ int export_handle_close_input(
 
 		return( -1 );
 	}
-	if( export_handle->control_set1_key != NULL )
+	if( export_handle->input_is_open != 0 )
 	{
-		if( libregf_key_free(
-		     &( export_handle->control_set1_key ),
-		     error ) != 1 )
+		if( export_handle->control_set1_key != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free control set 1 key.",
-			 function );
+			if( libregf_key_free(
+			     &( export_handle->control_set1_key ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free control set 1 key.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	if( export_handle->control_set2_key != NULL )
-	{
-		if( libregf_key_free(
-		     &( export_handle->control_set2_key ),
-		     error ) != 1 )
+		if( export_handle->control_set2_key != NULL )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free control set 2 key.",
-			 function );
+			if( libregf_key_free(
+			     &( export_handle->control_set2_key ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free control set 2 key.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
-	}
-	if( export_handle->system_registry_file != NULL )
-	{
-		if( libregf_file_close(
-		     export_handle->system_registry_file,
+		if( export_handle->system_registry_file != NULL )
+		{
+			if( libregf_file_close(
+			     export_handle->system_registry_file,
+			     error ) != 0 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 "%s: unable to close system registry file.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( libevt_file_close(
+		     export_handle->input_file,
 		     error ) != 0 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_IO,
 			 LIBERROR_IO_ERROR_CLOSE_FAILED,
-			 "%s: unable to close system registry file.",
+			 "%s: unable to close input file.",
 			 function );
 
 			result = -1;
 		}
-	}
-	if( libevt_file_close(
-	     export_handle->input_file,
-	     error ) != 0 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
-		 "%s: unable to close input file.",
-		 function );
-
-		result = -1;
+		export_handle->input_is_open = 0;
 	}
 	return( result );
 }
@@ -1383,7 +1445,7 @@ int export_handle_get_message_file_path(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to split current directory.",
+		 "%s: unable to split message filename.",
 		 function );
 
 		goto on_error;
@@ -2268,20 +2330,25 @@ int export_handle_export_record(
 {
 	libcstring_system_character_t posix_time_string[ 32 ];
 
-	libcstring_system_character_t *event_source     = NULL;
-	libcstring_system_character_t *message_filename = NULL;
-	libcstring_system_character_t *message_string   = NULL;
-	libcstring_system_character_t *value_string     = NULL;
-	libfdatetime_posix_time_t *posix_time           = NULL;
-	static char *function                           = "export_handle_export_record";
-	size_t event_source_size                        = 0;
-	size_t message_filename_size                    = 0;
-	size_t message_string_size                      = 0;
-	size_t value_string_size                        = 0;
-	uint32_t event_identifier                       = 0;
-	uint32_t value_32bit                            = 0;
-	uint16_t event_type                             = 0;
-	int result                                      = 0;
+	libcstring_system_character_t *event_source                    = NULL;
+	libcstring_system_character_t *message_filename                = NULL;
+	libcstring_system_character_t *message_filename_string_segment = NULL;
+	libcstring_system_character_t *message_string                  = NULL;
+	libcstring_system_character_t *value_string                    = NULL;
+	libfdatetime_posix_time_t *posix_time                          = NULL;
+	libsystem_split_string_t *message_filename_split_string        = NULL;
+	static char *function                                          = "export_handle_export_record";
+	size_t event_source_size                                       = 0;
+	size_t message_filename_size                                   = 0;
+	size_t message_filename_string_segment_size                    = 0;
+	size_t message_string_size                                     = 0;
+	size_t value_string_size                                       = 0;
+	uint32_t event_identifier                                      = 0;
+	uint32_t value_32bit                                           = 0;
+	uint16_t event_type                                            = 0;
+	int message_filename_number_of_segments                        = 0;
+	int message_filename_segment_index                             = 0;
+	int result                                                     = 0;
 
 	if( export_handle == NULL )
 	{
@@ -2680,48 +2747,131 @@ int export_handle_export_record(
 			 "Message filename\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 			 message_filename );
 
-			result = export_handle_get_message_string(
-			          export_handle,
-			          message_filename,
-			          message_filename_size - 1,
-			          event_identifier,
-			          &message_string,
-			          &message_string_size,
-			          error );
+			/* The message filename can contain multiple file names
+			 * separated by ;
+			 */
+			if( libsystem_string_split(
+			     message_filename,
+			     message_filename_size,
+			     (libcstring_system_character_t) ';',
+			     &message_filename_split_string,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to split message filename.",
+				 function );
 
-			if( result == -1 )
+				goto on_error;
+			}
+			if( libsystem_split_string_get_number_of_segments(
+			     message_filename_split_string,
+			     &message_filename_number_of_segments,
+			     error ) != 1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve message string.",
+				 "%s: unable to retrieve number of message filename string segments.",
 				 function );
 
 				goto on_error;
 			}
-			else if( result != 0 )
+			for( message_filename_segment_index = 0;
+			     message_filename_segment_index < message_filename_number_of_segments;
+			     message_filename_segment_index++ )
 			{
-				if( export_handle_message_string_fprint(
-				     export_handle,
-				     message_string,
-				     message_string_size - 1,
-				     record,
+				if( libsystem_split_string_get_segment_by_index(
+				     message_filename_split_string,
+				     message_filename_segment_index,
+				     &message_filename_string_segment,
+				     &message_filename_string_segment_size,
 				     error ) != 1 )
 				{
 					liberror_error_set(
 					 error,
 					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_PRINT_FAILED,
-					 "%s: unable to print message string.",
-					 function );
+					 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve message filename string segment: %d.",
+					 function,
+					 message_filename_segment_index );
 
 					goto on_error;
 				}
-				memory_free(
-				 message_string );
+				if( message_filename_string_segment == NULL )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: missing message filename string segment: %d.",
+					 function,
+					 message_filename_segment_index );
 
-				message_string = NULL;
+					goto on_error;
+				}
+				result = export_handle_get_message_string(
+					  export_handle,
+					  message_filename_string_segment,
+					  message_filename_string_segment_size - 1,
+					  event_identifier,
+					  &message_string,
+					  &message_string_size,
+					  error );
+
+				if( result == -1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve message string: 0x%08" PRIx32 ".",
+					 function,
+					 event_identifier );
+
+					goto on_error;
+				}
+				else if( result != 0 )
+				{
+					if( export_handle_message_string_fprint(
+					     export_handle,
+					     message_string,
+					     message_string_size - 1,
+					     record,
+					     error ) != 1 )
+					{
+						liberror_error_set(
+						 error,
+						 LIBERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBERROR_RUNTIME_ERROR_PRINT_FAILED,
+						 "%s: unable to print message string.",
+						 function );
+
+						goto on_error;
+					}
+					memory_free(
+					 message_string );
+
+					message_string = NULL;
+
+					break;
+				}
+			}
+			if( libsystem_split_string_free(
+			     &message_filename_split_string,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free message filename split string.",
+				 function );
+
+				goto on_error;
 			}
 			memory_free(
 			 message_filename );
@@ -2744,6 +2894,12 @@ on_error:
 	{
 		memory_free(
 		 message_string );
+	}
+	if( message_filename_split_string != NULL )
+	{
+		libsystem_split_string_free(
+		 &message_filename_split_string,
+		 NULL );
 	}
 	if( message_filename != NULL )
 	{
@@ -2853,7 +3009,6 @@ int export_handle_export_records(
 		     log_handle,
 		     error ) != 1 )
 		{
-/* TODO add error tollerance and log error */
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
@@ -2862,7 +3017,13 @@ int export_handle_export_records(
 			 function,
 			 record_index );
 
-			return( -1 );
+/* TODO print and log error
+			liberror_error_free(
+			 error );
+*/
+
+/* TODO this leaks the record */
+return( -1 );
 		}
 		if( libevt_record_free(
 		     &record,

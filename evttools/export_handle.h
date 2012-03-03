@@ -80,6 +80,10 @@ struct export_handle
 	 */
 	const libcstring_system_character_t *system_registry_filename;
 
+	/* Value to indicate the input is open
+	 */
+	int input_is_open;
+
 	/* The ascii codepage
 	 */
 	int ascii_codepage;
