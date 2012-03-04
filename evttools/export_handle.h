@@ -64,6 +64,10 @@ struct export_handle
 	 */
 	libregf_key_t *control_set2_key;
 
+	/* The preferred language identifier
+	 */
+	uint32_t preferred_language_identifier;
+
 	/* The message file cache
 	 */
 	libfcache_cache_t *message_file_cache;

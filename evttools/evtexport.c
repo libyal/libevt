@@ -132,6 +132,7 @@ int main( int argc, char * const argv[] )
 	libcstring_system_character_t *option_event_log_type           = NULL;
 	libcstring_system_character_t *option_log_filename             = NULL;
 	libcstring_system_character_t *option_message_files_path       = NULL;
+	libcstring_system_character_t *option_preferred_language       = NULL;
 	libcstring_system_character_t *option_system_registry_filename = NULL;
 	libcstring_system_character_t *source                          = NULL;
 	char *program                                                  = "evtexport";
@@ -326,6 +327,11 @@ int main( int argc, char * const argv[] )
 	if( option_system_registry_filename != NULL )
 	{
 		evtexport_export_handle->system_registry_filename = option_system_registry_filename;
+	}
+	if( option_preferred_language != NULL )
+	{
+/* TODO */
+		evtexport_export_handle->preferred_language_identifier = 0x0413;
 	}
 	if( log_handle_open(
 	     log_handle,

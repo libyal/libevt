@@ -83,6 +83,7 @@ int message_file_close(
 
 int message_file_get_string(
      message_file_t *message_file,
+     uint32_t preferred_language_identifier,
      uint32_t message_identifier,
      libcstring_system_character_t **message_string,
      size_t *message_string_size,

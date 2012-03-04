@@ -164,9 +164,10 @@ int export_handle_initialize(
 
 		goto on_error;
 	}
-	( *export_handle )->event_log_type = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
-	( *export_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
-	( *export_handle )->notify_stream  = EXPORT_HANDLE_NOTIFY_STREAM;
+	( *export_handle )->event_log_type                = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
+	( *export_handle )->preferred_language_identifier = 0x00000409UL;
+	( *export_handle )->ascii_codepage                = LIBEVT_CODEPAGE_WINDOWS_1252;
+	( *export_handle )->notify_stream                 = EXPORT_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
 
@@ -1830,9 +1831,6 @@ int export_handle_get_message_file_path(
 	}
 	( *message_file_path )[ message_file_path_index - 1 ] = 0;
 
-/* TODO */
-fprintf( stderr, "S: %s\n", *message_file_path );
-
 	if( libsystem_split_string_free(
 	     &message_filename_split_string,
 	     error ) != 1 )
@@ -1996,6 +1994,7 @@ int export_handle_get_message_string(
 		{
 			result = message_file_get_string(
 			          message_file,
+			          export_handle->preferred_language_identifier,
 			          message_identifier,
 			          message_string,
 			          message_string_size,

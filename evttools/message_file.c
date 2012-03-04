@@ -516,14 +516,18 @@ int message_file_close(
  */
 int message_file_get_string(
      message_file_t *message_file,
+     uint32_t preferred_language_identifier,
      uint32_t message_identifier,
      libcstring_system_character_t **message_string,
      size_t *message_string_size,
      liberror_error_t **error )
 {
-	static char *function = "message_file_get_string";
-	int message_index     = 0;
-	int result            = 0;
+	static char *function        = "message_file_get_string";
+	uint32_t language_identifier = 0;
+	int language_index           = 0;
+	int message_index            = 0;
+	int number_of_languages      = 0;
+	int result                   = 0;
 
 	if( message_file == NULL )
 	{
@@ -570,8 +574,48 @@ int message_file_get_string(
 		return( -1 );
 	}
 /* TODO cache message strings */
+	if( libwrc_message_table_get_number_of_languages(
+	     message_file->message_table_resource,
+	     &number_of_languages,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of languages.",
+		 function );
+
+		goto on_error;
+	}
+	for( language_index = 0;
+	     language_index < number_of_languages;
+	     language_index++ )
+	{
+		if( libwrc_message_table_get_language_identifier(
+		     message_file->message_table_resource,
+		     0,
+		     &language_identifier,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number language identifier: %d.",
+			 function,
+			 language_index );
+
+			goto on_error;
+		}
+		if( ( preferred_language_identifier & 0x000003ffUL ) == ( language_identifier & 0x000003ffUL ) )
+		{
+			break;
+		}
+	}
 	result = libwrc_message_table_get_index_by_identifier(
 	          message_file->message_table_resource,
+	          language_identifier,
 	          message_identifier,
 	          &message_index,
 	          error );
@@ -593,12 +637,14 @@ int message_file_get_string(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libwrc_message_table_get_utf16_message_size(
 		          message_file->message_table_resource,
+			  language_identifier,
 			  message_index,
 			  message_string_size,
 			  error );
 #else
 		result = libwrc_message_table_get_utf8_message_size(
 		          message_file->message_table_resource,
+			  language_identifier,
 			  message_index,
 			  message_string_size,
 			  error );
@@ -632,6 +678,7 @@ int message_file_get_string(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libwrc_message_table_get_utf16_message(
 		          message_file->message_table_resource,
+			  language_identifier,
 			  message_index,
 			  (uint16_t *) *message_string,
 			  *message_string_size,
@@ -639,6 +686,7 @@ int message_file_get_string(
 #else
 		result = libwrc_message_table_get_utf8_message(
 		          message_file->message_table_resource,
+			  language_identifier,
 			  message_index,
 			  (uint8_t *) *message_string,
 			  *message_string_size,

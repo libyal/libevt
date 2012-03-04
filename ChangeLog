@@ -1,19 +1,18 @@
 TODO:
-* windows directory example
-  http://msdn.microsoft.com/en-us/library/aa365200%28VS.85%29.aspx
+* complete language support in evtinput.[ch]
+* complete directory and directory entry handling in libsystem
 * export handle
-  - handle directory and file names case insensitive
+  - handle case insensitive registry key names
   - use current control set nr?
-* Handle dirty flag. What about recovered records ?
 * add function to scan for records
 * detect if wrapped flag is not set but file is wrapped
 * handle gap between first record and end of file record ?
   - only in wrapped situation
 * deal with dirty file
+  - handle dirty flag. What about recovered records ?
   - scan for end of file record
   - find next record (should be the oldest)
   - continue scanning for records if possible
-* add function to deal with formatted messages
 * deal with corruption
 * update manuals
 * update msvscpp files
@@ -33,6 +32,9 @@ Tools:
   - cache event source filenames
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120304
+* worked on multi language support
 
 20120302
 * fixed multiple memory leaks
