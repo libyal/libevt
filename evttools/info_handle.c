@@ -28,6 +28,7 @@
 #include <liberror.h>
 
 #include "evtinput.h"
+#include "evttools_codepage.h"
 #include "evttools_libfdatetime.h"
 #include "evttools_libevt.h"
 #include "info_handle.h"
@@ -107,7 +108,7 @@ int info_handle_initialize(
 		goto on_error;
 	}
 	( *info_handle )->event_log_type = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
-	( *info_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+	( *info_handle )->ascii_codepage = EVTTOOLS_CODEPAGE_WINDOWS_1252;
 	( *info_handle )->notify_stream  = INFO_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
@@ -216,8 +217,10 @@ int info_handle_set_ascii_codepage(
      const libcstring_system_character_t *string,
      liberror_error_t **error )
 {
-	static char *function = "info_handle_set_ascii_codepage";
-	int result            = 0;
+	static char *function  = "info_handle_set_ascii_codepage";
+	size_t string_length   = 0;
+	uint32_t feature_flags = 0;
+	int result             = 0;
 
 	if( info_handle == NULL )
 	{
@@ -230,9 +233,17 @@ int info_handle_set_ascii_codepage(
 
 		return( -1 );
 	}
-	result = evtinput_determine_ascii_codepage(
-	          string,
+	feature_flags = EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_KOI8_CODEPAGES
+	              | EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS_CODEPAGES;
+
+	string_length = libcstring_system_string_length(
+	                 string );
+
+	result = evttools_codepage_from_string(
 	          &( info_handle->ascii_codepage ),
+	          string,
+	          string_length,
+	          feature_flags,
 	          error );
 
 	if( result == -1 )

@@ -29,6 +29,7 @@
 #include <libsystem.h>
 
 #include "evtinput.h"
+#include "evttools_codepage.h"
 #include "evttools_libevt.h"
 #include "evttools_libexe.h"
 #include "evttools_libfcache.h"
@@ -166,7 +167,7 @@ int export_handle_initialize(
 	}
 	( *export_handle )->event_log_type                = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
 	( *export_handle )->preferred_language_identifier = 0x00000409UL;
-	( *export_handle )->ascii_codepage                = LIBEVT_CODEPAGE_WINDOWS_1252;
+	( *export_handle )->ascii_codepage                = EVTTOOLS_CODEPAGE_WINDOWS_1252;
 	( *export_handle )->notify_stream                 = EXPORT_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
@@ -324,7 +325,9 @@ int export_handle_set_ascii_codepage(
      liberror_error_t **error )
 {
 	static char *function = "export_handle_set_ascii_codepage";
-	int result            = 0;
+	size_t string_length   = 0;
+	uint32_t feature_flags = 0;
+	int result             = 0;
 
 	if( export_handle == NULL )
 	{
@@ -337,9 +340,17 @@ int export_handle_set_ascii_codepage(
 
 		return( -1 );
 	}
-	result = evtinput_determine_ascii_codepage(
-	          string,
+	feature_flags = EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_KOI8_CODEPAGES
+	              | EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS_CODEPAGES;
+
+	string_length = libcstring_system_string_length(
+	                 string );
+
+	result = evttools_codepage_from_string(
 	          &( export_handle->ascii_codepage ),
+	          string,
+	          string_length,
+	          feature_flags,
 	          error );
 
 	if( result == -1 )
@@ -642,7 +653,10 @@ int export_handle_open_system_registry_file(
 		if( ( export_handle->current_control_set != 1 )
 		 && ( export_handle->current_control_set != 2 ) )
 		{
-/* TODO print warning */
+			fprintf(
+			 export_handle->notify_stream,
+			 "Unsupported current control set defaulting to 1.\n" );
+
 			export_handle->current_control_set = 1;
 		}
 	}
@@ -1322,6 +1336,7 @@ int export_handle_get_message_file_path(
 	libsystem_directory_t *directory                               = NULL;
 	libsystem_directory_entry_t *directory_entry                   = NULL;
 	libsystem_split_string_t *message_filename_split_string        = NULL;
+	libcstring_system_character_t *directory_entry_name            = NULL;
 	libcstring_system_character_t *message_filename_string_segment = NULL;
 	static char *function                                          = "export_handle_get_message_file_path";
 	size_t directory_entry_name_length                             = 0;
@@ -1329,6 +1344,7 @@ int export_handle_get_message_file_path(
 	size_t message_files_path_length                               = 0;
 	size_t message_filename_directory_name_index                   = 0;
 	size_t message_filename_string_segment_size                    = 0;
+	uint8_t directory_entry_type                                   = 0;
 	int directory_entry_found                                      = 0;
 	int match                                                      = 0;
 	int message_filename_number_of_segments                        = 0;
@@ -1695,21 +1711,48 @@ int export_handle_get_message_file_path(
 			{
 				break;
 			}
-/* TODO abstract to functions */
-			if( ( ( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry->entry.d_type == DT_DIR ) )
-			 || ( ( message_filename_segment_index == ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry->entry.d_type == DT_REG ) ) )
+			if( libsystem_directory_entry_get_type(
+			     directory_entry,
+			     &directory_entry_type,
+			     error ) != 1 )
 			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve directory entry type.",
+				 function );
+
+				goto on_error;
+			}
+			if( ( ( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
+			  &&  ( directory_entry_type == LIBSYSTEM_DIRECTORY_ENTRY_TYPE_DIRECTORY ) )
+			 || ( ( message_filename_segment_index == ( message_filename_number_of_segments - 1 ) )
+			  &&  ( directory_entry_type == LIBSYSTEM_DIRECTORY_ENTRY_TYPE_FILE ) ) )
+			{
+				if( libsystem_directory_entry_get_name(
+				     directory_entry,
+				     &directory_entry_name,
+				     error ) != 1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve directory entry name.",
+					 function );
+
+					goto on_error;
+				}
 				directory_entry_name_length = libcstring_narrow_string_length(
-				                               directory_entry->entry.d_name );
+				                               directory_entry_name );
 
 				if( ( directory_entry_name_length + 1 ) == message_filename_string_segment_size )
 				{
 					/* If there is an exact match we're done searching
 					 */
 					match = libcstring_narrow_string_compare(
-					         directory_entry->entry.d_name,
+					         directory_entry_name,
 					         message_filename_string_segment,
 					         message_filename_string_segment_size - 1 );
 
@@ -1735,7 +1778,7 @@ int export_handle_get_message_file_path(
 						break;
 					}
 					match = libcstring_narrow_string_compare_no_case(
-					         directory_entry->entry.d_name,
+					         directory_entry_name,
 					         message_filename_string_segment,
 					         message_filename_string_segment_size - 1 );
 
@@ -1744,7 +1787,7 @@ int export_handle_get_message_file_path(
 /* TODO ignore successive caseless matches */
 						if( libcstring_system_string_copy(
 						     &( ( *message_file_path )[ message_file_path_index ] ),
-						     directory_entry->entry.d_name,
+						     directory_entry_name,
 						     message_filename_string_segment_size - 1 ) == NULL )
 						{
 							liberror_error_set(

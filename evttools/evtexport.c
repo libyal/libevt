@@ -136,7 +136,6 @@ int main( int argc, char * const argv[] )
 	libcstring_system_character_t *option_system_registry_filename = NULL;
 	libcstring_system_character_t *source                          = NULL;
 	char *program                                                  = "evtexport";
-	size_t source_length                                           = 0;
 	libcstring_system_integer_t option                             = 0;
 	int result                                                     = 0;
 	int verbose                                                    = 0;

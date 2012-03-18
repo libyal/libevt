@@ -33,6 +33,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120318
+* worked on libsystem directory entry support
+
 20120304
 * worked on multi language support
 

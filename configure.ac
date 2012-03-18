@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20120302],
+ [20120318],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -110,7 +110,7 @@ AS_IF(
  ])
 
 dnl Set memwatch support
-ac_cv_enable_memwatch=yes
+ac_cv_enable_memwatch=no
 
 AS_IF(
  [test "x$ac_cv_enable_memwatch" != xno ],

@@ -30,7 +30,7 @@ extern "C" {
 
 /* The codepage definitions
  */
-enum LIBEVT_CODEPAGE
+enum LIBEVT_CODEPAGES
 {
 	LIBEVT_CODEPAGE_ASCII				= 20127,
 
