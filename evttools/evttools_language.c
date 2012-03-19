@@ -25,146 +25,19 @@
 #include <libcstring.h>
 #include <liberror.h>
 
-#include "language_handle.h"
+#include "evttools_language.h"
 
-/* Initializes the language handle
- * Returns 1 if successful or -1 on error
+/* Determines the language identifier from a string
+ * Returns 1 if successful, 0 if unsupported value or -1 on error
  */
-int language_handle_initialize(
-     language_handle_t **language_handle,
-     uint32_t feature_flags,
+int evttools_language_identifier_from_string(
+     uint32_t *language_identifier,
+     const libcstring_system_character_t *string,
+     size_t string_length,
      liberror_error_t **error )
 {
-	static char *function = "language_handle_initialize";
+	static char *function = "evttools_language_identifier_from_string";
 
-	if( language_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid language handle.",
-		 function );
-
-		return( -1 );
-	}
-	if( *language_handle != NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid language handle value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( feature_flags != 0 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported feature flags value: 0x%08" PRIx32 ".",
-		 function,
-		 feature_flags );
-
-		return( -1 );
-	}
-	*language_handle = memory_allocate_structure(
-	                    language_handle_t );
-
-	if( *language_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create language handle.",
-		 function );
-
-		goto on_error;
-	}
-	if( memory_set(
-	     *language_handle,
-	     0,
-	     sizeof( language_handle_t ) ) == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear language handle.",
-		 function );
-
-		goto on_error;
-	}
-	( *language_handle )->feature_flags = feature_flags;
-
-	return( 1 );
-
-on_error:
-	if( *language_handle != NULL )
-	{
-		memory_free(
-		 *language_handle );
-
-		*language_handle = NULL;
-	}
-	return( -1 );
-}
-
-/* Frees the language handle and its elements
- * Returns 1 if successful or -1 on error
- */
-int language_handle_free(
-     language_handle_t **language_handle,
-     liberror_error_t **error )
-{
-	static char *function = "language_handle_free";
-
-	if( language_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid language handle.",
-		 function );
-
-		return( -1 );
-	}
-	if( *language_handle != NULL )
-	{
-		memory_free(
-		 *language_handle );
-
-		*language_handle = NULL;
-	}
-	return( 1 );
-}
-
-/* Retrieves the language identifier
- * Returns 1 if successful or -1 on error
- */
-int language_handle_get_identifier(
-     language_handle_t *language_handle,
-     uint16_t *language_identifier,
-     liberror_error_t **error )
-{
-	static char *function = "language_handle_get_identifier";
-
-	if( language_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid language handle.",
-		 function );
-
-		return( -1 );
-	}
 	if( language_identifier == NULL )
 	{
 		liberror_error_set(
@@ -172,33 +45,6 @@ int language_handle_get_identifier(
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid language identifier.",
-		 function );
-
-		return( -1 );
-	}
-	*language_identifier = language_handle->identifier;
-
-	return( 1 );
-}
-
-/* Copies the language from a string
- * Returns 1 if successful, 0 if unsupported value or -1 on error
- */
-int language_handle_copy_from_string(
-     language_handle_t *language_handle,
-     const libcstring_system_character_t *string,
-     size_t string_length,
-     liberror_error_t **error )
-{
-	static char *function = "language_handle_copy_from_string";
-
-	if( language_handle == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid language handle.",
 		 function );
 
 		return( -1 );
@@ -225,7 +71,7 @@ int language_handle_copy_from_string(
 
 		return( -1 );
 	}
-	language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_UNDEFINED;
+	*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_UNDEFINED;
 
 	if( string_length >= 2 )
 	{
@@ -237,7 +83,7 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'R':
 					case (libcstring_system_character_t) 'r':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_AR;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_AR;
 						break;
 
 					default:
@@ -251,7 +97,7 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'G':
 					case (libcstring_system_character_t) 'g':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_BG;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_BG;
 						break;
 
 					default:
@@ -265,12 +111,12 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'A':
 					case (libcstring_system_character_t) 'a':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_CA;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_CA;
 						break;
 
 					case (libcstring_system_character_t) 'S':
 					case (libcstring_system_character_t) 's':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_CS;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_CS;
 						break;
 
 					default:
@@ -284,12 +130,12 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'A':
 					case (libcstring_system_character_t) 'a':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_DA;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_DA;
 						break;
 
 					case (libcstring_system_character_t) 'E':
 					case (libcstring_system_character_t) 'e':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_DE;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_DE;
 						break;
 
 					default:
@@ -303,17 +149,17 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'L':
 					case (libcstring_system_character_t) 'l':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_EL;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_EL;
 						break;
 
 					case (libcstring_system_character_t) 'N':
 					case (libcstring_system_character_t) 'n':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_EN;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_EN;
 						break;
 
 					case (libcstring_system_character_t) 'S':
 					case (libcstring_system_character_t) 's':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_ES;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_ES;
 						break;
 
 					default:
@@ -327,12 +173,12 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'I':
 					case (libcstring_system_character_t) 'i':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_FI;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_FI;
 						break;
 
 					case (libcstring_system_character_t) 'R':
 					case (libcstring_system_character_t) 'r':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_FR;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_FR;
 						break;
 
 					default:
@@ -351,12 +197,17 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'E':
 					case (libcstring_system_character_t) 'e':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_HE;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_HE;
+						break;
+
+					case (libcstring_system_character_t) 'R':
+					case (libcstring_system_character_t) 'r':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_HR;
 						break;
 
 					case (libcstring_system_character_t) 'U':
 					case (libcstring_system_character_t) 'u':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_HU;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_HU;
 						break;
 
 					default:
@@ -370,12 +221,12 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'S':
 					case (libcstring_system_character_t) 's':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_IS;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_IS;
 						break;
 
 					case (libcstring_system_character_t) 'T':
 					case (libcstring_system_character_t) 't':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_IT;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_IT;
 						break;
 
 					default:
@@ -389,7 +240,7 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'A':
 					case (libcstring_system_character_t) 'a':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_JA;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_JA;
 						break;
 
 					default:
@@ -403,7 +254,7 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'O':
 					case (libcstring_system_character_t) 'o':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_KO;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_KO;
 						break;
 
 					default:
@@ -427,12 +278,12 @@ int language_handle_copy_from_string(
 				{
 					case (libcstring_system_character_t) 'L':
 					case (libcstring_system_character_t) 'l':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_NL;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_NL;
 						break;
 
 					case (libcstring_system_character_t) 'O':
 					case (libcstring_system_character_t) 'o':
-						language_handle->identifier = LANGUAGE_HANDLE_IDENTIFIER_NO;
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_NO;
 						break;
 
 					default:
@@ -442,18 +293,55 @@ int language_handle_copy_from_string(
 
 			case (libcstring_system_character_t) 'O':
 			case (libcstring_system_character_t) 'o':
+/* TODO remove if not used */
 				break;
 
 			case (libcstring_system_character_t) 'P':
 			case (libcstring_system_character_t) 'p':
+				switch( string[ 1 ] )
+				{
+					case (libcstring_system_character_t) 'L':
+					case (libcstring_system_character_t) 'l':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_PL;
+						break;
+
+					case (libcstring_system_character_t) 'T':
+					case (libcstring_system_character_t) 't':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_PT;
+						break;
+
+					default:
+						break;
+				}
 				break;
 
 			case (libcstring_system_character_t) 'Q':
 			case (libcstring_system_character_t) 'q':
+/* TODO remove if not used */
 				break;
 
 			case (libcstring_system_character_t) 'R':
 			case (libcstring_system_character_t) 'r':
+				switch( string[ 1 ] )
+				{
+					case (libcstring_system_character_t) 'M':
+					case (libcstring_system_character_t) 'm':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_RM;
+						break;
+
+					case (libcstring_system_character_t) 'O':
+					case (libcstring_system_character_t) 'o':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_RO;
+						break;
+
+					case (libcstring_system_character_t) 'U':
+					case (libcstring_system_character_t) 'u':
+						*language_identifier = LANGUAGE_HANDLE_IDENTIFIER_RU;
+						break;
+
+					default:
+						break;
+				}
 				break;
 
 			case (libcstring_system_character_t) 'S':
@@ -492,7 +380,7 @@ int language_handle_copy_from_string(
 				break;
 		}
 	}
-	if( language_handle->identifier != LANGUAGE_HANDLE_IDENTIFIER_UNDEFINED )
+	if( *language_identifier != LANGUAGE_HANDLE_IDENTIFIER_UNDEFINED )
 	{
 		return( 1 );
 	}
@@ -502,14 +390,6 @@ int language_handle_copy_from_string(
 #ifdef TODO
 	{ 0x0004, "zh-Hans",		"Chinese, Han (Simplified variant)" },
 
-	{ 0x0013, "nl",			"Dutch" },
-	{ 0x0014, "no",			"Norwegian" },
-	{ 0x0015, "pl",			"Polish" },
-	{ 0x0016, "pt",			"Portuguese" },
-	{ 0x0017, "rm",			"Romansh" },
-	{ 0x0018, "ro",			"Romanian" },
-	{ 0x0019, "ru",			"Russian" },
-	{ 0x001a, "hr",			"Croatian" },
 	{ 0x001b, "sk",			"Slovak" },
 	{ 0x001c, "sq",			"Albanian" },
 	{ 0x001d, "sv",			"Swedish" },
@@ -887,31 +767,363 @@ int language_handle_copy_from_string(
 	{ 0x7c68, "ha-Latn",		"Hausa, Latin" },
 #endif /* TODO */
 
-/* Copies the language to a string
- * The size should include the end of string character
- * Returns 1 if successful, 0 if unsupported value or -1 on error
+/* Returns a string representation of the language identifier
+ * Returns 1 if successful or NULL if language identifier is not supported
  */
-int language_handle_copy_to_string(
-     language_handle_t *language_handle,
-     libcstring_system_character_t *string,
-     size_t string_size,
-     liberror_error_t **error )
+const libcstring_system_character_t *evttools_language_identifier_to_string(
+                                      uint32_t language_identifier )
 {
-	static char *function = "language_handle_copy_to_string";
-
-	if( language_handle == NULL )
+	switch( language_identifier )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid language handle.",
-		 function );
+		case LANGUAGE_HANDLE_IDENTIFIER_AR:
+			return( "ar" );
 
-		return( -1 );
-	}
+		case LANGUAGE_HANDLE_IDENTIFIER_BG:
+			return( "bg" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_CA:
+			return( "ca" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ZH_HANS:
+			return( "zh-Hans" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_CS:
+			return( "cs" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_DA:
+			return( "da" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_DE:
+			return( "de" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_EL:
+			return( "el" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_EN:
+			return( "en" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ES:
+			return( "es" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FI:
+			return( "fi" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FR:
+			return( "fr" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HE:
+			return( "he" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HU:
+			return( "hu" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_IS:
+			return( "is" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_IT:
+			return( "it" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_JA:
+			return( "ja" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KO:
+			return( "ko" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_NL:
+			return( "nl" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_NO:
+			return( "no" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_PL:
+			return( "pl" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_PT:
+			return( "pt" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_RM:
+			return( "rm" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_RO:
+			return( "ro" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_RU:
+			return( "ru" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HR:
+			return( "hr" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SK:
+			return( "sk" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SQ:
+			return( "sq" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SV:
+			return( "sv" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TH:
+			return( "th" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TR:
+			return( "tr" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_UR:
+			return( "ur" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ID:
+			return( "id" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_UK:
+			return( "uk" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_BE:
+			return( "be" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SL:
+			return( "sl" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ET:
+			return( "et" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_LV:
+			return( "lv" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_LT:
+			return( "lt" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TG:
+			return( "tg" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FA:
+			return( "fa" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_VI:
+			return( "vi" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HY:
+			return( "hy" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_AZ:
+			return( "az" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_EU:
+			return( "eu" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HSB:
+			return( "hsb" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MK:
+			return( "mk" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TN:
+			return( "tn" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_XH:
+			return( "xh" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ZU:
+			return( "zu" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_AF:
+			return( "af" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KA:
+			return( "ka" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FO:
+			return( "fo" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HI:
+			return( "hi" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MT:
+			return( "mt" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SE:
+			return( "se" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_GA:
+			return( "ga" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MS:
+			return( "ms" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KK:
+			return( "kk" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KY:
+			return( "ky" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SW:
+			return( "sw" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TK:
+			return( "tk" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_UZ:
+			return( "uz" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TT:
+			return( "tt" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_BN:
+			return( "bn" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_PA:
+			return( "pa" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_GU:
+			return( "gu" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_OR:
+			return( "or" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TA:
+			return( "ta" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TE:
+			return( "te" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KN:
+			return( "kn" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ML:
+			return( "ml" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_AS:
+			return( "as" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MR:
+			return( "mr" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SA:
+			return( "sa" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MN:
+			return( "mn" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_BO:
+			return( "bo" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_CY:
+			return( "cy" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KM:
+			return( "km" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_LO:
+			return( "lo" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_GL:
+			return( "gl" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KOK:
+			return( "kok" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SYR:
+			return( "syr" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SI:
+			return( "si" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_IU:
+			return( "iu" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_AM:
+			return( "am" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_TZM:
+			return( "tzm" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_NE:
+			return( "ne" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FY:
+			return( "fy" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_PS:
+			return( "ps" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_FIL:
+			return( "fil" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_DV:
+			return( "dv" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_HA:
+			return( "ha" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_YO:
+			return( "yo" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_QUZ:
+			return( "quz" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_NSO:
+			return( "nso" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_BA:
+			return( "ba" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_LB:
+			return( "lb" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_KL:
+			return( "kl" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_IG:
+			return( "ig" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_II:
+			return( "ii" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_ARN:
+			return( "arn" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MOH:
+			return( "moh" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_BR:
+			return( "br" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_UG:
+			return( "ug" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_MI:
+			return( "mi" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_OC:
+			return( "oc" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_CO:
+			return( "co" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_GSW:
+			return( "gsw" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_SAH:
+			return( "sah" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_QUT:
+			return( "qut" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_RW:
+			return( "rw" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_WO:
+			return( "wo" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_PRS:
+			return( "prs" );
+
+		case LANGUAGE_HANDLE_IDENTIFIER_GD:
+			return( "gd" );
+
 /* TODO */
-
-	return( 1 );
+		default:
+			break;
+	}
+	return( NULL );
 }
 

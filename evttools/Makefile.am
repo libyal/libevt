@@ -28,6 +28,7 @@ evtexport_SOURCES = \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
 	evttools_codepage.c evttools_codepage.h \
+	evttools_language.c evttools_language.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
 	evttools_libevt.h \
