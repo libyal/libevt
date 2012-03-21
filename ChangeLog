@@ -33,6 +33,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120321
+* fix for libexe Makefile
+
 20120318
 * worked on libsystem directory entry support
 
