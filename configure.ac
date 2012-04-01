@@ -47,10 +47,24 @@ AX_TYPES_CHECK_LOCAL
 
 dnl Checks for libraries and library functions
 AX_COMMON_CHECK_LOCAL
-AX_LIBCSTRING_CHECK_LOCAL
-AX_LIBERROR_CHECK_LOCAL
+
+dnl Check for enabling libcstring for cross-platform C string functions
+AX_LIBCSTRING_CHECK_ENABLE
+
+dnl Check for enabling libcerror for cross-platform C error functions
+AX_LIBCERROR_CHECK_ENABLE
+
+dnl TODO
 AX_LIBNOTIFY_CHECK_LOCAL
-AX_LIBSYSTEM_CHECK_LOCAL
+
+dnl Check for enabling libcdirectory for cross-platform C directory functions
+AX_LIBCDIRECTORY_CHECK_ENABLE
+
+dnl Check for enabling libcpath for cross-platform C path functions
+AX_LIBCPATH_CHECK_ENABLE
+
+dnl Check for enabling libcsystem for cross-platform C generic system functions
+AX_LIBCSYSTEM_CHECK_ENABLE
 
 dnl Check for enabling libuna for Unicode string support
 AX_LIBUNA_CHECK_ENABLE
@@ -150,7 +164,7 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([common/Makefile])
 AC_CONFIG_FILES([libcstring/Makefile])
-AC_CONFIG_FILES([liberror/Makefile])
+AC_CONFIG_FILES([libcerror/Makefile])
 AC_CONFIG_FILES([libnotify/Makefile])
 AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
@@ -158,7 +172,9 @@ AC_CONFIG_FILES([libfdatetime/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
-AC_CONFIG_FILES([libsystem/Makefile])
+AC_CONFIG_FILES([libcdirectory/Makefile])
+AC_CONFIG_FILES([libcpath/Makefile])
+AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libexe/Makefile])
@@ -194,6 +210,11 @@ AC_OUTPUT
 dnl Print a summary
 AC_MSG_NOTICE([
 Building:
+   libcstring support:                       $ac_cv_libcstring
+   libcerror support:                        $ac_cv_libcerror
+   libcdirectory support:                    $ac_cv_libcdirectory
+   libcpath support:                         $ac_cv_libcpath
+   libcsystem support:                       $ac_cv_libcsystem
    libuna support:                           $ac_cv_libuna
    libbfio support:                          $ac_cv_libbfio
    libfdatetime support:                     $ac_cv_libfdatetime

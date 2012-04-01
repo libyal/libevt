@@ -1,5 +1,5 @@
 /*
- * Common input functions for the evttools
+ * The internal libcstring header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -9,51 +9,46 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVTINPUT_H )
-#define _EVTINPUT_H
+#if !defined( _UNATOOLS_LIBCSTRING_H )
+#define _UNATOOLS_LIBCSTRING_H
 
 #include <common.h>
-#include <types.h>
 
-#include "evttools_libcerror.h"
-#include "evttools_libcstring.h"
+/* Define HAVE_LOCAL_LIBCSTRING for local use of libcstring
+ */
+#if defined( HAVE_LOCAL_LIBCSTRING )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcstring_codepage.h>
+#include <libcstring_definitions.h>
+#include <libcstring_locale.h>
+#include <libcstring_narrow_string.h>
+#include <libcstring_system_string.h>
+#include <libcstring_types.h>
+#include <libcstring_wide_string.h>
+
+#elif defined( HAVE_LIBCSTRING_H )
+
+/* If libtool DLL support is enabled set LIBCSTRING_DLL_IMPORT
+ * before including libcstring.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCSTRING_DLL_IMPORT
 #endif
 
-enum EVTTOOLS_EVENT_LOG_TYPES
-{
-	EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN,
-	EVTTOOLS_EVENT_LOG_TYPE_APPLICATION,
-	EVTTOOLS_EVENT_LOG_TYPE_INTERNET_EXPLORER,
-	EVTTOOLS_EVENT_LOG_TYPE_SECURITY,
-	EVTTOOLS_EVENT_LOG_TYPE_SYSTEM,
-	EVTTOOLS_EVENT_LOG_TYPE_WINDOWS_POWERSHELL,
-};
+#include <libcstring.h>
 
-int evtinput_determine_event_log_type(
-     const libcstring_system_character_t *string,
-     int *event_log_type,
-     libcerror_error_t **error );
-
-int evtinput_determine_event_log_type_from_filename(
-     const libcstring_system_character_t *filename,
-     int *event_log_type,
-     libcerror_error_t **error );
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcstring.h
 #endif
 
 #endif

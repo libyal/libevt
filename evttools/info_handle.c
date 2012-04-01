@@ -24,11 +24,10 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
 #include "evtinput.h"
 #include "evttools_codepage.h"
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
 #include "evttools_libfdatetime.h"
 #include "evttools_libevt.h"
 #include "info_handle.h"
@@ -40,16 +39,16 @@
  */
 int info_handle_initialize(
      info_handle_t **info_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_initialize";
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -57,10 +56,10 @@ int info_handle_initialize(
 	}
 	if( *info_handle != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid info handle value already set.",
 		 function );
 
@@ -71,10 +70,10 @@ int info_handle_initialize(
 
 	if( *info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create info handle.",
 		 function );
 
@@ -85,10 +84,10 @@ int info_handle_initialize(
 	     0,
 	     sizeof( info_handle_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear info handle.",
 		 function );
 
@@ -98,10 +97,10 @@ int info_handle_initialize(
 	     &( ( *info_handle )->input_file ),
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to initialize input file.",
 		 function );
 
@@ -129,17 +128,17 @@ on_error:
  */
 int info_handle_free(
      info_handle_t **info_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_free";
 	int result            = 1;
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -151,10 +150,10 @@ int info_handle_free(
 		     &( ( *info_handle )->input_file ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free input file.",
 			 function );
 
@@ -173,16 +172,16 @@ int info_handle_free(
  */
 int info_handle_signal_abort(
      info_handle_t *info_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_signal_abort";
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -196,10 +195,10 @@ int info_handle_signal_abort(
 		     info_handle->input_file,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to signal input file to abort.",
 			 function );
 
@@ -215,7 +214,7 @@ int info_handle_signal_abort(
 int info_handle_set_ascii_codepage(
      info_handle_t *info_handle,
      const libcstring_system_character_t *string,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function  = "info_handle_set_ascii_codepage";
 	size_t string_length   = 0;
@@ -224,10 +223,10 @@ int info_handle_set_ascii_codepage(
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -248,10 +247,10 @@ int info_handle_set_ascii_codepage(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to determine ASCII codepage.",
 		 function );
 
@@ -266,17 +265,17 @@ int info_handle_set_ascii_codepage(
 int info_handle_set_event_log_type_from_filename(
      info_handle_t *info_handle,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_set_event_log_type_from_filename";
 	int result            = 0;
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -289,10 +288,10 @@ int info_handle_set_event_log_type_from_filename(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to determine event log type from filename.",
 		 function );
 
@@ -307,16 +306,16 @@ int info_handle_set_event_log_type_from_filename(
 int info_handle_open_input(
      info_handle_t *info_handle,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_open_input";
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -336,10 +335,10 @@ int info_handle_open_input(
 	     error ) != 1 )
 #endif
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open input file.",
 		 function );
 
@@ -353,16 +352,16 @@ int info_handle_open_input(
  */
 int info_handle_close_input(
      info_handle_t *info_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "info_handle_close_input";
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -372,10 +371,10 @@ int info_handle_close_input(
 	     info_handle->input_file,
 	     error ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 		 "%s: unable to close input file.",
 		 function );
 
@@ -389,7 +388,7 @@ int info_handle_close_input(
  */
 int info_handle_file_fprint(
      info_handle_t *info_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	const libcstring_system_character_t *event_log_type = NULL;
 	static char *function                               = "info_handle_file_fprint";
@@ -399,10 +398,10 @@ int info_handle_file_fprint(
 
 	if( info_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid info handle.",
 		 function );
 
@@ -414,10 +413,10 @@ int info_handle_file_fprint(
 	     &minor_version,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file version.",
 		 function );
 
@@ -428,10 +427,10 @@ int info_handle_file_fprint(
 	     &number_of_records,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of records.",
 		 function );
 

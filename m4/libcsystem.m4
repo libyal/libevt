@@ -1,10 +1,63 @@
-dnl Functions for libsystem
+dnl Functions for libcsystem
 dnl
-dnl Version: 20120226
+dnl Version: 20120327
+
+dnl Function to detect if libcsystem is available
+dnl ac_libcsystem_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
+AC_DEFUN([AX_LIBCSYSTEM_CHECK_LIB],
+ [dnl Check if parameters were provided
+ AS_IF(
+  [test "x$ac_cv_with_libcsystem" != x && test "x$ac_cv_with_libcsystem" != xno && test "x$ac_cv_with_libcsystem" != xauto-detect],
+  [AS_IF(
+   [test -d "$ac_cv_with_libcsystem"],
+   [CFLAGS="$CFLAGS -I${ac_cv_with_libcsystem}/include"
+   LDFLAGS="$LDFLAGS -L${ac_cv_with_libcsystem}/lib"],
+   [AC_MSG_WARN([no such directory: $ac_cv_with_libcsystem])
+   ])
+  ])
+
+ AS_IF(
+  [test "x$ac_cv_with_libcsystem" != xno],
+  [dnl Check for headers
+  AC_CHECK_HEADERS([libcsystem.h])
+ 
+  AS_IF(
+   [test "x$ac_cv_header_libcsystem_h" = xno],
+   [ac_cv_libcsystem=no],
+   [ac_cv_libcsystem=yes
+   AC_CHECK_LIB(
+    fdatetime,
+    libcsystem_get_version,
+    [ac_cv_libcsystem_dummy=yes],
+    [ac_cv_libcsystem=no])
+  
+   dnl TODO add functions
+   ])
+  ])
+
+ AS_IF(
+  [test "x$ac_cv_libcsystem" = xyes],
+  [AC_DEFINE(
+   [HAVE_LIBCSYSTEM],
+   [1],
+   [Define to 1 if you have the `csystem' library (-lcsystem).])
+  LIBS="-lcsystem $LIBS"
+  ])
+
+ AS_IF(
+  [test "x$ac_cv_libcsystem" = xyes],
+  [AC_SUBST(
+   [HAVE_LIBCSYSTEM],
+   [1]) ],
+  [AC_SUBST(
+   [HAVE_LIBCSYSTEM],
+   [0])
+  ])
+ ])
 
 dnl Function to detect if ctime_r or ctime is available
 dnl Also checks how to use ctime_r
-AC_DEFUN([AX_LIBSYSTEM_CHECK_FUNC_CTIME],
+AC_DEFUN([AX_LIBCSYSTEM_CHECK_FUNC_CTIME],
  [AC_CHECK_FUNCS([ctime_r])
 
  AS_IF(
@@ -86,98 +139,22 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_FUNC_CTIME],
   ])
  ])
 
-dnl Function to detect if mkdir is available
-dnl Also checks how to use mkdir
-AC_DEFUN([AX_LIBSYSTEM_CHECK_FUNC_MKDIR],
- [AC_CHECK_FUNCS([mkdir])
-
- AS_IF(
-  [test "x$ac_cv_func_mkdir" = xyes],
-  [AC_MSG_CHECKING(
-   [how to use mkdir])
-
-  SAVE_CFLAGS="$CFLAGS"
-  CFLAGS="$CFLAGS -Wall -Werror"
-  AC_LANG_PUSH(C)
-
-  AC_LINK_IFELSE(
-   [AC_LANG_PROGRAM(
-    [[#include <sys/stat.h>
-#include <sys/types.h>]],
-    [[mkdir( "", 0 )]] )],
-    [AC_MSG_RESULT(
-     [with additional mode argument])
-    ac_cv_cv_mkdir_mode=yes],
-    [ac_cv_cv_mkdir_mode=no])
-
-  AS_IF(
-   [test "x$ac_cv_cv_mkdir_mode" = xno],
-   [AC_LINK_IFELSE(
-    [AC_LANG_PROGRAM(
-     [[#include <io.h>]],
-     [[mkdir( "" )]] )],
-    [AC_MSG_RESULT(
-     [with single argument])
-    ac_cv_cv_mkdir=yes],
-    [ac_cv_cv_mkdir=no])
-   ])
-
-  AC_LANG_POP(C)
-  CFLAGS="$SAVE_CFLAGS"
-
-  AS_IF(
-   [test "x$ac_cv_cv_mkdir_mode" = xno && test "x$ac_cv_cv_mkdir" = xno],
-   [AC_MSG_WARN(
-    [unknown])
-   ac_cv_func_mkdir=no])
-
-  AS_IF(
-   [test "x$ac_cv_func_mkdir" = xyes],
-   [AC_DEFINE(
-    [HAVE_MKDIR],
-    [1],
-    [Define to 1 if you have the mkdir function.])
-   ])
-
-  AS_IF(
-   [test "x$ac_cv_cv_mkdir_mode" = xyes],
-   [AC_DEFINE(
-    [HAVE_MKDIR_MODE],
-    [1],
-    [Define to 1 if you have the mkdir function with a second mode argument.])
-   ])
-  ])
-
- AS_IF(
-  [test "x$ac_cv_func_mkdir" = xno],
-  [AC_MSG_FAILURE(
-   [Missing function: mkdir],
-   [1])
-  ])
- ])
-
-dnl Function to detect if libsystem dependencies are available
-AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
- [dnl Types used in libsystem/libsystem_date_time.c
+dnl Function to detect if libcsystem dependencies are available
+AC_DEFUN([AX_LIBCSYSTEM_CHECK_LOCAL],
+ [dnl Types used in libcsystem/libcsystem_date_time.c
  AC_STRUCT_TM
 
- dnl Headers included in libsystem/libsystem_file.h, libsystem/libsystem_glob.h,
- dnl libsystem/libsystem_notify.h and libsystem/libsystem_string.h
+ dnl Headers included in libcsystem/libcsystem_file.h, libcsystem/libcsystem_glob.h,
+ dnl and libcsystem/libcsystem_notify.h
  AC_CHECK_HEADERS([errno.h])
 
- dnl Headers included in libsystem/libsystem_directory.h, libsystem/libsystem_file_io.h
- AC_CHECK_HEADERS([sys/stat.h])
+ dnl Headers included in libcsystem/libcsystem_file_io.h
+ AC_CHECK_HEADERS([fcntl.h unistd.h sys/stat.h])
 
- dnl Headers included in libsystem/libsystem_directory.h
- AC_CHECK_HEADERS([dirent.h])
-
- dnl Headers included in libsystem/libsystem_file_io.h
- AC_CHECK_HEADERS([fcntl.h unistd.h])
-
- dnl Headers included in libsystem/libsystem_date_time.h
+ dnl Headers included in libcsystem/libcsystem_date_time.h
  AC_HEADER_TIME
 
- dnl Headers included in libsystem/libsystem_glob.h
+ dnl Headers included in libcsystem/libcsystem_glob.h
  AC_CHECK_HEADERS([glob.h])
 
  AS_IF(
@@ -185,10 +162,10 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
   [AC_CHECK_HEADERS([io.h])
   ])
 
- dnl Headers included in libsystem/libsystem_signal.h
+ dnl Headers included in libcsystem/libcsystem_signal.h
  AC_CHECK_HEADERS([signal.h sys/signal.h])
 
- dnl File input/output functions used in libsystem/libsystem_file_io.h
+ dnl File input/output functions used in libcsystem/libcsystem_file_io.h
  AC_CHECK_FUNCS([close fstat ftruncate lseek open read stat write])
 
  AS_IF(
@@ -247,7 +224,7 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
    [1])
   ])
 
- dnl Date and time functions used in libsystem/libsystem_date_time.c
+ dnl Date and time functions used in libcsystem/libcsystem_date_time.c
  AC_CHECK_FUNCS([localtime localtime_r mktime])
 
  AS_IF(
@@ -264,8 +241,8 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
    [1])
   ])
  
- dnl Date and time functions used in libsystem/libsystem_date_time.h
- AX_LIBSYSTEM_CHECK_FUNC_CTIME
+ dnl Date and time functions used in libcsystem/libcsystem_date_time.h
+ AX_LIBCSYSTEM_CHECK_FUNC_CTIME
  
  AC_CHECK_FUNCS([gmtime gmtime_r time])
 
@@ -283,19 +260,7 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
    [1])
   ])
  
- dnl Directory functions used in libsystem/libsystem_directory.h
- AC_CHECK_FUNCS([chdir closedir opendir readdir_r])
- 
- AS_IF(
-  [test "x$ac_cv_func_chdir" != xyes],
-  [AC_MSG_FAILURE(
-   [Missing functions: chdir],
-   [1])
-  ])
- 
- AX_LIBSYSTEM_CHECK_FUNC_MKDIR
- 
- dnl Check for error string functions used in libsystem/libsystem_error_string.c
+ dnl Check for error string functions used in libcsystem/libcsystem_error_string.c
  AC_FUNC_STRERROR_R()
  
  AS_IF(
@@ -310,24 +275,68 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
    ])
   ])
  
- dnl Commandline argument/option parsing functions in libsystem/libsystem_getopt.h
+ dnl Commandline argument/option parsing functions in libcsystem/libcsystem_getopt.h
  AC_CHECK_FUNCS([getopt])
  
- dnl Path functions used in libsystem/libsystem_path.h
- AC_CHECK_FUNCS([getcwd])
- 
- AS_IF(
-  [test "x$ac_cv_func_getcwd" != xyes],
-  [AC_MSG_FAILURE(
-   [Missing functions: getcwd],
-   [1])
-  ])
- 
- dnl Check for IO buffering functions in libsystem/libsystem_support.c
+ dnl Check for IO buffering functions in libcsystem/libcsystem_support.c
  AC_CHECK_FUNCS([setvbuf])
 
- dnl Check for internationalization functions in libsystem/libsystem_support.c
+ dnl Check for internationalization functions in libcsystem/libcsystem_support.c
  AC_CHECK_FUNCS([bindtextdomain textdomain])
 
+ ])
+
+dnl Function to detect how to enable libcsystem
+AC_DEFUN([AX_LIBCSYSTEM_CHECK_ENABLE],
+ [AX_COMMON_ARG_WITH(
+  [libcsystem],
+  [libcsystem],
+  [search for libcsystem in includedir and libdir or in the specified DIR, or no if to use local version],
+  [auto-detect],
+  [DIR])
+
+ AX_LIBCSYSTEM_CHECK_LIB
+
+ AS_IF(
+  [test "x$ac_cv_libcsystem" != xyes],
+  [AX_LIBCSYSTEM_CHECK_LOCAL
+
+  AC_DEFINE(
+   [HAVE_LOCAL_LIBCSYSTEM],
+   [1],
+   [Define to 1 if the local version of libcsystem is used.])
+  AC_SUBST(
+   [HAVE_LOCAL_LIBCSYSTEM],
+   [1])
+  AC_SUBST(
+   [LIBCSYSTEM_CPPFLAGS],
+   [-I../libcsystem])
+  AC_SUBST(
+   [LIBCSYSTEM_LIBADD],
+   [../libcsystem/libcsystem.la])
+
+  ac_cv_libcsystem=local
+  ])
+
+ AM_CONDITIONAL(
+  [HAVE_LOCAL_LIBCSYSTEM],
+  [test "x$ac_cv_libcsystem" = xlocal])
+
+ AS_IF(
+  [test "x$ac_cv_libcsystem" = xyes],
+  [AC_SUBST(
+   [ax_libcsystem_pc_libs_private],
+   [-lstring])
+  ])
+
+ AS_IF(
+  [test "x$ac_cv_libcsystem" = xyes],
+  [AC_SUBST(
+   [ax_libcsystem_spec_requires],
+   [libcsystem])
+  AC_SUBST(
+   [ax_libcsystem_spec_build_requires],
+   [libcsystem-devel])
+  ])
  ])
 

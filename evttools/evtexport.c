@@ -21,11 +21,7 @@
 
 #include <common.h>
 #include <file_stream.h>
-#include <memory.h>
 #include <types.h>
-
-#include <libcstring.h>
-#include <liberror.h>
 
 #if defined( HAVE_UNISTD_H )
 #include <unistd.h>
@@ -35,13 +31,14 @@
 #include <stdlib.h>
 #endif
 
-#include <libsystem.h>
-
-#include "export_handle.h"
-#include "log_handle.h"
 #include "evtinput.h"
 #include "evtoutput.h"
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
+#include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
+#include "export_handle.h"
+#include "log_handle.h"
 
 export_handle_t *evtexport_export_handle = NULL;
 int evtexport_abort                      = 0;
@@ -84,7 +81,7 @@ void usage_fprint(
 void evtexport_signal_handler(
       libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "evtexport_signal_handler";
 
 	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
@@ -103,7 +100,7 @@ void evtexport_signal_handler(
 
 			libsystem_notify_print_error_backtrace(
 			 error );
-			liberror_error_free(
+			libcerror_error_free(
 			 &error );
 		}
 	}
@@ -126,7 +123,7 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	liberror_error_t *error                                        = NULL;
+	libcerror_error_t *error                                        = NULL;
 	log_handle_t *log_handle                                       = NULL;
 	libcstring_system_character_t *option_ascii_codepage           = NULL;
 	libcstring_system_character_t *option_event_log_type           = NULL;
@@ -157,7 +154,7 @@ int main( int argc, char * const argv[] )
 
 		libsystem_notify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 
 		return( EXIT_FAILURE );
@@ -422,7 +419,7 @@ on_error:
 	{
 		libsystem_notify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	if( evtexport_export_handle != NULL )

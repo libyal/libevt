@@ -26,9 +26,8 @@
 #include <file_stream.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
 #include "evttools_libevt.h"
 #include "evttools_libexe.h"
 #include "evttools_libfcache.h"
@@ -103,44 +102,44 @@ struct export_handle
 
 int export_handle_initialize(
      export_handle_t **export_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_free(
      export_handle_t **export_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_signal_abort(
      export_handle_t *export_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_set_ascii_codepage(
      export_handle_t *export_handle,
      const libcstring_system_character_t *string,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_set_event_log_type(
      export_handle_t *export_handle,
      const libcstring_system_character_t *string,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_set_event_log_type_from_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_open_system_registry_file(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_open_input(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_close_input(
      export_handle_t *export_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 /* Record specific export functions
  */
@@ -150,7 +149,7 @@ int export_handle_get_message_filename(
      size_t event_source_length,
      libcstring_system_character_t **message_filename,
      size_t *message_filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_get_message_file_path(
      export_handle_t *export_handle,
@@ -158,7 +157,7 @@ int export_handle_get_message_file_path(
      size_t message_filename_length,
      libcstring_system_character_t **message_file_path,
      size_t *message_file_path_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_get_message_string(
      export_handle_t *export_handle,
@@ -167,20 +166,20 @@ int export_handle_get_message_string(
      uint32_t message_identifier,
      libcstring_system_character_t **message_string,
      size_t *message_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_message_string_fprint(
      export_handle_t *export_handle,
      const libcstring_system_character_t *message_string,
      size_t message_string_length,
      libevt_record_t *record,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_export_record(
      export_handle_t *export_handle,
      libevt_record_t *record,
      log_handle_t *log_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 /* File export functions
  */
@@ -188,12 +187,12 @@ int export_handle_export_records(
      export_handle_t *export_handle,
      libevt_file_t *file,
      log_handle_t *log_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int export_handle_export_file(
      export_handle_t *export_handle,
      log_handle_t *log_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

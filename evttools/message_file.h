@@ -25,9 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
 #include "evttools_libexe.h"
 #include "evttools_libwrc.h"
 
@@ -66,20 +65,20 @@ struct message_file
 
 int message_file_initialize(
      message_file_t **message_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int message_file_free(
      message_file_t **message_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int message_file_open(
      message_file_t *message_file,
      const libcstring_system_character_t *filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int message_file_close(
      message_file_t *message_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int message_file_get_string(
      message_file_t *message_file,
@@ -87,7 +86,7 @@ int message_file_get_string(
      uint32_t message_identifier,
      libcstring_system_character_t **message_string,
      size_t *message_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

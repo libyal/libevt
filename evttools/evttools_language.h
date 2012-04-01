@@ -25,8 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -461,7 +461,7 @@ int evttools_language_identifier_from_string(
      uint32_t *language_identifier,
      const libcstring_system_character_t *string,
      size_t string_length,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 const libcstring_system_character_t *evttools_language_identifier_to_string(
                                       uint32_t language_identifier );

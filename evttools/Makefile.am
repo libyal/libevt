@@ -1,15 +1,17 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcstring \
-	-I$(top_srcdir)/liberror \
-	-I$(top_srcdir)/libsystem \
+	@LIBCSTRING_CPPFLAGS@ \
+	@LIBCERROR_CPPFLAGS@ \
+	@LIBCDIRECTORY_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
+	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
-	@LIBFDATETIME_CPPFLAGS@ \
-	@LIBFWNT_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
+	@LIBFDATETIME_CPPFLAGS@ \
+	@LIBFWNT_CPPFLAGS@ \
 	@LIBEXE_CPPFLAGS@ \
 	@LIBREGF_CPPFLAGS@ \
 	@LIBWRC_CPPFLAGS@ \
@@ -29,6 +31,11 @@ evtexport_SOURCES = \
 	evtoutput.c evtoutput.h \
 	evttools_codepage.c evttools_codepage.h \
 	evttools_language.c evttools_language.h \
+	evttools_libcerror.h \
+	evttools_libcdirectory.h \
+	evttools_libcpath.h \
+	evttools_libcstring.h \
+	evttools_libcsystem.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
 	evttools_libevt.h \
@@ -40,10 +47,12 @@ evtexport_SOURCES = \
 	message_file.c message_file.h
 
 evtexport_LDADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
 	../libevt/libevt.la \
-	../libsystem/libsystem.la \
+	@LIBCDIRECTORY_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFWNT_LIBADD@ \
@@ -58,16 +67,19 @@ evtinfo_SOURCES = \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
 	evttools_codepage.c evttools_codepage.h \
+	evttools_libcerror.h \
+	evttools_libcstring.h \
+	evttools_libcsystem.h \
 	evttools_libfdatetime.h \
 	evttools_libevt.h \
 	evttools_libuna.h \
 	info_handle.c info_handle.h
 
 evtinfo_LDADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
 	../libevt/libevt.la \
-	../libsystem/libsystem.la \
+	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBINTL@ \

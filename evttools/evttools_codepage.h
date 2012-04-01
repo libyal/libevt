@@ -25,9 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
 #include "evttools_libevt.h"
 
 #if defined( __cplusplus )
@@ -102,7 +101,7 @@ int evttools_codepage_from_string(
      const libcstring_system_character_t *string,
      size_t string_length,
      uint32_t feature_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 const libcstring_system_character_t *evttools_codepage_to_string(
                                       int codepage );

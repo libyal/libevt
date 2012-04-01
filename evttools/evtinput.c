@@ -22,12 +22,10 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
-#include <libsystem.h>
-
 #include "evtinput.h"
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
+#include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
 
 /* Determines the event log type from a string
@@ -36,7 +34,7 @@
 int evtinput_determine_event_log_type(
      const libcstring_system_character_t *string,
      int *event_log_type,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "evtinput_determine_event_log_type";
 	size_t string_length  = 0;
@@ -44,10 +42,10 @@ int evtinput_determine_event_log_type(
 
 	if( string == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid string.",
 		 function );
 
@@ -55,10 +53,10 @@ int evtinput_determine_event_log_type(
 	}
 	if( event_log_type == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid event log type.",
 		 function );
 
@@ -109,7 +107,7 @@ int evtinput_determine_event_log_type(
 int evtinput_determine_event_log_type_from_filename(
      const libcstring_system_character_t *filename,
      int *event_log_type,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	const libcstring_system_character_t *path_separator = NULL;
 	static char *function                               = "evtinput_determine_event_log_type_from_filename";
@@ -118,10 +116,10 @@ int evtinput_determine_event_log_type_from_filename(
 
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -129,10 +127,10 @@ int evtinput_determine_event_log_type_from_filename(
 	}
 	if( event_log_type == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid event log type.",
 		 function );
 
