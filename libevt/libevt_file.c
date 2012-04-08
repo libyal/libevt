@@ -23,10 +23,6 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libevt_array_type.h"
 #include "libevt_codepage.h"
 #include "libevt_debug.h"
@@ -34,6 +30,9 @@
 #include "libevt_io_handle.h"
 #include "libevt_file.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
+#include "libevt_libcnotify.h"
+#include "libevt_libcstring.h"
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
@@ -43,17 +42,17 @@
  */
 int libevt_file_initialize(
      libevt_file_t **file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_initialize";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -61,10 +60,10 @@ int libevt_file_initialize(
 	}
 	if( *file != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid file value already set.",
 		 function );
 
@@ -75,10 +74,10 @@ int libevt_file_initialize(
 
 	if( internal_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create file.",
 		 function );
 
@@ -89,10 +88,10 @@ int libevt_file_initialize(
 	     0,
 	     sizeof( libevt_internal_file_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear file.",
 		 function );
 
@@ -106,10 +105,10 @@ int libevt_file_initialize(
 	     0,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create records array.",
 		 function );
 
@@ -119,10 +118,10 @@ int libevt_file_initialize(
 	     &( internal_file->io_handle ),
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create IO handle.",
 		 function );
 
@@ -153,7 +152,7 @@ on_error:
  */
 int libevt_file_free(
      libevt_file_t **file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_free";
@@ -161,10 +160,10 @@ int libevt_file_free(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -180,10 +179,10 @@ int libevt_file_free(
 			     *file,
 			     error ) != 0 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 				 "%s: unable to close file.",
 				 function );
 
@@ -194,13 +193,13 @@ int libevt_file_free(
 
 		if( libevt_array_free(
 		     &( internal_file->records_array ),
-		     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_values_free,
+		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free records array.",
 			 function );
 
@@ -210,10 +209,10 @@ int libevt_file_free(
 		     &( internal_file->io_handle ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free IO handle.",
 			 function );
 
@@ -230,17 +229,17 @@ int libevt_file_free(
  */
 int libevt_file_signal_abort(
      libevt_file_t *file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_signal_abort";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -250,10 +249,10 @@ int libevt_file_signal_abort(
 
 	if( internal_file->io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal file - missing IO handle.",
 		 function );
 
@@ -271,7 +270,7 @@ int libevt_file_open(
      libevt_file_t *file,
      const char *filename,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle      = NULL;
 	libevt_internal_file_t *internal_file = NULL;
@@ -279,10 +278,10 @@ int libevt_file_open(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -292,10 +291,10 @@ int libevt_file_open(
 
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -304,10 +303,10 @@ int libevt_file_open(
 	if( ( ( access_flags & LIBEVT_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -315,10 +314,10 @@ int libevt_file_open(
 	}
 	if( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: write access currently not supported.",
 		 function );
 
@@ -328,10 +327,10 @@ int libevt_file_open(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create file IO handle.",
 		 function );
 
@@ -343,10 +342,10 @@ int libevt_file_open(
 	     1,
 	     error ) != 1 )
 	{
-                liberror_error_set(
+                libcerror_error_set(
                  error,
-                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
                  "%s: unable to set track offsets read in file IO handle.",
                  function );
 
@@ -360,10 +359,10 @@ int libevt_file_open(
 	      filename ) + 1,
 	     error ) != 1 )
 	{
-                liberror_error_set(
+                libcerror_error_set(
                  error,
-                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
                  "%s: unable to set filename in file IO handle.",
                  function );
 
@@ -375,10 +374,10 @@ int libevt_file_open(
 	     access_flags,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open file: %s.",
 		 function,
 		 filename );
@@ -408,7 +407,7 @@ int libevt_file_open_wide(
      libevt_file_t *file,
      const wchar_t *filename,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle      = NULL;
 	libevt_internal_file_t *internal_file = NULL;
@@ -416,10 +415,10 @@ int libevt_file_open_wide(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -429,10 +428,10 @@ int libevt_file_open_wide(
 
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -441,10 +440,10 @@ int libevt_file_open_wide(
 	if( ( ( access_flags & LIBEVT_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -452,10 +451,10 @@ int libevt_file_open_wide(
 	}
 	if( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: write access currently not supported.",
 		 function );
 
@@ -465,10 +464,10 @@ int libevt_file_open_wide(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create file IO handle.",
 		 function );
 
@@ -480,10 +479,10 @@ int libevt_file_open_wide(
 	     1,
 	     error ) != 1 )
 	{
-                liberror_error_set(
+                libcerror_error_set(
                  error,
-                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
                  "%s: unable to set track offsets read in file IO handle.",
                  function );
 
@@ -497,10 +496,10 @@ int libevt_file_open_wide(
 	      filename ) + 1,
 	     error ) != 1 )
 	{
-                liberror_error_set(
+                libcerror_error_set(
                  error,
-                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
                  "%s: unable to set filename in file IO handle.",
                  function );
 
@@ -512,10 +511,10 @@ int libevt_file_open_wide(
 	     access_flags,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open file: %ls.",
 		 function,
 		 filename );
@@ -545,7 +544,7 @@ int libevt_file_open_file_io_handle(
      libevt_file_t *file,
      libbfio_handle_t *file_io_handle,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_open_file_io_handle";
@@ -554,10 +553,10 @@ int libevt_file_open_file_io_handle(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -567,10 +566,10 @@ int libevt_file_open_file_io_handle(
 
 	if( internal_file->file_io_handle != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid internal file - file IO handle already set.",
 		 function );
 
@@ -578,10 +577,10 @@ int libevt_file_open_file_io_handle(
 	}
 	if( file_io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file IO handle.",
 		 function );
 
@@ -590,10 +589,10 @@ int libevt_file_open_file_io_handle(
 	if( ( ( access_flags & LIBEVT_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -601,10 +600,10 @@ int libevt_file_open_file_io_handle(
 	}
 	if( ( access_flags & LIBEVT_ACCESS_FLAG_WRITE ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: write access currently not supported.",
 		 function );
 
@@ -622,10 +621,10 @@ int libevt_file_open_file_io_handle(
 
 	if( file_io_handle_is_open == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to determine if file IO handle is open.",
 		 function );
 
@@ -638,10 +637,10 @@ int libevt_file_open_file_io_handle(
 		     bfio_access_flags,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to open file IO handle.",
 			 function );
 
@@ -652,10 +651,10 @@ int libevt_file_open_file_io_handle(
 	     internal_file,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read from file handle.",
 		 function );
 
@@ -669,7 +668,7 @@ int libevt_file_open_file_io_handle(
  */
 int libevt_file_close(
      libevt_file_t *file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_close";
@@ -677,10 +676,10 @@ int libevt_file_close(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -690,10 +689,10 @@ int libevt_file_close(
 
 	if( internal_file->file_io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid file - missing file IO handle.",
 		 function );
 
@@ -702,16 +701,16 @@ int libevt_file_close(
 	if( internal_file->file_io_handle_created_in_library != 0 )
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
+		if( libcnotify_verbose != 0 )
 		{
 			if( libevt_debug_print_read_offsets(
 			     internal_file->file_io_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_PRINT_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
 				 "%s: unable to print the read offsets.",
 				 function );
 
@@ -723,10 +722,10 @@ int libevt_file_close(
 		     internal_file->file_io_handle,
 		     error ) != 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 			 "%s: unable to close file IO handle.",
 			 function );
 
@@ -736,10 +735,10 @@ int libevt_file_close(
 		     &( internal_file->file_io_handle ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free file IO handle.",
 			 function );
 
@@ -752,13 +751,13 @@ int libevt_file_close(
 	if( libevt_array_resize(
 	     internal_file->records_array,
 	     0,
-	     (int(*)(intptr_t **, liberror_error_t **)) &libevt_record_values_free,
+	     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_RESIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
 		 "%s: unable to resize records array.",
 		 function );
 
@@ -772,7 +771,7 @@ int libevt_file_close(
  */
 int libevt_file_open_read(
      libevt_internal_file_t *internal_file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function              = "libevt_file_open_read";
 	uint32_t end_of_file_record_offset = 0;
@@ -781,10 +780,10 @@ int libevt_file_open_read(
 
 	if( internal_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid internal file.",
 		 function );
 
@@ -792,10 +791,10 @@ int libevt_file_open_read(
 	}
 	if( internal_file->io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal file - missing IO handle.",
 		 function );
 
@@ -806,9 +805,9 @@ int libevt_file_open_read(
 		internal_file->io_handle->abort = 0;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
+	if( libcnotify_verbose != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Reading file header:\n" );
 	}
 #endif
@@ -819,19 +818,19 @@ int libevt_file_open_read(
 	     &end_of_file_record_offset,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read file header.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
+	if( libcnotify_verbose != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Reading records:\n" );
 	}
 #endif
@@ -845,10 +844,10 @@ int libevt_file_open_read(
 
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read records.",
 		 function );
 
@@ -856,11 +855,11 @@ int libevt_file_open_read(
 		if( ( error != NULL )
 		 && ( *error != NULL ) )
 		{
-			libnotify_print_error_backtrace(
+			libcnotify_print_error_backtrace(
 			 *error );
 		}
 #endif
-		liberror_error_free(
+		libcerror_error_free(
 		 error );
 	}
 	if( ( result != 1 )
@@ -876,10 +875,10 @@ int libevt_file_open_read(
 
 		if( result != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read recover records.",
 			 function );
 
@@ -887,11 +886,11 @@ int libevt_file_open_read(
 			if( ( error != NULL )
 			 && ( *error != NULL ) )
 			{
-				libnotify_print_error_backtrace(
+				libcnotify_print_error_backtrace(
 				 *error );
 			}
 #endif
-			liberror_error_free(
+			libcerror_error_free(
 			 error );
 		}
 	}
@@ -908,17 +907,17 @@ int libevt_file_open_read(
 int libevt_file_get_ascii_codepage(
      libevt_file_t *file,
      int *ascii_codepage,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_get_ascii_codepage";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -928,10 +927,10 @@ int libevt_file_get_ascii_codepage(
 
 	if( internal_file->io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal file - missing IO handle.",
 		 function );
 
@@ -939,10 +938,10 @@ int libevt_file_get_ascii_codepage(
 	}
 	if( ascii_codepage == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid ASCII codepage.",
 		 function );
 
@@ -959,17 +958,17 @@ int libevt_file_get_ascii_codepage(
 int libevt_file_set_ascii_codepage(
      libevt_file_t *file,
      int ascii_codepage,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_set_ascii_codepage";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -979,10 +978,10 @@ int libevt_file_set_ascii_codepage(
 
 	if( internal_file->io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal file - missing IO handle.",
 		 function );
 
@@ -1001,10 +1000,10 @@ int libevt_file_set_ascii_codepage(
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1257 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1258 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported ASCII codepage.",
 		 function );
 
@@ -1022,17 +1021,17 @@ int libevt_file_get_version(
      libevt_file_t *file,
      uint32_t *major_version,
      uint32_t *minor_version,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_get_version";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -1042,10 +1041,10 @@ int libevt_file_get_version(
 
 	if( internal_file->io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid internal file - missing IO handle.",
 		 function );
 
@@ -1053,10 +1052,10 @@ int libevt_file_get_version(
 	}
 	if( major_version == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid major version.",
 		 function );
 
@@ -1064,10 +1063,10 @@ int libevt_file_get_version(
 	}
 	if( minor_version == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid minor version.",
 		 function );
 
@@ -1085,17 +1084,17 @@ int libevt_file_get_version(
 int libevt_file_get_number_of_records(
      libevt_file_t *file,
      int *number_of_records,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_get_number_of_records";
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -1108,10 +1107,10 @@ int libevt_file_get_number_of_records(
 	     number_of_records,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of records.",
 		 function );
 
@@ -1127,7 +1126,7 @@ int libevt_file_get_record(
      libevt_file_t *file,
      int record_index,
      libevt_record_t **record,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
@@ -1135,10 +1134,10 @@ int libevt_file_get_record(
 
 	if( file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file.",
 		 function );
 
@@ -1148,10 +1147,10 @@ int libevt_file_get_record(
 
 	if( record == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid record.",
 		 function );
 
@@ -1163,10 +1162,10 @@ int libevt_file_get_record(
 	     (intptr_t **) &record_values,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve record values: %d.",
 		 function,
 		 record_index );
@@ -1181,10 +1180,10 @@ int libevt_file_get_record(
 	     LIBEVT_RECORD_FLAGS_DEFAULT,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create record.",
 		 function );
 

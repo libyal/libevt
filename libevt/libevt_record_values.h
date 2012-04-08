@@ -25,10 +25,9 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
 #include "libevt_libfvalue.h"
 
 #if defined( __cplusplus )
@@ -93,40 +92,40 @@ struct libevt_record_values
 
 int libevt_record_values_initialize(
      libevt_record_values_t **record_values,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libevt_record_values_free(
      libevt_record_values_t **record_values,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libevt_record_values_clone(
      libevt_record_values_t **destination_record_values,
      libevt_record_values_t *source_record_values,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 ssize_t libevt_record_values_read(
          libevt_record_values_t *record_values,
          libbfio_handle_t *file_io_handle,
          libevt_io_handle_t *io_handle,
          off64_t *file_offset,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 int libevt_record_values_read_event(
      libevt_record_values_t *record_values,
      uint8_t *record_values_data,
      size_t record_values_data_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libevt_record_values_read_end_of_file(
      libevt_record_values_t *record_values,
      uint8_t *record_values_data,
      size_t record_values_data_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libevt_record_values_get_type(
      libevt_record_values_t *record_values,
      uint8_t *type,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

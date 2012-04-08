@@ -25,10 +25,9 @@
 #include <types.h>
 
 #include "evtinput.h"
-#include "evttools_codepage.h"
 #include "evttools_libcerror.h"
+#include "evttools_libclocale.h"
 #include "evttools_libcstring.h"
-#include "evttools_libfdatetime.h"
 #include "evttools_libevt.h"
 #include "info_handle.h"
 
@@ -107,7 +106,7 @@ int info_handle_initialize(
 		goto on_error;
 	}
 	( *info_handle )->event_log_type = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
-	( *info_handle )->ascii_codepage = EVTTOOLS_CODEPAGE_WINDOWS_1252;
+	( *info_handle )->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
 	( *info_handle )->notify_stream  = INFO_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
@@ -232,19 +231,27 @@ int info_handle_set_ascii_codepage(
 
 		return( -1 );
 	}
-	feature_flags = EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_KOI8_CODEPAGES
-	              | EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS_CODEPAGES;
+	feature_flags = LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_KOI8
+	              | LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS;
 
 	string_length = libcstring_system_string_length(
 	                 string );
 
-	result = evttools_codepage_from_string(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libclocale_codepage_copy_from_string_wide(
 	          &( info_handle->ascii_codepage ),
 	          string,
 	          string_length,
 	          feature_flags,
 	          error );
-
+#else
+	result = libclocale_codepage_copy_from_string(
+	          &( info_handle->ascii_codepage ),
+	          string,
+	          string_length,
+	          feature_flags,
+	          error );
+#endif
 	if( result == -1 )
 	{
 		libcerror_error_set(

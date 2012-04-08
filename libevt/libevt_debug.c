@@ -22,12 +22,11 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libevt_debug.h"
 #include "libevt_definitions.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
+#include "libevt_libcnotify.h"
 
 #if defined( HAVE_DEBUG_OUTPUT )
 
@@ -38,22 +37,22 @@ void libevt_debug_print_file_flags(
 {
 	if( ( file_flags & LIBEVT_FILE_FLAG_IS_DIRTY ) != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Is dirty (ELF_LOGFILE_HEADER_DIRTY)\n" );
 	}
 	if( ( file_flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Has wrapped (ELF_LOGFILE_HEADER_WRAP)\n" );
 	}
 	if( ( file_flags & LIBEVT_FILE_FLAG_IS_FULL ) != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Is full (ELF_LOGFILE_LOGFULL_WRITTEN)\n" );
 	}
 	if( ( file_flags & LIBEVT_FILE_FLAG_ARCHIVE ) != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "Should be archived (ELF_LOGFILE_ARCHIVE_SET)\n" );
 	}
 }
@@ -68,22 +67,22 @@ void libevt_debug_print_event_identifier_severity(
 	switch( event_identifier_severity )
 	{
 		case 0:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Success" );
 			break;
 
 		case 1:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Informational" );
 			break;
 
 		case 2:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Warning" );
 			break;
 
 		case 3:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Error" );
 			break;
 	}
@@ -97,32 +96,32 @@ void libevt_debug_print_event_type(
 	switch( event_type )
 	{
 		case LIBEVT_EVENT_TYPE_ERROR:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Error event" );
 			break;
 
 		case LIBEVT_EVENT_TYPE_WARNING:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Warning event" );
 			break;
 
 		case LIBEVT_EVENT_TYPE_INFORMATION:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Information event" );
 			break;
 
 		case LIBEVT_EVENT_TYPE_AUDIT_SUCCESS:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Success Audit event" );
 			break;
 
 		case LIBEVT_EVENT_TYPE_AUDIT_FAILURE:
-			libnotify_printf(
+			libcnotify_printf(
 			 "Failure Audit event" );
 			break;
 
 		default:
-			libnotify_printf(
+			libcnotify_printf(
 			 "(Unknown)" );
 	}
 }
@@ -132,7 +131,7 @@ void libevt_debug_print_event_type(
  */
 int libevt_debug_print_read_offsets(
      libbfio_handle_t *file_io_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libevt_debug_print_read_offsets";
 	off64_t offset        = 0;
@@ -142,10 +141,10 @@ int libevt_debug_print_read_offsets(
 
 	if( file_io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file io handle.",
 		 function );
 
@@ -156,16 +155,16 @@ int libevt_debug_print_read_offsets(
 	     &number_of_offsets,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of offsets read.",
 		 function );
 
 		return( -1 );
 	}
-	libnotify_printf(
+	libcnotify_printf(
 	 "Offsets read:\n" );
 
 	for( offset_iterator = 0;
@@ -179,17 +178,17 @@ int libevt_debug_print_read_offsets(
 		     &size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve offset: %d.",
 			 function,
 			 ( offset_iterator + 1 ) );
 
 			return( -1 );
 		}
-		libnotify_printf(
+		libcnotify_printf(
 		 "%08" PRIi64 " ( 0x%08" PRIx64 " ) - %08" PRIi64 " ( 0x%08" PRIx64 " ) size: %" PRIu64 "\n",
 		 offset,
 		 offset,
@@ -197,7 +196,7 @@ int libevt_debug_print_read_offsets(
 		 offset + size,
 		 size );
 	}
-	libnotify_printf(
+	libcnotify_printf(
 	 "\n" );
 
 	return( 1 );

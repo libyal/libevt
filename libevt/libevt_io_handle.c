@@ -24,15 +24,14 @@
 #include <memory.h>
 #include <types.h>
 
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libevt_array_type.h"
 #include "libevt_debug.h"
 #include "libevt_codepage.h"
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
+#include "libevt_libcnotify.h"
 #include "libevt_record_values.h"
 #include "libevt_unused.h"
 
@@ -46,16 +45,16 @@ const char *evt_file_signature = "LfLe";
  */
 int libevt_io_handle_initialize(
      libevt_io_handle_t **io_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libevt_io_handle_initialize";
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
 		 function );
 
@@ -63,10 +62,10 @@ int libevt_io_handle_initialize(
 	}
 	if( *io_handle != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid IO handle value already set.",
 		 function );
 
@@ -77,10 +76,10 @@ int libevt_io_handle_initialize(
 
 	if( *io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create IO handle.",
 		 function );
 
@@ -91,10 +90,10 @@ int libevt_io_handle_initialize(
 	     0,
 	     sizeof( libevt_io_handle_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear file.",
 		 function );
 
@@ -120,16 +119,16 @@ on_error:
  */
 int libevt_io_handle_free(
      libevt_io_handle_t **io_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libevt_io_handle_free";
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
 		 function );
 
@@ -153,7 +152,7 @@ int libevt_io_handle_read_file_header(
      libbfio_handle_t *file_io_handle,
      uint32_t *first_record_offset,
      uint32_t *end_of_file_record_offset,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	evt_file_header_t file_header;
 
@@ -168,10 +167,10 @@ int libevt_io_handle_read_file_header(
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
 		 function );
 
@@ -179,10 +178,10 @@ int libevt_io_handle_read_file_header(
 	}
 	if( first_record_offset == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid first record offset.",
 		 function );
 
@@ -190,10 +189,10 @@ int libevt_io_handle_read_file_header(
 	}
 	if( end_of_file_record_offset == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid end of file record offset.",
 		 function );
 
@@ -204,19 +203,19 @@ int libevt_io_handle_read_file_header(
 	     &( io_handle->file_size ),
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file size.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
+	if( libcnotify_verbose != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: reading file header at offset: 0 (0x00000000)\n",
 		 function );
 	}
@@ -227,16 +226,16 @@ int libevt_io_handle_read_file_header(
 	     SEEK_SET,
 	     error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek file header offset: 0.",
 		 function );
 
 		return( -1 );
 	}
-	read_count = libbfio_handle_read(
+	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
 	              (uint8_t *) &file_header,
 	              sizeof( evt_file_header_t ),
@@ -244,22 +243,22 @@ int libevt_io_handle_read_file_header(
 
 	if( read_count != (ssize_t) sizeof( evt_file_header_t ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read file header.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
+	if( libcnotify_verbose != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: file header:\n",
 		 function );
-		libnotify_print_data(
+		libcnotify_print_data(
 		 (uint8_t *) &file_header,
 		 sizeof( evt_file_header_t ),
 		 0 );
@@ -270,10 +269,10 @@ int libevt_io_handle_read_file_header(
 	     evt_file_signature,
 	     4 ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
 		 "%s: invalid file signature.",
 		 function );
 
@@ -308,14 +307,14 @@ int libevt_io_handle_read_file_header(
 	 size_copy );
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	if( libnotify_verbose != 0 )
+	if( libcnotify_verbose != 0 )
 	{
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: size\t\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 size );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: signature\t\t\t\t: %c%c%c%c\n",
 		 function,
 		 file_header.signature[ 0 ],
@@ -323,22 +322,22 @@ int libevt_io_handle_read_file_header(
 		 file_header.signature[ 2 ],
 		 file_header.signature[ 3 ] );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: major version\t\t\t: %" PRIu32 "\n",
 		 function,
 		 io_handle->major_version );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: minor version\t\t\t: %" PRIu32 "\n",
 		 function,
 		 io_handle->minor_version );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: first record offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 *first_record_offset );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 *end_of_file_record_offset );
@@ -346,7 +345,7 @@ int libevt_io_handle_read_file_header(
 		byte_stream_copy_to_uint32_little_endian(
 		 file_header.last_record_number,
 		 value_32bit );
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: last record number\t\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
@@ -354,43 +353,43 @@ int libevt_io_handle_read_file_header(
 		byte_stream_copy_to_uint32_little_endian(
 		 file_header.first_record_number,
 		 value_32bit );
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: first record number\t\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: file flags\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 io_handle->file_flags );
 		libevt_debug_print_file_flags(
 		 io_handle->file_flags );
-		libnotify_printf(
+		libcnotify_printf(
 		 "\n" );
 
 		byte_stream_copy_to_uint32_little_endian(
 		 file_header.retention,
 		 value_32bit );
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: retention\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "%s: size copy\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 size_copy );
 
-		libnotify_printf(
+		libcnotify_printf(
 		 "\n" );
 	}
 #endif
 	if( size != size_copy )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_INPUT,
-		 LIBERROR_INPUT_ERROR_VALUE_MISMATCH,
+		 LIBCERROR_ERROR_DOMAIN_INPUT,
+		 LIBCERROR_INPUT_ERROR_VALUE_MISMATCH,
 		 "%s: value mismatch for size and size copy.",
 		 function );
 
@@ -408,7 +407,7 @@ int libevt_io_handle_read_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *records_array,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_io_handle_read_records";
@@ -420,10 +419,10 @@ int libevt_io_handle_read_records(
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
 		 function );
 
@@ -434,10 +433,10 @@ int libevt_io_handle_read_records(
 	if( ( file_offset < (off64_t) sizeof( evt_file_header_t ) )
 	 || ( (size64_t) file_offset >= io_handle->file_size ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: file offset value out of bounds.",
 		 function );
 
@@ -449,10 +448,10 @@ int libevt_io_handle_read_records(
 	     SEEK_SET,
 	     error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek record offset: %" PRIi64 ".",
 		 function,
 		 file_offset );
@@ -462,9 +461,9 @@ int libevt_io_handle_read_records(
 	do
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
-		if( libnotify_verbose != 0 )
+		if( libcnotify_verbose != 0 )
 		{
-			libnotify_printf(
+			libcnotify_printf(
 			 "%s: reading record: %" PRIu32 " at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
 			 record_iterator,
@@ -476,10 +475,10 @@ int libevt_io_handle_read_records(
 		     &record_values,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create record values.",
 			 function );
 
@@ -494,10 +493,10 @@ int libevt_io_handle_read_records(
 
 		if( read_count == -1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read record: %" PRIu32 ".",
 			 function,
 			 record_iterator );
@@ -514,10 +513,10 @@ int libevt_io_handle_read_records(
 			     (intptr_t *) record_values,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
 				 "%s: unable to append record values to records array.",
 				 function );
 
@@ -544,10 +543,10 @@ fprintf( stderr, "EMERGENCY BREAK\n" );
 	     &record_values,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free record values.",
 		 function );
 
@@ -576,7 +575,7 @@ int libevt_io_handle_read_recover_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *recovered_records_array,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	uint8_t *scan_block      = NULL;
 	static char *function    = "libevt_io_handle_read_recover_records";
@@ -589,10 +588,10 @@ int libevt_io_handle_read_recover_records(
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
 		 function );
 
@@ -603,10 +602,10 @@ int libevt_io_handle_read_recover_records(
 
 	if( scan_block == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create scan block.",
 		 function );
 
@@ -625,10 +624,10 @@ int libevt_io_handle_read_recover_records(
 	     SEEK_SET,
 	     error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek scan block offset: %" PRIi64 ".",
 		 function,
 		 file_offset );
@@ -645,7 +644,7 @@ int libevt_io_handle_read_recover_records(
 		{
 			read_size = scan_block_size;
 		}
-		read_count = libbfio_handle_read(
+		read_count = libbfio_handle_read_buffer(
 		              file_io_handle,
 		              scan_block,
 		              read_size,
@@ -653,10 +652,10 @@ int libevt_io_handle_read_recover_records(
 
 		if( read_count != (ssize_t) read_size )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read scan block at offset: %" PRIi64 ".",
 			 function,
 			 file_offset );
@@ -756,10 +755,10 @@ int libevt_io_handle_read_recover_records(
 	     recovered_records_array,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read records.",
 		 function );
 

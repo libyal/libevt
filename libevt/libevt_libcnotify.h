@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal libcnotify header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,33 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _LIBEVT_LIBCNOTIFY_H )
+#define _LIBEVT_LIBCNOTIFY_H
 
 #include <common.h>
-#include <types.h>
 
-#include <stdio.h>
+/* Define HAVE_LOCAL_LIBCNOTIFY for local use of libcnotify
+ */
+#if defined( HAVE_LOCAL_LIBCNOTIFY )
 
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
+#include <libcnotify_definitions.h>
+#include <libcnotify_print.h>
+#include <libcnotify_stream.h>
+#include <libcnotify_verbose.h>
 
-#if defined( __cplusplus )
-extern "C" {
+#elif defined( HAVE_LIBCNOTIFY_H )
+
+/* If libtool DLL support is enabled set LIBCNOTIFY_DLL_IMPORT
+ * before including libcnotify.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCNOTIFY_DLL_IMPORT
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#include <libcnotify.h>
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
-
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcnotify.h
 #endif
 
 #endif

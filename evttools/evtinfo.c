@@ -33,6 +33,8 @@
 
 #include "evtoutput.h"
 #include "evttools_libcerror.h"
+#include "evttools_libclocale.h"
+#include "evttools_libcnotify.h"
 #include "evttools_libcstring.h"
 #include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
@@ -69,12 +71,12 @@ void usage_fprint(
 /* Signal handler for evtinfo
  */
 void evtinfo_signal_handler(
-      libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
+      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function   = "evtinfo_signal_handler";
 
-	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
+	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
 
 	evtinfo_abort = 1;
 
@@ -84,11 +86,11 @@ void evtinfo_signal_handler(
 		     evtinfo_info_handle,
 		     &error ) != 1 )
 		{
-			libsystem_notify_printf(
+			libcnotify_printf(
 			 "%s: unable to signal info handle to abort.\n",
 			 function );
 
-			libsystem_notify_print_error_backtrace(
+			libcnotify_print_error_backtrace(
 			 error );
 			libcerror_error_free(
 			 &error );
@@ -96,10 +98,10 @@ void evtinfo_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libsystem_file_io_close(
+	if( libcsystem_file_io_close(
 	     0 ) != 0 )
 	{
-		libsystem_notify_printf(
+		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
 		 function );
 	}
@@ -113,7 +115,7 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcerror_error_t *error                              = NULL;
+	libcerror_error_t *error                             = NULL;
 	libcstring_system_character_t *option_ascii_codepage = NULL;
 	libcstring_system_character_t *source                = NULL;
 	char *program                                        = "evtinfo";
@@ -121,14 +123,23 @@ int main( int argc, char * const argv[] )
 	int result                                           = 0;
 	int verbose                                          = 0;
 
-	libsystem_notify_set_stream(
+	libcnotify_stream_set(
 	 stderr,
 	 NULL );
-	libsystem_notify_set_verbose(
+	libcnotify_verbose_set(
 	 1 );
 
-	if( libsystem_initialize(
+	if( libclocale_initialize(
 	     "evttools",
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to initialize locale values.\n" );
+
+		goto on_error;
+	}
+	if( libcsystem_initialize(
 	     _IONBF,
 	     &error ) != 1 )
 	{
@@ -136,18 +147,13 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to initialize system values.\n" );
 
-		libsystem_notify_print_error_backtrace(
-		 error );
-		libcerror_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	evtoutput_version_fprint(
 	 stdout,
 	 program );
 
-	while( ( option = libsystem_getopt(
+	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
 	                   _LIBCSTRING_SYSTEM_STRING( "c:hvV" ) ) ) != (libcstring_system_integer_t) -1 )
@@ -202,7 +208,7 @@ int main( int argc, char * const argv[] )
 	}
 	source = argv[ optind ];
 
-	libsystem_notify_set_verbose(
+	libcnotify_verbose_set(
 	 verbose );
 	libevt_notify_set_stream(
 	 stderr,
@@ -302,7 +308,7 @@ int main( int argc, char * const argv[] )
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
 		libcerror_error_free(
 		 &error );

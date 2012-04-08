@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal libcdirectory header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,33 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _LIBUNATOOLS_LIBCDIRECTORY_H )
+#define _LIBUNATOOLS_LIBCDIRECTORY_H
 
 #include <common.h>
-#include <types.h>
 
-#include <stdio.h>
+/* Define HAVE_LOCAL_LIBCDIRECTORY for local use of libcdirectory
+ */
+#if defined( HAVE_LOCAL_LIBCDIRECTORY )
 
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
+#include <libcdirectory_definitions.h>
+#include <libcdirectory_directory.h>
+#include <libcdirectory_directory_entry.h>
+#include <libcdirectory_types.h>
 
-#if defined( __cplusplus )
-extern "C" {
+#elif defined( HAVE_LIBCDIRECTORY_H )
+
+/* If libtool DLL support is enabled set LIBCDIRECTORY_DLL_IMPORT
+ * before including libcdirectory.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCDIRECTORY_DLL_IMPORT
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#include <libcdirectory.h>
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
-
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcdirectory.h
 #endif
 
 #endif

@@ -14,7 +14,7 @@ export DH_OPTIONS
 install_libevt:
 	# Set up libevt package directories and files
 	mkdir -p debian/libevt/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.so.* debian/libevt/usr/lib
+	install -p -m755 debian/tmp/usr/lib/lib*.so.*.*.* debian/libevt/usr/lib
 
 install_libevt_dev:
 	# Set up libevt-dev package directories and files

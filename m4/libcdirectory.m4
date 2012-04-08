@@ -1,6 +1,6 @@
 dnl Functions for libcdirectory
 dnl
-dnl Version: 20120327
+dnl Version: 20120408
 
 dnl Function to detect if libcdirectory is available
 dnl ac_libcdirectory_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -17,7 +17,8 @@ AC_DEFUN([AX_LIBCDIRECTORY_CHECK_LIB],
   ])
 
  AS_IF(
-  [test "x$ac_cv_with_libcdirectory" != xno],
+  [test "x$ac_cv_with_libcdirectory" = xno],
+  [ac_cv_libcdirectory=no],
   [dnl Check for headers
   AC_CHECK_HEADERS([libcdirectory.h])
  
@@ -41,7 +42,8 @@ AC_DEFUN([AX_LIBCDIRECTORY_CHECK_LIB],
    [HAVE_LIBCDIRECTORY],
    [1],
    [Define to 1 if you have the `cdirectory' library (-lcdirectory).])
-  LIBS="-lcdirectory $LIBS"
+
+  ac_cv_libcdirectory_LIBADD="-lcdirectory"
   ])
 
  AS_IF(
@@ -83,6 +85,11 @@ AC_DEFUN([AX_LIBCDIRECTORY_CHECK_LOCAL],
    [Missing functions: readdir_r],
    [1])
   ])
+ 
+ ac_cv_libcdirectory_CPPFLAGS="-I../libcdirectory";
+ ac_cv_libcdirectory_LIBADD="../libcdirectory/libcdirectory.la";
+
+ ac_cv_libcdirectory=local
  ])
 
 dnl Function to detect how to enable libcdirectory
@@ -94,8 +101,25 @@ AC_DEFUN([AX_LIBCDIRECTORY_CHECK_ENABLE],
   [auto-detect],
   [DIR])
 
- AX_LIBCDIRECTORY_CHECK_LIB
+ dnl Check for a pkg-config file
+ AS_IF(
+  [test "x$cross_compiling" != "xyes" && test "x$PKGCONFIG" != "x"],
+  [PKG_CHECK_MODULES(
+   [libcdirectory],
+   [libcdirectory >= 20120405],
+   [ac_cv_libcdirectory=yes],
+   [ac_cv_libcdirectory=no])
 
+  ac_cv_libcdirectory_CPPFLAGS="$pkg_cv_libcdirectory_CFLAGS"
+  ac_cv_libcdirectory_LIBADD="$pkg_cv_libcdirectory_LIBS"
+ ])
+
+ dnl Check for a shared library version
+ AS_IF(
+  [test "x$ac_cv_libcdirectory" != xyes],
+  [AX_LIBCDIRECTORY_CHECK_LIB])
+
+ dnl Check if the dependencies for the local library version
  AS_IF(
   [test "x$ac_cv_libcdirectory" != xyes],
   [AX_LIBCDIRECTORY_CHECK_LOCAL
@@ -107,19 +131,23 @@ AC_DEFUN([AX_LIBCDIRECTORY_CHECK_ENABLE],
   AC_SUBST(
    [HAVE_LOCAL_LIBCDIRECTORY],
    [1])
-  AC_SUBST(
-   [LIBCDIRECTORY_CPPFLAGS],
-   [-I../libcdirectory])
-  AC_SUBST(
-   [LIBCDIRECTORY_LIBADD],
-   [../libcdirectory/libcdirectory.la])
-
-  ac_cv_libcdirectory=local
   ])
 
  AM_CONDITIONAL(
   [HAVE_LOCAL_LIBCDIRECTORY],
   [test "x$ac_cv_libcdirectory" = xlocal])
+ AS_IF(
+  [test "x$ac_cv_libcdirectory_CPPFLAGS" != "x"],
+  [AC_SUBST(
+   [LIBCDIRECTORY_CPPFLAGS],
+   [$ac_cv_libcdirectory_CPPFLAGS])
+  ])
+ AS_IF(
+  [test "x$ac_cv_libcdirectory_LIBADD" != "x"],
+  [AC_SUBST(
+   [LIBCDIRECTORY_LIBADD],
+   [$ac_cv_libcdirectory_LIBADD])
+  ])
 
  AS_IF(
   [test "x$ac_cv_libcdirectory" = xyes],

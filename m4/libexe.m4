@@ -1,6 +1,6 @@
 dnl Functions for libexe
 dnl
-dnl Version: 20111025
+dnl Version: 20120408
 
 dnl Function to detect if libexe is available
 dnl ac_libexe_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -42,7 +42,8 @@ AC_DEFUN([AX_LIBEXE_CHECK_LIB],
    [HAVE_LIBEXE],
    [1],
    [Define to 1 if you have the `exe' library (-lexe).])
-  LIBS="-lexe $LIBS"
+
+  ac_cv_libexe_LIBADD="-lexe"
   ])
 
  AS_IF(
@@ -56,24 +57,6 @@ AC_DEFUN([AX_LIBEXE_CHECK_LIB],
   ])
  ])
 
-dnl Function to detect if libexe dependencies are available
-AC_DEFUN([AX_LIBEXE_CHECK_LOCAL],
- [dnl Types used in libexe/libexe_date_time.h
- AC_STRUCT_TM
-
- dnl Headers included in libexe/libexe_date_time.h
- AC_HEADER_TIME
-
- dnl Date and time functions used in libexe/libexe_date_time.h
- AC_CHECK_FUNCS(
-  [time],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing function: time],
-   [1])
-  ])
- ])
-
 dnl Function to detect how to enable libexe
 AC_DEFUN([AX_LIBEXE_CHECK_ENABLE],
  [AX_COMMON_ARG_WITH(
@@ -83,11 +66,31 @@ AC_DEFUN([AX_LIBEXE_CHECK_ENABLE],
   [auto-detect],
   [DIR])
 
- AX_LIBEXE_CHECK_LIB
+ dnl Check for a pkg-config file
+ AS_IF(
+  [test "x$cross_compiling" != "xyes" && test "x$PKGCONFIG" != "x"],
+  [PKG_CHECK_MODULES(
+   [libexe],
+   [libexe >= 20120405],
+   [ac_cv_libexe=yes],
+   [ac_cv_libexe=no])
 
+  ac_cv_libexe_CPPFLAGS="$pkg_cv_libexe_CFLAGS"
+  ac_cv_libexe_LIBADD="$pkg_cv_libexe_LIBS"
+ ])
+
+ dnl Check for a shared library version
  AS_IF(
   [test "x$ac_cv_libexe" != xyes],
-  [AX_LIBEXE_CHECK_LOCAL
+  [AX_LIBEXE_CHECK_LIB])
+
+ dnl Check if the dependencies for the local library version
+ AS_IF(
+  [test "x$ac_cv_libexe" != xyes],
+  [ac_cv_libexe_CPPFLAGS="-I../libexe";
+  ac_cv_libexe_LIBADD="../libexe/libexe.la";
+
+  ac_cv_libexe=local
 
   AC_DEFINE(
    [HAVE_LOCAL_LIBEXE],
@@ -96,18 +99,23 @@ AC_DEFUN([AX_LIBEXE_CHECK_ENABLE],
   AC_SUBST(
    [HAVE_LOCAL_LIBEXE],
    [1])
-  AC_SUBST(
-   [LIBEXE_CPPFLAGS],
-   [-I../libexe])
-  AC_SUBST(
-   [LIBEXE_LIBADD],
-   [../libexe/libexe.la])
-  ac_cv_libexe=local
   ])
 
  AM_CONDITIONAL(
   [HAVE_LOCAL_LIBEXE],
   [test "x$ac_cv_libexe" = xlocal])
+ AS_IF(
+  [test "x$ac_cv_libexe_CPPFLAGS" != "x"],
+  [AC_SUBST(
+   [LIBEXE_CPPFLAGS],
+   [$ac_cv_libexe_CPPFLAGS])
+  ])
+ AS_IF(
+  [test "x$ac_cv_libexe_LIBADD" != "x"],
+  [AC_SUBST(
+   [LIBEXE_LIBADD],
+   [$ac_cv_libexe_LIBADD])
+  ])
 
  AS_IF(
   [test "x$ac_cv_libexe" = xyes],

@@ -29,9 +29,11 @@
 #if defined( HAVE_LOCAL_LIBWRC )
 
 #include <libwrc_definitions.h>
+#include <libwrc_manifest.h>
 #include <libwrc_message_table.h>
 #include <libwrc_resource.h>
 #include <libwrc_stream.h>
+#include <libwrc_string.h>
 #include <libwrc_version.h>
 #include <libwrc_types.h>
 

@@ -1,6 +1,6 @@
 dnl Functions for libregf
 dnl
-dnl Version: 20111113
+dnl Version: 20120408
 
 dnl Function to detect if libregf is available
 dnl ac_libregf_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -42,7 +42,8 @@ AC_DEFUN([AX_LIBREGF_CHECK_LIB],
    [HAVE_LIBREGF],
    [1],
    [Define to 1 if you have the `regf' library (-lregf).])
-  LIBS="-lregf $LIBS"
+
+  ac_cv_libregf_LIBADD="-lexe"
   ])
 
  AS_IF(
@@ -56,24 +57,6 @@ AC_DEFUN([AX_LIBREGF_CHECK_LIB],
   ])
  ])
 
-dnl Function to detect if libregf dependencies are available
-AC_DEFUN([AX_LIBREGF_CHECK_LOCAL],
- [dnl Types used in libregf/libregf_date_time.h
- AC_STRUCT_TM
-
- dnl Headers included in libregf/libregf_date_time.h
- AC_HEADER_TIME
-
- dnl Date and time functions used in libregf/libregf_date_time.h
- AC_CHECK_FUNCS(
-  [time],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing function: time],
-   [1])
-  ])
- ])
-
 dnl Function to detect how to enable libregf
 AC_DEFUN([AX_LIBREGF_CHECK_ENABLE],
  [AX_COMMON_ARG_WITH(
@@ -83,11 +66,31 @@ AC_DEFUN([AX_LIBREGF_CHECK_ENABLE],
   [auto-detect],
   [DIR])
 
- AX_LIBREGF_CHECK_LIB
+ dnl Check for a pkg-config file
+ AS_IF(
+  [test "x$cross_compiling" != "xyes" && test "x$PKGCONFIG" != "x"],
+  [PKG_CHECK_MODULES(
+   [libregf],
+   [libregf >= 20120405],
+   [ac_cv_libregf=yes],
+   [ac_cv_libregf=no])
 
+  ac_cv_libregf_CPPFLAGS="$pkg_cv_libregf_CFLAGS"
+  ac_cv_libregf_LIBADD="$pkg_cv_libregf_LIBS"
+ ])
+
+ dnl Check for a shared library version
  AS_IF(
   [test "x$ac_cv_libregf" != xyes],
-  [AX_LIBREGF_CHECK_LOCAL
+  [AX_LIBREGF_CHECK_LIB])
+
+ dnl Check if the dependencies for the local library version
+ AS_IF(
+  [test "x$ac_cv_libregf" != xyes],
+  [ac_cv_libregf_CPPFLAGS="-I../libregf";
+  ac_cv_libregf_LIBADD="../libregf/libregf.la";
+
+  ac_cv_libregf=local
 
   AC_DEFINE(
    [HAVE_LOCAL_LIBREGF],
@@ -96,18 +99,23 @@ AC_DEFUN([AX_LIBREGF_CHECK_ENABLE],
   AC_SUBST(
    [HAVE_LOCAL_LIBREGF],
    [1])
-  AC_SUBST(
-   [LIBREGF_CPPFLAGS],
-   [-I../libregf])
-  AC_SUBST(
-   [LIBREGF_LIBADD],
-   [../libregf/libregf.la])
-  ac_cv_libregf=local
   ])
 
  AM_CONDITIONAL(
   [HAVE_LOCAL_LIBREGF],
   [test "x$ac_cv_libregf" = xlocal])
+ AS_IF(
+  [test "x$ac_cv_libregf_CPPFLAGS" != "x"],
+  [AC_SUBST(
+   [LIBREGF_CPPFLAGS],
+   [$ac_cv_libregf_CPPFLAGS])
+  ])
+ AS_IF(
+  [test "x$ac_cv_libregf_LIBADD" != "x"],
+  [AC_SUBST(
+   [LIBREGF_LIBADD],
+   [$ac_cv_libregf_LIBADD])
+  ])
 
  AS_IF(
   [test "x$ac_cv_libregf" = xyes],

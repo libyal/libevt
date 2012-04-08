@@ -25,12 +25,11 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-
 #include "libevt_array_type.h"
 #include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
 #include "libevt_types.h"
 
 #if defined( __cplusplus )
@@ -61,24 +60,24 @@ struct libevt_internal_file
 LIBEVT_EXTERN \
 int libevt_file_initialize(
      libevt_file_t **file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_free(
      libevt_file_t **file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_signal_abort(
      libevt_file_t *file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_open(
      libevt_file_t *file,
      const char *filename,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 LIBEVT_EXTERN \
@@ -86,7 +85,7 @@ int libevt_file_open_wide(
      libevt_file_t *file,
      const wchar_t *filename,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 #endif
 
 LIBEVT_EXTERN \
@@ -94,48 +93,48 @@ int libevt_file_open_file_io_handle(
      libevt_file_t *file,
      libbfio_handle_t *file_io_handle,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_close(
      libevt_file_t *file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libevt_file_open_read(
      libevt_internal_file_t *internal_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_get_ascii_codepage(
      libevt_file_t *file,
      int *ascii_codepage,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_set_ascii_codepage(
      libevt_file_t *file,
      int ascii_codepage,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_get_version(
      libevt_file_t *file,
      uint32_t *major_version,
      uint32_t *minor_version,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_get_number_of_records(
      libevt_file_t *file,
      int *number_of_records,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_file_get_record(
      libevt_file_t *file,
      int record_index,
      libevt_record_t **record,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

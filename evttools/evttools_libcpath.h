@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal libcpath header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,36 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _LIBEVTTOOLS_LIBCPATH_H )
+#define _LIBEVTTOOLS_LIBCPATH_H
 
 #include <common.h>
-#include <types.h>
 
-#include <stdio.h>
+/* Define HAVE_LOCAL_LIBCPATH for local use of libcpath
+ */
+#if defined( HAVE_LOCAL_LIBCPATH )
 
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
+#include <libcpath_definitions.h>
+#include <libcpath_narrow_split_string.h>
+#include <libcpath_narrow_string.h>
+#include <libcpath_path.h>
+#include <libcpath_types.h>
+#include <libcpath_wide_split_string.h>
+#include <libcpath_wide_string.h>
 
-#if defined( __cplusplus )
-extern "C" {
+#elif defined( HAVE_LIBCPATH_H )
+
+/* If libtool DLL support is enabled set LIBCPATH_DLL_IMPORT
+ * before including libcpath.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCPATH_DLL_IMPORT
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#include <libcpath.h>
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
-
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcpath.h
 #endif
 
 #endif

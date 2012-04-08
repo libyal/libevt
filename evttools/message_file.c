@@ -634,14 +634,14 @@ int message_file_get_string(
 	else if( result != 0 )
 	{
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libwrc_message_table_get_utf16_message_size(
+		result = libwrc_message_table_get_utf16_string_size(
 		          message_file->message_table_resource,
 			  language_identifier,
 			  message_index,
 			  message_string_size,
 			  error );
 #else
-		result = libwrc_message_table_get_utf8_message_size(
+		result = libwrc_message_table_get_utf8_string_size(
 		          message_file->message_table_resource,
 			  language_identifier,
 			  message_index,
@@ -675,7 +675,7 @@ int message_file_get_string(
 			goto on_error;
 		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libwrc_message_table_get_utf16_message(
+		result = libwrc_message_table_get_utf16_string(
 		          message_file->message_table_resource,
 			  language_identifier,
 			  message_index,
@@ -683,7 +683,7 @@ int message_file_get_string(
 			  *message_string_size,
 			  error );
 #else
-		result = libwrc_message_table_get_utf8_message(
+		result = libwrc_message_table_get_utf8_string(
 		          message_file->message_table_resource,
 			  language_identifier,
 			  message_index,

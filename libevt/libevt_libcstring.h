@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal libcstring header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,34 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _LIBEVT_LIBCSTRING_H )
+#define _LIBEVT_LIBCSTRING_H
 
 #include <common.h>
-#include <types.h>
 
-#include <stdio.h>
+/* Define HAVE_LOCAL_LIBCSTRING for local use of libcstring
+ */
+#if defined( HAVE_LOCAL_LIBCSTRING )
 
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
+#include <libcstring_definitions.h>
+#include <libcstring_narrow_string.h>
+#include <libcstring_system_string.h>
+#include <libcstring_types.h>
+#include <libcstring_wide_string.h>
 
-#if defined( __cplusplus )
-extern "C" {
+#elif defined( HAVE_LIBCSTRING_H )
+
+/* If libtool DLL support is enabled set LIBCSTRING_DLL_IMPORT
+ * before including libcstring.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCSTRING_DLL_IMPORT
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#include <libcstring.h>
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
-
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcstring.h
 #endif
 
 #endif

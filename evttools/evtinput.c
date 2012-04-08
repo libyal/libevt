@@ -24,6 +24,7 @@
 
 #include "evtinput.h"
 #include "evttools_libcerror.h"
+#include "evttools_libcpath.h"
 #include "evttools_libcstring.h"
 #include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
@@ -141,7 +142,7 @@ int evtinput_determine_event_log_type_from_filename(
 
 	path_separator = libcstring_system_string_search_character_reverse(
 			  filename,
-			  (libcstring_system_character_t) LIBSYSTEM_PATH_SEPARATOR,
+			  (libcstring_system_character_t) LIBCPATH_SEPARATOR,
 			  filename_length );
 
 	if( path_separator == NULL )

@@ -24,13 +24,12 @@
 #include <types.h>
 
 #include "evtinput.h"
-#include "evttools_codepage.h"
+#include "evttools_libcdirectory.h"
 #include "evttools_libcerror.h"
+#include "evttools_libclocale.h"
+#include "evttools_libcpath.h"
 #include "evttools_libcstring.h"
-#include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
-#include "evttools_libexe.h"
-#include "evttools_libfcache.h"
 #include "evttools_libfdatetime.h"
 #include "evttools_libregf.h"
 #include "export_handle.h"
@@ -165,7 +164,7 @@ int export_handle_initialize(
 	}
 	( *export_handle )->event_log_type                = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
 	( *export_handle )->preferred_language_identifier = 0x00000409UL;
-	( *export_handle )->ascii_codepage                = EVTTOOLS_CODEPAGE_WINDOWS_1252;
+	( *export_handle )->ascii_codepage                = LIBEVT_CODEPAGE_WINDOWS_1252;
 	( *export_handle )->notify_stream                 = EXPORT_HANDLE_NOTIFY_STREAM;
 
 	return( 1 );
@@ -322,7 +321,7 @@ int export_handle_set_ascii_codepage(
      const libcstring_system_character_t *string,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_set_ascii_codepage";
+	static char *function  = "export_handle_set_ascii_codepage";
 	size_t string_length   = 0;
 	uint32_t feature_flags = 0;
 	int result             = 0;
@@ -338,19 +337,27 @@ int export_handle_set_ascii_codepage(
 
 		return( -1 );
 	}
-	feature_flags = EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_KOI8_CODEPAGES
-	              | EVTTOOLS_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS_CODEPAGES;
+	feature_flags = LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_KOI8
+	              | LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS;
 
 	string_length = libcstring_system_string_length(
 	                 string );
 
-	result = evttools_codepage_from_string(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libclocale_codepage_copy_from_string_wide(
 	          &( export_handle->ascii_codepage ),
 	          string,
 	          string_length,
 	          feature_flags,
 	          error );
-
+#else
+	result = libclocale_codepage_copy_from_string(
+	          &( export_handle->ascii_codepage ),
+	          string,
+	          string_length,
+	          feature_flags,
+	          error );
+#endif
 	if( result == -1 )
 	{
 		libcerror_error_set(
@@ -1331,9 +1338,8 @@ int export_handle_get_message_file_path(
      size_t *message_file_path_size,
      libcerror_error_t **error )
 {
-	libsystem_directory_t *directory                               = NULL;
-	libsystem_directory_entry_t *directory_entry                   = NULL;
-	libsystem_split_string_t *message_filename_split_string        = NULL;
+	libcdirectory_directory_t *directory                           = NULL;
+	libcdirectory_directory_entry_t *directory_entry               = NULL;
 	libcstring_system_character_t *directory_entry_name            = NULL;
 	libcstring_system_character_t *message_filename_string_segment = NULL;
 	static char *function                                          = "export_handle_get_message_file_path";
@@ -1348,6 +1354,12 @@ int export_handle_get_message_file_path(
 	int message_filename_number_of_segments                        = 0;
 	int message_filename_segment_index                             = 0;
 	int result                                                     = 0;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	libcpath_wide_split_string_t *message_filename_split_string    = NULL;
+#else
+	libcpath_narrow_split_string_t *message_filename_split_string  = NULL;
+#endif
 
 	if( export_handle == NULL )
 	{
@@ -1449,12 +1461,21 @@ int export_handle_get_message_file_path(
 			}
 		}
 	}
-	if( libsystem_string_split(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_wide_string_split(
 	     &( message_filename[ message_filename_directory_name_index ] ),
 	     message_filename_length - message_filename_directory_name_index + 1,
 	     (libcstring_system_character_t) '\\',
 	     &message_filename_split_string,
 	     error ) != 1 )
+#else
+	if( libcpath_narrow_string_split(
+	     &( message_filename[ message_filename_directory_name_index ] ),
+	     message_filename_length - message_filename_directory_name_index + 1,
+	     (libcstring_system_character_t) '\\',
+	     &message_filename_split_string,
+	     error ) != 1 )
+#endif
 	{
 		libcerror_error_set(
 		 error,
@@ -1465,10 +1486,17 @@ int export_handle_get_message_file_path(
 
 		goto on_error;
 	}
-	if( libsystem_split_string_get_number_of_segments(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_wide_split_string_get_number_of_segments(
 	     message_filename_split_string,
 	     &message_filename_number_of_segments,
 	     error ) != 1 )
+#else
+	if( libcpath_narrow_split_string_get_number_of_segments(
+	     message_filename_split_string,
+	     &message_filename_number_of_segments,
+	     error ) != 1 )
+#endif
 	{
 		libcerror_error_set(
 		 error,
@@ -1485,12 +1513,21 @@ int export_handle_get_message_file_path(
 	     message_filename_segment_index < message_filename_number_of_segments;
 	     message_filename_segment_index++ )
 	{
-		if( libsystem_split_string_get_segment_by_index(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libcpath_wide_split_string_get_segment_by_index(
 		     message_filename_split_string,
 		     message_filename_segment_index,
 		     &message_filename_string_segment,
 		     &message_filename_string_segment_size,
 		     error ) != 1 )
+#else
+		if( libcpath_narrow_split_string_get_segment_by_index(
+		     message_filename_split_string,
+		     message_filename_segment_index,
+		     &message_filename_string_segment,
+		     &message_filename_string_segment_size,
+		     error ) != 1 )
+#endif
 		{
 			libcerror_error_set(
 			 error,
@@ -1600,12 +1637,21 @@ int export_handle_get_message_file_path(
 	     message_filename_segment_index < message_filename_number_of_segments;
 	     message_filename_segment_index++ )
 	{
-		if( libsystem_split_string_get_segment_by_index(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libcpath_wide_split_string_get_segment_by_index(
 		     message_filename_split_string,
 		     message_filename_segment_index,
 		     &message_filename_string_segment,
 		     &message_filename_string_segment_size,
 		     error ) != 1 )
+#else
+		if( libcpath_narrow_split_string_get_segment_by_index(
+		     message_filename_split_string,
+		     message_filename_segment_index,
+		     &message_filename_string_segment,
+		     &message_filename_string_segment_size,
+		     error ) != 1 )
+#endif
 		{
 			libcerror_error_set(
 			 error,
@@ -1643,7 +1689,7 @@ int export_handle_get_message_file_path(
 		( *message_file_path )[ message_file_path_index ] = 0;
 
 /* TODO refactor to function */
-		if( libsystem_directory_initialize(
+		if( libcdirectory_directory_initialize(
 		     &directory,
 		     error ) != 1 )
 		{
@@ -1656,7 +1702,7 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		if( libsystem_directory_open(
+		if( libcdirectory_directory_open(
 		     directory,
 		     *message_file_path,
 		     error ) != 1 )
@@ -1671,7 +1717,7 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		if( libsystem_directory_entry_initialize(
+		if( libcdirectory_directory_entry_initialize(
 		     &directory_entry,
 		     error ) != 1 )
 		{
@@ -1688,7 +1734,7 @@ int export_handle_get_message_file_path(
 
 		do
 		{
-			result = libsystem_directory_read_entry(
+			result = libcdirectory_directory_read_entry(
 			          directory,
 			          directory_entry,
 			          error );
@@ -1709,7 +1755,7 @@ int export_handle_get_message_file_path(
 			{
 				break;
 			}
-			if( libsystem_directory_entry_get_type(
+			if( libcdirectory_directory_entry_get_type(
 			     directory_entry,
 			     &directory_entry_type,
 			     error ) != 1 )
@@ -1724,11 +1770,11 @@ int export_handle_get_message_file_path(
 				goto on_error;
 			}
 			if( ( ( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry_type == LIBSYSTEM_DIRECTORY_ENTRY_TYPE_DIRECTORY ) )
+			  &&  ( directory_entry_type == LIBCDIRECTORY_ENTRY_TYPE_DIRECTORY ) )
 			 || ( ( message_filename_segment_index == ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry_type == LIBSYSTEM_DIRECTORY_ENTRY_TYPE_FILE ) ) )
+			  &&  ( directory_entry_type == LIBCDIRECTORY_ENTRY_TYPE_FILE ) ) )
 			{
-				if( libsystem_directory_entry_get_name(
+				if( libcdirectory_directory_entry_get_name(
 				     directory_entry,
 				     &directory_entry_name,
 				     error ) != 1 )
@@ -1825,11 +1871,11 @@ int export_handle_get_message_file_path(
 		}
 		message_file_path_index += message_filename_string_segment_size - 1;
 
-		( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBSYSTEM_PATH_SEPARATOR;
+		( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
 
 		message_file_path_index += 1;
 
-		if( libsystem_directory_entry_free(
+		if( libcdirectory_directory_entry_free(
 		     &directory_entry,
 		     error ) != 1 )
 		{
@@ -1842,7 +1888,7 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		if( libsystem_directory_close(
+		if( libcdirectory_directory_close(
 		     directory,
 		     error ) != 0 )
 		{
@@ -1856,7 +1902,7 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		if( libsystem_directory_free(
+		if( libcdirectory_directory_free(
 		     &directory,
 		     error ) != 1 )
 		{
@@ -1872,9 +1918,15 @@ int export_handle_get_message_file_path(
 	}
 	( *message_file_path )[ message_file_path_index - 1 ] = 0;
 
-	if( libsystem_split_string_free(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_wide_split_string_free(
 	     &message_filename_split_string,
 	     error ) != 1 )
+#else
+	if( libcpath_narrow_split_string_free(
+	     &message_filename_split_string,
+	     error ) != 1 )
+#endif
 	{
 		libcerror_error_set(
 		 error,
@@ -1890,9 +1942,15 @@ int export_handle_get_message_file_path(
 on_error:
 	if( message_filename_split_string != NULL )
 	{
-		libsystem_split_string_free(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libcpath_wide_split_string_free(
 		 &message_filename_split_string,
 		 NULL );
+#else
+		libcpath_narrow_split_string_free(
+		 &message_filename_split_string,
+		 NULL );
+#endif
 	}
 	if( *message_file_path != NULL )
 	{
@@ -2376,7 +2434,6 @@ int export_handle_export_record(
 	libcstring_system_character_t *message_string                  = NULL;
 	libcstring_system_character_t *value_string                    = NULL;
 	libfdatetime_posix_time_t *posix_time                          = NULL;
-	libsystem_split_string_t *message_filename_split_string        = NULL;
 	static char *function                                          = "export_handle_export_record";
 	size_t event_source_size                                       = 0;
 	size_t message_filename_size                                   = 0;
@@ -2389,6 +2446,12 @@ int export_handle_export_record(
 	int message_filename_number_of_segments                        = 0;
 	int message_filename_segment_index                             = 0;
 	int result                                                     = 0;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	libcpath_wide_split_string_t *message_filename_split_string    = NULL;
+#else
+	libcpath_narrow_split_string_t *message_filename_split_string  = NULL;
+#endif
 
 	if( export_handle == NULL )
 	{
@@ -2461,6 +2524,7 @@ int export_handle_export_record(
 	if( libfdatetime_posix_time_copy_from_32bit(
 	     posix_time,
 	     value_32bit,
+	     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -2522,6 +2586,7 @@ int export_handle_export_record(
 	if( libfdatetime_posix_time_copy_from_32bit(
 	     posix_time,
 	     value_32bit,
+	     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -2790,12 +2855,21 @@ int export_handle_export_record(
 			/* The message filename can contain multiple file names
 			 * separated by ;
 			 */
-			if( libsystem_string_split(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcpath_wide_string_split(
 			     message_filename,
 			     message_filename_size,
 			     (libcstring_system_character_t) ';',
 			     &message_filename_split_string,
 			     error ) != 1 )
+#else
+			if( libcpath_narrow_string_split(
+			     message_filename,
+			     message_filename_size,
+			     (libcstring_system_character_t) ';',
+			     &message_filename_split_string,
+			     error ) != 1 )
+#endif
 			{
 				libcerror_error_set(
 				 error,
@@ -2806,10 +2880,17 @@ int export_handle_export_record(
 
 				goto on_error;
 			}
-			if( libsystem_split_string_get_number_of_segments(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcpath_wide_split_string_get_number_of_segments(
 			     message_filename_split_string,
 			     &message_filename_number_of_segments,
 			     error ) != 1 )
+#else
+			if( libcpath_narrow_split_string_get_number_of_segments(
+			     message_filename_split_string,
+			     &message_filename_number_of_segments,
+			     error ) != 1 )
+#endif
 			{
 				libcerror_error_set(
 				 error,
@@ -2824,12 +2905,21 @@ int export_handle_export_record(
 			     message_filename_segment_index < message_filename_number_of_segments;
 			     message_filename_segment_index++ )
 			{
-				if( libsystem_split_string_get_segment_by_index(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+				if( libcpath_wide_split_string_get_segment_by_index(
 				     message_filename_split_string,
 				     message_filename_segment_index,
 				     &message_filename_string_segment,
 				     &message_filename_string_segment_size,
 				     error ) != 1 )
+#else
+				if( libcpath_narrow_split_string_get_segment_by_index(
+				     message_filename_split_string,
+				     message_filename_segment_index,
+				     &message_filename_string_segment,
+				     &message_filename_string_segment_size,
+				     error ) != 1 )
+#endif
 				{
 					libcerror_error_set(
 					 error,
@@ -2900,9 +2990,15 @@ int export_handle_export_record(
 					break;
 				}
 			}
-			if( libsystem_split_string_free(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcpath_wide_split_string_free(
 			     &message_filename_split_string,
 			     error ) != 1 )
+#else
+			if( libcpath_narrow_split_string_free(
+			     &message_filename_split_string,
+			     error ) != 1 )
+#endif
 			{
 				libcerror_error_set(
 				 error,
@@ -2937,9 +3033,15 @@ on_error:
 	}
 	if( message_filename_split_string != NULL )
 	{
-		libsystem_split_string_free(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libcpath_wide_split_string_free(
 		 &message_filename_split_string,
 		 NULL );
+#else
+		libcpath_narrow_split_string_free(
+		 &message_filename_split_string,
+		 NULL );
+#endif
 	}
 	if( message_filename != NULL )
 	{

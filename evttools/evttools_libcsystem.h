@@ -20,8 +20,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _UNATOOLS_LIBCSYSTEM_H )
-#define _UNATOOLS_LIBCSYSTEM_H
+#if !defined( _EVTTOOLS_LIBCSYSTEM_H )
+#define _EVTTOOLS_LIBCSYSTEM_H
 
 /* Define HAVE_LOCAL_LIBCSYSTEM for local use of libcsystem
  */
@@ -34,7 +34,6 @@
 #include <libcsystem_getopt.h>
 #include <libcsystem_glob.h>
 #include <libcsystem_i18n.h>
-#include <libcsystem_notify.h>
 #include <libcsystem_signal.h>
 #include <libcsystem_string.h>
 #include <libcsystem_support.h>

@@ -32,10 +32,9 @@
 #error Missing headers stdarg.h and varargs.h
 #endif
 
-#include <libcsystem.h>
-
 #include "evttools_libcerror.h"
 #include "evttools_libcstring.h"
+#include "evttools_libcsystem.h"
 #include "log_handle.h"
 
 /* Initializes the log handle

@@ -1,6 +1,5 @@
 TODO:
 * complete language support in evtinput.[ch]
-* complete directory and directory entry handling in libsystem
 * export handle
   - handle case insensitive registry key names
   - use current control set nr?
@@ -32,6 +31,9 @@ Tools:
   - cache event source filenames
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120408
+* applied updates
 
 20120321
 * fix for libexe Makefile

@@ -1,6 +1,6 @@
 dnl Functions for libcerror
 dnl
-dnl Version: 20120325
+dnl Version: 20120407
 
 dnl Function to detect if libcerror is available
 dnl ac_libcerror_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -17,7 +17,8 @@ AC_DEFUN([AX_LIBCERROR_CHECK_LIB],
   ])
 
  AS_IF(
-  [test "x$ac_cv_with_libcerror" != xno],
+  [test "x$ac_cv_with_libcerror" = xno],
+  [ac_cv_libcerror=no],
   [dnl Check for headers
   AC_CHECK_HEADERS([libcerror.h])
  
@@ -26,12 +27,54 @@ AC_DEFUN([AX_LIBCERROR_CHECK_LIB],
    [ac_cv_libcerror=no],
    [ac_cv_libcerror=yes
    AC_CHECK_LIB(
-    fdatetime,
+    cerror,
     libcerror_get_version,
     [ac_cv_libcerror_dummy=yes],
     [ac_cv_libcerror=no])
   
-   dnl TODO add functions
+   dnl Error functions
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_free,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_set,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_matches,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_fprint,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_sprint,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_backtrace_fprint,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_error_backtrace_sprint,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
+  
+   dnl System rrror functions
+   AC_CHECK_LIB(
+    cerror,
+    libcerror_system_set_error,
+    [ac_cv_libcerror_dummy=yes],
+    [ac_cv_libcerror=no])
    ])
   ])
 
@@ -41,7 +84,8 @@ AC_DEFUN([AX_LIBCERROR_CHECK_LIB],
    [HAVE_LIBCERROR],
    [1],
    [Define to 1 if you have the `cerror' library (-lcerror).])
-  LIBS="-lcerror $LIBS"
+
+  ac_cv_libcerror_LIBADD=="-lcerror"
   ])
 
  AS_IF(
@@ -94,6 +138,11 @@ AC_DEFUN([AX_LIBCERROR_CHECK_LOCAL],
     [1])
    ])
   ])
+
+ ac_cv_libcerror_CPPFLAGS="-I../libcerror";
+ ac_cv_libcerror_LIBADD="../libcerror/libcerror.la";
+
+ ac_cv_libcerror=local
  ])
 
 dnl Function to detect how to enable libcerror
@@ -105,8 +154,25 @@ AC_DEFUN([AX_LIBCERROR_CHECK_ENABLE],
   [auto-detect],
   [DIR])
 
- AX_LIBCERROR_CHECK_LIB
+ dnl Check for a pkg-config file
+ AS_IF(
+  [test "x$cross_compiling" != "xyes" && test "x$PKGCONFIG" != "x"],
+  [PKG_CHECK_MODULES(
+   [libcerror],
+   [libcerror >= 20120405],
+   [ac_cv_libcerror=yes],
+   [ac_cv_libcerror=no])
 
+  ac_cv_libcerror_CPPFLAGS="$pkg_cv_libcerror_CFLAGS"
+  ac_cv_libcerror_LIBADD="$pkg_cv_libcerror_LIBS"
+ ])
+
+ dnl Check for a shared library version
+ AS_IF(
+  [test "x$ac_cv_libcerror" != xyes],
+  [AX_LIBCERROR_CHECK_LIB])
+
+ dnl Check if the dependencies for the local library version
  AS_IF(
   [test "x$ac_cv_libcerror" != xyes],
   [AX_LIBCERROR_CHECK_LOCAL
@@ -118,19 +184,23 @@ AC_DEFUN([AX_LIBCERROR_CHECK_ENABLE],
   AC_SUBST(
    [HAVE_LOCAL_LIBCERROR],
    [1])
-  AC_SUBST(
-   [LIBCERROR_CPPFLAGS],
-   [-I../libcerror])
-  AC_SUBST(
-   [LIBCERROR_LIBADD],
-   [../libcerror/libcerror.la])
-
-  ac_cv_libcerror=local
   ])
 
  AM_CONDITIONAL(
   [HAVE_LOCAL_LIBCERROR],
   [test "x$ac_cv_libcerror" = xlocal])
+ AS_IF(
+  [test "x$ac_cv_libcerror_CPPFLAGS" != "x"],
+  [AC_SUBST(
+   [LIBCERROR_CPPFLAGS],
+   [$ac_cv_libcerror_CPPFLAGS])
+  ])
+ AS_IF(
+  [test "x$ac_cv_libcerror_LIBADD" != "x"],
+  [AC_SUBST(
+   [LIBCERROR_LIBADD],
+   [$ac_cv_libcerror_LIBADD])
+  ])
 
  AS_IF(
   [test "x$ac_cv_libcerror" = xyes],

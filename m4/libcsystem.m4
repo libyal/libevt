@@ -1,6 +1,6 @@
 dnl Functions for libcsystem
 dnl
-dnl Version: 20120327
+dnl Version: 20120406
 
 dnl Function to detect if libcsystem is available
 dnl ac_libcsystem_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -17,7 +17,8 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_LIB],
   ])
 
  AS_IF(
-  [test "x$ac_cv_with_libcsystem" != xno],
+  [test "x$ac_cv_with_libcsystem" = xno],
+  [ac_cv_libcsystem=no],
   [dnl Check for headers
   AC_CHECK_HEADERS([libcsystem.h])
  
@@ -41,7 +42,8 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_LIB],
    [HAVE_LIBCSYSTEM],
    [1],
    [Define to 1 if you have the `csystem' library (-lcsystem).])
-  LIBS="-lcsystem $LIBS"
+
+  ac_cv_libcsystem_LIBADD="-lcsystem"
   ])
 
  AS_IF(
@@ -260,21 +262,6 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_LOCAL],
    [1])
   ])
  
- dnl Check for error string functions used in libcsystem/libcsystem_error_string.c
- AC_FUNC_STRERROR_R()
- 
- AS_IF(
-  [test "x$ac_cv_have_decl_strerror_r" != xyes],
-  [AC_CHECK_FUNCS([strerror])
-
-  AS_IF(
-   [test "x$ac_cv_func_strerror" != xyes],
-   [AC_MSG_FAILURE(
-    [Missing functions: strerror_r and strerror],
-    [1])
-   ])
-  ])
- 
  dnl Commandline argument/option parsing functions in libcsystem/libcsystem_getopt.h
  AC_CHECK_FUNCS([getopt])
  
@@ -284,6 +271,10 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_LOCAL],
  dnl Check for internationalization functions in libcsystem/libcsystem_support.c
  AC_CHECK_FUNCS([bindtextdomain textdomain])
 
+ ac_cv_libcsystem_CPPFLAGS="-I../libcsystem";
+ ac_cv_libcsystem_LIBADD="../libcsystem/libcsystem.la";
+
+ ac_cv_libcsystem=local
  ])
 
 dnl Function to detect how to enable libcsystem
@@ -295,8 +286,25 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_ENABLE],
   [auto-detect],
   [DIR])
 
- AX_LIBCSYSTEM_CHECK_LIB
+ dnl Check for a pkg-config file
+ AS_IF(
+  [test "x$cross_compiling" != "xyes" && test "x$PKGCONFIG" != "x"],
+  [PKG_CHECK_MODULES(
+   [libcsystem],
+   [libcsystem >= 20120405],
+   [ac_cv_libcsystem=yes],
+   [ac_cv_libcsystem=no])
 
+  ac_cv_libcsystem_CPPFLAGS="$pkg_cv_libcsystem_CFLAGS"
+  ac_cv_libcsystem_LIBADD="$pkg_cv_libcsystem_LIBS"
+ ])
+
+ dnl Check for a shared library version
+ AS_IF(
+  [test "x$ac_cv_libcsystem" != xyes],
+  [AX_LIBCSYSTEM_CHECK_LIB])
+
+ dnl Check if the dependencies for the local library version
  AS_IF(
   [test "x$ac_cv_libcsystem" != xyes],
   [AX_LIBCSYSTEM_CHECK_LOCAL
@@ -308,19 +316,23 @@ AC_DEFUN([AX_LIBCSYSTEM_CHECK_ENABLE],
   AC_SUBST(
    [HAVE_LOCAL_LIBCSYSTEM],
    [1])
-  AC_SUBST(
-   [LIBCSYSTEM_CPPFLAGS],
-   [-I../libcsystem])
-  AC_SUBST(
-   [LIBCSYSTEM_LIBADD],
-   [../libcsystem/libcsystem.la])
-
-  ac_cv_libcsystem=local
   ])
 
  AM_CONDITIONAL(
   [HAVE_LOCAL_LIBCSYSTEM],
   [test "x$ac_cv_libcsystem" = xlocal])
+ AS_IF(
+  [test "x$ac_cv_libcsystem_CPPFLAGS" != "x"],
+  [AC_SUBST(
+   [LIBCSYSTEM_CPPFLAGS],
+   [$ac_cv_libcsystem_CPPFLAGS])
+  ])
+ AS_IF(
+  [test "x$ac_cv_libcsystem_LIBADD" != "x"],
+  [AC_SUBST(
+   [LIBCSYSTEM_LIBADD],
+   [$ac_cv_libcsystem_LIBADD])
+  ])
 
  AS_IF(
   [test "x$ac_cv_libcsystem" = xyes],

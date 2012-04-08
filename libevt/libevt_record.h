@@ -25,11 +25,10 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-
 #include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
 #include "libevt_record_values.h"
 #include "libevt_types.h"
 
@@ -64,107 +63,107 @@ int libevt_record_initialize(
      libbfio_handle_t *file_io_handle,
      libevt_record_values_t *record_values,
      uint8_t flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_free(
      libevt_record_t **record,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_identifier(
      libevt_record_t *record,
      uint32_t *identifier,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_creation_time(
      libevt_record_t *record,
      uint32_t *creation_time,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_written_time(
      libevt_record_t *record,
      uint32_t *written_time,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_event_identifier(
      libevt_record_t *record,
      uint32_t *event_identifier,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_event_type(
      libevt_record_t *record,
      uint16_t *event_type,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_source_name_size(
      libevt_record_t *record,
      size_t *utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_source_name(
      libevt_record_t *record,
      uint8_t *utf8_string,
      size_t utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_source_name_size(
      libevt_record_t *record,
      size_t *utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_source_name(
      libevt_record_t *record,
      uint16_t *utf16_string,
      size_t utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_computer_name_size(
      libevt_record_t *record,
      size_t *utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_computer_name(
      libevt_record_t *record,
      uint8_t *utf8_string,
      size_t utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name_size(
      libevt_record_t *record,
      size_t *utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name(
      libevt_record_t *record,
      uint16_t *utf16_string,
      size_t utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_number_of_strings(
      libevt_record_t *record,
      int *number_of_strings,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_string_size(
      libevt_record_t *record,
      int string_index,
      size_t *utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_string(
@@ -172,14 +171,14 @@ int libevt_record_get_utf8_string(
      int string_index,
      uint8_t *utf8_string,
      size_t utf8_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_string_size(
      libevt_record_t *record,
      int string_index,
      size_t *utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_string(
@@ -187,7 +186,7 @@ int libevt_record_get_utf16_string(
      int string_index,
      uint16_t *utf16_string,
      size_t utf16_string_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

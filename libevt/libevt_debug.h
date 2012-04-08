@@ -25,9 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-
 #include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -46,7 +45,7 @@ void libevt_debug_print_event_type(
 
 int libevt_debug_print_read_offsets(
      libbfio_handle_t *file_io_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #endif
 

@@ -3,10 +3,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/common \
 	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
-	@LIBCDIRECTORY_CPPFLAGS@ \
-	@LIBCPATH_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
+	@LIBCLOCALE_CPPFLAGS@ \
+	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCFILE_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
@@ -15,6 +16,8 @@ AM_CPPFLAGS = \
 	@LIBEXE_CPPFLAGS@ \
 	@LIBREGF_CPPFLAGS@ \
 	@LIBWRC_CPPFLAGS@ \
+	@LIBCDIRECTORY_CPPFLAGS@ \
+	@LIBCSYSTEM_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
@@ -29,11 +32,11 @@ evtexport_SOURCES = \
 	evtexport.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
-	evttools_codepage.c evttools_codepage.h \
 	evttools_language.c evttools_language.h \
-	evttools_libcerror.h \
 	evttools_libcdirectory.h \
-	evttools_libcpath.h \
+	evttools_libcerror.h \
+	evttools_libclocale.h \
+	evttools_libcnotify.h \
 	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfcache.h \
@@ -49,16 +52,18 @@ evtexport_SOURCES = \
 evtexport_LDADD = \
 	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	../libevt/libevt.la \
-	@LIBCDIRECTORY_LIBADD@ \
-	@LIBCPATH_LIBADD@ \
-	@LIBCSYSTEM_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	../libevt/libevt.la \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFWNT_LIBADD@ \
 	@LIBEXE_LIBADD@ \
 	@LIBREGF_LIBADD@ \
 	@LIBWRC_LIBADD@ \
+	@LIBCDIRECTORY_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCSYSTEM_LIBADD@ \
 	@LIBINTL@ \
 	@MEMWATCH_LIBADD@
 
@@ -66,8 +71,9 @@ evtinfo_SOURCES = \
 	evtinfo.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
-	evttools_codepage.c evttools_codepage.h \
 	evttools_libcerror.h \
+	evttools_libclocale.h \
+	evttools_libcnotify.h \
 	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfdatetime.h \
@@ -78,10 +84,12 @@ evtinfo_SOURCES = \
 evtinfo_LDADD = \
 	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	../libevt/libevt.la \
-	@LIBCSYSTEM_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	../libevt/libevt.la \
 	@LIBFDATETIME_LIBADD@ \
+	@LIBCSYSTEM_LIBADD@ \
 	@LIBINTL@ \
 	@MEMWATCH_LIBADD@
 

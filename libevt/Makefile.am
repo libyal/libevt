@@ -1,10 +1,13 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcstring \
-	-I$(top_srcdir)/liberror \
-	-I$(top_srcdir)/libnotify \
+	@LIBCSTRING_CPPFLAGS@ \
+	@LIBCERROR_CPPFLAGS@ \
+	@LIBCLOCALE_CPPFLAGS@ \
+	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCFILE_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
@@ -26,6 +29,10 @@ libevt_la_SOURCES = \
 	libevt_file.c libevt_file.h \
 	libevt_io_handle.c libevt_io_handle.h \
 	libevt_libbfio.h \
+	libevt_libcerror.h \
+	libevt_libclocale.h \
+	libevt_libcnotify.h \
+	libevt_libcstring.h \
 	libevt_libfdatetime.h \
 	libevt_libfvalue.h \
 	libevt_libfwnt.h \
@@ -38,10 +45,13 @@ libevt_la_SOURCES = \
 	libevt_unused.h
 
 libevt_la_LIBADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
-	../libnotify/libnotify.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \

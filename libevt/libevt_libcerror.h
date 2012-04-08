@@ -1,5 +1,5 @@
 /*
- * Notification function
+ * The internal libcerror header
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,33 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _LIBEVT_LIBCERROR_H )
+#define _LIBEVT_LIBCERROR_H
 
 #include <common.h>
-#include <types.h>
 
-#include <stdio.h>
+/* Define HAVE_LOCAL_LIBCERROR for local use of libcerror
+ */
+#if defined( HAVE_LOCAL_LIBCERROR )
 
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
+#include <libcerror_definitions.h>
+#include <libcerror_error.h>
+#include <libcerror_system.h>
+#include <libcerror_types.h>
 
-#if defined( __cplusplus )
-extern "C" {
+#elif defined( HAVE_LIBCERROR_H )
+
+/* If libtool DLL support is enabled set LIBCERROR_DLL_IMPORT
+ * before including libcerror.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCERROR_DLL_IMPORT
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#include <libcerror.h>
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
-
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
-
-#endif
-
-#if defined( __cplusplus )
-}
+#else
+#error Missing libcerror.h
 #endif
 
 #endif
