@@ -32,6 +32,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120409
+* libregf now is case insensitive regarding key/value names
+
 20120408
 * applied updates
 

@@ -57,6 +57,29 @@ AC_DEFUN([AX_LIBREGF_CHECK_LIB],
   ])
  ])
 
+dnl Function to detect if libregf dependencies are available
+AC_DEFUN([AX_LIBREGF_CHECK_LOCAL],
+ [dnl Headers included in libregf/libregf_file.h, libregf/libregf_key.h
+ dnl libregf/libregf_key_item_values.h and libregf/libregf_value_item_values.h
+ AC_CHECK_HEADERS([wctype.h])
+
+ dnl Functions used in libregf/libregf_file.h, libregf/libregf_key.h
+ dnl libregf/libregf_key_item_values.h and libregf/libregf_value_item_values.h
+ AC_CHECK_FUNCS([towupper])
+ 
+ AS_IF(
+  [test "x$ac_cv_func_towupper" != xyes],
+  [AC_MSG_FAILURE(
+   [Missing functions: towupper],
+   [1])
+  ])
+ 
+ ac_cv_libregf_CPPFLAGS="-I../libregf";
+ ac_cv_libregf_LIBADD="../libregf/libregf.la";
+
+ ac_cv_libregf=local
+ ])
+
 dnl Function to detect how to enable libregf
 AC_DEFUN([AX_LIBREGF_CHECK_ENABLE],
  [AX_COMMON_ARG_WITH(
@@ -87,10 +110,7 @@ AC_DEFUN([AX_LIBREGF_CHECK_ENABLE],
  dnl Check if the dependencies for the local library version
  AS_IF(
   [test "x$ac_cv_libregf" != xyes],
-  [ac_cv_libregf_CPPFLAGS="-I../libregf";
-  ac_cv_libregf_LIBADD="../libregf/libregf.la";
-
-  ac_cv_libregf=local
+  [AX_LIBREGF_CHECK_LOCAL
 
   AC_DEFINE(
    [HAVE_LOCAL_LIBREGF],
