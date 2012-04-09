@@ -1,8 +1,12 @@
 TODO:
+* libcdirectory:
+  - implement wide and narrow char support
 * complete language support in evtinput.[ch]
 * export handle
-  - handle case insensitive registry key names
   - use current control set nr?
+  - print if message file key not found
+  - print if message file not found
+  - print if message file has no resources
 * add function to scan for records
 * detect if wrapped flag is not set but file is wrapped
 * handle gap between first record and end of file record ?
@@ -24,11 +28,8 @@ Tools:
 * evtexport
   - add mode (all, records, recovered)
   - print event type description
-  - print strings
-  - print data ?
   - improved version that also can get strings
   - validate eventlog/computername in system registry
-  - cache event source filenames
   - print event categories CategoryMessageFile
 * evtinfo
 

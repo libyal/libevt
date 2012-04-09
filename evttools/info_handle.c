@@ -445,7 +445,7 @@ int info_handle_file_fprint(
 	}
 	fprintf(
 	 info_handle->notify_stream,
-	 "Windows Event Viewer Log (EVT) information:\n" );
+	 "Windows EventViewer Log (EVT) information:\n" );
 
 	fprintf(
 	 info_handle->notify_stream,

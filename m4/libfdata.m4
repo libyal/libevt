@@ -1,6 +1,6 @@
 dnl Functions for libfdata
 dnl
-dnl Version: 20120406
+dnl Version: 20120409
 
 dnl Function to detect if libfdata is available
 dnl ac_libfdata_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -57,29 +57,6 @@ AC_DEFUN([AX_LIBFDATA_CHECK_LIB],
   ])
  ])
 
-dnl Function to detect if libfdata dependencies are available
-AC_DEFUN([AX_LIBFDATA_CHECK_LOCAL],
- [dnl Types used in libfdata/libfdata_date_time.h
- AC_STRUCT_TM
-
- dnl Headers included in libfdata/libfdata_date_time.h
- AC_HEADER_TIME
-
- dnl Date and time functions used in libfdata/libfdata_date_time.h
- AC_CHECK_FUNCS(
-  [time],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing function: time],
-   [1])
-  ])
-
- ac_cv_libfdata_CPPFLAGS="-I../libfdata";
- ac_cv_libfdata_LIBADD="../libfdata/libfdata.la";
-
- ac_cv_libfdata=local
- ])
-
 dnl Function to detect how to enable libfdata
 AC_DEFUN([AX_LIBFDATA_CHECK_ENABLE],
  [AX_COMMON_ARG_WITH(
@@ -110,7 +87,10 @@ AC_DEFUN([AX_LIBFDATA_CHECK_ENABLE],
  dnl Check if the dependencies for the local library version
  AS_IF(
   [test "x$ac_cv_libfdata" != xyes],
-  [AX_LIBFDATA_CHECK_LOCAL
+  [ac_cv_libfdata_CPPFLAGS="-I../libfdata";
+  ac_cv_libfdata_LIBADD="../libfdata/libfdata.la";
+
+  ac_cv_libfdata=local
 
   AC_DEFINE(
    [HAVE_LOCAL_LIBFDATA],

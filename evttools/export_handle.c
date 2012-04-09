@@ -30,6 +30,7 @@
 #include "evttools_libcpath.h"
 #include "evttools_libcstring.h"
 #include "evttools_libevt.h"
+#include "evttools_libfcache.h"
 #include "evttools_libfdatetime.h"
 #include "evttools_libregf.h"
 #include "export_handle.h"
@@ -149,6 +150,20 @@ int export_handle_initialize(
 
 		goto on_error;
 	}
+	if( libfcache_cache_initialize(
+	     &( ( *export_handle )->message_file_cache ),
+	     16,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create message file cache.",
+		 function );
+
+		goto on_error;
+	}
 	if( libevt_file_initialize(
 	     &( ( *export_handle )->input_file ),
 	     error ) != 1 )
@@ -172,6 +187,12 @@ int export_handle_initialize(
 on_error:
 	if( *export_handle != NULL )
 	{
+		if( ( *export_handle )->message_file_cache != NULL )
+		{
+			libfcache_cache_free(
+			 &( ( *export_handle )->message_file_cache ),
+			 NULL );
+		}
 		memory_free(
 		 *export_handle );
 
@@ -244,6 +265,19 @@ int export_handle_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free input file.",
+			 function );
+
+			result = -1;
+		}
+		if( libfcache_cache_free(
+		     &( ( *export_handle )->message_file_cache ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free message file cache.",
 			 function );
 
 			result = -1;
@@ -1977,9 +2011,11 @@ int export_handle_get_message_string(
      libcerror_error_t **error )
 {
 	libcstring_system_character_t *message_file_path = NULL;
+	libfcache_cache_value_t *cache_value             = NULL;
 	message_file_t *message_file                     = NULL;
 	static char *function                            = "export_handle_get_message_string";
 	size_t message_file_path_size                    = 0;
+	int cache_index                                  = 0;
 	int result                                       = 0;
 
 	if( export_handle == NULL )
@@ -2038,9 +2074,64 @@ int export_handle_get_message_string(
 
 		return( -1 );
 	}
-/* TODO
- * lookup message file in cache
- */
+	for( cache_index = 0;
+	     cache_index < 16;
+	     cache_index++ )
+	{
+		if( libfcache_cache_get_value_by_index(
+		     export_handle->message_file_cache,
+		     cache_index,
+		     &cache_value,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve cache value: %d.",
+			 function,
+			 cache_index );
+
+			return( -1 );
+		}
+		if( cache_value != NULL )
+		{
+			if( libfcache_cache_value_get_value(
+			     cache_value,
+			     (intptr_t **) &message_file,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve message file from cache value: %d.",
+				 function,
+				 cache_index );
+
+				return( -1 );
+			}
+		}
+		if( message_file != NULL )
+		{
+			if( message_filename_length != ( message_file->name_size - 1 ) )
+			{
+				message_file = NULL;
+			}
+			else if( libcstring_system_string_compare(
+				  message_filename,
+				  message_file->name,
+				  message_filename_length ) != 0 )
+			{
+				message_file = NULL;
+			}
+		}
+		if( message_file != NULL )
+		{
+			break;
+		}
+	}
+	if( message_file == NULL )
 	{
 		if( export_handle_get_message_file_path(
 		     export_handle,
@@ -2072,12 +2163,29 @@ int export_handle_get_message_string(
 
 			goto on_error;
 		}
-		result = message_file_open(
-			  message_file,
-			  message_file_path,
-			  error );
+		if( message_file_set_name(
+		     message_file,
+		     message_filename,
+		     message_filename_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set name in message file.",
+			 function );
 
-		if( result == -1 )
+			message_file_free(
+			 &message_file,
+			 NULL );
+
+			goto on_error;
+		}
+		if( message_file_open(
+		     message_file,
+		     message_file_path,
+		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -2087,71 +2195,69 @@ int export_handle_get_message_string(
 			 function,
 			 message_file_path );
 
-			goto on_error;
-		}
-		else if( result != 0 )
-		{
-			result = message_file_get_string(
-			          message_file,
-			          export_handle->preferred_language_identifier,
-			          message_identifier,
-			          message_string,
-			          message_string_size,
-			          error );
-
-			if( result == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve message string: 0x%" PRIx32 ".",
-				 function );
-
-				goto on_error;
-			}
-		}
-		memory_free(
-		 message_file_path );
-
-		message_file_path = NULL;
-
-		if( message_file_close(
-		     message_file,
-		     error ) != 0 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-			 "%s: unable to close message file.",
-			 function );
+			message_file_free(
+			 &message_file,
+			 NULL );
 
 			goto on_error;
 		}
-		if( message_file_free(
-		     &message_file,
+		if( libfcache_cache_set_value_by_index(
+		     export_handle->message_file_cache,
+		     export_handle->next_message_file_cache_index,
+		     export_handle->next_message_file_cache_index,
+		     libfcache_date_time_get_timestamp(),
+		     (intptr_t *) message_file,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &message_file_free,
+		     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free message file.",
-			 function );
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set message file in cache entry: %d.",
+			 function,
+			 export_handle->next_message_file_cache_index );
+
+			message_file_free(
+			 &message_file,
+			 NULL );
 
 			goto on_error;
 		}
+		export_handle->next_message_file_cache_index++;
+
+		if( export_handle->next_message_file_cache_index == 16 )
+		{
+			export_handle->next_message_file_cache_index = 0;
+		}
+		memory_free(
+		 message_file_path );
+
+		message_file_path = NULL;
+	}
+	result = message_file_get_string(
+		  message_file,
+		  export_handle->preferred_language_identifier,
+		  message_identifier,
+		  message_string,
+		  message_string_size,
+		  error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve message string: 0x%" PRIx32 ".",
+		 function );
+
+		goto on_error;
 	}
 	return( result );
 
 on_error:
-	if( message_file != NULL )
-	{
-		message_file_free(
-		 &message_file,
-		 NULL );
-	}
 	if( message_file_path != NULL )
 	{
 		memory_free(
@@ -2259,8 +2365,9 @@ int export_handle_message_string_fprint(
 		 && ( ( message_string_index + 1 ) < message_string_length ) )
 		{
 /* TODO add support for more conversion specifiers */
-			/* Ignore %0 = end of string, %r = cariage return */
+			/* Ignore %0 = end of string, %n = new line, %r = cariage return */
 			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
+			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
 			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
 			{
 				message_string_index += 2;

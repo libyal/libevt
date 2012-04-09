@@ -38,6 +38,14 @@ typedef struct message_file message_file_t;
 
 struct message_file
 {
+	/* The name
+	 */
+	libcstring_system_character_t *name;
+
+	/* The name size
+	 */
+	size_t name_size;
+
 	/* The libexe file
 	 */
 	libexe_file_t *exe_file;
@@ -86,6 +94,12 @@ int message_file_get_string(
      uint32_t message_identifier,
      libcstring_system_character_t **message_string,
      size_t *message_string_size,
+     libcerror_error_t **error );
+
+int message_file_set_name(
+     message_file_t *message_file,
+     const libcstring_system_character_t *name,
+     size_t name_length,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

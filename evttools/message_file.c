@@ -241,6 +241,11 @@ int message_file_free(
 
 			result = -1;
 		}
+		if( ( *message_file )->name != NULL )
+		{
+			memory_free(
+			 ( *message_file )->name );
+		}
 		memory_free(
 		 *message_file );
 
@@ -250,7 +255,7 @@ int message_file_free(
 }
 
 /* Opens the message file
- * Returns 1 if successful, 0 if no message table resource could be found or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int message_file_open(
      message_file_t *message_file,
@@ -259,7 +264,6 @@ int message_file_open(
 {
 	static char *function    = "message_file_open";
 	uint32_t virtual_address = 0;
-	int result               = 0;
 
 	if( message_file == NULL )
 	{
@@ -306,14 +310,12 @@ int message_file_open(
 
 		goto on_error;
 	}
-	result = libexe_file_get_section_by_name(
-	          message_file->exe_file,
-	          ".rsrc",
-	          5,
-	          &( message_file->resource_section ),
-	          error );
-
-	if( result == -1 )
+	if( libexe_file_get_section_by_name(
+	     message_file->exe_file,
+	     ".rsrc",
+	     5,
+	     &( message_file->resource_section ),
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -324,85 +326,81 @@ int message_file_open(
 
 		goto on_error;
 	}
-	else if( result != 0 )
+	if( libexe_section_get_virtual_address(
+	     message_file->resource_section,
+	     &virtual_address,
+	     error ) != 1 )
 	{
-		if( libexe_section_get_virtual_address(
-		     message_file->resource_section,
-		     &virtual_address,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve resource section virtual adress.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve resource section virtual adress.",
+		 function );
 
-			goto on_error;
-		}
-		if( libexe_section_get_data_file_io_handle(
-		     message_file->resource_section,
-		     &( message_file->resource_section_file_io_handle ),
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve resource section file IO handle.",
-			 function );
-
-			goto on_error;
-		}
-		if( libwrc_stream_set_virtual_address(
-		     message_file->resource_stream,
-		     virtual_address,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set resource stream virtual adress.",
-			 function );
-
-			goto on_error;
-		}
-		if( libwrc_stream_open_file_io_handle(
-		     message_file->resource_stream,
-		     message_file->resource_section_file_io_handle,
-		     LIBWRC_OPEN_READ,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_OPEN_FAILED,
-			 "%s: unable to open resource stream.",
-			 function );
-
-			goto on_error;
-		}
-		result = libwrc_stream_get_resource_by_type(
-			  message_file->resource_stream,
-			  LIBWRC_RESOURCE_TYPE_MESSAGE_TABLE,
-			  &( message_file->message_table_resource ),
-			  error );
-
-		if( result == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve message table resource.",
-			 function );
-
-			goto on_error;
-		}
-		message_file->is_open = 1;
+		goto on_error;
 	}
-	return( result );
+	if( libexe_section_get_data_file_io_handle(
+	     message_file->resource_section,
+	     &( message_file->resource_section_file_io_handle ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve resource section file IO handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( libwrc_stream_set_virtual_address(
+	     message_file->resource_stream,
+	     virtual_address,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set resource stream virtual adress.",
+		 function );
+
+		goto on_error;
+	}
+	if( libwrc_stream_open_file_io_handle(
+	     message_file->resource_stream,
+	     message_file->resource_section_file_io_handle,
+	     LIBWRC_OPEN_READ,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open resource stream.",
+		 function );
+
+		goto on_error;
+	}
+	if( libwrc_stream_get_resource_by_type(
+	     message_file->resource_stream,
+	     LIBWRC_RESOURCE_TYPE_MESSAGE_TABLE,
+	     &( message_file->message_table_resource ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve message table resource.",
+		 function );
+
+		goto on_error;
+	}
+	message_file->is_open = 1;
+
+	return( 1 );
 
 on_error:
 	if( message_file->resource_section_file_io_handle != NULL )
@@ -714,6 +712,115 @@ on_error:
 		*message_string = NULL;
 	}
 	*message_string_size = 0;
+
+	return( -1 );
+}
+
+/* Sets the name
+ * Returns 1 if successful or -1 error
+ */
+int message_file_set_name(
+     message_file_t *message_file,
+     const libcstring_system_character_t *name,
+     size_t name_length,
+     libcerror_error_t **error )
+{
+	static char *function = "message_file_set_name";
+
+	if( message_file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid message file.",
+		 function );
+
+		return( -1 );
+	}
+	if( message_file->is_open != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid message file already open.",
+		 function );
+
+		return( -1 );
+	}
+	if( name == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid name.",
+		 function );
+
+		return( -1 );
+	}
+	if( name_length > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid name length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( message_file->name != NULL )
+	{
+		memory_free(
+		 message_file->name );
+
+		message_file->name = NULL;
+	}
+	message_file->name_size = name_length + 1;
+
+	message_file->name = libcstring_system_string_allocate(
+			      message_file->name_size );
+
+	if( message_file->name == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create name.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcstring_system_string_copy(
+	     message_file->name,
+	     name,
+	     name_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy name.",
+		 function );
+
+		goto on_error;
+	}
+	( message_file->name )[ name_length ] = 0;
+
+	return( 1 );
+
+on_error:
+	if( message_file->name != NULL )
+	{
+		memory_free(
+		 message_file->name );
+
+		message_file->name = NULL;
+	}
+	message_file->name_size = 0;
 
 	return( -1 );
 }

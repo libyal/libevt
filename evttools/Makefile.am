@@ -37,6 +37,7 @@ evtexport_SOURCES = \
 	evttools_libcerror.h \
 	evttools_libclocale.h \
 	evttools_libcnotify.h \
+	evttools_libcpath.h \
 	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfcache.h \

@@ -71,6 +71,10 @@ struct export_handle
 	 */
 	libfcache_cache_t *message_file_cache;
 
+	/* The next available message file cache index
+	 */
+	int next_message_file_cache_index;
+
 	/* The event log type
 	 */
 	int event_log_type;
