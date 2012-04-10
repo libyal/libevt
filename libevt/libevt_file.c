@@ -134,6 +134,12 @@ int libevt_file_initialize(
 on_error:
 	if( internal_file != NULL )
 	{
+		if( internal_file->io_handle != NULL )
+		{
+			libevt_io_handle_free(
+			 &( internal_file->io_handle ),
+			 NULL );
+		}
 		if( internal_file->records_array != NULL )
 		{
 			libevt_array_free(

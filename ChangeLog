@@ -33,6 +33,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120410
+* worked on Python bindings
+
 20120409
 * libregf now is case insensitive regarding key/value names
 

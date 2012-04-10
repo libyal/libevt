@@ -23,6 +23,7 @@ SUBDIRS = \
 	libcdirectory \
 	libcsystem \
 	evttools \
+	pyevt \
 	po \
 	manuals \
 	examples \

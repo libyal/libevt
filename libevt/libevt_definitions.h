@@ -37,11 +37,11 @@
  * for local use of libevt
  */
 #else
-#define LIBEVT_VERSION						20120409
+#define LIBEVT_VERSION						20120410
 
 /* The version string
  */
-#define LIBEVT_VERSION_STRING					"20120409"
+#define LIBEVT_VERSION_STRING					"20120410"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
@@ -86,6 +86,8 @@ enum LIBEVT_FILE_FLAGS
 	LIBEVT_FILE_FLAG_ARCHIVE				= 0x00000008UL
 };
 
+/* The record flags
+ */
 enum LIBEVT_RECORD_FLAGS
 {
 	LIBEVT_RECORD_FLAG_NON_MANAGED_FILE_IO_HANDLE		= 0x00,
@@ -94,6 +96,8 @@ enum LIBEVT_RECORD_FLAGS
 
 #define LIBEVT_RECORD_FLAGS_DEFAULT				LIBEVT_RECORD_FLAG_NON_MANAGED_FILE_IO_HANDLE
 
+/* The recover scan states
+ */
 enum LIBEVT_RECOVER_SCAN_STATES
 {
 	LIBEVT_RECOVER_SCAN_STATE_START,
