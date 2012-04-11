@@ -37,11 +37,11 @@
  * for local use of libevt
  */
 #else
-#define LIBEVT_VERSION						20120410
+#define LIBEVT_VERSION						20120411
 
 /* The version string
  */
-#define LIBEVT_VERSION_STRING					"20120410"
+#define LIBEVT_VERSION_STRING					"20120411"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
@@ -84,6 +84,15 @@ enum LIBEVT_FILE_FLAGS
 	LIBEVT_FILE_FLAG_HAS_WRAPPED				= 0x00000002UL,
 	LIBEVT_FILE_FLAG_IS_FULL				= 0x00000004UL,
 	LIBEVT_FILE_FLAG_ARCHIVE				= 0x00000008UL
+};
+
+/* The IO handle flags
+ */
+enum LIBEVT_IO_HANDLE_FLAGS
+{
+	/* The file is corrupted
+	 */
+	LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED			= 0x01
 };
 
 /* The record flags

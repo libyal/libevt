@@ -44,6 +44,10 @@ struct libevt_internal_file
 	 */
 	libevt_array_t *records_array;
 
+	/* The recovered records array
+	 */
+	libevt_array_t *recovered_records_array;
+
 	/* The IO handle
 	 */
 	libevt_io_handle_t *io_handle;
@@ -105,6 +109,11 @@ int libevt_file_open_read(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_file_is_corrupted(
+     libevt_file_t *file,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_file_get_ascii_codepage(
      libevt_file_t *file,
      int *ascii_codepage,
@@ -131,6 +140,19 @@ int libevt_file_get_number_of_records(
 
 LIBEVT_EXTERN \
 int libevt_file_get_record(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_file_get_number_of_recovered_records(
+     libevt_file_t *file,
+     int *number_of_records,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_file_get_recovered_record(
      libevt_file_t *file,
      int record_index,
      libevt_record_t **record,

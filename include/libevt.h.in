@@ -252,6 +252,14 @@ int libevt_file_close(
      libevt_file_t *file,
      libevt_error_t **error );
 
+/* Determine if the fil ecorrupted
+ * Returns 1 if corrupted, 0 if not or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_file_is_corrupted(
+     libevt_file_t *file,
+     libevt_error_t **error );
+
 /* Retrieves the file ASCII codepage
  * Returns 1 if successful or -1 on error
  */
@@ -294,6 +302,25 @@ int libevt_file_get_number_of_records(
  */
 LIBEVT_EXTERN \
 int libevt_file_get_record(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libevt_error_t **error );
+
+/* Retrieves the number of recovered records
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_file_get_number_of_recovered_records(
+     libevt_file_t *file,
+     int *number_of_records,
+     libevt_error_t **error );
+
+/* Retrieves a specific recovered record
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_file_get_recovered_record(
      libevt_file_t *file,
      int record_index,
      libevt_record_t **record,

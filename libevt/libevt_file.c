@@ -36,6 +36,8 @@
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
+#include "evt_file_header.h"
+
 /* Initializes a file
  * Make sure the value file is pointing to is set to NULL
  * Returns 1 if successful or -1 on error
@@ -114,6 +116,20 @@ int libevt_file_initialize(
 
 		goto on_error;
 	}
+	if( libevt_array_initialize(
+	     &( internal_file->recovered_records_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create recovered records array.",
+		 function );
+
+		goto on_error;
+	}
 	if( libevt_io_handle_initialize(
 	     &( internal_file->io_handle ),
 	     error ) != 1 )
@@ -134,10 +150,11 @@ int libevt_file_initialize(
 on_error:
 	if( internal_file != NULL )
 	{
-		if( internal_file->io_handle != NULL )
+		if( internal_file->recovered_records_array != NULL )
 		{
-			libevt_io_handle_free(
-			 &( internal_file->io_handle ),
+			libevt_array_free(
+			 &( internal_file->recovered_records_array ),
+			 NULL,
 			 NULL );
 		}
 		if( internal_file->records_array != NULL )
@@ -207,6 +224,20 @@ int libevt_file_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free records array.",
+			 function );
+
+			result = -1;
+		}
+		if( libevt_array_free(
+		     &( internal_file->recovered_records_array ),
+		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free recovered records array.",
 			 function );
 
 			result = -1;
@@ -780,6 +811,7 @@ int libevt_file_open_read(
      libcerror_error_t **error )
 {
 	static char *function              = "libevt_file_open_read";
+	off64_t last_record_offset         = 0;
 	uint32_t end_of_file_record_offset = 0;
 	uint32_t first_record_offset       = 0;
 	int result                         = 1;
@@ -846,6 +878,8 @@ int libevt_file_open_read(
 	          first_record_offset,
 	          end_of_file_record_offset,
 	          internal_file->records_array,
+	          &last_record_offset,
+	          0,
 	          error );
 
 	if( result != 1 )
@@ -868,15 +902,44 @@ int libevt_file_open_read(
 		libcerror_error_free(
 		 error );
 	}
+	if( internal_file->io_handle->abort == 0 )
+	{
+		if( internal_file->io_handle->is_wrapped == 0 )
+		{
+			if( last_record_offset == (off64_t) first_record_offset )
+			{
+fprintf( stderr, "NO GAP\n" );
+			}
+			if( first_record_offset > (off64_t) sizeof( evt_file_header_t ) )
+			{
+fprintf( stderr, "PRE GAP: %zd - %" PRIu32 "\n", sizeof( evt_file_header_t ), first_record_offset );
+			}
+			if( last_record_offset < internal_file->io_handle->file_size )
+			{
+fprintf( stderr, "POST GAP: %" PRIi64 " - %" PRIu64 "\n", last_record_offset, internal_file->io_handle->file_size );
+			}
+		}
+		else
+		{
+/* TODO correct last record offset to end of record ? */
+			if( last_record_offset < (off64_t) first_record_offset )
+			{
+fprintf( stderr, "MID GAP: %" PRIi64 " - %" PRIu32 "\n", last_record_offset, first_record_offset );
+			}
+		}
+	}
+
+/* TODO detect if there is a gap that can be analysed for recoverable records */
 	if( ( result != 1 )
 	 && ( internal_file->io_handle->abort == 0 ) )
 	{
-		result = libevt_io_handle_read_recover_records(
+		result = libevt_io_handle_recover_records(
 		          internal_file->io_handle,
 		          internal_file->file_io_handle,
 		          first_record_offset,
 		          end_of_file_record_offset,
-		          internal_file->records_array,
+		          internal_file->recovered_records_array,
+		          &last_record_offset,
 		          error );
 
 		if( result != 1 )
@@ -885,7 +948,7 @@ int libevt_file_open_read(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read recover records.",
+			 "%s: unable to recover records.",
 			 function );
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -905,6 +968,47 @@ int libevt_file_open_read(
 		internal_file->io_handle->abort = 0;
 	}
 	return( result );
+}
+
+/* Determine if the fil ecorrupted
+ * Returns 1 if corrupted, 0 if not or -1 on error
+ */
+int libevt_file_is_corrupted(
+     libevt_file_t *file,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	static char *function                 = "libevt_file_is_corrupted";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( internal_file->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid file - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( internal_file->io_handle->flags & LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED ) != 0 )
+	{
+		return( 1 );
+	}
+	return( 0 );
 }
 
 /* Retrieves the file ASCII codepage
@@ -1173,6 +1277,120 @@ int libevt_file_get_record(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve record values: %d.",
+		 function,
+		 record_index );
+
+		return( -1 );
+	}
+	if( libevt_record_initialize(
+	     record,
+	     internal_file->io_handle,
+	     internal_file->file_io_handle,
+	     record_values,
+	     LIBEVT_RECORD_FLAGS_DEFAULT,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create record.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the number of recovered records
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_file_get_number_of_recovered_records(
+     libevt_file_t *file,
+     int *number_of_records,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	static char *function                 = "libevt_file_get_number_of_recovered_records";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( libevt_array_get_number_of_entries(
+	     internal_file->recovered_records_array,
+	     number_of_records,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of recovered records.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific recovered record
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_file_get_recovered_record(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_file_get_recovered_record";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libevt_array_get_entry_by_index(
+	     internal_file->recovered_records_array,
+	     record_index,
+	     (intptr_t **) &record_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve recovered record values: %d.",
 		 function,
 		 record_index );
 

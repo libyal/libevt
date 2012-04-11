@@ -55,6 +55,14 @@ struct libevt_io_handle
 	 */
 	size64_t file_size;
 
+	/* Value to indicate the record data is wrapped
+	 */
+	uint8_t is_wrapped;
+
+	/* Flags
+	 */
+	uint8_t flags;
+
 	/* The codepage of the extended ASCII strings
 	 */
 	int ascii_codepage;
@@ -85,14 +93,17 @@ int libevt_io_handle_read_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *records_array,
+     off64_t *last_record_offset,
+     uint8_t recovery_mode,
      libcerror_error_t **error );
 
-int libevt_io_handle_read_recover_records(
+int libevt_io_handle_recover_records(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *recovered_records_array,
+     off64_t *last_record_offset,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

@@ -1,14 +1,13 @@
 TODO:
 * libcdirectory:
   - implement wide and narrow char support
-* complete language support in evtinput.[ch]
+* complete language support in libclocale
 * export handle
   - use current control set nr?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
 * add function to scan for records
-* detect if wrapped flag is not set but file is wrapped
 * handle gap between first record and end of file record ?
   - only in wrapped situation
 * deal with dirty file
@@ -32,6 +31,10 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120411
+* added detection if wrapped flag is not set but file is wrapped
+* worked on improving recovery
 
 20120410
 * worked on Python bindings

@@ -401,6 +401,8 @@ int info_handle_file_fprint(
 	static char *function                               = "info_handle_file_fprint";
 	uint32_t major_version                              = 0;
 	uint32_t minor_version                              = 0;
+	int is_corrupted                                    = 0;
+	int number_of_recovered_records                     = 0;
 	int number_of_records                               = 0;
 
 	if( info_handle == NULL )
@@ -429,6 +431,21 @@ int info_handle_file_fprint(
 
 		return( -1 );
 	}
+	is_corrupted = libevt_file_is_corrupted(
+	                info_handle->input_file,
+	                error );
+
+	if( is_corrupted == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine if file is corrupted.",
+		 function );
+
+		return( -1 );
+	}
 	if( libevt_file_get_number_of_records(
 	     info_handle->input_file,
 	     &number_of_records,
@@ -443,13 +460,27 @@ int info_handle_file_fprint(
 
 		return( -1 );
 	}
+	if( libevt_file_get_number_of_recovered_records(
+	     info_handle->input_file,
+	     &number_of_recovered_records,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of recovered records.",
+		 function );
+
+		return( -1 );
+	}
 	fprintf(
 	 info_handle->notify_stream,
 	 "Windows EventViewer Log (EVT) information:\n" );
 
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tVersion\t\t\t: %" PRIu32 ".%" PRIu32 "\n",
+	 "\tVersion\t\t\t\t: %" PRIu32 ".%" PRIu32 "\n",
 	 major_version,
 	 minor_version );
 
@@ -474,14 +505,25 @@ int info_handle_file_fprint(
 	}
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tLog type\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+	 "\tLog type\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 	 event_log_type );
 
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tNumber of records\t: %d\n",
+	 "\tNumber of records\t\t: %d\n",
 	 number_of_records );
 
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tNumber of recovered records\t: %d\n",
+	 number_of_recovered_records );
+
+	if( is_corrupted != 0 )
+	{
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tIs corrupted\n" );
+	}
 	fprintf(
 	 info_handle->notify_stream,
 	 "\n" );

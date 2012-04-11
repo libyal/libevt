@@ -386,14 +386,37 @@ int libevt_io_handle_read_file_header(
 #endif
 	if( size != size_copy )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_INPUT,
-		 LIBCERROR_INPUT_ERROR_VALUE_MISMATCH,
-		 "%s: value mismatch for size and size copy.",
-		 function );
-
-		return( -1 );
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: value mismatch for size and copy ( %" PRIu32 " != %" PRIu32 " ).\n",
+			 function,
+			 size,
+			 size_copy );
+		}
+#endif
+		/* If the size does not match the header size assume size copy contains
+		 * the correct value for the next validation check
+		 */
+		if( size != sizeof( evt_file_header_t ) )
+		{
+			size = size_copy;
+		}
+		io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+	}
+	if( (size_t) size != sizeof( evt_file_header_t ) )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: size: %" PRIu32 " does not match header size.\n",
+			 function,
+			 size );
+		}
+#endif
+		io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 	}
 	return( 1 );
 }
@@ -407,6 +430,8 @@ int libevt_io_handle_read_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *records_array,
+     off64_t *last_record_offset,
+     uint8_t recovery_mode,
      libcerror_error_t **error )
 {
 	libevt_record_values_t *record_values = NULL;
@@ -424,6 +449,17 @@ int libevt_io_handle_read_records(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( last_record_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid last record offset.",
 		 function );
 
 		return( -1 );
@@ -484,6 +520,8 @@ int libevt_io_handle_read_records(
 
 			goto on_error;
 		}
+		*last_record_offset = file_offset;
+
 		read_count = libevt_record_values_read(
 		              record_values,
 		              file_io_handle,
@@ -502,6 +540,13 @@ int libevt_io_handle_read_records(
 			 record_iterator );
 
 			goto on_error;
+		}
+		if( recovery_mode == 0 )
+		{
+			if( *last_record_offset > file_offset )
+			{
+				io_handle->is_wrapped = 0;
+			}
 		}
 		record_type = record_values->type;
 
@@ -554,6 +599,37 @@ fprintf( stderr, "EMERGENCY BREAK\n" );
 
 		goto on_error;
 	}
+	if( recovery_mode == 0 )
+	{
+		if( ( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
+		 && ( *last_record_offset != (off64_t) end_of_file_record_offset ) )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: mismatch in end of file record offset ( %" PRIi64 " != %" PRIu32 " ).\n",
+				 function,
+				 *last_record_offset,
+				 end_of_file_record_offset );
+			}
+#endif
+			io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+		}
+		if( ( io_handle->is_wrapped != 0 )
+		 && ( ( io_handle->flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) == 0 ) )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: file is wrapped but no indication in file flags.\n",
+				 function );
+			}
+#endif
+			io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+		}
+	}
 	return( 1 );
 
 on_error:
@@ -569,16 +645,17 @@ on_error:
 /* Reads the records using the recovery method into the records array
  * Returns 1 if successful or -1 on error
  */
-int libevt_io_handle_read_recover_records(
+int libevt_io_handle_recover_records(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      libevt_array_t *recovered_records_array,
+     off64_t *last_record_offset,
      libcerror_error_t **error )
 {
 	uint8_t *scan_block      = NULL;
-	static char *function    = "libevt_io_handle_read_recover_records";
+	static char *function    = "libevt_io_handle_recover_records";
 	off64_t file_offset      = 0;
 	size_t read_size         = 0;
 	size_t scan_block_offset = 0;
@@ -753,6 +830,8 @@ int libevt_io_handle_read_recover_records(
 	     first_record_offset,
 	     end_of_file_record_offset,
 	     recovered_records_array,
+	     last_record_offset,
+	     1,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -762,7 +841,7 @@ int libevt_io_handle_read_recover_records(
 		 "%s: unable to read records.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	return( 1 );
 
