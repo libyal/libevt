@@ -431,7 +431,6 @@ int libevt_io_handle_read_records(
      uint32_t end_of_file_record_offset,
      libevt_array_t *records_array,
      off64_t *last_record_offset,
-     uint8_t recovery_mode,
      libcerror_error_t **error )
 {
 	libevt_record_values_t *record_values = NULL;
@@ -541,12 +540,9 @@ int libevt_io_handle_read_records(
 
 			goto on_error;
 		}
-		if( recovery_mode == 0 )
+		if( *last_record_offset > file_offset )
 		{
-			if( *last_record_offset > file_offset )
-			{
-				io_handle->is_wrapped = 0;
-			}
+			io_handle->has_wrapped = 0;
 		}
 		record_type = record_values->type;
 
@@ -576,8 +572,6 @@ int libevt_io_handle_read_records(
 		if( ( file_offset > (off64_t) end_of_file_record_offset )
 		 && ( file_offset < (off64_t) ( end_of_file_record_offset + read_count ) ) )
 		{
-/* TODO */
-fprintf( stderr, "EMERGENCY BREAK\n" );
 			break;
 		}
 		record_iterator++;
@@ -599,10 +593,9 @@ fprintf( stderr, "EMERGENCY BREAK\n" );
 
 		goto on_error;
 	}
-	if( recovery_mode == 0 )
+	if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 	{
-		if( ( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
-		 && ( *last_record_offset != (off64_t) end_of_file_record_offset ) )
+		if( *last_record_offset != (off64_t) end_of_file_record_offset )
 		{
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -616,19 +609,20 @@ fprintf( stderr, "EMERGENCY BREAK\n" );
 #endif
 			io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 		}
-		if( ( io_handle->is_wrapped != 0 )
-		 && ( ( io_handle->flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) == 0 ) )
-		{
+		*last_record_offset += read_count;
+	}
+	if( ( io_handle->has_wrapped != 0 )
+	 && ( ( io_handle->flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) == 0 ) )
+	{
 #if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: file is wrapped but no indication in file flags.\n",
-				 function );
-			}
-#endif
-			io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: file has wrapped but file flags indicate otherwise.\n",
+			 function );
 		}
+#endif
+		io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 	}
 	return( 1 );
 
@@ -642,26 +636,26 @@ on_error:
 	return( -1 );
 }
 
-/* Reads the records using the recovery method into the records array
- * Returns 1 if successful or -1 on error
+/* Scans for the end-of-file record and adjusts the offsets accordingly
+ * Returns 1 if successful, 0 if not or -1 on error
  */
-int libevt_io_handle_recover_records(
+int libevt_io_handle_end_of_file_record_scan(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     uint32_t first_record_offset,
-     uint32_t end_of_file_record_offset,
-     libevt_array_t *recovered_records_array,
-     off64_t *last_record_offset,
+     uint32_t *first_record_offset,
+     uint32_t *end_of_file_record_offset,
      libcerror_error_t **error )
 {
-	uint8_t *scan_block      = NULL;
-	static char *function    = "libevt_io_handle_recover_records";
-	off64_t file_offset      = 0;
-	size_t read_size         = 0;
-	size_t scan_block_offset = 0;
-	size_t scan_block_size   = 8192;
-	ssize_t read_count       = 0;
-	uint8_t scan_state       = LIBEVT_RECOVER_SCAN_STATE_START;
+	uint8_t *scan_block         = NULL;
+	static char *function       = "libevt_io_handle_end_of_file_record_scan";
+	off64_t file_offset         = 0;
+	off64_t initial_file_offset = 0;
+	size_t read_size            = 0;
+	size_t scan_block_offset    = 0;
+	size_t scan_block_size      = 8192;
+	ssize_t read_count          = 0;
+	uint8_t scan_state          = LIBEVT_RECOVER_SCAN_STATE_START;
+	uint8_t scan_has_wrapped    = 0;
 
 	if( io_handle == NULL )
 	{
@@ -674,8 +668,30 @@ int libevt_io_handle_recover_records(
 
 		return( -1 );
 	}
+	if( first_record_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid first record offset.",
+		 function );
+
+		return( -1 );
+	}
+	if( end_of_file_record_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid end of file record offset.",
+		 function );
+
+		return( -1 );
+	}
 	scan_block = (uint8_t *) memory_allocate(
-	                          sizeof( uint8_t ) * scan_block_size );
+				  sizeof( uint8_t ) * scan_block_size );
 
 	if( scan_block == NULL )
 	{
@@ -688,13 +704,17 @@ int libevt_io_handle_recover_records(
 
 		goto on_error;
 	}
-	file_offset = (off64_t) end_of_file_record_offset;
+	/* If the file has wrapped start looking for the end-of-file record after the end-of-file record offset
+	 */
+	file_offset = (off64_t) *end_of_file_record_offset;
 
 	if( ( file_offset < (off64_t) sizeof( evt_file_header_t ) )
 	 || ( (size64_t) file_offset >= io_handle->file_size ) )
 	{
 		file_offset = (off64_t) sizeof( evt_file_header_t );
 	}
+	initial_file_offset = file_offset;
+
 	if( libbfio_handle_seek_offset(
 	     file_io_handle,
 	     file_offset,
@@ -711,7 +731,7 @@ int libevt_io_handle_recover_records(
 
 		goto on_error;
 	}
-	while( (size64_t) file_offset < io_handle->file_size )
+	do
 	{
 		if( ( (size64_t) file_offset + scan_block_size ) > io_handle->file_size )
 		{
@@ -722,10 +742,10 @@ int libevt_io_handle_recover_records(
 			read_size = scan_block_size;
 		}
 		read_count = libbfio_handle_read_buffer(
-		              file_io_handle,
-		              scan_block,
-		              read_size,
-		              error );
+			      file_io_handle,
+			      scan_block,
+			      read_size,
+			      error );
 
 		if( read_count != (ssize_t) read_size )
 		{
@@ -790,7 +810,7 @@ int libevt_io_handle_recover_records(
 				     evt_end_of_file_record_signature4,
 				     4 ) == 0 )
 				{
-					end_of_file_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 16 );
+					*end_of_file_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 16 );
 
 					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4;
 				}
@@ -806,7 +826,7 @@ int libevt_io_handle_recover_records(
 				     evt_file_signature,
 				     4 ) == 0 )
 				{
-					first_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 4 );
+					*first_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 4 );
 
 					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE;
 
@@ -814,36 +834,46 @@ int libevt_io_handle_recover_records(
 				}
 			}
 		}
-		if( scan_state == 4 )
+		if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE )
 		{
 			break;
 		}
+		if( (size64_t) file_offset >= io_handle->file_size )
+		{
+			if( libbfio_handle_seek_offset(
+			     file_io_handle,
+			     (off64_t) sizeof( evt_file_header_t ),
+			     SEEK_SET,
+			     error ) == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_SEEK_FAILED,
+				 "%s: unable to seek scan block offset: %" PRIzd ".",
+				 function,
+				 sizeof( evt_file_header_t ) );
+
+				goto on_error;
+			}
+			file_offset = (off64_t) sizeof( evt_file_header_t );
+
+			scan_has_wrapped = 1;
+		}
 	}
+	while( ( scan_has_wrapped == 0 )
+	    || ( file_offset < initial_file_offset ) );
+
 	memory_free(
 	 scan_block );
 
 	scan_block = NULL;
 
-	if( libevt_io_handle_read_records(
-	     io_handle,
-	     file_io_handle,
-	     first_record_offset,
-	     end_of_file_record_offset,
-	     recovered_records_array,
-	     last_record_offset,
-	     1,
-	     error ) != 1 )
+	if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read records.",
-		 function );
-
-		goto on_error;
+		return( 1 );
 	}
-	return( 1 );
+	return( 0 );
 
 on_error:
 	if( scan_block != NULL )
@@ -852,5 +882,529 @@ on_error:
 		 scan_block );
 	}
 	return( -1 );
+}
+
+/* Scans for the event record and adds them to the recovered records array
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int libevt_io_handle_event_record_scan(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     off64_t file_offset,
+     size64_t size,
+     libevt_array_t *recovered_records_array,
+     libcerror_error_t **error )
+{
+	libevt_record_values_t *record_values = NULL;
+	uint8_t *scan_block                   = NULL;
+	static char *function                 = "libevt_io_handle_event_record_scan";
+	off64_t record_offset                 = 0;
+	size_t read_size                      = 0;
+	size_t scan_block_offset              = 0;
+	size_t scan_block_size                = 8192;
+	size_t scan_record_size               = 0;
+	ssize_t read_count                    = 0;
+	int record_entry_index                = 0;
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( file_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
+		 "%s: invalid file offset value less than zero.",
+		 function );
+
+		return( -1 );
+	}
+	if( size > (off64_t) INT64_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	scan_block = (uint8_t *) memory_allocate(
+				  sizeof( uint8_t ) * scan_block_size );
+
+	if( scan_block == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create scan block.",
+		 function );
+
+		goto on_error;
+	}
+	while( size > 0 )
+	{
+		if( libbfio_handle_seek_offset(
+		     file_io_handle,
+		     file_offset,
+		     SEEK_SET,
+		     error ) == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek scan block offset: %" PRIi64 ".",
+			 function,
+			 file_offset );
+
+			goto on_error;
+		}
+		if( scan_block_size > size )
+		{
+			read_size = (size_t) size;
+		}
+		else
+		{
+			read_size = scan_block_size;
+		}
+		read_count = libbfio_handle_read_buffer(
+			      file_io_handle,
+			      scan_block,
+			      read_size,
+			      error );
+
+		if( read_count != (ssize_t) read_size )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read scan block at offset: %" PRIi64 ".",
+			 function,
+			 file_offset );
+
+			goto on_error;
+		}
+		size -= read_count;
+
+		for( scan_block_offset = 0;
+		     scan_block_offset < read_size;
+		     scan_block_offset += 4 )
+		{
+			if( memory_compare(
+			     &( scan_block[ scan_block_offset ] ),
+			     evt_file_signature,
+			     4 ) == 0 )
+			{
+				record_offset = file_offset + scan_block_offset - 4;
+
+				if( record_values == NULL )
+				{
+					if( libevt_record_values_initialize(
+					     &record_values,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+						 "%s: unable to create record values.",
+						 function );
+
+						goto on_error;
+					}
+				}
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					libcnotify_printf(
+					 "%s: reading recovered record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+					 function,
+					 record_offset,
+					 record_offset );
+				}
+#endif
+				if( libbfio_handle_seek_offset(
+				     file_io_handle,
+				     record_offset,
+				     SEEK_SET,
+				     error ) == -1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_SEEK_FAILED,
+					 "%s: unable to seek record offset: %" PRIi64 ".",
+					 function,
+					 record_offset );
+
+					goto on_error;
+				}
+				read_count = libevt_record_values_read(
+					      record_values,
+					      file_io_handle,
+					      io_handle,
+					      &record_offset,
+					      error );
+
+				if( read_count == -1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_READ_FAILED,
+					 "%s: unable to read record at offset: %" PRIi64 ".",
+					 function,
+					 file_offset + scan_block_offset - 4 );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+					if( libcnotify_verbose != 0 )
+					{
+						if( ( error != NULL )
+						 && ( *error != NULL ) )
+						{
+							libcnotify_print_error_backtrace(
+							 *error );
+						}
+					}
+#endif
+					libcerror_error_free(
+					 error );
+				}
+				else
+				{
+					scan_block_offset += read_count;
+
+					if( scan_block_offset > read_size )
+					{
+						scan_record_size = scan_block_offset - read_size;
+					}
+					else
+					{
+						scan_record_size = 0;
+					}
+					/* Ignore records that cross the scan range
+					 */
+					if( scan_record_size <= size )
+					{
+						if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
+						{
+							if( libevt_array_append_entry(
+							     recovered_records_array,
+							     &record_entry_index,
+							     (intptr_t *) record_values,
+							     error ) != 1 )
+							{
+								libcerror_error_set(
+								 error,
+								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+								 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+								 "%s: unable to append record values to records array.",
+								 function );
+
+								goto on_error;
+							}
+							record_values = NULL;
+						}
+						file_offset += scan_record_size;
+						size        -= scan_record_size;
+					}
+				}
+			}
+		}
+		file_offset += read_count;
+	}
+	if( record_values != NULL )
+	{
+		if( libevt_record_values_free(
+		     &record_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free record values.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	memory_free(
+	 scan_block );
+
+	scan_block = NULL;
+
+	return( 1 );
+
+on_error:
+	if( record_values != NULL )
+	{
+		libevt_record_values_free(
+		 &record_values,
+		 NULL );
+	}
+	if( scan_block != NULL )
+	{
+		memory_free(
+		 scan_block );
+	}
+	return( -1 );
+}
+
+/* Tries to recover records
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_io_handle_recover_records(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     uint32_t first_record_offset,
+     uint32_t end_of_file_record_offset,
+     off64_t last_record_offset,
+     libevt_array_t *records_array,
+     libevt_array_t *recovered_records_array,
+     libcerror_error_t **error )
+{
+	static char *function  = "libevt_io_handle_recover_records";
+	int result             = 0;
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( last_record_offset == (off64_t) first_record_offset )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: no records found at specified offsets scanning for end-of-file record.\n",
+			 function );
+		}
+#endif
+		io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+
+		result = libevt_io_handle_end_of_file_record_scan(
+		          io_handle,
+		          file_io_handle,
+		          &first_record_offset,
+		          &end_of_file_record_offset,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to scan for end of file record.",
+			 function );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			result = libevt_io_handle_read_records(
+			          io_handle,
+			          file_io_handle,
+			          first_record_offset,
+			          end_of_file_record_offset,
+			          records_array,
+			          &last_record_offset,
+			          error );
+
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read records.",
+				 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcnotify_print_error_backtrace(
+						 *error );
+					}
+				}
+#endif
+				libcerror_error_free(
+				 error );
+			}
+		}
+		else
+		{
+			first_record_offset = (uint32_t) sizeof( evt_file_header_t );
+			last_record_offset  = (off64_t) sizeof( evt_file_header_t );
+		}
+	}
+	if( io_handle->has_wrapped == 0 )
+	{
+		if( first_record_offset > (uint32_t) sizeof( evt_file_header_t ) )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: scanning unused space before records at offset: %" PRIzd " - %" PRIu32 "\n",
+				 function,
+				 sizeof( evt_file_header_t ),
+				 first_record_offset );
+			}
+#endif
+			if( libevt_io_handle_event_record_scan(
+			     io_handle,
+			     file_io_handle,
+			     (off64_t) sizeof( evt_file_header_t ),
+			     (size64_t) ( first_record_offset - sizeof( evt_file_header_t ) ),
+			     recovered_records_array,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to scan for event records.",
+				 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcnotify_print_error_backtrace(
+						 *error );
+					}
+				}
+#endif
+				libcerror_error_free(
+				 error );
+			}
+		}
+		if( last_record_offset < io_handle->file_size )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				if( last_record_offset > (off64_t) sizeof( evt_file_header_t ) )
+				{
+					libcnotify_printf(
+					 "%s: scanning unused space after records at offset: %" PRIi64 " - %" PRIu64 "\n",
+					 function,
+					 last_record_offset,
+					 io_handle->file_size );
+				}
+				else
+				{
+					libcnotify_printf(
+					 "%s: scanning unused space after header at offset: %" PRIi64 " - %" PRIu64 "\n",
+					 function,
+					 last_record_offset,
+					 io_handle->file_size );
+				}
+			}
+#endif
+			if( libevt_io_handle_event_record_scan(
+			     io_handle,
+			     file_io_handle,
+			     last_record_offset,
+			     io_handle->file_size - last_record_offset,
+			     recovered_records_array,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to scan for event records.",
+				 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcnotify_print_error_backtrace(
+						 *error );
+					}
+				}
+#endif
+				libcerror_error_free(
+				 error );
+			}
+		}
+	}
+	else
+	{
+		if( last_record_offset < (off64_t) first_record_offset )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: scanning unused space between records at offset: %" PRIi64 " - %" PRIu32 "\n",
+				 function,
+				 last_record_offset,
+				 first_record_offset );
+			}
+#endif
+			if( libevt_io_handle_event_record_scan(
+			     io_handle,
+			     file_io_handle,
+			     last_record_offset,
+			     (size64_t) first_record_offset - last_record_offset,
+			     recovered_records_array,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to scan for event records.",
+				 function );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcnotify_print_error_backtrace(
+						 *error );
+					}
+				}
+#endif
+				libcerror_error_free(
+				 error );
+			}
+		}
+	}
+	return( 1 );
 }
 

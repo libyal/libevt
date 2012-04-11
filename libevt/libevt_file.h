@@ -133,6 +133,12 @@ int libevt_file_get_version(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_file_get_flags(
+     libevt_file_t *file,
+     uint32_t *flags,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_file_get_number_of_records(
      libevt_file_t *file,
      int *number_of_records,

@@ -36,8 +36,6 @@
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
-#include "evt_file_header.h"
-
 /* Initializes a file
  * Make sure the value file is pointing to is set to NULL
  * Returns 1 if successful or -1 on error
@@ -814,7 +812,9 @@ int libevt_file_open_read(
 	off64_t last_record_offset         = 0;
 	uint32_t end_of_file_record_offset = 0;
 	uint32_t first_record_offset       = 0;
-	int result                         = 1;
+	int result_record_read             = 0;
+	int result_record_recovery         = 0;
+	int result                         = 0;
 
 	if( internal_file == NULL )
 	{
@@ -872,17 +872,16 @@ int libevt_file_open_read(
 		 "Reading records:\n" );
 	}
 #endif
-	result = libevt_io_handle_read_records(
-	          internal_file->io_handle,
-	          internal_file->file_io_handle,
-	          first_record_offset,
-	          end_of_file_record_offset,
-	          internal_file->records_array,
-	          &last_record_offset,
-	          0,
-	          error );
+	result_record_read = libevt_io_handle_read_records(
+	                      internal_file->io_handle,
+	                      internal_file->file_io_handle,
+	                      first_record_offset,
+	                      end_of_file_record_offset,
+	                      internal_file->records_array,
+	                      &last_record_offset,
+	                      error );
 
-	if( result != 1 )
+	if( result_record_read != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -892,57 +891,30 @@ int libevt_file_open_read(
 		 function );
 
 #if defined( HAVE_DEBUG_OUTPUT )
-		if( ( error != NULL )
-		 && ( *error != NULL ) )
+		if( libcnotify_verbose != 0 )
 		{
-			libcnotify_print_error_backtrace(
-			 *error );
+			if( ( error != NULL )
+			 && ( *error != NULL ) )
+			{
+				libcnotify_print_error_backtrace(
+				 *error );
+			}
 		}
 #endif
-		libcerror_error_free(
-		 error );
 	}
 	if( internal_file->io_handle->abort == 0 )
 	{
-		if( internal_file->io_handle->is_wrapped == 0 )
-		{
-			if( last_record_offset == (off64_t) first_record_offset )
-			{
-fprintf( stderr, "NO GAP\n" );
-			}
-			if( first_record_offset > (off64_t) sizeof( evt_file_header_t ) )
-			{
-fprintf( stderr, "PRE GAP: %zd - %" PRIu32 "\n", sizeof( evt_file_header_t ), first_record_offset );
-			}
-			if( last_record_offset < internal_file->io_handle->file_size )
-			{
-fprintf( stderr, "POST GAP: %" PRIi64 " - %" PRIu64 "\n", last_record_offset, internal_file->io_handle->file_size );
-			}
-		}
-		else
-		{
-/* TODO correct last record offset to end of record ? */
-			if( last_record_offset < (off64_t) first_record_offset )
-			{
-fprintf( stderr, "MID GAP: %" PRIi64 " - %" PRIu32 "\n", last_record_offset, first_record_offset );
-			}
-		}
-	}
+		result_record_recovery = libevt_io_handle_recover_records(
+		                          internal_file->io_handle,
+		                          internal_file->file_io_handle,
+		                          first_record_offset,
+		                          end_of_file_record_offset,
+		                          last_record_offset,
+		                          internal_file->records_array,
+		                          internal_file->recovered_records_array,
+		                          error );
 
-/* TODO detect if there is a gap that can be analysed for recoverable records */
-	if( ( result != 1 )
-	 && ( internal_file->io_handle->abort == 0 ) )
-	{
-		result = libevt_io_handle_recover_records(
-		          internal_file->io_handle,
-		          internal_file->file_io_handle,
-		          first_record_offset,
-		          end_of_file_record_offset,
-		          internal_file->recovered_records_array,
-		          &last_record_offset,
-		          error );
-
-		if( result != 1 )
+		if( result_record_recovery != 1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -952,16 +924,32 @@ fprintf( stderr, "MID GAP: %" PRIi64 " - %" PRIu32 "\n", last_record_offset, fir
 			 function );
 
 #if defined( HAVE_DEBUG_OUTPUT )
-			if( ( error != NULL )
-			 && ( *error != NULL ) )
+			if( libcnotify_verbose != 0 )
 			{
-				libcnotify_print_error_backtrace(
-				 *error );
+				if( ( error != NULL )
+				 && ( *error != NULL ) )
+				{
+					libcnotify_print_error_backtrace(
+					 *error );
+				}
 			}
 #endif
+		}
+	}
+	if( ( result_record_read == 1 )
+	 || ( result_record_recovery == 1 ) )
+	{
+		if( ( error != NULL )
+		 && ( *error != NULL ) )
+		{
 			libcerror_error_free(
 			 error );
 		}
+		result = 1;
+	}
+	else
+	{
+		result = -1;
 	}
 	if( internal_file->io_handle->abort != 0 )
 	{
@@ -1184,6 +1172,57 @@ int libevt_file_get_version(
 	}
 	*major_version = internal_file->io_handle->major_version;
 	*minor_version = internal_file->io_handle->minor_version;
+
+	return( 1 );
+}
+
+/* Retrieves the flags
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_file_get_flags(
+     libevt_file_t *file,
+     uint32_t *flags,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	static char *function                 = "libevt_file_get_flags";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( internal_file->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( flags == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid flags.",
+		 function );
+
+		return( -1 );
+	}
+	*flags = internal_file->io_handle->file_flags;
 
 	return( 1 );
 }

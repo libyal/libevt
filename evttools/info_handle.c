@@ -399,6 +399,7 @@ int info_handle_file_fprint(
 {
 	const libcstring_system_character_t *event_log_type = NULL;
 	static char *function                               = "info_handle_file_fprint";
+	uint32_t flags                                      = 0;
 	uint32_t major_version                              = 0;
 	uint32_t minor_version                              = 0;
 	int is_corrupted                                    = 0;
@@ -426,7 +427,21 @@ int info_handle_file_fprint(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file version.",
+		 "%s: unable to retrieve version.",
+		 function );
+
+		return( -1 );
+	}
+	if( libevt_file_get_flags(
+	     info_handle->input_file,
+	     &flags,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve flags.",
 		 function );
 
 		return( -1 );
@@ -490,6 +505,10 @@ int info_handle_file_fprint(
 			event_log_type = _LIBCSTRING_SYSTEM_STRING( "Application" );
 			break;
 
+		case EVTTOOLS_EVENT_LOG_TYPE_INTERNET_EXPLORER:
+			event_log_type = _LIBCSTRING_SYSTEM_STRING( "Internet Explorer" );
+			break;
+
 		case EVTTOOLS_EVENT_LOG_TYPE_SECURITY:
 			event_log_type = _LIBCSTRING_SYSTEM_STRING( "Security" );
 			break;
@@ -497,17 +516,7 @@ int info_handle_file_fprint(
 		case EVTTOOLS_EVENT_LOG_TYPE_SYSTEM:
 			event_log_type = _LIBCSTRING_SYSTEM_STRING( "System" );
 			break;
-
-		default:
-			event_log_type = _LIBCSTRING_SYSTEM_STRING( "(Unknown)" );
-			break;
-
 	}
-	fprintf(
-	 info_handle->notify_stream,
-	 "\tLog type\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-	 event_log_type );
-
 	fprintf(
 	 info_handle->notify_stream,
 	 "\tNumber of records\t\t: %d\n",
@@ -518,11 +527,49 @@ int info_handle_file_fprint(
 	 "\tNumber of recovered records\t: %d\n",
 	 number_of_recovered_records );
 
+	if( event_log_type != NULL )
+	{
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tLog type\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 event_log_type );
+	}
 	if( is_corrupted != 0 )
 	{
 		fprintf(
 		 info_handle->notify_stream,
 		 "\tIs corrupted\n" );
+	}
+	if( flags != 0 )
+	{
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tFlags:\n" );
+
+		if( ( flags & LIBEVT_FILE_FLAG_IS_DIRTY ) != 0 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\t\tIs dirty\n" );
+		}
+		if( ( flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) != 0 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\t\tHas wrapped\n" );
+		}
+		if( ( flags & LIBEVT_FILE_FLAG_IS_FULL ) != 0 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\t\tIs full\n" );
+		}
+		if( ( flags & LIBEVT_FILE_FLAG_ARCHIVE ) != 0 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\t\tShould be archived\n" );
+		}
 	}
 	fprintf(
 	 info_handle->notify_stream,

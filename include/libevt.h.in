@@ -278,7 +278,7 @@ int libevt_file_set_ascii_codepage(
      int ascii_codepage,
      libevt_error_t **error );
 
-/* Retrieves the file version
+/* Retrieves the version
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
@@ -286,6 +286,15 @@ int libevt_file_get_version(
      libevt_file_t *file,
      uint32_t *major_version,
      uint32_t *minor_version,
+     libevt_error_t **error );
+
+/* Retrieves the flags
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_file_get_flags(
+     libevt_file_t *file,
+     uint32_t *flags,
      libevt_error_t **error );
 
 /* Retrieves the number of records

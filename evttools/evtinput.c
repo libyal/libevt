@@ -168,6 +168,14 @@ int evtinput_determine_event_log_type_from_filename(
 		}
 		else if( libcstring_system_string_compare_no_case(
 		          path_separator,
+		          _LIBCSTRING_SYSTEM_STRING( "Internet.Evt" ),
+		          12 ) == 0 )
+		{
+			*event_log_type = EVTTOOLS_EVENT_LOG_TYPE_INTERNET_EXPLORER;
+			result          = 1;
+		}
+		else if( libcstring_system_string_compare_no_case(
+		          path_separator,
 		          _LIBCSTRING_SYSTEM_STRING( "SecEvent.Evt" ),
 		          12 ) == 0 )
 		{

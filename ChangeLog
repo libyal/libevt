@@ -1,26 +1,21 @@
 TODO:
 * libcdirectory:
   - implement wide and narrow char support
-* complete language support in libclocale
+* libclocale
+  - complete language support
+* pyevt:
+  - add record object
+  - add record functions
 * export handle
+  - export recovered records (add export mode)
   - use current control set nr?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
-* add function to scan for records
-* handle gap between first record and end of file record ?
-  - only in wrapped situation
-* deal with dirty file
-  - handle dirty flag. What about recovered records ?
-  - scan for end of file record
-  - find next record (should be the oldest)
-  - continue scanning for records if possible
-* deal with corruption
 * update manuals
 * update msvscpp files
-* debug function for event flags
-* add API record functions
-* add error tollerability
+* add debug function for event flags
+* add error tollerability (+/-)
   - sizes and copy
 
 Tools:
@@ -35,6 +30,7 @@ Tools:
 20120411
 * added detection if wrapped flag is not set but file is wrapped
 * worked on improving recovery
+* added functionality to scan for records
 
 20120410
 * worked on Python bindings

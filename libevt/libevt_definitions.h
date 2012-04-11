@@ -74,8 +74,6 @@ enum LIBEVT_EVENT_TYPES
 	LIBEVT_EVENT_TYPE_AUDIT_FAILURE				= 0x0010
 };
 
-#endif
-
 /* The event file flags
  */
 enum LIBEVT_FILE_FLAGS
@@ -85,6 +83,8 @@ enum LIBEVT_FILE_FLAGS
 	LIBEVT_FILE_FLAG_IS_FULL				= 0x00000004UL,
 	LIBEVT_FILE_FLAG_ARCHIVE				= 0x00000008UL
 };
+
+#endif
 
 /* The IO handle flags
  */

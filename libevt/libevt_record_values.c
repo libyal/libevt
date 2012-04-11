@@ -1521,7 +1521,7 @@ int libevt_record_values_read_end_of_file(
      size_t record_data_size,
      libcerror_error_t **error )
 {
-	static char *function = "libevt_record_values_read_event";
+	static char *function = "libevt_record_values_read_end_of_file";
 	uint32_t size         = 0;
 	uint32_t size_copy    = 0;
 
