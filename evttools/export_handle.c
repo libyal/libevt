@@ -177,6 +177,7 @@ int export_handle_initialize(
 
 		goto on_error;
 	}
+	( *export_handle )->export_mode                   = EXPORT_MODE_ITEMS;
 	( *export_handle )->event_log_type                = EVTTOOLS_EVENT_LOG_TYPE_UNKNOWN;
 	( *export_handle )->preferred_language_identifier = 0x00000409UL;
 	( *export_handle )->ascii_codepage                = LIBEVT_CODEPAGE_WINDOWS_1252;
@@ -345,6 +346,82 @@ int export_handle_signal_abort(
 		}
 	}
 	return( 1 );
+}
+
+/* Sets the export mode
+ * Returns 1 if successful, 0 if unsupported values or -1 on error
+ */
+int export_handle_set_export_mode(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *string,
+     libcerror_error_t **error )
+{
+	static char *function = "export_handle_set_export_mode";
+	size_t string_length  = 0;
+	int result            = 0;
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid string.",
+		 function );
+
+		return( -1 );
+	}
+	string_length = libcstring_system_string_length(
+	                 string );
+
+	if( string_length == 3 )
+	{
+		if( libcstring_system_string_compare(
+		     string,
+		     _LIBCSTRING_SYSTEM_STRING( "all" ),
+		     3 ) == 0 )
+		{
+			export_handle->export_mode = EXPORT_MODE_ALL;
+
+			result = 1;
+		}
+	}
+	else if( string_length == 5 )
+	{
+		if( libcstring_system_string_compare(
+		     string,
+		     _LIBCSTRING_SYSTEM_STRING( "items" ),
+		     5 ) == 0 )
+		{
+			export_handle->export_mode = EXPORT_MODE_ITEMS;
+
+			result = 1;
+		}
+	}
+	else if( string_length == 9 )
+	{
+		if( libcstring_system_string_compare(
+		     string,
+		     _LIBCSTRING_SYSTEM_STRING( "recovered" ),
+		     9 ) == 0 )
+		{
+			export_handle->export_mode = EXPORT_MODE_RECOVERED;
+
+			result = 1;
+		}
+	}
+	return( result );
 }
 
 /* Sets the ascii codepage
@@ -3266,13 +3343,121 @@ int export_handle_export_records(
 			 function,
 			 record_index );
 
-/* TODO print and log error
 			libcerror_error_free(
 			 error );
-*/
+		}
+		if( libevt_record_free(
+		     &record,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free record: %d.",
+			 function,
+			 record_index );
 
-/* TODO this leaks the record */
-return( -1 );
+			return( -1 );
+		}
+	}
+	return( 1 );
+}
+
+/* Exports the recovered records
+ * Returns the 1 if succesful, 0 if no records are available or -1 on error
+ */
+int export_handle_export_recovered_records(
+     export_handle_t *export_handle,
+     libevt_file_t *file,
+     log_handle_t *log_handle,
+     libcerror_error_t **error )
+{
+	libevt_record_t *record = NULL;
+	static char *function   = "export_handle_export_recovered_records";
+	int number_of_records   = 0;
+	int record_index        = 0;
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	if( libevt_file_get_number_of_recovered_records(
+	     file,
+	     &number_of_records,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of recovered records.",
+		 function );
+
+		return( -1 );
+	}
+	if( number_of_records == 0 )
+	{
+		return( 0 );
+	}
+	for( record_index = 0;
+	     record_index < number_of_records;
+	     record_index++ )
+	{
+		if( export_handle->abort != 0 )
+		{
+			return( -1 );
+		}
+		if( libevt_file_get_recovered_record(
+		     file,
+		     record_index,
+		     &record,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve recovered record: %d.",
+			 function,
+			 record_index );
+
+			return( -1 );
+		}
+		if( export_handle_export_record(
+		     export_handle,
+		     record,
+		     log_handle,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GENERIC,
+			 "%s: unable to export recovered record: %d.",
+			 function,
+			 record_index );
+
+			libcerror_error_free(
+			 error );
 		}
 		if( libevt_record_free(
 		     &record,
@@ -3300,8 +3485,9 @@ int export_handle_export_file(
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_export_file";
-	int result            = 0;
+	static char *function        = "export_handle_export_file";
+	int result_recovered_records = 0;
+	int result_records           = 0;
 
 	if( export_handle == NULL )
 	{
@@ -3314,23 +3500,51 @@ int export_handle_export_file(
 
 		return( -1 );
 	}
-	result = export_handle_export_records(
-	          export_handle,
-	          export_handle->input_file,
-	          log_handle,
-	          error );
-
-	if( result == -1 )
+	if( export_handle->export_mode != EXPORT_MODE_RECOVERED )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GENERIC,
-		 "%s: unable to export records.",
-		 function );
+		result_records = export_handle_export_records(
+				  export_handle,
+				  export_handle->input_file,
+				  log_handle,
+				  error );
 
-		return( -1 );
+		if( result_records == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GENERIC,
+			 "%s: unable to export records.",
+			 function );
+
+			return( -1 );
+		}
 	}
-	return( result );
+	if( export_handle->export_mode != EXPORT_MODE_ITEMS )
+	{
+		result_recovered_records = export_handle_export_recovered_records(
+					    export_handle,
+					    export_handle->input_file,
+					    log_handle,
+					    error );
+
+		if( result_recovered_records == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GENERIC,
+			 "%s: unable to export recovered records.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	if( ( result_records != 0 )
+	 || ( result_recovered_records != 0 ) )
+	{
+		return( 1 );
+	}
+	return( 0 );
 }
 

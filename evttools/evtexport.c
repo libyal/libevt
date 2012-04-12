@@ -57,8 +57,8 @@ void usage_fprint(
 	fprintf( stream, "Use evtexport to export items stored in a Windows Event Viewer\n"
 	                 "Log (EVT) file.\n\n" );
 
-	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -f log_type ]\n"
-	                 "                 [ -l log_file ] [ -m message_files_path ]\n"
+	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -f log_type ] [ -l log_file ]\n"
+	                 "                 [ -m mode ] [ -p message_files_path ]\n"
 	                 "                 [ -s system_file ] [ -hvV ] source\n\n" );
 
 	fprintf( stream, "\tsource: the source file\n\n" );
@@ -72,7 +72,11 @@ void usage_fprint(
 	                 "\t        on the filename.\n\n" );
 	fprintf( stream, "\t-h:     shows this help\n" );
 	fprintf( stream, "\t-l:     logs information about the exported items\n" );
-	fprintf( stream, "\t-m:     search PATH for the message files\n" );
+	fprintf( stream, "\t-m:     export mode, option: all, items (default), recovered\n"
+	                 "\t        'all' exports the (allocated) items and recovered items,\n"
+	                 "\t        'items' exports the (allocated) items and 'recovered' exports\n"
+	                 "\t        the recovered items\n" );
+	fprintf( stream, "\t-p:     search PATH for the message files\n" );
 	fprintf( stream, "\t-s:     filename of the SYSTEM (Windows) Registry file\n" );
 	fprintf( stream, "\t-v:     verbose output to stderr\n" );
 	fprintf( stream, "\t-V:     print version\n" );
@@ -129,6 +133,7 @@ int main( int argc, char * const argv[] )
 	log_handle_t *log_handle                                       = NULL;
 	libcstring_system_character_t *option_ascii_codepage           = NULL;
 	libcstring_system_character_t *option_event_log_type           = NULL;
+	libcstring_system_character_t *option_export_mode              = NULL;
 	libcstring_system_character_t *option_log_filename             = NULL;
 	libcstring_system_character_t *option_message_files_path       = NULL;
 	libcstring_system_character_t *option_preferred_language       = NULL;
@@ -172,7 +177,7 @@ int main( int argc, char * const argv[] )
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "c:hl:m:s:vV" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _LIBCSTRING_SYSTEM_STRING( "c:hl:m:p:s:vV" ) ) ) != (libcstring_system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -205,6 +210,11 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (libcstring_system_integer_t) 'm':
+				option_export_mode = optarg;
+
+				break;
+
+			case (libcstring_system_integer_t) 'p':
 				option_message_files_path = optarg;
 
 				break;
@@ -303,6 +313,28 @@ int main( int argc, char * const argv[] )
 			 "Unable to set event log type in export handle.\n" );
 
 			goto on_error;
+		}
+	}
+	if( option_export_mode != NULL )
+	{
+		result = export_handle_set_export_mode(
+			  evtexport_export_handle,
+			  option_export_mode,
+			  &error );
+
+		if( result == -1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set export mode.\n" );
+
+			goto on_error;
+		}
+		else if( result == 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Unsupported export mode defaulting to: items.\n" );
 		}
 	}
 	if( ( option_event_log_type == NULL )

@@ -39,10 +39,21 @@
 extern "C" {
 #endif
 
+enum EXPORT_MODES
+{
+	EXPORT_MODE_ALL				= (int) 'a',
+	EXPORT_MODE_ITEMS			= (int) 'i',
+	EXPORT_MODE_RECOVERED			= (int) 'r'
+};
+
 typedef struct export_handle export_handle_t;
 
 struct export_handle
 {
+	/* The export mode
+	 */
+	uint8_t export_mode;
+
 	/* The libevt input file
 	 */
 	libevt_file_t *input_file;
@@ -114,6 +125,11 @@ int export_handle_free(
 
 int export_handle_signal_abort(
      export_handle_t *export_handle,
+     libcerror_error_t **error );
+
+int export_handle_set_export_mode(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *string,
      libcerror_error_t **error );
 
 int export_handle_set_ascii_codepage(
@@ -188,6 +204,12 @@ int export_handle_export_record(
 /* File export functions
  */
 int export_handle_export_records(
+     export_handle_t *export_handle,
+     libevt_file_t *file,
+     log_handle_t *log_handle,
+     libcerror_error_t **error );
+
+int export_handle_export_recovered_records(
      export_handle_t *export_handle,
      libevt_file_t *file,
      log_handle_t *log_handle,

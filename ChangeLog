@@ -7,7 +7,7 @@ TODO:
   - add record object
   - add record functions
 * export handle
-  - export recovered records (add export mode)
+  - use export mode
   - use current control set nr?
   - print if message file key not found
   - print if message file not found
@@ -26,6 +26,11 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120412
+* worked on export mode
+* added export of recovered items
+* change -m into -p
 
 20120411
 * added detection if wrapped flag is not set but file is wrapped
