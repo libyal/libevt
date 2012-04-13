@@ -1,4 +1,5 @@
 TODO:
+* %SystemRoot% expansion support for WINNT and WINNT35
 * libcdirectory:
   - implement wide and narrow char support
 * libclocale
@@ -7,12 +8,13 @@ TODO:
   - add record object
   - add record functions
 * export handle
-  - use export mode
   - use current control set nr?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
+  - print raw strings if no message was found
 * update manuals
+  - remove Nickfile
 * update msvscpp files
 * add debug function for event flags
 * add error tollerability (+/-)
@@ -26,6 +28,9 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120413
+* export_handle: code clean up
 
 20120412
 * worked on export mode

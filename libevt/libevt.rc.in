@@ -21,7 +21,7 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",		"Library to support the Windows Event Viewer Log (EVT) format\0"
+      VALUE "FileDescription",		"Library to support the Windows Event Log (EVT) format\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"libevt.dll\0"
       VALUE "LegalCopyright",		"(c) 2011-2012 Joachim Metz <jbmetz@users.sourceforge.net>\0"

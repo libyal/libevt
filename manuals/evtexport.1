@@ -1,26 +1,26 @@
 .Dd July 4, 2011
-.Dt nk2export
-.Os libnk2
+.Dt evtexport
+.Os libevt
 .Sh NAME
-.Nm nk2export
-.Nd exports items stored in a Nickfile (NK2)
+.Nm evtexport
+.Nd exports items stored in a Nickfile (EVT)
 .Sh SYNOPSIS
-.Nm nk2export
+.Nm evtexport
 .Op Fl c Ar codepage
 .Op Fl l Ar logfile
 .Op Fl t Ar target
 .Op Fl hqvV
 .Va Ar source
 .Sh DESCRIPTION
-.Nm nk2export
-is a utility to export items stored in a Nickfile (NK2)
+.Nm evtexport
+is a utility to export items stored in a Nickfile (EVT)
 .Pp
-.Nm nk2export
+.Nm evtexport
 is part of the
-.Nm libnk2
+.Nm libevt
 package.
-.Nm libnk2
-is a library to support the Nickfile (NK2) format
+.Nm libevt
+is a library to support the Nickfile (EVT) format
 .Pp
 .Ar source
 is the source file.
@@ -48,8 +48,8 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# nk2export Outlook.NK2
-nk2export 20110704
+# evtexport Outlook.EVT
+evtexport 20110704
 
 Opening file.
 Exporting aliases.
@@ -64,11 +64,11 @@ Errors, verbose and debug output are printed to stderr when verbose output \-v i
 Verbose and debug output are only printed when enabled at compilation.
 .Sh BUGS
 Please report bugs of any kind to <jbmetz@users.sourceforge.net> or on the project website:
-http://libnk2.sourceforge.net/
+http://libevt.sourceforge.net/
 .Sh AUTHOR
 These man pages were written by Joachim Metz.
 .Sh COPYRIGHT
 Copyright 2009-2011 Joachim Metz <jbmetz@users.sourceforge.net>.
 This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO
-.Xr nk2info 1
+.Xr evtinfo 1

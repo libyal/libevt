@@ -29,10 +29,8 @@
 #include "evttools_libcerror.h"
 #include "evttools_libcstring.h"
 #include "evttools_libevt.h"
-#include "evttools_libexe.h"
 #include "evttools_libfcache.h"
 #include "evttools_libregf.h"
-#include "evttools_libwrc.h"
 #include "log_handle.h"
 
 #if defined( __cplusplus )

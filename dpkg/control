@@ -10,8 +10,8 @@ Package: libevt
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Library to support the Windows Event Viewer Log (EVT) format
- libevt is a library to support the Windows Event Viewer Log (EVT) format.
+Description: Library to support the Windows Event Log (EVT) format
+ libevt is a library to support the Windows Event Log (EVT) format.
 
 Package: libevt-dev
 Section: libdevel
@@ -24,6 +24,6 @@ Package: libevt-tools
 Section: utils
 Architecture: any
 Depends: libevt (= ${Source-Version}), ${shlibs:Depends}
-Description: Several tools for reading Windows Event Viewer Log (EVT) files
- Several tools for reading Windows Event Viewer Log (EVT) files.
+Description: Several tools for reading Windows Event Log (EVT) files
+ Several tools for reading Windows Event Log (EVT) files.
 

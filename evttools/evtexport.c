@@ -1,5 +1,5 @@
 /*
- * Extracts items from a Windows Event Viewer Log (EVT) file
+ * Extracts items from a Windows Event Log (EVT) file
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -54,7 +54,7 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use evtexport to export items stored in a Windows Event Viewer\n"
+	fprintf( stream, "Use evtexport to export items stored in a Windows Event\n"
 	                 "Log (EVT) file.\n\n" );
 
 	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -f log_type ] [ -l log_file ]\n"

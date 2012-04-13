@@ -1460,8 +1460,6 @@ int export_handle_get_message_file_path(
 	size_t message_filename_directory_name_index                   = 0;
 	size_t message_filename_string_segment_size                    = 0;
 	uint8_t directory_entry_type                                   = 0;
-	int directory_entry_found                                      = 0;
-	int match                                                      = 0;
 	int message_filename_number_of_segments                        = 0;
 	int message_filename_segment_index                             = 0;
 	int result                                                     = 0;
@@ -1704,10 +1702,18 @@ int export_handle_get_message_file_path(
 		else if( ( message_filename_string_segment[ 0 ] == (libcstring_system_character_t) '%' )
 		      && ( message_filename_string_segment[ message_filename_string_segment_size - 2 ] == (libcstring_system_character_t) '%' ) )
 		{
-/* TODO
- * expand %SystemRoot% to WINDOWS
- */
-			message_filename_string_segment_size = 8;
+			if( ( message_filename_string_segment_size - 1 ) == 12 )
+			{
+				/* Expand %SystemRoot% to WINDOWS
+				 */
+				if( libcstring_system_string_compare(
+				     message_filename_string_segment,
+				     _LIBCSTRING_SYSTEM_STRING( "%SystemRoot%" ),
+				     12 ) == 0 )
+				{
+					message_filename_string_segment_size = 8;
+				}
+			}
 		}
 		*message_file_path_size += message_filename_string_segment_size;
 	}
@@ -1789,17 +1795,24 @@ int export_handle_get_message_file_path(
 		if( ( message_filename_string_segment[ 0 ] == (libcstring_system_character_t) '%' )
 		 && ( message_filename_string_segment[ message_filename_string_segment_size - 2 ] == (libcstring_system_character_t) '%' ) )
 		{
-/* TODO
- * expand %SystemRoot% to WINDOWS
- */
-			message_filename_string_segment      = _LIBCSTRING_SYSTEM_STRING( "Windows" );
-			message_filename_string_segment_size = 8;
+			if( ( message_filename_string_segment_size - 1 ) == 12 )
+			{
+				/* Expand %SystemRoot% to WINDOWS
+				 */
+				if( libcstring_system_string_compare(
+				     message_filename_string_segment,
+				     _LIBCSTRING_SYSTEM_STRING( "%SystemRoot%" ),
+				     12 ) == 0 )
+				{
+					message_filename_string_segment      = _LIBCSTRING_SYSTEM_STRING( "Windows" );
+					message_filename_string_segment_size = 8;
+				}
+			}
 		}
 		/* Terminate the path string we currently have
 		 */
 		( *message_file_path )[ message_file_path_index ] = 0;
 
-/* TODO refactor to function */
 		if( libcdirectory_directory_initialize(
 		     &directory,
 		     error ) != 1 )
@@ -1813,10 +1826,18 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		if( libcdirectory_directory_open(
-		     directory,
-		     *message_file_path,
-		     error ) != 1 )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libcdirectory_directory_open_wide(
+		          directory,
+		          *message_file_path,
+		          error );
+#else
+		result = libcdirectory_directory_open(
+		          directory,
+		          *message_file_path,
+		          error );
+#endif
+		if( result != 1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -1841,133 +1862,87 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
-		directory_entry_found = 0;
-
-		do
+		if( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
 		{
-			result = libcdirectory_directory_read_entry(
-			          directory,
+			directory_entry_type = LIBCDIRECTORY_ENTRY_TYPE_DIRECTORY;
+		}
+		else
+		{
+			directory_entry_type = LIBCDIRECTORY_ENTRY_TYPE_FILE;
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libcdirectory_directory_has_entry_wide(
+			  directory,
+			  directory_entry,
+			  message_filename_string_segment,
+			  message_filename_string_segment_size - 1,
+			  directory_entry_type,
+			  LIBCDIRECTORY_COMPARE_FLAG_NO_CASE,
+			  error );
+#else
+		result = libcdirectory_directory_has_entry(
+			  directory,
+			  directory_entry,
+			  message_filename_string_segment,
+			  message_filename_string_segment_size - 1,
+			  directory_entry_type,
+			  LIBCDIRECTORY_COMPARE_FLAG_NO_CASE,
+			  error );
+#endif
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_GENERIC,
+			 "%s: unable to determine if directory has entry: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 function,
+			 message_filename_string_segment );
+
+			goto on_error;
+		}
+		else if( result != 0 )
+		{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libcdirectory_directory_entry_get_name_wide(
 			          directory_entry,
+			          &directory_entry_name,
 			          error );
-
-			if( result == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read directory entry.",
-				 function,
-				 message_file_path );
-
-				goto on_error;
-			}
-			else if( result == 0 )
-			{
-				break;
-			}
-			if( libcdirectory_directory_entry_get_type(
-			     directory_entry,
-			     &directory_entry_type,
-			     error ) != 1 )
+#else
+			result = libcdirectory_directory_entry_get_name(
+			          directory_entry,
+			          &directory_entry_name,
+			          error );
+#endif
+			if( result != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve directory entry type.",
+				 "%s: unable to retrieve directory entry name.",
 				 function );
 
 				goto on_error;
 			}
-			if( ( ( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry_type == LIBCDIRECTORY_ENTRY_TYPE_DIRECTORY ) )
-			 || ( ( message_filename_segment_index == ( message_filename_number_of_segments - 1 ) )
-			  &&  ( directory_entry_type == LIBCDIRECTORY_ENTRY_TYPE_FILE ) ) )
+			directory_entry_name_length = libcstring_system_string_length(
+			                               directory_entry_name );
+
+			if( directory_entry_name_length != ( message_filename_string_segment_size - 1 ) )
 			{
-				if( libcdirectory_directory_entry_get_name(
-				     directory_entry,
-				     &directory_entry_name,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to retrieve directory entry name.",
-					 function );
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: directory entry name length value out of bounds.",
+				 function );
 
-					goto on_error;
-				}
-				directory_entry_name_length = libcstring_narrow_string_length(
-				                               directory_entry_name );
-
-				if( ( directory_entry_name_length + 1 ) == message_filename_string_segment_size )
-				{
-					/* If there is an exact match we're done searching
-					 */
-					match = libcstring_narrow_string_compare(
-					         directory_entry_name,
-					         message_filename_string_segment,
-					         message_filename_string_segment_size - 1 );
-
-					if( match == 0 )
-					{
-						if( libcstring_system_string_copy(
-						     &( ( *message_file_path )[ message_file_path_index ] ),
-						     message_filename_string_segment,
-						     message_filename_string_segment_size - 1 ) == NULL )
-						{
-							libcerror_error_set(
-							 error,
-							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-							 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-							 "%s: unable to set message filename string segment: %d in message file path.",
-							 function,
-							 message_filename_segment_index );
-
-							goto on_error;
-						}
-						directory_entry_found = 1;
-
-						break;
-					}
-					match = libcstring_narrow_string_compare_no_case(
-					         directory_entry_name,
-					         message_filename_string_segment,
-					         message_filename_string_segment_size - 1 );
-
-					if( match == 0 )
-					{
-/* TODO ignore successive caseless matches */
-						if( libcstring_system_string_copy(
-						     &( ( *message_file_path )[ message_file_path_index ] ),
-						     directory_entry_name,
-						     message_filename_string_segment_size - 1 ) == NULL )
-						{
-							libcerror_error_set(
-							 error,
-							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-							 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-							 "%s: unable to set message filename string segment: %d in message file path.",
-							 function,
-							 message_filename_segment_index );
-
-							goto on_error;
-						}
-						directory_entry_found = 1;
-					}
-				}
+				goto on_error;
 			}
-		}
-		while( result != 0 );
-
-		if( directory_entry_found == 0 )
-		{
 			if( libcstring_system_string_copy(
 			     &( ( *message_file_path )[ message_file_path_index ] ),
-			     message_filename_string_segment,
-			     message_filename_string_segment_size - 1 ) == NULL )
+			     directory_entry_name,
+			     directory_entry_name_length ) == NULL )
 			{
 				libcerror_error_set(
 				 error,
@@ -2051,6 +2026,18 @@ int export_handle_get_message_file_path(
 	return( 1 );
 
 on_error:
+	if( directory_entry != NULL )
+	{
+		libcdirectory_directory_entry_free(
+		 &directory_entry,
+		 NULL );
+	}
+	if( directory != NULL )
+	{
+		libcdirectory_directory_free(
+		 &directory,
+		 NULL );
+	}
 	if( message_filename_split_string != NULL )
 	{
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -2828,8 +2815,6 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	posix_time = NULL;
-
 	if( libevt_record_get_event_identifier(
 	     record,
 	     &event_identifier,

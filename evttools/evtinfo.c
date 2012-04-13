@@ -1,5 +1,5 @@
 /*
- * Shows information obtained from a Windows Event Viewer Log (EVT) file
+ * Shows information obtained from a Windows Event Log (EVT) file
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -52,7 +52,7 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use evtinfo to determine information about a Windows Event Viewer\n"
+	fprintf( stream, "Use evtinfo to determine information about a Windows Event\n"
 	                 "Log (EVT) file.\n\n" );
 
 	fprintf( stream, "Usage: evtinfo [ -c codepage ] [ -hvV ] source\n\n" );

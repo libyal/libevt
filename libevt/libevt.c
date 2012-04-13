@@ -1,5 +1,5 @@
 /*
- * Library to support the Windows Event Viewer Log (EVT) format
+ * Library to support the Windows Event Log (EVT) format
  *
  * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
