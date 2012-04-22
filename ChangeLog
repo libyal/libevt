@@ -29,6 +29,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120422
+* fixes for deployment
+
 20120413
 * export_handle: code clean up
 

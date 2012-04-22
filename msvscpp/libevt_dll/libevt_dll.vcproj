@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="libfmapi"
-	ProjectGUID="{CDB03E65-C81B-47E0-B70F-C880D841DD61}"
-	RootNamespace="libfmapi"
+	Name="libevt_dll"
+	ProjectGUID="{B5225323-AC67-411D-8FBA-199E9467FAB5}"
+	RootNamespace="libevt"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -19,7 +19,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -39,8 +39,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libnotify;..\..\libuna;..\..\libfdatetime;..\..\libfguid;..\..\libfwnt"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libnotify;..\..\libuna;..\..\libbfio;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libfmapi;..\..\libevt"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI;LIBEVT_DLL_EXPORT"
 				RuntimeLibrary="2"
 				WarningLevel="4"
 				CompileAs="1"
@@ -55,13 +55,18 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\libfmapi.lib"
-				ModuleDefinitionFile=""
-				IgnoreAllDefaultLibraries="false"
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\libevt.dll"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\libevt.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -73,6 +78,9 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -80,7 +88,7 @@
 			Name="VSDebug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="1"
 			>
 			<Tool
@@ -101,8 +109,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libnotify;..\..\libuna;..\..\libfdatetime;..\..\libfguid;..\..\libfwnt"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libnotify;..\..\libuna;..\..\libbfio;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libfmapi;..\..\libevt"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI;LIBEVT_DLL_EXPORT"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
@@ -119,13 +127,19 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)\libfmapi.lib"
-				ModuleDefinitionFile=""
-				IgnoreAllDefaultLibraries="false"
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\libevt.dll"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
+				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				ImportLibrary="$(OutDir)\libevt.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -135,6 +149,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -150,47 +167,47 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_class_identifier.c"
+				RelativePath="..\..\libevt\libevt.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_codepage.c"
+				RelativePath="..\..\libevt\libevt_array_type.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_crc.c"
+				RelativePath="..\..\libevt\libevt_debug.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_debug.c"
+				RelativePath="..\..\libevt\libevt_error.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_entry_identifier.c"
+				RelativePath="..\..\libevt\libevt_file.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_lcid.c"
+				RelativePath="..\..\libevt\libevt_io_handle.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_lzfu.c"
+				RelativePath="..\..\libevt\libevt_item.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_one_off_entry_identifier.c"
+				RelativePath="..\..\libevt\libevt_legacy.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_property_type.c"
+				RelativePath="..\..\libevt\libevt_notify.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_service_provider_identifier.c"
+				RelativePath="..\..\libevt\libevt_support.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_value_type.c"
+				RelativePath="..\..\libevt\libevt_value_identifier.c"
 				>
 			</File>
 		</Filter>
@@ -200,75 +217,99 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_class_identifier.h"
+				RelativePath="..\..\libevt\libevt_array_type.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_codepage.h"
+				RelativePath="..\..\libevt\libevt_codepage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_crc.h"
+				RelativePath="..\..\libevt\libevt_debug.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_debug.h"
+				RelativePath="..\..\libevt\libevt_definitions.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_definitions.h"
+				RelativePath="..\..\libevt\libevt_error.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_entry_identifier.h"
+				RelativePath="..\..\libevt\libevt_extern.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_lcid.h"
+				RelativePath="..\..\libevt\libevt_file.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_libfdatetime.h"
+				RelativePath="..\..\libevt\libevt_io_handle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_libfguid.h"
+				RelativePath="..\..\libevt\libevt_item.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_libfwnt.h"
+				RelativePath="..\..\libevt\libevt_legacy.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_libuna.h"
+				RelativePath="..\..\libevt\libevt_libbfio.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_lzfu.h"
+				RelativePath="..\..\libevt\libevt_libfdatetime.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_one_off_entry_identifier.h"
+				RelativePath="..\..\libevt\libevt_libfmapi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_property_type.h"
+				RelativePath="..\..\libevt\libevt_libfvalue.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_service_provider_identifier.h"
+				RelativePath="..\..\libevt\libevt_libuna.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_types.h"
+				RelativePath="..\..\libevt\libevt_mapi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_value_type.h"
+				RelativePath="..\..\libevt\libevt_notify.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libfmapi\libfmapi_x400_object_identifier.h"
+				RelativePath="..\..\libevt\libevt_support.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\libevt_types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\libevt_unused.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\libevt_value_identifier.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\evt_file_footer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\evt_file_header.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\evt_item.h"
 				>
 			</File>
 		</Filter>
@@ -277,6 +318,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\..\libevt\libevt.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
