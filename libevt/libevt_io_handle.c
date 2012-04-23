@@ -1306,7 +1306,7 @@ int libevt_io_handle_recover_records(
 				 error );
 			}
 		}
-		if( last_record_offset < io_handle->file_size )
+		if( last_record_offset < (off64_t) io_handle->file_size )
 		{
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )

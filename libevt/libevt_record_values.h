@@ -71,7 +71,7 @@ struct libevt_record_values
 
 	/* The event type
 	 */
-	uint32_t event_type;
+	uint16_t event_type;
 
 	/* The source name
 	 */

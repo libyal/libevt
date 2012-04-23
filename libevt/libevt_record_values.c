@@ -417,7 +417,7 @@ ssize_t libevt_record_values_read(
 
 	if( ( (size64_t) *file_offset + read_size ) > io_handle->file_size )
 	{
-		read_size = io_handle->file_size - *file_offset;
+		read_size = (size_t) ( io_handle->file_size - *file_offset );
 	}
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,

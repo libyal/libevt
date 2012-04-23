@@ -29,6 +29,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120423
+* updated msvscpp files
+
 20120422
 * fixes for deployment
 

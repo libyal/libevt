@@ -1,5 +1,8 @@
 EXTRA_DIST = \
+	evtexport/evtexport.vcproj \
+	evtinfo/evtinfo.vcproj \
 	libbfio/libbfio.vcproj \
+	libcdirectory/libcdirectory.vcproj \
 	libcerror/libcerror.vcproj \
 	libcfile/libcfile.vcproj \
 	libclocale/libclocale.vcproj \
@@ -8,16 +11,16 @@ EXTRA_DIST = \
 	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libevt_dll/libevt_dll.vcproj \
+	libexe/libexe.vcproj \
 	libfcache/libfcache.vcproj \
 	libfdata/libfdata.vcproj \
 	libfdatetime/libfdatetime.vcproj \
-	libfguid/libfguid.vcproj \
+	libfvalue/libfvalue.vcproj \
 	libfwnt/libfwnt.vcproj \
-	libfwsi/libfwsi.vcproj \
+	libregf/libregf.vcproj \
 	libuna/libuna.vcproj \
-	libevt.sln \
-	evtexport/evtexport.vcproj \
-	evtinfo/evtinfo.vcproj
+	libwrc/libwrc.vcproj \
+	libevt.sln
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
