@@ -1,4 +1,7 @@
 TODO:
+* msvscpp files:
+  - update libfdatetime and libfvalue
+  - build tools
 * %SystemRoot% expansion support for WINNT and WINNT35
 * libcdirectory:
   - implement wide and narrow char support
@@ -29,8 +32,11 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120424
+* applied updates
+
 20120423
-* updated msvscpp files
+* worked on msvscpp files
 
 20120422
 * fixes for deployment

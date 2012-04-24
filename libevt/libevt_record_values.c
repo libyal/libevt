@@ -751,16 +751,14 @@ int libevt_record_values_read_event(
 			  posix_time,
 			  (uint16_t *) posix_time_string,
 			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 			  error );
 #else
 		result = libfdatetime_posix_time_copy_to_utf8_string(
 			  posix_time,
 			  (uint8_t *) posix_time_string,
 			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 			  error );
 #endif
 		if( result != 1 )
@@ -801,16 +799,14 @@ int libevt_record_values_read_event(
 			  posix_time,
 			  (uint16_t *) posix_time_string,
 			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 			  error );
 #else
 		result = libfdatetime_posix_time_copy_to_utf8_string(
 			  posix_time,
 			  (uint8_t *) posix_time_string,
 			  32,
-			  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 			  error );
 #endif
 		if( result != 1 )
