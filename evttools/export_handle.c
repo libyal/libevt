@@ -1703,11 +1703,23 @@ int export_handle_get_message_file_path(
 		else if( ( message_filename_string_segment[ 0 ] == (libcstring_system_character_t) '%' )
 		      && ( message_filename_string_segment[ message_filename_string_segment_size - 2 ] == (libcstring_system_character_t) '%' ) )
 		{
-			if( ( message_filename_string_segment_size - 1 ) == 12 )
+			if( ( message_filename_string_segment_size - 1 ) == 8 )
+			{
+				/* Expand %WinDir% to WINDOWS
+				 */
+				if( libcstring_system_string_compare_no_case(
+				     message_filename_string_segment,
+				     _LIBCSTRING_SYSTEM_STRING( "%WinDir%" ),
+				     8 ) == 0 )
+				{
+					message_filename_string_segment_size = 8;
+				}
+			}
+			else if( ( message_filename_string_segment_size - 1 ) == 12 )
 			{
 				/* Expand %SystemRoot% to WINDOWS
 				 */
-				if( libcstring_system_string_compare(
+				if( libcstring_system_string_compare_no_case(
 				     message_filename_string_segment,
 				     _LIBCSTRING_SYSTEM_STRING( "%SystemRoot%" ),
 				     12 ) == 0 )
@@ -1796,11 +1808,24 @@ int export_handle_get_message_file_path(
 		if( ( message_filename_string_segment[ 0 ] == (libcstring_system_character_t) '%' )
 		 && ( message_filename_string_segment[ message_filename_string_segment_size - 2 ] == (libcstring_system_character_t) '%' ) )
 		{
-			if( ( message_filename_string_segment_size - 1 ) == 12 )
+			if( ( message_filename_string_segment_size - 1 ) == 8 )
+			{
+				/* Expand %WinDir% to WINDOWS
+				 */
+				if( libcstring_system_string_compare_no_case(
+				     message_filename_string_segment,
+				     _LIBCSTRING_SYSTEM_STRING( "%WinDir%" ),
+				     8 ) == 0 )
+				{
+					message_filename_string_segment      = _LIBCSTRING_SYSTEM_STRING( "Windows" );
+					message_filename_string_segment_size = 8;
+				}
+			}
+			else if( ( message_filename_string_segment_size - 1 ) == 12 )
 			{
 				/* Expand %SystemRoot% to WINDOWS
 				 */
-				if( libcstring_system_string_compare(
+				if( libcstring_system_string_compare_no_case(
 				     message_filename_string_segment,
 				     _LIBCSTRING_SYSTEM_STRING( "%SystemRoot%" ),
 				     12 ) == 0 )

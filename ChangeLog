@@ -32,6 +32,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120430
+* small change to recovered record scan
+
 20120424
 * applied updates
 

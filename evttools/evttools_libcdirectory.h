@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBUNATOOLS_LIBCDIRECTORY_H )
-#define _LIBUNATOOLS_LIBCDIRECTORY_H
+#if !defined( _EVTTOOLS_LIBCDIRECTORY_H )
+#define _EVTTOOLS_LIBCDIRECTORY_H
 
 #include <common.h>
 

@@ -999,9 +999,9 @@ int libevt_io_handle_event_record_scan(
 		}
 		size -= read_count;
 
-		for( scan_block_offset = 0;
-		     scan_block_offset < read_size;
-		     scan_block_offset += 4 )
+		scan_block_offset = 0;
+
+		while( scan_block_offset < read_size )
 		{
 			if( memory_compare(
 			     &( scan_block[ scan_block_offset ] ),
@@ -1085,7 +1085,7 @@ int libevt_io_handle_event_record_scan(
 				}
 				else
 				{
-					scan_block_offset += read_count;
+					scan_block_offset += read_count - 8;
 
 					if( scan_block_offset > read_size )
 					{
@@ -1123,6 +1123,7 @@ int libevt_io_handle_event_record_scan(
 					}
 				}
 			}
+			scan_block_offset += 4;
 		}
 		file_offset += read_count;
 	}

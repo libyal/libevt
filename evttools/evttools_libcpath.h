@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVTTOOLS_LIBCPATH_H )
-#define _LIBEVTTOOLS_LIBCPATH_H
+#if !defined( _EVTTOOLS_LIBCPATH_H )
+#define _EVTTOOLS_LIBCPATH_H
 
 #include <common.h>
 

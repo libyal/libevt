@@ -288,7 +288,7 @@ int info_handle_set_event_log_type_from_filename(
 
 		return( -1 );
 	}
-	result = evtinput_determine_event_log_type_from_filename(
+	result = evtxinput_determine_event_log_type_from_filename(
 	          filename,
 	          &( info_handle->event_log_type ),
 	          error );
@@ -499,6 +499,16 @@ int info_handle_file_fprint(
 	 major_version,
 	 minor_version );
 
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tNumber of records\t\t: %d\n",
+	 number_of_records );
+
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tNumber of recovered records\t: %d\n",
+	 number_of_recovered_records );
+
 	switch( info_handle->event_log_type )
 	{
 		case EVTTOOLS_EVENT_LOG_TYPE_APPLICATION:
@@ -517,16 +527,6 @@ int info_handle_file_fprint(
 			event_log_type = _LIBCSTRING_SYSTEM_STRING( "System" );
 			break;
 	}
-	fprintf(
-	 info_handle->notify_stream,
-	 "\tNumber of records\t\t: %d\n",
-	 number_of_records );
-
-	fprintf(
-	 info_handle->notify_stream,
-	 "\tNumber of recovered records\t: %d\n",
-	 number_of_recovered_records );
-
 	if( event_log_type != NULL )
 	{
 		fprintf(
