@@ -25,10 +25,10 @@
 #include <common.h>
 #include <types.h>
 
-#include "evtxtools_libcerror.h"
-#include "evtxtools_libcstring.h"
-#include "evtxtools_libexe.h"
-#include "evtxtools_libwrc.h"
+#include "evttools_libcerror.h"
+#include "evttools_libcstring.h"
+#include "evttools_libexe.h"
+#include "evttools_libwrc.h"
 
 #if defined( __cplusplus )
 extern "C" {

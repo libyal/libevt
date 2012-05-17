@@ -288,7 +288,7 @@ int info_handle_set_event_log_type_from_filename(
 
 		return( -1 );
 	}
-	result = evtxinput_determine_event_log_type_from_filename(
+	result = evtinput_determine_event_log_type_from_filename(
 	          filename,
 	          &( info_handle->event_log_type ),
 	          error );

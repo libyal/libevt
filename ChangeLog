@@ -16,6 +16,7 @@ TODO:
   - print if message file not found
   - print if message file has no resources
   - print raw strings if no message was found
+  - output data as CSV/TSV
 * update manuals
   - remove Nickfile
 * update msvscpp files
@@ -31,6 +32,11 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120517
+* applied updates
+* export_handle_get_message_file_path now returns 0
+  if no corresponding file has been found
 
 20120430
 * small change to recovered record scan

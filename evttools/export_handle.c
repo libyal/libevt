@@ -1440,7 +1440,7 @@ on_error:
 }
 
 /* Retrieves the path of the message file based on the message filename
- * Returns 1 if successful or -1 error
+ * Returns 1 if successful, 0 if no path can be found or -1 error
  */
 int export_handle_get_message_file_path(
      export_handle_t *export_handle,
@@ -2027,6 +2027,10 @@ int export_handle_get_message_file_path(
 
 			goto on_error;
 		}
+		if( result == 0 )
+		{
+			break;
+		}
 	}
 	( *message_file_path )[ message_file_path_index - 1 ] = 0;
 
@@ -2049,7 +2053,7 @@ int export_handle_get_message_file_path(
 
 		goto on_error;
 	}
-	return( 1 );
+	return( result );
 
 on_error:
 	if( directory_entry != NULL )
@@ -2223,13 +2227,15 @@ int export_handle_get_message_string(
 	}
 	if( message_file == NULL )
 	{
-		if( export_handle_get_message_file_path(
-		     export_handle,
-		     message_filename,
-		     message_filename_length,
-		     &message_file_path,
-		     &message_file_path_size,
-		     error ) != 1 )
+		result = export_handle_get_message_file_path(
+		          export_handle,
+		          message_filename,
+		          message_filename_length,
+		          &message_file_path,
+		          &message_file_path_size,
+		          error );
+
+		if( result == -1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -2240,110 +2246,116 @@ int export_handle_get_message_string(
 
 			goto on_error;
 		}
-		if( message_file_initialize(
-		     &message_file,
-		     error ) != 1 )
+		else if( result != 0 )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create message file.",
-			 function );
+			if( message_file_initialize(
+			     &message_file,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to create message file.",
+				 function );
 
-			goto on_error;
-		}
-		if( message_file_set_name(
-		     message_file,
-		     message_filename,
-		     message_filename_length,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set name in message file.",
-			 function );
+				goto on_error;
+			}
+			if( message_file_set_name(
+			     message_file,
+			     message_filename,
+			     message_filename_length,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set name in message file.",
+				 function );
 
-			message_file_free(
-			 &message_file,
-			 NULL );
+				message_file_free(
+				 &message_file,
+				 NULL );
 
-			goto on_error;
-		}
-		if( message_file_open(
-		     message_file,
-		     message_file_path,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_OPEN_FAILED,
-			 "%s: unable to open message file: %" PRIs_LIBCSTRING_SYSTEM ".",
-			 function,
+				goto on_error;
+			}
+			if( message_file_open(
+			     message_file,
+			     message_file_path,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_OPEN_FAILED,
+				 "%s: unable to open message file: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 function,
+				 message_file_path );
+
+				message_file_free(
+				 &message_file,
+				 NULL );
+
+				goto on_error;
+			}
+			if( libfcache_cache_set_value_by_index(
+			     export_handle->message_file_cache,
+			     export_handle->next_message_file_cache_index,
+			     export_handle->next_message_file_cache_index,
+			     libfcache_date_time_get_timestamp(),
+			     (intptr_t *) message_file,
+			     (int (*)(intptr_t **, libcerror_error_t **)) &message_file_free,
+			     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set message file in cache entry: %d.",
+				 function,
+				 export_handle->next_message_file_cache_index );
+
+				message_file_free(
+				 &message_file,
+				 NULL );
+
+				goto on_error;
+			}
+			export_handle->next_message_file_cache_index++;
+
+			if( export_handle->next_message_file_cache_index == 16 )
+			{
+				export_handle->next_message_file_cache_index = 0;
+			}
+			memory_free(
 			 message_file_path );
 
-			message_file_free(
-			 &message_file,
-			 NULL );
-
-			goto on_error;
+			message_file_path = NULL;
 		}
-		if( libfcache_cache_set_value_by_index(
-		     export_handle->message_file_cache,
-		     export_handle->next_message_file_cache_index,
-		     export_handle->next_message_file_cache_index,
-		     libfcache_date_time_get_timestamp(),
-		     (intptr_t *) message_file,
-		     (int (*)(intptr_t **, libcerror_error_t **)) &message_file_free,
-		     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
-		     error ) != 1 )
+	}
+	if( message_file != NULL )
+	{
+		result = message_file_get_string(
+			  message_file,
+			  export_handle->preferred_language_identifier,
+			  message_identifier,
+			  message_string,
+			  message_string_size,
+			  error );
+
+		if( result == -1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set message file in cache entry: %d.",
-			 function,
-			 export_handle->next_message_file_cache_index );
-
-			message_file_free(
-			 &message_file,
-			 NULL );
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve message string: 0x%" PRIx32 ".",
+			 function );
 
 			goto on_error;
 		}
-		export_handle->next_message_file_cache_index++;
-
-		if( export_handle->next_message_file_cache_index == 16 )
-		{
-			export_handle->next_message_file_cache_index = 0;
-		}
-		memory_free(
-		 message_file_path );
-
-		message_file_path = NULL;
-	}
-	result = message_file_get_string(
-		  message_file,
-		  export_handle->preferred_language_identifier,
-		  message_identifier,
-		  message_string,
-		  message_string_size,
-		  error );
-
-	if( result == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve message string: 0x%" PRIx32 ".",
-		 function );
-
-		goto on_error;
 	}
 	return( result );
 
@@ -2455,11 +2467,32 @@ int export_handle_message_string_fprint(
 		 && ( ( message_string_index + 1 ) < message_string_length ) )
 		{
 /* TODO add support for more conversion specifiers */
-			/* Ignore %0 = end of string, %n = new line, %r = cariage return */
+			/* Ignore %0 = end of string, %r = cariage return */
 			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
-			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
 			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
 			{
+				message_string_index += 2;
+
+				continue;
+			}
+			/* Replace %n = new line */
+			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
+			{
+				fprintf(
+				 export_handle->notify_stream,
+				 "\n" );
+
+				message_string_index += 2;
+
+				continue;
+			}
+			/* Replace %t = tab */
+			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 't' )
+			{
+				fprintf(
+				 export_handle->notify_stream,
+				 "\t" );
+
 				message_string_index += 2;
 
 				continue;
@@ -2738,16 +2771,14 @@ int export_handle_export_record(
 		  posix_time,
 		  (uint16_t *) posix_time_string,
 		  32,
-		  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		  error );
 #else
 	result = libfdatetime_posix_time_copy_to_utf8_string(
 		  posix_time,
 		  (uint8_t *) posix_time_string,
 		  32,
-		  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		  error );
 #endif
 	if( result != 1 )
@@ -2800,16 +2831,14 @@ int export_handle_export_record(
 		  posix_time,
 		  (uint16_t *) posix_time_string,
 		  32,
-		  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		  error );
 #else
 	result = libfdatetime_posix_time_copy_to_utf8_string(
 		  posix_time,
 		  (uint8_t *) posix_time_string,
 		  32,
-		  LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  LIBFDATETIME_DATE_TIME_FORMAT_CTIME,
+		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		  error );
 #endif
 	if( result != 1 )

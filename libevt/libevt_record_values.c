@@ -580,7 +580,7 @@ int libevt_record_values_read_event(
 {
 	static char *function                 = "libevt_record_values_read_event";
 	size_t record_data_offset             = 0;
-	size_t value_data_size                = 0;
+	ssize_t value_data_size               = 0;
 	uint32_t data_offset                  = 0;
 	uint32_t data_size                    = 0;
 	uint32_t members_data_size            = 0;
@@ -1056,7 +1056,7 @@ int libevt_record_values_read_event(
 			 0 );
 		}
 #endif
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &( record_values->source_name ),
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
 		     error ) != 1 )
@@ -1070,13 +1070,15 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-		if( libfvalue_value_set_data_string(
-		     record_values->source_name,
-		     &( record_data[ record_data_offset ] ),
-		     members_data_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
+		value_data_size = libfvalue_value_type_set_data_string(
+		                   record_values->source_name,
+		                   &( record_data[ record_data_offset ] ),
+		                   members_data_size,
+		                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
+		                   LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		                   error );
+
+		if( value_data_size == -1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -1094,8 +1096,9 @@ int libevt_record_values_read_event(
 			 "%s: source name\t\t\t\t: ",
 			 function );
 
-			if( libfvalue_debug_print_value(
+			if( libfvalue_value_print(
 			     record_values->source_name,
+			     0,
 			     0,
 			     error ) != 1 )
 			{
@@ -1112,24 +1115,10 @@ int libevt_record_values_read_event(
 			 "\n" );
 		}
 #endif
-		if( libfvalue_value_get_data_size(
-		     record_values->source_name,
-		     &value_data_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to retrieve data size of source name value.",
-			 function );
-
-			goto on_error;
-		}
 		record_data_offset += value_data_size;
 		members_data_size  -= (uint32_t) value_data_size;
 
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &( record_values->computer_name ),
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
 		     error ) != 1 )
@@ -1143,13 +1132,15 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-		if( libfvalue_value_set_data_string(
-		     record_values->computer_name,
-		     &( record_data[ record_data_offset ] ),
-		     members_data_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
+		value_data_size = libfvalue_value_type_set_data_string(
+		                   record_values->computer_name,
+		                   &( record_data[ record_data_offset ] ),
+		                   members_data_size,
+		                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
+		                   LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		                   error );
+
+		if( value_data_size == -1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -1167,8 +1158,9 @@ int libevt_record_values_read_event(
 			 "%s: computer name\t\t\t\t: ",
 			 function );
 
-			if( libfvalue_debug_print_value(
+			if( libfvalue_value_print(
 			     record_values->computer_name,
+			     0,
 			     0,
 			     error ) != 1 )
 			{
@@ -1185,20 +1177,6 @@ int libevt_record_values_read_event(
 			 "\n" );
 		}
 #endif
-		if( libfvalue_value_get_data_size(
-		     record_values->computer_name,
-		     &value_data_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to retrieve data size of computer name value.",
-			 function );
-
-			goto on_error;
-		}
 		record_data_offset += value_data_size;
 		members_data_size  -= (uint32_t) value_data_size;
 
@@ -1240,6 +1218,7 @@ int libevt_record_values_read_event(
 			     sid,
 			     &( record_data[ user_sid_offset ] ),
 			     (size_t) user_sid_size,
+			     LIBFWNT_ENDIAN_LITTLE,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1254,6 +1233,7 @@ int libevt_record_values_read_event(
 			result = libfwnt_security_identifier_get_string_size(
 				  sid,
 				  &sid_string_size,
+				  0,
 				  error );
 
 			if( result != 1 )
@@ -1286,12 +1266,14 @@ int libevt_record_values_read_event(
 				  sid,
 				  (uint16_t *) sid_string,
 				  128,
+				  0,
 				  error );
 #else
 			result = libfwnt_security_identifier_copy_to_utf8_string(
 				  sid,
 				  (uint8_t *) sid_string,
 				  128,
+				  0,
 				  error );
 #endif
 			if( result != 1 )
@@ -1340,7 +1322,7 @@ int libevt_record_values_read_event(
 			 0 );
 		}
 #endif
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &( record_values->strings ),
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
 		     error ) != 1 )
@@ -1354,13 +1336,15 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-		if( libfvalue_value_set_data_strings_array(
-		     record_values->strings,
-		     &( record_data[ record_data_offset ] ),
-		     strings_size,
-		     LIBFVALUE_ENDIAN_LITTLE,
-		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
-		     error ) != 1 )
+		value_data_size = libfvalue_value_type_set_data_strings_array(
+		                   record_values->strings,
+		                   &( record_data[ record_data_offset ] ),
+		                   strings_size,
+		                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
+		                   LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		                   error );
+
+		if( value_data_size == -1 )
 		{
 			libcerror_error_set(
 			 error,
@@ -1387,7 +1371,7 @@ int libevt_record_values_read_event(
 			 0 );
 		}
 #endif
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &( record_values->data ),
 		     LIBFVALUE_VALUE_TYPE_BINARY_DATA,
 		     error ) != 1 )
