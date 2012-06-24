@@ -1,7 +1,7 @@
 /*
  * Language handle functions
  *
- * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -775,349 +775,349 @@ const libcstring_system_character_t *evttools_language_identifier_to_string(
 	switch( language_identifier )
 	{
 		case LANGUAGE_HANDLE_IDENTIFIER_AR:
-			return( "ar" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ar" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BG:
-			return( "bg" );
+			return( _LIBCSTRING_SYSTEM_STRING( "bg" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_CA:
-			return( "ca" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ca" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ZH_HANS:
-			return( "zh-Hans" );
+			return( _LIBCSTRING_SYSTEM_STRING( "zh-Hans" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_CS:
-			return( "cs" );
+			return( _LIBCSTRING_SYSTEM_STRING( "cs" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_DA:
-			return( "da" );
+			return( _LIBCSTRING_SYSTEM_STRING( "da" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_DE:
-			return( "de" );
+			return( _LIBCSTRING_SYSTEM_STRING( "de" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_EL:
-			return( "el" );
+			return( _LIBCSTRING_SYSTEM_STRING( "el" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_EN:
-			return( "en" );
+			return( _LIBCSTRING_SYSTEM_STRING( "en" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ES:
-			return( "es" );
+			return( _LIBCSTRING_SYSTEM_STRING( "es" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FI:
-			return( "fi" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fi" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FR:
-			return( "fr" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fr" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HE:
-			return( "he" );
+			return( _LIBCSTRING_SYSTEM_STRING( "he" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HU:
-			return( "hu" );
+			return( _LIBCSTRING_SYSTEM_STRING( "hu" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_IS:
-			return( "is" );
+			return( _LIBCSTRING_SYSTEM_STRING( "is" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_IT:
-			return( "it" );
+			return( _LIBCSTRING_SYSTEM_STRING( "it" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_JA:
-			return( "ja" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ja" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KO:
-			return( "ko" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ko" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_NL:
-			return( "nl" );
+			return( _LIBCSTRING_SYSTEM_STRING( "nl" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_NO:
-			return( "no" );
+			return( _LIBCSTRING_SYSTEM_STRING( "no" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_PL:
-			return( "pl" );
+			return( _LIBCSTRING_SYSTEM_STRING( "pl" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_PT:
-			return( "pt" );
+			return( _LIBCSTRING_SYSTEM_STRING( "pt" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_RM:
-			return( "rm" );
+			return( _LIBCSTRING_SYSTEM_STRING( "rm" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_RO:
-			return( "ro" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ro" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_RU:
-			return( "ru" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ru" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HR:
-			return( "hr" );
+			return( _LIBCSTRING_SYSTEM_STRING( "hr" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SK:
-			return( "sk" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sk" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SQ:
-			return( "sq" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sq" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SV:
-			return( "sv" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sv" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TH:
-			return( "th" );
+			return( _LIBCSTRING_SYSTEM_STRING( "th" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TR:
-			return( "tr" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tr" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_UR:
-			return( "ur" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ur" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ID:
-			return( "id" );
+			return( _LIBCSTRING_SYSTEM_STRING( "id" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_UK:
-			return( "uk" );
+			return( _LIBCSTRING_SYSTEM_STRING( "uk" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BE:
-			return( "be" );
+			return( _LIBCSTRING_SYSTEM_STRING( "be" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SL:
-			return( "sl" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sl" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ET:
-			return( "et" );
+			return( _LIBCSTRING_SYSTEM_STRING( "et" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_LV:
-			return( "lv" );
+			return( _LIBCSTRING_SYSTEM_STRING( "lv" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_LT:
-			return( "lt" );
+			return( _LIBCSTRING_SYSTEM_STRING( "lt" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TG:
-			return( "tg" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tg" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FA:
-			return( "fa" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fa" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_VI:
-			return( "vi" );
+			return( _LIBCSTRING_SYSTEM_STRING( "vi" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HY:
-			return( "hy" );
+			return( _LIBCSTRING_SYSTEM_STRING( "hy" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_AZ:
-			return( "az" );
+			return( _LIBCSTRING_SYSTEM_STRING( "az" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_EU:
-			return( "eu" );
+			return( _LIBCSTRING_SYSTEM_STRING( "eu" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HSB:
-			return( "hsb" );
+			return( _LIBCSTRING_SYSTEM_STRING( "hsb" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MK:
-			return( "mk" );
+			return( _LIBCSTRING_SYSTEM_STRING( "mk" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TN:
-			return( "tn" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tn" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_XH:
-			return( "xh" );
+			return( _LIBCSTRING_SYSTEM_STRING( "xh" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ZU:
-			return( "zu" );
+			return( _LIBCSTRING_SYSTEM_STRING( "zu" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_AF:
-			return( "af" );
+			return( _LIBCSTRING_SYSTEM_STRING( "af" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KA:
-			return( "ka" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ka" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FO:
-			return( "fo" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fo" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HI:
-			return( "hi" );
+			return( _LIBCSTRING_SYSTEM_STRING( "hi" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MT:
-			return( "mt" );
+			return( _LIBCSTRING_SYSTEM_STRING( "mt" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SE:
-			return( "se" );
+			return( _LIBCSTRING_SYSTEM_STRING( "se" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_GA:
-			return( "ga" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ga" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MS:
-			return( "ms" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ms" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KK:
-			return( "kk" );
+			return( _LIBCSTRING_SYSTEM_STRING( "kk" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KY:
-			return( "ky" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ky" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SW:
-			return( "sw" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sw" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TK:
-			return( "tk" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tk" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_UZ:
-			return( "uz" );
+			return( _LIBCSTRING_SYSTEM_STRING( "uz" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TT:
-			return( "tt" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tt" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BN:
-			return( "bn" );
+			return( _LIBCSTRING_SYSTEM_STRING( "bn" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_PA:
-			return( "pa" );
+			return( _LIBCSTRING_SYSTEM_STRING( "pa" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_GU:
-			return( "gu" );
+			return( _LIBCSTRING_SYSTEM_STRING( "gu" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_OR:
-			return( "or" );
+			return( _LIBCSTRING_SYSTEM_STRING( "or" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TA:
-			return( "ta" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ta" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TE:
-			return( "te" );
+			return( _LIBCSTRING_SYSTEM_STRING( "te" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KN:
-			return( "kn" );
+			return( _LIBCSTRING_SYSTEM_STRING( "kn" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ML:
-			return( "ml" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ml" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_AS:
-			return( "as" );
+			return( _LIBCSTRING_SYSTEM_STRING( "as" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MR:
-			return( "mr" );
+			return( _LIBCSTRING_SYSTEM_STRING( "mr" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SA:
-			return( "sa" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sa" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MN:
-			return( "mn" );
+			return( _LIBCSTRING_SYSTEM_STRING( "mn" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BO:
-			return( "bo" );
+			return( _LIBCSTRING_SYSTEM_STRING( "bo" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_CY:
-			return( "cy" );
+			return( _LIBCSTRING_SYSTEM_STRING( "cy" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KM:
-			return( "km" );
+			return( _LIBCSTRING_SYSTEM_STRING( "km" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_LO:
-			return( "lo" );
+			return( _LIBCSTRING_SYSTEM_STRING( "lo" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_GL:
-			return( "gl" );
+			return( _LIBCSTRING_SYSTEM_STRING( "gl" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KOK:
-			return( "kok" );
+			return( _LIBCSTRING_SYSTEM_STRING( "kok" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SYR:
-			return( "syr" );
+			return( _LIBCSTRING_SYSTEM_STRING( "syr" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SI:
-			return( "si" );
+			return( _LIBCSTRING_SYSTEM_STRING( "si" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_IU:
-			return( "iu" );
+			return( _LIBCSTRING_SYSTEM_STRING( "iu" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_AM:
-			return( "am" );
+			return( _LIBCSTRING_SYSTEM_STRING( "am" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_TZM:
-			return( "tzm" );
+			return( _LIBCSTRING_SYSTEM_STRING( "tzm" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_NE:
-			return( "ne" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ne" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FY:
-			return( "fy" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fy" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_PS:
-			return( "ps" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ps" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_FIL:
-			return( "fil" );
+			return( _LIBCSTRING_SYSTEM_STRING( "fil" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_DV:
-			return( "dv" );
+			return( _LIBCSTRING_SYSTEM_STRING( "dv" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_HA:
-			return( "ha" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ha" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_YO:
-			return( "yo" );
+			return( _LIBCSTRING_SYSTEM_STRING( "yo" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_QUZ:
-			return( "quz" );
+			return( _LIBCSTRING_SYSTEM_STRING( "quz" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_NSO:
-			return( "nso" );
+			return( _LIBCSTRING_SYSTEM_STRING( "nso" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BA:
-			return( "ba" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ba" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_LB:
-			return( "lb" );
+			return( _LIBCSTRING_SYSTEM_STRING( "lb" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_KL:
-			return( "kl" );
+			return( _LIBCSTRING_SYSTEM_STRING( "kl" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_IG:
-			return( "ig" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ig" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_II:
-			return( "ii" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ii" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_ARN:
-			return( "arn" );
+			return( _LIBCSTRING_SYSTEM_STRING( "arn" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MOH:
-			return( "moh" );
+			return( _LIBCSTRING_SYSTEM_STRING( "moh" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_BR:
-			return( "br" );
+			return( _LIBCSTRING_SYSTEM_STRING( "br" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_UG:
-			return( "ug" );
+			return( _LIBCSTRING_SYSTEM_STRING( "ug" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_MI:
-			return( "mi" );
+			return( _LIBCSTRING_SYSTEM_STRING( "mi" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_OC:
-			return( "oc" );
+			return( _LIBCSTRING_SYSTEM_STRING( "oc" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_CO:
-			return( "co" );
+			return( _LIBCSTRING_SYSTEM_STRING( "co" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_GSW:
-			return( "gsw" );
+			return( _LIBCSTRING_SYSTEM_STRING( "gsw" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_SAH:
-			return( "sah" );
+			return( _LIBCSTRING_SYSTEM_STRING( "sah" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_QUT:
-			return( "qut" );
+			return( _LIBCSTRING_SYSTEM_STRING( "qut" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_RW:
-			return( "rw" );
+			return( _LIBCSTRING_SYSTEM_STRING( "rw" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_WO:
-			return( "wo" );
+			return( _LIBCSTRING_SYSTEM_STRING( "wo" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_PRS:
-			return( "prs" );
+			return( _LIBCSTRING_SYSTEM_STRING( "prs" ) );
 
 		case LANGUAGE_HANDLE_IDENTIFIER_GD:
-			return( "gd" );
+			return( _LIBCSTRING_SYSTEM_STRING( "gd" ) );
 
 /* TODO */
 		default:

@@ -1,12 +1,10 @@
 TODO:
-* msvscpp files:
-  - update libfdatetime and libfvalue
-  - build tools
-* %SystemRoot% expansion support for WINNT and WINNT35
 * libcdirectory:
-  - implement wide and narrow char support
+  - move WINAPI * path expansion from export handle to libcdirectory
+* %SystemRoot% expansion support for WINNT and WINNT35
 * libclocale
   - complete language support
+  - move language support into library
 * pyevt:
   - add record object
   - add record functions
@@ -18,8 +16,7 @@ TODO:
   - print raw strings if no message was found
   - output data as CSV/TSV
 * update manuals
-  - remove Nickfile
-* update msvscpp files
+  - evtexport add example output
 * add debug function for event flags
 * add error tollerability (+/-)
   - sizes and copy
@@ -32,6 +29,14 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120624
+* applied updates
+* fixed TODO in export handle fixes issue
+* reversed library order in evttools Makefile for MinGW
+* worked on msvscpp files
+* worked on man pages
+* fixes for WINAPI support in libcdirectory
 
 20120517
 * applied updates

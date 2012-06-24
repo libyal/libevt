@@ -1,7 +1,7 @@
 /* 
  * Export handle
  *
- * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -822,8 +822,8 @@ int export_handle_open_system_registry_file(
 		sub_key_path = export_handle_get_event_log_type(
 		                export_handle->event_log_type );
 
-		sub_key_path_length = libcstring_system_string_length(
-				   sub_key_path );
+		sub_key_path_length = libcstring_narrow_string_length(
+		                       sub_key_path );
 
 		result = libregf_key_get_sub_key_by_utf8_name(
 			  sub_key,
@@ -863,7 +863,7 @@ int export_handle_open_system_registry_file(
 	 */
 	sub_key_path = "ControlSet002\\Services\\Eventlog";
 
-	sub_key_path_length = libcstring_system_string_length(
+	sub_key_path_length = libcstring_narrow_string_length(
 	                       sub_key_path );
 
 	result = libregf_key_get_sub_key_by_utf8_path(
@@ -890,7 +890,7 @@ int export_handle_open_system_registry_file(
 		sub_key_path = export_handle_get_event_log_type(
 		                export_handle->event_log_type );
 
-		sub_key_path_length = libcstring_system_string_length(
+		sub_key_path_length = libcstring_narrow_string_length(
 				       sub_key_path );
 
 		result = libregf_key_get_sub_key_by_utf8_name(
@@ -1470,6 +1470,9 @@ int export_handle_get_message_file_path(
 #else
 	libcpath_narrow_split_string_t *message_filename_split_string  = NULL;
 #endif
+#if defined( WINAPI )
+	const libcstring_system_character_t *volume_letter             = NULL;
+#endif
 
 	if( export_handle == NULL )
 	{
@@ -1548,10 +1551,6 @@ int export_handle_get_message_file_path(
 
 		return( -1 );
 	}
-/* TODO make sure ->message_files_path is sane, check for path separator */
-	message_files_path_length = libcstring_system_string_length(
-	                             export_handle->message_files_path );
-
 	if( message_filename_length > 2 )
 	{
 		/* Check if the message filename starts with a volume letter
@@ -1569,6 +1568,9 @@ int export_handle_get_message_file_path(
 			{
 				message_filename_directory_name_index += 1;
 			}
+#if defined( WINAPI )
+			volume_letter = message_filename;
+#endif
 		}
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1617,7 +1619,7 @@ int export_handle_get_message_file_path(
 
 		goto on_error;
 	}
-	*message_file_path_size = message_files_path_length + 1;
+	*message_file_path_size = 0;
 
 	for( message_filename_segment_index = 0;
 	     message_filename_segment_index < message_filename_number_of_segments;
@@ -1713,6 +1715,9 @@ int export_handle_get_message_file_path(
 				     8 ) == 0 )
 				{
 					message_filename_string_segment_size = 8;
+#if defined( WINAPI )
+					volume_letter = _LIBCSTRING_SYSTEM_STRING( "C" );
+#endif
 				}
 			}
 			else if( ( message_filename_string_segment_size - 1 ) == 12 )
@@ -1725,12 +1730,40 @@ int export_handle_get_message_file_path(
 				     12 ) == 0 )
 				{
 					message_filename_string_segment_size = 8;
+#if defined( WINAPI )
+					volume_letter = _LIBCSTRING_SYSTEM_STRING( "C" );
+#endif
 				}
 			}
 		}
 		*message_file_path_size += message_filename_string_segment_size;
 	}
-	message_file_path_index = 0;
+	if( export_handle->message_files_path != NULL )
+	{
+		message_files_path_length = libcstring_system_string_length(
+		                             export_handle->message_files_path );
+	}
+	if( ( export_handle->message_files_path != NULL )
+	 && ( message_files_path_length > 0 ) )
+	{
+		*message_file_path_size += message_files_path_length;
+
+		if( export_handle->message_files_path[ message_files_path_length - 1 ] != (libcstring_system_character_t) LIBCPATH_SEPARATOR )
+		{
+			*message_file_path_size += 1;
+		}
+	}
+#if defined( WINAPI )
+	else if( volume_letter != NULL )
+	{
+		*message_file_path_size += 3;
+	}
+#endif
+	else
+	{
+		*message_file_path_size += 2;
+	}
+	*message_file_path_size += 1;
 
 	*message_file_path = libcstring_system_string_allocate(
 	                      *message_file_path_size );
@@ -1746,23 +1779,47 @@ int export_handle_get_message_file_path(
 
 		goto on_error;
 	}
-/* TODO make sure ->message_files_path is sane */
-	if( libcstring_system_string_copy(
-	     &( ( *message_file_path )[ message_file_path_index ] ),
-	     export_handle->message_files_path,
-	     message_files_path_length ) == NULL )
+	message_file_path_index = 0;
+
+	if( ( export_handle->message_files_path != NULL )
+	 && ( message_files_path_length > 0 ) )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy message files path to message file path.",
-		 function );
+		if( libcstring_system_string_copy(
+		     &( ( *message_file_path )[ message_file_path_index ] ),
+		     export_handle->message_files_path,
+		     message_files_path_length ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy message files path to message file path.",
+			 function );
 
-		goto on_error;
+			goto on_error;
+		}
+		message_file_path_index += message_files_path_length;
+
+		if( export_handle->message_files_path[ message_files_path_length - 1 ] != (libcstring_system_character_t) LIBCPATH_SEPARATOR )
+		{
+			( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
+
+			message_file_path_index += 1;
+		}
 	}
-	message_file_path_index += message_files_path_length;
-
+#if defined( WINAPI )
+	else if( volume_letter != NULL )
+	{
+		( *message_file_path )[ message_file_path_index++ ] = volume_letter[ 0 ];
+		( *message_file_path )[ message_file_path_index++ ] = (libcstring_system_character_t) ':';
+		( *message_file_path )[ message_file_path_index++ ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
+	}
+#endif
+	else
+	{
+		( *message_file_path )[ message_file_path_index++ ] = (libcstring_system_character_t) '.';
+		( *message_file_path )[ message_file_path_index++ ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
+	}
 	for( message_filename_segment_index = 0;
 	     message_filename_segment_index < message_filename_number_of_segments;
 	     message_filename_segment_index++ )
@@ -1836,8 +1893,14 @@ int export_handle_get_message_file_path(
 			}
 		}
 		/* Terminate the path string we currently have
+		 * WINAPI requires a glob character
 		 */
+#if defined( WINAPI )
+		( *message_file_path )[ message_file_path_index ]     = (libcstring_system_character_t) '*';
+		( *message_file_path )[ message_file_path_index + 1 ] = 0;
+#else
 		( *message_file_path )[ message_file_path_index ] = 0;
+#endif
 
 		if( libcdirectory_directory_initialize(
 		     &directory,

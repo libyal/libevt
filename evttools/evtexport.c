@@ -1,7 +1,7 @@
 /*
  * Extracts items from a Windows Event Log (EVT) file
  *
- * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -76,7 +76,8 @@ void usage_fprint(
 	                 "\t        'all' exports the (allocated) items and recovered items,\n"
 	                 "\t        'items' exports the (allocated) items and 'recovered' exports\n"
 	                 "\t        the recovered items\n" );
-	fprintf( stream, "\t-p:     search PATH for the message files\n" );
+	fprintf( stream, "\t-p:     search PATH for the message files (default is the current\n"
+	                 "\t        working directory)\n" );
 	fprintf( stream, "\t-s:     filename of the SYSTEM (Windows) Registry file\n" );
 	fprintf( stream, "\t-v:     verbose output to stderr\n" );
 	fprintf( stream, "\t-V:     print version\n" );

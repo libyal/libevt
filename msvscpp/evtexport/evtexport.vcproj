@@ -41,8 +41,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libuna;..\..\libbfio;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libfmapi;..\..\libsystem"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI;LIBEVT_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfvalue;..\..\libfwnt;..\..\libexe;..\..\libregf;..\..\libwrc;..\..\libcsystem"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBEXE;HAVE_LOCAL_LIBREGF;HAVE_LOCAL_LIBWRC;HAVE_LOCAL_LIBCSYSTEM;LIBEVT_DLL_IMPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
@@ -61,7 +61,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="liberror.lib libuna.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
 				GenerateDebugInformation="false"
@@ -120,8 +119,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libuna;..\..\libbfio;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libfmapi;..\..\libsystem"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBFMAPI;LIBEVT_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfvalue;..\..\libfwnt;..\..\libexe;..\..\libregf;..\..\libwrc;..\..\libcsystem"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBEXE;HAVE_LOCAL_LIBREGF;HAVE_LOCAL_LIBWRC;HAVE_LOCAL_LIBCSYSTEM;LIBEVT_DLL_IMPORT"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
@@ -142,7 +141,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="liberror.lib libuna.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
 				GenerateDebugInformation="true"
@@ -185,14 +183,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\evttools\export_handle.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\log_handle.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\evttools\evtexport.c"
 				>
 			</File>
@@ -204,20 +194,28 @@
 				RelativePath="..\..\evttools\evtoutput.c"
 				>
 			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_language.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\export_handle.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\log_handle.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\message_file.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\evttools\export_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\log_handle.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\evttools\evtinput.h"
 				>
@@ -227,7 +225,75 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_language.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcdirectory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcerror.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libclocale.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcnotify.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcpath.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcstring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libcsystem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\evttools_libevt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libexe.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libfcache.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libfdatetime.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libregf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libuna.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\evttools_libwrc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\export_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\log_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\message_file.h"
 				>
 			</File>
 		</Filter>

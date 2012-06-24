@@ -1,7 +1,7 @@
 /*
  * Record values functions
  *
- * Copyright (c) 2011-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -1341,7 +1341,6 @@ int libevt_record_values_read_event(
 		                   &( record_data[ record_data_offset ] ),
 		                   strings_size,
 		                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
-		                   LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
 		                   error );
 
 		if( value_data_size == -1 )

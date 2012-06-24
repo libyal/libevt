@@ -1,10 +1,10 @@
 Source: libevt
 Section: unknown
 Priority: extra
-Maintainer: Joachim Metz <jbmetz@users.sourceforge.net>
+Maintainer: Joachim Metz <joachim.metz@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev
 Standards-Version: 3.8.3
-Homepage: https://sourceforge.net/projects/libevt/
+Homepage: http://code.google.com/p/libevt/
 
 Package: libevt
 Section: libs
