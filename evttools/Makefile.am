@@ -32,7 +32,6 @@ evtexport_SOURCES = \
 	evtexport.c \
 	evtinput.c evtinput.h \
 	evtoutput.c evtoutput.h \
-	evttools_language.c evttools_language.h \
 	evttools_libcdirectory.h \
 	evttools_libcerror.h \
 	evttools_libclocale.h \

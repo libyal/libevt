@@ -2,18 +2,15 @@ TODO:
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
 * %SystemRoot% expansion support for WINNT and WINNT35
-* libclocale
-  - complete language support
-  - move language support into library
 * pyevt:
   - add record object
   - add record functions
 * export handle
+  - print raw strings if no message was found
   - use current control set nr?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
-  - print raw strings if no message was found
   - output data as CSV/TSV
 * update manuals
   - evtexport add example output
@@ -29,6 +26,9 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120625
+* moved language support to libclocale
 
 20120624
 * applied updates

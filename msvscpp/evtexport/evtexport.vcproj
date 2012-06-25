@@ -195,10 +195,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_language.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\evttools\export_handle.c"
 				>
 			</File>
@@ -222,10 +218,6 @@
 			</File>
 			<File
 				RelativePath="..\..\evttools\evtoutput.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\evttools_language.h"
 				>
 			</File>
 			<File
