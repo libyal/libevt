@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
 	@LIBCNOTIFY_CPPFLAGS@ \
+	@LIBCSPLIT_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
@@ -37,6 +38,7 @@ evtexport_SOURCES = \
 	evttools_libclocale.h \
 	evttools_libcnotify.h \
 	evttools_libcpath.h \
+	evttools_libcsplit.h \
 	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfcache.h \
@@ -60,6 +62,7 @@ evtexport_LDADD = \
 	@LIBCDIRECTORY_LIBADD@ \
 	../libevt/libevt.la \
 	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \

@@ -11,6 +11,8 @@ TODO:
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
+  - print user sid; find corresponding name
+  - print event category
   - output data as CSV/TSV
 * update manuals
   - evtexport add example output
@@ -26,6 +28,10 @@ Tools:
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
 * evtinfo
+
+20120805
+* applied updates
+* added libcsplit support
 
 20120625
 * moved language support to libclocale

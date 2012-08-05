@@ -1,5 +1,5 @@
 /*
- * The internal libcpath header
+ * The internal libcsplit header
  *
  * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,28 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVTTOOLS_LIBCPATH_H )
-#define _EVTTOOLS_LIBCPATH_H
+#if !defined( _EVTTOOLS_LIBCSPLIT_H )
+#define _EVTTOOLS_LIBCSPLIT_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBCPATH for local use of libcpath
+/* Define HAVE_LOCAL_LIBCSPLIT for local use of libcsplit
  */
-#if defined( HAVE_LOCAL_LIBCPATH )
+#if defined( HAVE_LOCAL_LIBCSPLIT )
 
-#include <libcpath_definitions.h>
-#include <libcpath_path.h>
+#include <libcsplit_definitions.h>
+#include <libcsplit_narrow_split_string.h>
+#include <libcsplit_narrow_string.h>
+#include <libcsplit_types.h>
+#include <libcsplit_wide_split_string.h>
+#include <libcsplit_wide_string.h>
 
 #else
 
-/* If libtool DLL support is enabled set LIBCPATH_DLL_IMPORT
- * before including libcpath.h
+/* If libtool DLL support is enabled set LIBCSPLIT_DLL_IMPORT
+ * before including libcsplit.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBCPATH_DLL_IMPORT
+#define LIBCSPLIT_DLL_IMPORT
 #endif
 
-#include <libcpath.h>
+#include <libcsplit.h>
 
 #endif
 
