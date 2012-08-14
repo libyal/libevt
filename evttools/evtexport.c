@@ -64,9 +64,10 @@ void usage_fprint(
 	fprintf( stream, "\tsource: the source file\n\n" );
 
 	fprintf( stream, "\t-c:     codepage of ASCII strings, options: ascii, windows-874,\n"
-	                 "\t        windows-932, windows-936, windows-1250, windows-1251,\n"
-	                 "\t        windows-1252 (default), windows-1253, windows-1254,\n"
-	                 "\t        windows-1255, windows-1256, windows-1257 or windows-1258\n" );
+	                 "\t        windows-932, windows-936, windows-949, windows-950,\n"
+	                 "\t        windows-1250, windows-1251, windows-1252 (default),\n"
+	                 "\t        windows-1253, windows-1254, windows-1255, windows-1256\n"
+	                 "\t        windows-1257 or windows-1258\n" );
 	fprintf( stream, "\t-f:     event log type, options: application, security, system\n"
 	                 "\t        if not specified the event log type is determined based\n"
 	                 "\t        on the filename.\n\n" );

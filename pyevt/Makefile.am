@@ -24,7 +24,8 @@ pyevt_la_SOURCES = \
 	pyevt_libclocale.h \
 	pyevt_libcstring.h \
 	pyevt_libevt.h \
-	pyevt_python.h
+	pyevt_python.h \
+	pyevt_record.c pyevt_record.h
 
 pyevt_la_LIBADD = \
 	@LIBCSTRING_LIBADD@ \

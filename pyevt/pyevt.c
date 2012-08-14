@@ -32,6 +32,7 @@
 #include "pyevt_libcstring.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
+#include "pyevt_record.h"
 
 /* The pyevt module methods
  */
@@ -167,9 +168,10 @@ PyObject *pyevt_check_file_signature(
 PyMODINIT_FUNC initpyevt(
                 void ) 
 {
-	PyObject *module               = NULL;
-	PyTypeObject *file_type_object = NULL;
-	PyGILState_STATE gil_state     = 0;
+	PyObject *module                 = NULL;
+	PyTypeObject *file_type_object   = NULL;
+	PyTypeObject *record_type_object = NULL;
+	PyGILState_STATE gil_state       = 0;
 
 	PyEval_InitThreads();
 
@@ -200,6 +202,25 @@ PyMODINIT_FUNC initpyevt(
 	 module,
 	"file",
 	(PyObject *) file_type_object );
+
+	/* Setup the record type object
+	 */
+	pyevt_record_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyevt_record_type_object ) < 0 )
+	{
+		return;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyevt_record_type_object );
+
+	record_type_object = &pyevt_record_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "record",
+	 (PyObject *) record_type_object );
 
 	PyGILState_Release(
 	 gil_state );

@@ -611,6 +611,20 @@ int export_handle_open_system_registry_file(
 
 		goto on_error;
 	}
+	if( libregf_file_set_ascii_codepage(
+	     export_handle->system_registry_file,
+	     export_handle->ascii_codepage,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set ASCII codepage in system registry file.",
+		 function );
+
+		return( -1 );
+	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libregf_file_open_wide(
 	     export_handle->system_registry_file,
@@ -1053,6 +1067,20 @@ int export_handle_open_input(
 
 			return( -1 );
 		}
+	}
+	if( libevt_file_set_ascii_codepage(
+	     export_handle->input_file,
+	     export_handle->ascii_codepage,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set ASCII codepage in input file.",
+		 function );
+
+		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libevt_file_open_wide(

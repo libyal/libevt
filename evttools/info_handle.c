@@ -328,6 +328,20 @@ int info_handle_open_input(
 
 		return( -1 );
 	}
+	if( libevt_file_set_ascii_codepage(
+	     info_handle->input_file,
+	     info_handle->ascii_codepage,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set ASCII codepage in input file.",
+		 function );
+
+		return( -1 );
+	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libevt_file_open_wide(
 	     info_handle->input_file,

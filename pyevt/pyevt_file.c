@@ -38,6 +38,7 @@
 #include "pyevt_libcstring.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
+#include "pyevt_record.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
 LIBEVT_EXTERN \
@@ -111,6 +112,20 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  "\n"
 	  "Retrieves a specific record" },
 
+	{ "get_number_of_recovered_records",
+	  (PyCFunction) pyevt_file_get_number_of_recovered_records,
+	  METH_NOARGS,
+	  "get_number_of_recovered_records() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of recovered records" },
+
+	{ "get_recovered_record",
+	  (PyCFunction) pyevt_file_get_recovered_record,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_recovered_record(index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific recovered record" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -125,6 +140,12 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 
 	{ "number_of_records",
 	  (getter) pyevt_file_get_number_of_records,
+	  (setter) 0,
+	  "The number of records",
+	  NULL },
+
+	{ "number_of_recovered_records",
+	  (getter) pyevt_file_get_number_of_recovered_records,
 	  (setter) 0,
 	  "The number of records",
 	  NULL },
@@ -946,5 +967,323 @@ PyObject *pyevt_file_set_ascii_codepage(
 	 Py_None );
 
 	return( Py_None );
+}
+
+/* Retrieves the number of records
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_number_of_records(
+           pyevt_file_t *pyevt_file )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_file_get_number_of_records";
+	int number_of_records    = 0;
+	int result               = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_number_of_records(
+	          pyevt_file->file,
+	          &number_of_records,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of records.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of records.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyInt_FromLong(
+	         (long) number_of_records ) );
+}
+
+/* Retrieves a specific record
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_record(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error    = NULL;
+	libevt_record_t *record     = NULL;
+	PyObject *record_object     = NULL;
+	static char *keyword_list[] = { "record_index", NULL };
+	static char *function       = "pyevt_file_get_record";
+	int record_index            = 0;
+	int result                  = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &record_index ) == 0 )
+        {
+		goto on_error;
+        }
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_record(
+	          pyevt_file->file,
+	          record_index,
+	          &record,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve record: %d.",
+			 function,
+			 record_index );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve record: %d.\n%s",
+			 function,
+			 record_index,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	record_object = pyevt_record_new(
+	                 NULL );
+
+	if( record_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create record object.",
+		 function );
+
+		goto on_error;
+	}
+	( (pyevt_record_t *) record_object )->record = record;
+
+	return( record_object );
+
+on_error:
+	if( record != NULL )
+	{
+		libevt_record_free(
+		 &record,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves the number of recovered records
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_number_of_recovered_records(
+           pyevt_file_t *pyevt_file )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_file_get_number_of_recovered_records";
+	int number_of_records    = 0;
+	int result               = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_number_of_recovered_records(
+	          pyevt_file->file,
+	          &number_of_records,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of recovered records.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of recovered records.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyInt_FromLong(
+	         (long) number_of_records ) );
+}
+
+/* Retrieves a specific recovered record
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_recovered_record(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error    = NULL;
+	libevt_record_t *record     = NULL;
+	PyObject *record_object     = NULL;
+	static char *keyword_list[] = { "record_index", NULL };
+	static char *function       = "pyevt_file_get_recovered_record";
+	int record_index            = 0;
+	int result                  = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &record_index ) == 0 )
+        {
+		goto on_error;
+        }
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_recovered_record(
+	          pyevt_file->file,
+	          record_index,
+	          &record,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve recovered record: %d.",
+			 function,
+			 record_index );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve recovered record: %d.\n%s",
+			 function,
+			 record_index,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	record_object = pyevt_record_new(
+	                 NULL );
+
+	if( record_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create recovered record object.",
+		 function );
+
+		goto on_error;
+	}
+	( (pyevt_record_t *) record_object )->record = record;
+
+	return( record_object );
+
+on_error:
+	if( record != NULL )
+	{
+		libevt_record_free(
+		 &record,
+		 NULL );
+	}
+	return( NULL );
 }
 

@@ -3,7 +3,6 @@ TODO:
   - move WINAPI * path expansion from export handle to libcdirectory
 * %SystemRoot% expansion support for WINNT and WINNT35
 * pyevt:
-  - add record object
   - add record functions
 * export handle
   - print raw strings if no message was found
@@ -30,7 +29,8 @@ Tools:
 * evtinfo
 
 20120814
-* updated for pyevt
+* worked on python bindings
+* worked on tools
 
 20120805
 * applied updates
