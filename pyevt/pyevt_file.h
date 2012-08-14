@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libevt file
  *
- * Copyright (c) 2009-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -82,6 +82,14 @@ PyObject *pyevt_file_get_ascii_codepage(
            pyevt_file_t *pyevt_file );
 
 PyObject *pyevt_file_set_ascii_codepage(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyevt_file_get_number_of_records(
+           pyevt_file_t *pyevt_file );
+
+PyObject *pyevt_key_get_record(
            pyevt_file_t *pyevt_file,
            PyObject *arguments,
            PyObject *keywords );

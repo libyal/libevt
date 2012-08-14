@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libevt file
  *
- * Copyright (c) 2009-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -97,6 +97,20 @@ PyMethodDef pyevt_file_object_methods[] = {
 
 	/* Functions to access the records */
 
+	{ "get_number_of_records",
+	  (PyCFunction) pyevt_file_get_number_of_records,
+	  METH_NOARGS,
+	  "get_number_of_records() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of records" },
+
+	{ "get_record",
+	  (PyCFunction) pyevt_file_get_record,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_record(index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific record" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -107,6 +121,12 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 	  (getter) pyevt_file_get_ascii_codepage,
 	  (setter) pyevt_file_set_ascii_codepage,
 	  "The codepage used for ASCII strings in the file",
+	  NULL },
+
+	{ "number_of_records",
+	  (getter) pyevt_file_get_number_of_records,
+	  (setter) 0,
+	  "The number of records",
 	  NULL },
 
 	/* Sentinel */

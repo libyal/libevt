@@ -29,6 +29,9 @@ Tools:
   - print event categories CategoryMessageFile
 * evtinfo
 
+20120814
+* updated for pyevt
+
 20120805
 * applied updates
 * added libcsplit support

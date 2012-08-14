@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20120805],
+ [20120814],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -122,7 +122,7 @@ AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
 dnl Check if libevt should be build with debug output
 AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
-dnl Check if liblnk python bindings (pyevt) should be build
+dnl Check if libevt python bindings (pyevt) should be build
 AX_PYTHON_CHECK_ENABLE
 
 dnl Check if DLL support is needed in evttools
