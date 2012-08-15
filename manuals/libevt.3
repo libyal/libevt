@@ -1,4 +1,4 @@
-.Dd June 24, 2012
+.Dd August 15, 2012
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -93,6 +93,8 @@ Record functions
 .Ft int
 .Fn libevt_record_get_event_type "libevt_record_t *record, uint16_t *event_type, libevt_error_t **error"
 .Ft int
+.Fn libevt_record_get_event_category "libevt_record_t *record, uint16_t *event_category, libevt_error_t **error"
+.Ft int
 .Fn libevt_record_get_utf8_source_name_size "libevt_record_t *record, size_t *utf8_string_size, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_utf8_source_name "libevt_record_t *record, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
@@ -108,6 +110,14 @@ Record functions
 .Fn libevt_record_get_utf16_computer_name_size "libevt_record_t *record, size_t *utf16_string_size, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_utf16_computer_name "libevt_record_t *record, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_utf8_user_security_identifier_size "libevt_record_t *record, size_t *utf8_string_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_utf8_user_security_identifier "libevt_record_t *record, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_utf16_user_security_identifier_size "libevt_record_t *record, size_t *utf16_string_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_utf16_user_security_identifier "libevt_record_t *record, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_number_of_strings "libevt_record_t *record, int *number_of_strings, libevt_error_t **error"
 .Ft int

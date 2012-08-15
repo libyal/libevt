@@ -504,6 +504,57 @@ int libevt_record_get_event_type(
 	return( 1 );
 }
 
+/* Retrieves the event category
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_event_category(
+     libevt_record_t *record,
+     uint16_t *event_category,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_event_category";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( event_category == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid event category.",
+		 function );
+
+		return( -1 );
+	}
+	*event_category = internal_record->record_values->event_category;
+
+	return( 1 );
+}
+
 /* Retrieves the size of the UTF-8 encoded source name
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
@@ -937,6 +988,226 @@ int libevt_record_get_utf16_computer_name(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy computer name to UTF-16 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-8 encoded user security identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_user_security_identifier_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_user_security_identifier_size";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf8_string_size(
+	     internal_record->record_values->user_security_identifier,
+	     0,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded user security identifier
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf8_user_security_identifier(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf8_user_security_identifier";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf8_string(
+	     internal_record->record_values->user_security_identifier,
+	     0,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy user security identifier to UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded user security identifier
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_user_security_identifier_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_user_security_identifier_size";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_get_utf16_string_size(
+	     internal_record->record_values->user_security_identifier,
+	     0,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 string size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded user security identifier
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_get_utf16_user_security_identifier(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_utf16_user_security_identifier";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfvalue_value_copy_to_utf16_string(
+	     internal_record->record_values->user_security_identifier,
+	     0,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy user security identifier to UTF-16 string.",
 		 function );
 
 		return( -1 );

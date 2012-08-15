@@ -73,6 +73,10 @@ struct libevt_record_values
 	 */
 	uint16_t event_type;
 
+	/* The event category
+	 */
+	uint16_t event_category;
+
 	/* The source name
 	 */
 	libfvalue_value_t *source_name;
@@ -80,6 +84,10 @@ struct libevt_record_values
 	/* The computer name
 	 */
 	libfvalue_value_t *computer_name;
+
+	/* The user security identifier (SID)
+	 */
+	libfvalue_value_t *user_security_identifier;
 
 	/* The strings
 	 */

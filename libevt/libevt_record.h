@@ -101,6 +101,12 @@ int libevt_record_get_event_type(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_record_get_event_category(
+     libevt_record_t *record,
+     uint16_t *event_category,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_record_get_utf8_source_name_size(
      libevt_record_t *record,
      size_t *utf8_string_size,
@@ -147,6 +153,32 @@ int libevt_record_get_utf16_computer_name_size(
 
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name(
+     libevt_record_t *record,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_user_security_identifier_size(
+     libevt_record_t *record,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf8_user_security_identifier(
+     libevt_record_t *record,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_user_security_identifier_size(
+     libevt_record_t *record,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_utf16_user_security_identifier(
      libevt_record_t *record,
      uint16_t *utf16_string,
      size_t utf16_string_size,

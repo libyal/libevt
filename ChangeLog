@@ -1,32 +1,39 @@
 TODO:
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
-* %SystemRoot% expansion support for WINNT and WINNT35
-* pyevt:
-  - add record functions
-* export handle
-  - print raw strings if no message was found
-  - use current control set nr?
-  - print if message file key not found
-  - print if message file not found
-  - print if message file has no resources
-  - print user sid; find corresponding name
-  - print event category
-  - output data as CSV/TSV
 * update manuals
   - evtexport add example output
-* add debug function for event flags
 * add error tollerability (+/-)
   - sizes and copy
 
 Tools:
-* evtexport
-  - add mode (all, records, recovered)
-  - print event type description
-  - improved version that also can get strings
+* API
+  - functionality to parse event identifier ?
+  - access to data
+* evtexport/export handle
   - validate eventlog/computername in system registry
   - print event categories CategoryMessageFile
+  - use current control set nr?
+  - print if message file key not found
+  - print if message file not found
+  - print if message file has no resources
+  - user sid - find corresponding user name ?
+  - output data as CSV/TSV
+  - %SystemRoot% expansion support for WINNT and WINNT35
 * evtinfo
+* pyevt
+  - functionality to parse event identifier ?
+  - string representations of event type ?
+  - access to data
+
+Format:
+* event flags ? (debug function)
+* closing record number ?
+
+20120815
+* worked on python bindings
+* Added user SID as string support to API
+* worked on tools
 
 20120814
 * worked on python bindings

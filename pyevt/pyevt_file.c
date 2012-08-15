@@ -108,7 +108,7 @@ PyMethodDef pyevt_file_object_methods[] = {
 	{ "get_record",
 	  (PyCFunction) pyevt_file_get_record,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_record(index) -> Object or None\n"
+	  "get_record(record_index) -> Object or None\n"
 	  "\n"
 	  "Retrieves a specific record" },
 
@@ -122,7 +122,7 @@ PyMethodDef pyevt_file_object_methods[] = {
 	{ "get_recovered_record",
 	  (PyCFunction) pyevt_file_get_recovered_record,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_recovered_record(index) -> Object or None\n"
+	  "get_recovered_record(record_index) -> Object or None\n"
 	  "\n"
 	  "Retrieves a specific recovered record" },
 

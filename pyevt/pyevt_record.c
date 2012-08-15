@@ -39,6 +39,20 @@ PyMethodDef pyevt_record_object_methods[] = {
 
 	/* Functions to access the record values */
 
+	{ "get_identifier",
+	  (PyCFunction) pyevt_record_get_identifier,
+	  METH_NOARGS,
+	  "get_identifier() -> Integer\n"
+	  "\n"
+	  "Retrieves the identifier (number)" },
+
+	{ "get_creation_time",
+	  (PyCFunction) pyevt_record_get_creation_time,
+	  METH_NOARGS,
+	  "get_creation_time() -> Datetime\n"
+	  "\n"
+	  "Returns the creation date and time" },
+
 	{ "get_written_time",
 	  (PyCFunction) pyevt_record_get_written_time,
 	  METH_NOARGS,
@@ -53,12 +67,12 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  "\n"
 	  "Retrieves the event identifier" },
 
-	{ "get_event_level",
-	  (PyCFunction) pyevt_record_get_event_level,
+	{ "get_event_type",
+	  (PyCFunction) pyevt_record_get_event_type,
 	  METH_NOARGS,
-	  "get_event_level() -> Integer\n"
+	  "get_event_type() -> Integer\n"
 	  "\n"
-	  "Retrieves the event level" },
+	  "Retrieves the event type" },
 
 	{ "get_source_name",
 	  (PyCFunction) pyevt_record_get_source_name,
@@ -74,11 +88,46 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  "\n"
 	  "Retrieves the computer name" },
 
+	{ "get_user_security_identifier",
+	  (PyCFunction) pyevt_record_get_user_security_identifier,
+	  METH_NOARGS,
+	  "get_user_security_identifier -> Unicode string or None\n"
+	  "\n"
+	  "Retrieves the user security identifier (SID)" },
+
+	/* Functions to access the string */
+
+	{ "get_number_of_strings",
+	  (PyCFunction) pyevt_record_get_number_of_strings,
+	  METH_NOARGS,
+	  "get_number_of_strings() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of strings" },
+
+	{ "get_string",
+	  (PyCFunction) pyevt_record_get_string,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_string(string_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific string" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
 
 PyGetSetDef pyevt_record_object_get_set_definitions[] = {
+
+	{ "identifier",
+	  (getter) pyevt_record_get_identifier,
+	  (setter) 0,
+	  "The identifier (number)",
+	  NULL },
+
+	{ "creation_time",
+	  (getter) pyevt_record_get_creation_time,
+	  (setter) 0,
+	  "The creation date and time",
+	  NULL },
 
 	{ "written_time",
 	  (getter) pyevt_record_get_written_time,
@@ -92,10 +141,10 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	  "The event identifier",
 	  NULL },
 
-	{ "event_level",
-	  (getter) pyevt_record_get_event_level,
+	{ "event_type",
+	  (getter) pyevt_record_get_event_type,
 	  (setter) 0,
-	  "The event level",
+	  "The event type",
 	  NULL },
 
 	{ "source_name",
@@ -108,6 +157,18 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	  (getter) pyevt_record_get_computer_name,
 	  (setter) 0,
 	  "The computer name",
+	  NULL },
+
+	{ "user_security_identifier",
+	  (getter) pyevt_record_get_user_security_identifier,
+	  (setter) 0,
+	  "The user security identifier (SID)",
+	  NULL },
+
+	{ "number_of_strings",
+	  (getter) pyevt_record_get_number_of_strings,
+	  (setter) 0,
+	  "The number of strings",
 	  NULL },
 
 	/* Sentinel */
@@ -353,6 +414,129 @@ void pyevt_record_free(
 	 (PyObject*) pyevt_record );
 }
 
+/* Retrieves the identifier
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_identifier(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_record_get_identifier";
+	uint32_t identifier      = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_identifier(
+	          pyevt_record->record,
+	          &identifier,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve identifier.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve identifier.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyInt_FromLong(
+	         (long) identifier ) );
+}
+
+/* Retrieves the creation date and time
+ * Returns a Python object holding the offset if successful or NULL on error
+ */
+PyObject *pyevt_record_get_creation_time(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error   = NULL;
+	PyObject *date_time_object = NULL;
+	static char *function      = "pyevt_record_get_creation_time";
+	uint32_t posix_time        = 0;
+	int result                 = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_creation_time(
+	          pyevt_record->record,
+	          &posix_time,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve creation time.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve creation time.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	date_time_object = pyevt_datetime_new_from_posix_time(
+	                    posix_time );
+
+	return( date_time_object );
+}
+
 /* Retrieves the written date and time
  * Returns a Python object holding the offset if successful or NULL on error
  */
@@ -364,7 +548,7 @@ PyObject *pyevt_record_get_written_time(
 	libcerror_error_t *error   = NULL;
 	PyObject *date_time_object = NULL;
 	static char *function      = "pyevt_record_get_written_time";
-	uint64_t filetime          = 0;
+	uint32_t posix_time        = 0;
 	int result                 = 0;
 
 	if( pyevt_record == NULL )
@@ -380,7 +564,7 @@ PyObject *pyevt_record_get_written_time(
 
 	result = libevt_record_get_written_time(
 	          pyevt_record->record,
-	          &filetime,
+	          &posix_time,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -410,8 +594,8 @@ PyObject *pyevt_record_get_written_time(
 
 		return( NULL );
 	}
-	date_time_object = pyevt_datetime_new_from_filetime(
-	                    filetime );
+	date_time_object = pyevt_datetime_new_from_posix_time(
+	                    posix_time );
 
 	return( date_time_object );
 }
@@ -476,17 +660,17 @@ PyObject *pyevt_record_get_event_identifier(
 	         (long) event_identifier ) );
 }
 
-/* Retrieves the event level
+/* Retrieves the event type
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyevt_record_get_event_level(
+PyObject *pyevt_record_get_event_type(
            pyevt_record_t *pyevt_record )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
-	static char *function    = "pyevt_record_get_event_level";
-	uint8_t event_level      = 0;
+	static char *function    = "pyevt_record_get_event_type";
+	uint16_t event_type      = 0;
 	int result               = 0;
 
 	if( pyevt_record == NULL )
@@ -500,9 +684,9 @@ PyObject *pyevt_record_get_event_level(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libevt_record_get_event_level(
+	result = libevt_record_get_event_type(
 	          pyevt_record->record,
-	          &event_level,
+	          &event_type,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -516,14 +700,14 @@ PyObject *pyevt_record_get_event_level(
                 {
 			PyErr_Format(
 			 PyExc_IOError,
-			 "%s: unable to retrieve event level.",
+			 "%s: unable to retrieve event type.",
 			 function );
 		}
 		else
 		{
 			PyErr_Format(
 			 PyExc_IOError,
-			 "%s: unable to retrieve event level.\n%s",
+			 "%s: unable to retrieve event type.\n%s",
 			 function,
 			 error_string );
 		}
@@ -533,7 +717,7 @@ PyObject *pyevt_record_get_event_level(
 		return( NULL );
 	}
 	return( PyInt_FromLong(
-	         (long) event_level ) );
+	         (long) event_type ) );
 }
 
 /* Retrieves the source name
@@ -806,6 +990,360 @@ on_error:
 	{
 		memory_free(
 		 computer_name );
+	}
+	return( NULL );
+}
+
+/* Retrieves the user security identifier
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_user_security_identifier(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error             = NULL;
+	PyObject *string_object              = NULL;
+	const char *errors                   = NULL;
+	uint8_t *user_security_identifier    = NULL;
+	static char *function                = "pyevt_record_get_user_security_identifier";
+	size_t user_security_identifier_size = 0;
+	int result                           = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_utf8_user_security_identifier_size(
+	          pyevt_record->record,
+	          &user_security_identifier_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve user security identifier size.",
+			 function );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve user security identifier size.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( user_security_identifier_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	user_security_identifier = (uint8_t *) memory_allocate(
+	                                        sizeof( uint8_t ) * user_security_identifier_size );
+
+	if( user_security_identifier == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create user security identifier.",
+		 function );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_utf8_user_security_identifier(
+		  pyevt_record->record,
+		  user_security_identifier,
+		  user_security_identifier_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve user security identifier.",
+			 function );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve user security identifier.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
+	 */
+	string_object = PyUnicode_DecodeUTF8(
+			 (char *) user_security_identifier,
+			 (Py_ssize_t) user_security_identifier_size - 1,
+			 errors );
+
+	memory_free(
+	 user_security_identifier );
+
+	return( string_object );
+
+on_error:
+	if( user_security_identifier != NULL )
+	{
+		memory_free(
+		 user_security_identifier );
+	}
+	return( NULL );
+}
+
+/* Retrieves the number of strings
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_number_of_strings(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_record_get_number_of_strings";
+	int number_of_strings    = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_number_of_strings(
+	          pyevt_record->record,
+	          &number_of_strings,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of strings.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of strings.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyInt_FromLong(
+	         (long) number_of_strings ) );
+}
+
+/* Retrieves a specific string
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_string(
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error    = NULL;
+	PyObject *string_object     = NULL;
+	uint8_t *string             = NULL;
+	const char *errors          = NULL;
+	static char *keyword_list[] = { "string_index", NULL };
+	static char *function       = "pyevt_record_get_string";
+	size_t string_size          = 0;
+	int string_index            = 0;
+	int result                  = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &string_index ) == 0 )
+        {
+		goto on_error;
+        }
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_utf8_string_size(
+	          pyevt_record->record,
+	          string_index,
+	          &string_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve string: %d size.",
+			 function,
+			 string_index );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve string: %d size.\n%s",
+			 function,
+			 string_index,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( string_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	string = (uint8_t *) memory_allocate(
+	                      sizeof( uint8_t ) * string_size );
+
+	if( string == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create string: %d.",
+		 function,
+		 string_index );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_utf8_string(
+		  pyevt_record->record,
+		  string_index,
+		  string,
+		  string_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve string: %d.",
+			 function,
+			 string_index );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve string: %d.\n%s",
+			 function,
+			 string_index,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
+	 */
+	string_object = PyUnicode_DecodeUTF8(
+			 (char *) string,
+			 (Py_ssize_t) string_size - 1,
+			 errors );
+
+	memory_free(
+	 string );
+
+	return( string_object );
+
+on_error:
+	if( string != NULL )
+	{
+		memory_free(
+		 string );
 	}
 	return( NULL );
 }

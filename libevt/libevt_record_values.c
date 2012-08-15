@@ -170,6 +170,22 @@ int libevt_record_values_free(
 				result = -1;
 			}
 		}
+		if( ( *record_values )->user_security_identifier != NULL )
+		{
+			if( libfvalue_value_free(
+			     &( ( *record_values )->user_security_identifier ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free user security identifier (SID).",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( ( *record_values )->strings != NULL )
 		{
 			if( libfvalue_value_free(
@@ -593,11 +609,8 @@ int libevt_record_values_read_event(
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libcstring_system_character_t posix_time_string[ 32 ];
-	libcstring_system_character_t sid_string[ 128 ];
 
 	libfdatetime_posix_time_t *posix_time = NULL;
-	libfwnt_security_identifier_t *sid    = NULL;
-	size_t sid_string_size                = 0;
 	uint32_t value_32bit                  = 0;
 	uint16_t value_16bit                  = 0;
 	int result                            = 0;
@@ -670,6 +683,10 @@ int libevt_record_values_read_event(
 	byte_stream_copy_to_uint16_little_endian(
 	 ( (evt_record_event_header_t *) record_data )->event_type,
 	 record_values->event_type );
+
+	byte_stream_copy_to_uint16_little_endian(
+	 ( (evt_record_event_header_t *) record_data )->event_category,
+	 record_values->event_category );
 
 	byte_stream_copy_to_uint32_little_endian(
 	 ( (evt_record_event_header_t *) record_data )->strings_offset,
@@ -889,13 +906,10 @@ int libevt_record_values_read_event(
 		 function,
 		 value_16bit );
 
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (evt_record_event_header_t *) record_data )->event_category,
-		 value_16bit );
 		libcnotify_printf(
 		 "%s: event category\t\t\t\t: %" PRIu16 "\n",
 		 function,
-		 value_16bit );
+		 record_values->event_category );
 
 		byte_stream_copy_to_uint16_little_endian(
 		 ( (evt_record_event_header_t *) record_data )->event_flags,
@@ -1198,112 +1212,61 @@ int libevt_record_values_read_event(
 	}
 	if( user_sid_size != 0 )
 	{
+		if( libfvalue_value_type_initialize(
+		     &( record_values->user_security_identifier ),
+		     LIBFVALUE_VALUE_TYPE_NT_SECURITY_IDENTIFIER,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create user security identifier (SID) value.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfvalue_value_set_data(
+		     record_values->user_security_identifier,
+		     &( record_data[ user_sid_offset ] ),
+		     (size_t) user_sid_size,
+		     LIBFVALUE_ENDIAN_LITTLE,
+		     LIBFVALUE_VALUE_DATA_FLAG_MANAGED,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set data of user security identifier (SID) value.",
+			 function );
+
+			goto on_error;
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
-			if( libfwnt_security_identifier_initialize(
-			     &sid,
+			libcnotify_printf(
+			 "%s: user security identifier (SID)\t\t: ",
+			 function );
+
+			if( libfvalue_value_print(
+			     record_values->user_security_identifier,
+			     0,
+			     0,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create SID.",
-				 function );
-
-				goto on_error;
-			}
-			if( libfwnt_security_identifier_copy_from_byte_stream(
-			     sid,
-			     &( record_data[ user_sid_offset ] ),
-			     (size_t) user_sid_size,
-			     LIBFWNT_ENDIAN_LITTLE,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy byte stream to SID.",
-				 function );
-
-				goto on_error;
-			}
-			result = libfwnt_security_identifier_get_string_size(
-				  sid,
-				  &sid_string_size,
-				  0,
-				  error );
-
-			if( result != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve SID string size.",
-				 function );
-
-				goto on_error;
-			}
-			/* It is assumed that the SID string cannot be larger than 127 characters
-			 * otherwise using dynamic allocation is more appropriate
-			 */
-			if( sid_string_size > 128 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: SID string size value exceeds maximum.",
-				 function );
-
-				goto on_error;
-			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			result = libfwnt_security_identifier_copy_to_utf16_string(
-				  sid,
-				  (uint16_t *) sid_string,
-				  128,
-				  0,
-				  error );
-#else
-			result = libfwnt_security_identifier_copy_to_utf8_string(
-				  sid,
-				  (uint8_t *) sid_string,
-				  128,
-				  0,
-				  error );
-#endif
-			if( result != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy SID to string.",
-				 function );
-
-				goto on_error;
-			}
-			if( libfwnt_security_identifier_free(
-			     &sid,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free SID.",
+				 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+				 "%s: unable to print user security identifier (SID) value.",
 				 function );
 
 				goto on_error;
 			}
 			libcnotify_printf(
-			 "%s: user security identifier (SID)\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-			 function,
-			 sid_string );
+			 "\n" );
 		}
 #endif
 		record_data_offset += user_sid_size;
@@ -1455,12 +1418,6 @@ on_error:
 	{
 		libfdatetime_posix_time_free(
 		 &posix_time,
-		 NULL );
-	}
-	if( sid != NULL )
-	{
-		libfwnt_security_identifier_free(
-		 &sid,
 		 NULL );
 	}
 #endif

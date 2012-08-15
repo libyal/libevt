@@ -57,13 +57,19 @@ int pyevt_record_init(
 void pyevt_record_free(
       pyevt_record_t *pyevt_record );
 
+PyObject *pyevt_record_get_identifier(
+           pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_creation_time(
+           pyevt_record_t *pyevt_record );
+
 PyObject *pyevt_record_get_written_time(
            pyevt_record_t *pyevt_record );
 
 PyObject *pyevt_record_get_event_identifier(
            pyevt_record_t *pyevt_record );
 
-PyObject *pyevt_record_get_event_level(
+PyObject *pyevt_record_get_event_type(
            pyevt_record_t *pyevt_record );
 
 PyObject *pyevt_record_get_source_name(
@@ -71,6 +77,17 @@ PyObject *pyevt_record_get_source_name(
 
 PyObject *pyevt_record_get_computer_name(
            pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_user_security_identifier(
+           pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_number_of_strings(
+           pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_string(
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments,
+           PyObject *keywords );
 
 #if defined( __cplusplus )
 }

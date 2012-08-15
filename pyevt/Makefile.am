@@ -9,6 +9,7 @@ AM_CFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFWNT_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@
 
 pyexec_LTLIBRARIES = pyevt.la
@@ -24,6 +25,7 @@ pyevt_la_SOURCES = \
 	pyevt_libclocale.h \
 	pyevt_libcstring.h \
 	pyevt_libevt.h \
+	pyevt_libfwnt.h \
 	pyevt_python.h \
 	pyevt_record.c pyevt_record.h
 
@@ -34,7 +36,8 @@ pyevt_la_LIBADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCFILE_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
-	@LIBBFIO_LIBADD@
+	@LIBBFIO_LIBADD@ \
+	@LIBFWNT_LIBADD@
 
 pyevt_la_CPPFLAGS = $(PYTHON_CPPFLAGS)
 pyevt_la_LDFLAGS  = -module -avoid-version $(PYTHON_LDFLAGS)
