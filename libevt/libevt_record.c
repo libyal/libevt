@@ -557,7 +557,7 @@ int libevt_record_get_event_category(
 
 /* Retrieves the size of the UTF-8 encoded source name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_source_name_size(
      libevt_record_t *record,
@@ -611,7 +611,7 @@ int libevt_record_get_utf8_source_name_size(
 
 /* Retrieves the UTF-8 encoded source name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_source_name(
      libevt_record_t *record,
@@ -667,7 +667,7 @@ int libevt_record_get_utf8_source_name(
 
 /* Retrieves the size of the UTF-16 encoded source name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_source_name_size(
      libevt_record_t *record,
@@ -721,7 +721,7 @@ int libevt_record_get_utf16_source_name_size(
 
 /* Retrieves the UTF-16 encoded source name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_source_name(
      libevt_record_t *record,
@@ -777,7 +777,7 @@ int libevt_record_get_utf16_source_name(
 
 /* Retrieves the size of the UTF-8 encoded computer name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_computer_name_size(
      libevt_record_t *record,
@@ -831,7 +831,7 @@ int libevt_record_get_utf8_computer_name_size(
 
 /* Retrieves the UTF-8 encoded computer name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_computer_name(
      libevt_record_t *record,
@@ -887,7 +887,7 @@ int libevt_record_get_utf8_computer_name(
 
 /* Retrieves the size of the UTF-16 encoded computer name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_computer_name_size(
      libevt_record_t *record,
@@ -941,7 +941,7 @@ int libevt_record_get_utf16_computer_name_size(
 
 /* Retrieves the UTF-16 encoded computer name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_computer_name(
      libevt_record_t *record,
@@ -997,7 +997,7 @@ int libevt_record_get_utf16_computer_name(
 
 /* Retrieves the size of the UTF-8 encoded user security identifier
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_user_security_identifier_size(
      libevt_record_t *record,
@@ -1031,6 +1031,10 @@ int libevt_record_get_utf8_user_security_identifier_size(
 
 		return( -1 );
 	}
+	if( internal_record->record_values->user_security_identifier == NULL )
+	{
+		return( 0 );
+	}
 	if( libfvalue_value_get_utf8_string_size(
 	     internal_record->record_values->user_security_identifier,
 	     0,
@@ -1051,7 +1055,7 @@ int libevt_record_get_utf8_user_security_identifier_size(
 
 /* Retrieves the UTF-8 encoded user security identifier
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf8_user_security_identifier(
      libevt_record_t *record,
@@ -1086,6 +1090,10 @@ int libevt_record_get_utf8_user_security_identifier(
 
 		return( -1 );
 	}
+	if( internal_record->record_values->user_security_identifier == NULL )
+	{
+		return( 0 );
+	}
 	if( libfvalue_value_copy_to_utf8_string(
 	     internal_record->record_values->user_security_identifier,
 	     0,
@@ -1107,7 +1115,7 @@ int libevt_record_get_utf8_user_security_identifier(
 
 /* Retrieves the size of the UTF-16 encoded user security identifier
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_user_security_identifier_size(
      libevt_record_t *record,
@@ -1161,7 +1169,7 @@ int libevt_record_get_utf16_user_security_identifier_size(
 
 /* Retrieves the UTF-16 encoded user security identifier
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libevt_record_get_utf16_user_security_identifier(
      libevt_record_t *record,

@@ -405,7 +405,7 @@ int libevt_record_get_event_category(
 
 /* Retrieves the size of the UTF-8 encoded source name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_source_name_size(
@@ -415,7 +415,7 @@ int libevt_record_get_utf8_source_name_size(
 
 /* Retrieves the UTF-8 encoded source name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_source_name(
@@ -426,7 +426,7 @@ int libevt_record_get_utf8_source_name(
 
 /* Retrieves the size of the UTF-16 encoded source name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_source_name_size(
@@ -436,7 +436,7 @@ int libevt_record_get_utf16_source_name_size(
 
 /* Retrieves the UTF-16 encoded source name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_source_name(
@@ -447,7 +447,7 @@ int libevt_record_get_utf16_source_name(
 
 /* Retrieves the size of the UTF-8 encoded computer name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_computer_name_size(
@@ -457,7 +457,7 @@ int libevt_record_get_utf8_computer_name_size(
 
 /* Retrieves the UTF-8 encoded computer name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_computer_name(
@@ -468,7 +468,7 @@ int libevt_record_get_utf8_computer_name(
 
 /* Retrieves the size of the UTF-16 encoded computer name
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name_size(
@@ -478,7 +478,7 @@ int libevt_record_get_utf16_computer_name_size(
 
 /* Retrieves the UTF-16 encoded computer name
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_computer_name(
@@ -489,7 +489,7 @@ int libevt_record_get_utf16_computer_name(
 
 /* Retrieves the size of the UTF-8 encoded user security identifier (SID)
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_user_security_identifier_size(
@@ -499,7 +499,7 @@ int libevt_record_get_utf8_user_security_identifier_size(
 
 /* Retrieves the UTF-8 encoded user security identifier (SID)
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf8_user_security_identifier(
@@ -510,7 +510,7 @@ int libevt_record_get_utf8_user_security_identifier(
 
 /* Retrieves the size of the UTF-16 encoded user security identifier (SID)
  * The returned size includes the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_user_security_identifier_size(
@@ -520,7 +520,7 @@ int libevt_record_get_utf16_user_security_identifier_size(
 
 /* Retrieves the UTF-16 encoded user security identifier (SID)
  * The size should include the end of string character
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBEVT_EXTERN \
 int libevt_record_get_utf16_user_security_identifier(

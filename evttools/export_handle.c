@@ -3035,7 +3035,7 @@ int export_handle_export_record(
 	          &event_source_size,
 	          error );
 #endif
-	if( result != 1 )
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -3046,7 +3046,8 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( event_source_size > 0 )
+	if( ( result != 0 )
+	 && ( event_source_size > 0 ) )
 	{
 		event_source = libcstring_system_string_allocate(
 		                event_source_size );
@@ -3102,7 +3103,7 @@ int export_handle_export_record(
 	          &value_string_size,
 	          error );
 #endif
-	if( result != 1 )
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -3113,7 +3114,8 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( value_string_size > 0 )
+	if( ( result != 0 )
+	 && ( value_string_size > 0 ) )
 	{
 		value_string = libcstring_system_string_allocate(
 		                value_string_size );
@@ -3174,7 +3176,7 @@ int export_handle_export_record(
 	          &value_string_size,
 	          error );
 #endif
-	if( result != 1 )
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -3185,7 +3187,8 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( value_string_size > 0 )
+	if( ( result != 0 )
+	 && ( value_string_size > 0 ) )
 	{
 		value_string = libcstring_system_string_allocate(
 		                value_string_size );
