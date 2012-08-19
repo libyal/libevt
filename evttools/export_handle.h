@@ -165,6 +165,8 @@ int export_handle_get_message_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *event_source,
      size_t event_source_length,
+     const libcstring_system_character_t *value_name,
+     size_t value_name_length,
      libcstring_system_character_t **message_filename,
      size_t *message_filename_size,
      libcerror_error_t **error );
@@ -186,11 +188,37 @@ int export_handle_get_message_string(
      size_t *message_string_size,
      libcerror_error_t **error );
 
+int export_handle_get_message_string_from_message_file(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     uint32_t message_identifier,
+     libcstring_system_character_t **message_string,
+     size_t *message_string_size,
+     libcerror_error_t **error );
+
 int export_handle_message_string_fprint(
      export_handle_t *export_handle,
      const libcstring_system_character_t *message_string,
      size_t message_string_length,
      libevt_record_t *record,
+     libcerror_error_t **error );
+
+int export_handle_export_record_event_category(
+     export_handle_t *export_handle,
+     libevt_record_t *record,
+     const libcstring_system_character_t *event_source,
+     size_t event_source_length,
+     log_handle_t *log_handle,
+     libcerror_error_t **error );
+
+int export_handle_export_record_event_message(
+     export_handle_t *export_handle,
+     libevt_record_t *record,
+     const libcstring_system_character_t *event_source,
+     size_t event_source_length,
+     uint32_t event_identifier,
+     log_handle_t *log_handle,
      libcerror_error_t **error );
 
 int export_handle_export_record(

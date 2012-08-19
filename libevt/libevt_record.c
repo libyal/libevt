@@ -1360,7 +1360,7 @@ int libevt_record_get_utf8_string_size(
 	return( 1 );
 }
 
-/* Retrieves a specifig UTF-8 encoded string
+/* Retrieves a specific UTF-8 encoded string
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1496,7 +1496,7 @@ int libevt_record_get_utf16_string_size(
 	return( 1 );
 }
 
-/* Retrieves a specifig UTF-16 encoded string
+/* Retrieves a specific UTF-16 encoded string
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1559,6 +1559,120 @@ int libevt_record_get_utf16_string(
 		 "%s: unable to copy strings value entry: %d to UTF-16 string.",
 		 function,
 		 string_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the data
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+int libevt_record_get_data_size(
+     libevt_record_t *record,
+     size_t *data_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_data_size";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_record->record_values->data == NULL )
+	{
+		return( 0 );
+	}
+	if( libfvalue_value_get_data_size(
+	     internal_record->record_values->data,
+	     data_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve data size.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the data
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+int libevt_record_get_data(
+     libevt_record_t *record,
+     uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error )
+{
+	libevt_internal_record_t *internal_record = NULL;
+	static char *function                     = "libevt_record_get_data";
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	internal_record = (libevt_internal_record_t *) record;
+
+	if( internal_record->record_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal record - missing record values.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_record->record_values->data == NULL )
+	{
+		return( 0 );
+	}
+	if( libfvalue_value_copy_data(
+	     internal_record->record_values->data,
+	     data,
+	     data_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy data.",
+		 function );
 
 		return( -1 );
 	}

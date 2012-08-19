@@ -1,4 +1,4 @@
-.Dd August 15, 2012
+.Dd August 19, 2012
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -128,6 +128,10 @@ Record functions
 .Fn libevt_record_get_utf16_string_size "libevt_record_t *record, int string_index, size_t *utf16_string_size, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_utf16_string "libevt_record_t *record, int string_index, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_data_size "libevt_record_t *record, size_t *data_size, libevt_error_t **error"
+.Ft int
+.Fn libevt_record_get_data "libevt_record_t *record, uint8_t *data, size_t data_size, libevt_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int

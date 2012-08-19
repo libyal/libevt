@@ -220,6 +220,19 @@ int libevt_record_get_utf16_string(
      size_t utf16_string_size,
      libcerror_error_t **error );
 
+LIBEVT_EXTERN \
+int libevt_record_get_data_size(
+     libevt_record_t *record,
+     size_t *data_size,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_record_get_data(
+     libevt_record_t *record,
+     uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

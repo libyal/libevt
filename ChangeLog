@@ -1,4 +1,7 @@
 TODO:
+* msvscpp build
+  - fix libwrc
+
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
 * update manuals
@@ -9,17 +12,17 @@ TODO:
 Tools:
 * API
   - functionality to parse event identifier ?
-  - access to data
 * evtexport/export handle
-  - validate eventlog/computername in system registry
-  - print event categories CategoryMessageFile
-  - use current control set nr?
+  - validate eventlog/computername in system registry ?
+  - use current control set nr ?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
   - user sid - find corresponding user name ?
-  - output data as CSV/TSV
+  - output data as CSV/TSV, DFXML ?
   - %SystemRoot% expansion support for WINNT and WINNT35
+  - print data
+  - move output to separate code, e.g. libpff
 * evtinfo
 * pyevt
   - functionality to parse event identifier ?
@@ -29,6 +32,11 @@ Tools:
 Format:
 * event flags ? (debug function)
 * closing record number ?
+
+20120819
+* applied updates
+* worked on printing category name
+* worked on API - access to data
 
 20120815
 * worked on python bindings

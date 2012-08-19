@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20120815],
+ [20120819],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -83,6 +83,9 @@ AX_LIBBFIO_CHECK_ENABLE
 dnl Check for enabling libfdatetime for file date and time support
 AX_LIBFDATETIME_CHECK_ENABLE
 
+dnl Check for enabling libfguid for file GUID/UUID support
+AX_LIBFGUID_CHECK_ENABLE
+
 dnl Check for enabling libfvalue for file value support
 AX_LIBFVALUE_CHECK_ENABLE
 
@@ -94,6 +97,9 @@ AX_LIBEVT_CHECK_LOCAL
 
 dnl Check for enabling libfcache for file value cache support
 AX_LIBFCACHE_CHECK_ENABLE
+
+dnl Check for enabling libfwevt for Windows Event Log binary XML support
+AX_LIBFWEVT_CHECK_ENABLE
 
 dnl Check for enabling libfdata for file data types support
 AX_LIBFDATA_CHECK_ENABLE
@@ -158,7 +164,7 @@ AM_CONDITIONAL(
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
- [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwnt" = xyes],
+ [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfguid" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwnt" = xyes],
  [AC_SUBST(
   [libevt_spec_requires],
   [Requires:])
@@ -193,6 +199,7 @@ AC_CONFIG_FILES([libcfile/Makefile])
 AC_CONFIG_FILES([libcpath/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfdatetime/Makefile])
+AC_CONFIG_FILES([libfguid/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
@@ -243,10 +250,12 @@ Building:
    libcpath support:                         $ac_cv_libcpath
    libbfio support:                          $ac_cv_libbfio
    libfdatetime support:                     $ac_cv_libfdatetime
+   libfguid support:                         $ac_cv_libfguid
    libfvalue support:                        $ac_cv_libfvalue
    libfwnt support:                          $ac_cv_libfwnt
    libfcache support:                        $ac_cv_libfcache
    libfdata support:                         $ac_cv_libfdata
+   libfwevt support:                         $ac_cv_libfwevt
    libexe support:                           $ac_cv_libexe
    libregf support:                          $ac_cv_libregf
    libwrc support:                           $ac_cv_libwrc

@@ -70,7 +70,7 @@ void usage_fprint(
 	                 "\t        windows-1257 or windows-1258\n" );
 	fprintf( stream, "\t-f:     event log type, options: application, security, system\n"
 	                 "\t        if not specified the event log type is determined based\n"
-	                 "\t        on the filename.\n\n" );
+	                 "\t        on the filename.\n" );
 	fprintf( stream, "\t-h:     shows this help\n" );
 	fprintf( stream, "\t-l:     logs information about the exported items\n" );
 	fprintf( stream, "\t-m:     export mode, option: all, items (default), recovered\n"

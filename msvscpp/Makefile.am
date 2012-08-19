@@ -8,6 +8,7 @@ EXTRA_DIST = \
 	libclocale/libclocale.vcproj \
 	libcnotify/libcnotify.vcproj \
 	libcpath/libcpath.vcproj \
+	libcsplit/libcsplit.vcproj \
 	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libevt_dll/libevt_dll.vcproj \
@@ -15,7 +16,9 @@ EXTRA_DIST = \
 	libfcache/libfcache.vcproj \
 	libfdata/libfdata.vcproj \
 	libfdatetime/libfdatetime.vcproj \
+	libfguid/libfguid.vcproj \
 	libfvalue/libfvalue.vcproj \
+	libfwevt/libfwevt.vcproj \
 	libfwnt/libfwnt.vcproj \
 	libregf/libregf.vcproj \
 	libuna/libuna.vcproj \

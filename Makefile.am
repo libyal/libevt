@@ -13,11 +13,13 @@ SUBDIRS = \
 	libcpath \
 	libbfio \
 	libfdatetime \
+	libfguid \
 	libfvalue \
 	libfwnt \
 	libevt \
 	libfcache \
 	libfdata \
+	libfwevt \
 	libexe \
 	libregf \
 	libwrc \
@@ -89,6 +91,7 @@ library:
 	(cd $(srcdir)/libcpath && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfdatetime && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfguid && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfwnt && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libevt && $(MAKE) $(AM_MAKEFLAGS))
@@ -117,11 +120,13 @@ splint:
 	(cd $(srcdir)/libcpath && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfdatetime && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfguid && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfwnt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libevt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfcache && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfdata && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfwevt && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libexe && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libregf && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libwrc && $(MAKE) splint $(AM_MAKEFLAGS))

@@ -39,6 +39,7 @@
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 #include "pyevt_record.h"
+#include "pyevt_records.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
 LIBEVT_EXTERN \
@@ -144,10 +145,22 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 	  "The number of records",
 	  NULL },
 
+	{ "records",
+	  (getter) pyevt_file_get_records,
+	  (setter) 0,
+	  "The records",
+	  NULL },
+
 	{ "number_of_recovered_records",
 	  (getter) pyevt_file_get_number_of_recovered_records,
 	  (setter) 0,
 	  "The number of records",
+	  NULL },
+
+	{ "recoverd_records",
+	  (getter) pyevt_file_get_recovered_records,
+	  (setter) 0,
+	  "The recovered records",
 	  NULL },
 
 	/* Sentinel */
@@ -1128,6 +1141,80 @@ on_error:
 	return( NULL );
 }
 
+/* Retrieves a records sequence and iterator object for the records
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_records(
+           pyevt_file_t *pyevt_file )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	PyObject *records_object = NULL;
+	static char *function    = "pyevt_file_get_records";
+	int number_of_records    = 0;
+	int result               = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_number_of_records(
+	          pyevt_file->file,
+	          &number_of_records,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of records.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of records.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	records_object = pyevt_records_new(
+	                  pyevt_file,
+	                  &pyevt_file_get_record_by_index,
+	                  number_of_records );
+
+	if( records_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create records object.",
+		 function );
+
+		return( NULL );
+	}
+	return( records_object );
+}
+
 /* Retrieves the number of recovered records
  * Returns a Python object if successful or NULL on error
  */
@@ -1285,5 +1372,79 @@ on_error:
 		 NULL );
 	}
 	return( NULL );
+}
+
+/* Retrieves a records sequence and iterator object for the recoverd records
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_recovered_records(
+           pyevt_file_t *pyevt_file )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	PyObject *records_object = NULL;
+	static char *function    = "pyevt_file_get_recovered_records";
+	int number_of_records    = 0;
+	int result               = 0;
+
+	if( pyevt_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_number_of_recovered_records(
+	          pyevt_file->file,
+	          &number_of_records,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of recovered records.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of recovered records.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	records_object = pyevt_records_new(
+	                  pyevt_file,
+	                  &pyevt_file_get_recovered_record_by_index,
+	                  number_of_records );
+
+	if( records_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create records object.",
+		 function );
+
+		return( NULL );
+	}
+	return( records_object );
 }
 

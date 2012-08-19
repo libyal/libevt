@@ -27,7 +27,8 @@ pyevt_la_SOURCES = \
 	pyevt_libevt.h \
 	pyevt_libfwnt.h \
 	pyevt_python.h \
-	pyevt_record.c pyevt_record.h
+	pyevt_record.c pyevt_record.h \
+	pyevt_records.c pyevt_records.h
 
 pyevt_la_LIBADD = \
 	@LIBCSTRING_LIBADD@ \
