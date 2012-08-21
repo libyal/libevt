@@ -30,7 +30,7 @@ Description: Several tools for reading Windows Event Log (EVT) files
 Package: libevt-python
 Section: python
 Architecture: any
-Depends: libevt (= ${Source-Version}), ${shlibs:Depends}
+Depends: libevt (= ${Source-Version}), ${shlibs:Depends}, ${python:Depends}
 Description: Python bindings for libevt
  Python bindings for libevt.
 
