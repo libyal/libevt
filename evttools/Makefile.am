@@ -60,8 +60,8 @@ evtexport_LDADD = \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCDIRECTORY_LIBADD@ \
-	../libevt/libevt.la \
 	@LIBUNA_LIBADD@ \
+	../libevt/libevt.la \
 	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
@@ -87,8 +87,8 @@ evtinfo_SOURCES = \
 evtinfo_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
-	../libevt/libevt.la \
 	@LIBUNA_LIBADD@ \
+	../libevt/libevt.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
