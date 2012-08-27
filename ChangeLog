@@ -1,4 +1,7 @@
 TODO:
+* get %SystemRoot% from:
+  SOFTWARE\Microsoft\Windows NT\CurrentVersion\
+
 * msvscpp build
   - fix libwrc
 
