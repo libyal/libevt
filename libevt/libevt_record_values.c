@@ -983,7 +983,7 @@ int libevt_record_values_read_event(
 		}
 		if( user_sid_size != 0 )
 		{
-			if( (size_t) ( user_sid_offset + user_sid_size ) >= ( record_data_size - 4 ) )
+			if( (size_t) ( user_sid_offset + user_sid_size ) > ( record_data_size - 4 ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -996,25 +996,24 @@ int libevt_record_values_read_event(
 			}
 		}
 	}
-/* TODO
-	if( strings_offset != 0 )
-*/
+	/* If the strings offset is points at the offset at record data size - 4
+	 * the strings are empty. For this to be sane the data offset should
+	 * be the same as the strings offset or the data size 0.
+	 */
+	if( ( (size_t) strings_offset < user_sid_offset )
+	 || ( (size_t) strings_offset > ( record_data_size - 4 ) ) )
 	{
-		if( ( (size_t) strings_offset < user_sid_offset )
-		 || ( (size_t) strings_offset >= ( record_data_size - 4 ) ) )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: strings offset value out of bounds.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: strings offset value out of bounds.",
+		 function );
 
-			goto on_error;
-		}
+		goto on_error;
 	}
 	if( ( (size_t) data_offset < strings_offset )
-	 || ( (size_t) data_offset >= ( record_data_size - 4 ) ) )
+	 || ( (size_t) data_offset > ( record_data_size - 4 ) ) )
 	{
 		if( data_size != 0 )
 		{
@@ -1032,6 +1031,18 @@ int libevt_record_values_read_event(
 			data_offset = record_data_size - 4;
 		}
 	}
+	if( ( (size_t) strings_offset == ( record_data_size - 4 ) )
+	 && ( strings_offset != data_offset ) )
+	{       
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: strings offset value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	if( user_sid_offset != 0 )
 	{
 		members_data_size = user_sid_offset - record_data_offset;
@@ -1044,7 +1055,7 @@ int libevt_record_values_read_event(
 
 	if( data_size != 0 )
 	{
-		if( (size_t) ( data_offset + data_size ) >= ( record_data_size - 4 ) )
+		if( (size_t) ( data_offset + data_size ) > ( record_data_size - 4 ) )
 		{
 			libcerror_error_set(
 			 error,

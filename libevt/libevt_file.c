@@ -916,6 +916,13 @@ int libevt_file_open_read(
 
 		if( result_record_recovery != 1 )
 		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( result_record_read != 1 )
+			{
+				libcerror_error_free(
+				 error );
+			}
+#endif
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,

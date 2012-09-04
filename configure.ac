@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20120819],
+ [20120904],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -205,6 +205,7 @@ AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
+AC_CONFIG_FILES([libfwevt/Makefile])
 AC_CONFIG_FILES([libexe/Makefile])
 AC_CONFIG_FILES([libregf/Makefile])
 AC_CONFIG_FILES([libwrc/Makefile])

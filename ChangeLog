@@ -36,6 +36,11 @@ Format:
 * event flags ? (debug function)
 * closing record number ?
 
+20120904
+* added debug output
+* fix for too strict size checks
+* fix in configure for missing libfwevt
+
 20120819
 * applied updates
 * worked on printing category name

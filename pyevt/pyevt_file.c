@@ -1042,23 +1042,20 @@ PyObject *pyevt_file_get_number_of_records(
 	         (long) number_of_records ) );
 }
 
-/* Retrieves a specific record
+/* Retrieves a specific record by index
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyevt_file_get_record(
+PyObject *pyevt_file_get_record_by_index(
            pyevt_file_t *pyevt_file,
-           PyObject *arguments,
-           PyObject *keywords )
+           int record_index )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
-	libcerror_error_t *error    = NULL;
-	libevt_record_t *record     = NULL;
-	PyObject *record_object     = NULL;
-	static char *keyword_list[] = { "record_index", NULL };
-	static char *function       = "pyevt_file_get_record";
-	int record_index            = 0;
-	int result                  = 0;
+	libcerror_error_t *error = NULL;
+	libevt_record_t *record = NULL;
+	PyObject *record_object  = NULL;
+	static char *function    = "pyevt_file_get_record_by_index";
+	int result               = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -1069,15 +1066,6 @@ PyObject *pyevt_file_get_record(
 
 		return( NULL );
 	}
-	if( PyArg_ParseTupleAndKeywords(
-	     arguments,
-	     keywords,
-	     "i",
-	     keyword_list,
-	     &record_index ) == 0 )
-        {
-		goto on_error;
-        }
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_file_get_record(
@@ -1116,7 +1104,7 @@ PyObject *pyevt_file_get_record(
 		goto on_error;
 	}
 	record_object = pyevt_record_new(
-	                 NULL );
+	                 record );
 
 	if( record_object == NULL )
 	{
@@ -1127,8 +1115,6 @@ PyObject *pyevt_file_get_record(
 
 		goto on_error;
 	}
-	( (pyevt_record_t *) record_object )->record = record;
-
 	return( record_object );
 
 on_error:
@@ -1139,6 +1125,35 @@ on_error:
 		 NULL );
 	}
 	return( NULL );
+}
+
+/* Retrieves a specific record
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_record(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *record_object     = NULL;
+	static char *keyword_list[] = { "record_index", NULL };
+	static char *function       = "pyevt_file_get_record";
+	int record_index            = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &record_index ) == 0 )
+        {
+		return( NULL );
+        }
+	record_object = pyevt_file_get_record_by_index(
+	                 pyevt_file,
+	                 record_index );
+
+	return( record_object );
 }
 
 /* Retrieves a records sequence and iterator object for the records
@@ -1275,23 +1290,20 @@ PyObject *pyevt_file_get_number_of_recovered_records(
 	         (long) number_of_records ) );
 }
 
-/* Retrieves a specific recovered record
+/* Retrieves a specific recovered record by index
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyevt_file_get_recovered_record(
+PyObject *pyevt_file_get_recovered_record_by_index(
            pyevt_file_t *pyevt_file,
-           PyObject *arguments,
-           PyObject *keywords )
+           int record_index )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
-	libcerror_error_t *error    = NULL;
-	libevt_record_t *record     = NULL;
-	PyObject *record_object     = NULL;
-	static char *keyword_list[] = { "record_index", NULL };
-	static char *function       = "pyevt_file_get_recovered_record";
-	int record_index            = 0;
-	int result                  = 0;
+	libcerror_error_t *error = NULL;
+	libevt_record_t *record = NULL;
+	PyObject *record_object  = NULL;
+	static char *function    = "pyevt_file_get_recovered_record_by_index";
+	int result               = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -1302,15 +1314,6 @@ PyObject *pyevt_file_get_recovered_record(
 
 		return( NULL );
 	}
-	if( PyArg_ParseTupleAndKeywords(
-	     arguments,
-	     keywords,
-	     "i",
-	     keyword_list,
-	     &record_index ) == 0 )
-        {
-		goto on_error;
-        }
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_file_get_recovered_record(
@@ -1349,7 +1352,7 @@ PyObject *pyevt_file_get_recovered_record(
 		goto on_error;
 	}
 	record_object = pyevt_record_new(
-	                 NULL );
+	                 record );
 
 	if( record_object == NULL )
 	{
@@ -1360,8 +1363,6 @@ PyObject *pyevt_file_get_recovered_record(
 
 		goto on_error;
 	}
-	( (pyevt_record_t *) record_object )->record = record;
-
 	return( record_object );
 
 on_error:
@@ -1372,6 +1373,35 @@ on_error:
 		 NULL );
 	}
 	return( NULL );
+}
+
+/* Retrieves a specific recovered record
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_get_recovered_record(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *record_object     = NULL;
+	static char *keyword_list[] = { "record_index", NULL };
+	static char *function       = "pyevt_file_get_recovered_record";
+	int record_index            = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &record_index ) == 0 )
+        {
+		return( NULL );
+        }
+	record_object = pyevt_file_get_recovered_record_by_index(
+	                 pyevt_file,
+	                 record_index );
+
+	return( record_object );
 }
 
 /* Retrieves a records sequence and iterator object for the recoverd records

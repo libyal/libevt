@@ -542,7 +542,16 @@ int libevt_io_handle_read_records(
 		}
 		if( *last_record_offset > file_offset )
 		{
-			io_handle->has_wrapped = 0;
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: wrapped at offset: 0x%08" PRIx64 ".\n",
+				 function,
+				 *last_record_offset );
+			}
+#endif
+			io_handle->has_wrapped = 1;
 		}
 		record_type = record_values->type;
 
@@ -567,11 +576,30 @@ int libevt_io_handle_read_records(
 		}
 		else if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: end-of-file record found at offset: 0x%08" PRIx64 ".\n",
+				 function,
+				 file_offset );
+			}
+#endif
 			break;
 		}
 		if( ( file_offset > (off64_t) end_of_file_record_offset )
 		 && ( file_offset < (off64_t) ( end_of_file_record_offset + read_count ) ) )
 		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: file offset: 0x%08" PRIx64 " exceeds end-of-file offset: 0x%08" PRIx64 ".\n",
+				 function,
+				 file_offset, 
+				 end_of_file_record_offset );
+			}
+#endif
 			break;
 		}
 		record_iterator++;
@@ -1061,6 +1089,17 @@ int libevt_io_handle_event_record_scan(
 
 				if( read_count == -1 )
 				{
+#if defined( HAVE_DEBUG_OUTPUT )
+					if( libcnotify_verbose != 0 )
+					{
+						if( ( error != NULL )
+						 && ( *error != NULL ) )
+						{
+							libcerror_error_free(
+							 error );
+						}
+					}
+#endif
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_IO,
@@ -1224,6 +1263,15 @@ int libevt_io_handle_recover_records(
 		}
 		else if( result != 0 )
 		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: end-of-file record found at offset: 0x%08" PRIx64 ".\n",
+				 function,
+				 end_of_file_record_offset );
+			}
+#endif
 			result = libevt_io_handle_read_records(
 			          io_handle,
 			          file_io_handle,
@@ -1235,6 +1283,17 @@ int libevt_io_handle_recover_records(
 
 			if( result != 1 )
 			{
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcerror_error_free(
+						 error );
+					}
+				}
+#endif
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
@@ -1271,7 +1330,7 @@ int libevt_io_handle_recover_records(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: scanning unused space before records at offset: %" PRIzd " - %" PRIu32 "\n",
+				 "%s: scanning unused space before records at offset: 0x%08" PRIzd " - 0x%08" PRIx32 "\n",
 				 function,
 				 sizeof( evt_file_header_t ),
 				 first_record_offset );
@@ -1285,6 +1344,17 @@ int libevt_io_handle_recover_records(
 			     recovered_records_array,
 			     error ) != 1 )
 			{
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcerror_error_free(
+						 error );
+					}
+				}
+#endif
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
@@ -1315,7 +1385,7 @@ int libevt_io_handle_recover_records(
 				if( last_record_offset > (off64_t) sizeof( evt_file_header_t ) )
 				{
 					libcnotify_printf(
-					 "%s: scanning unused space after records at offset: %" PRIi64 " - %" PRIu64 "\n",
+					 "%s: scanning unused space after records at offset: 0x%08" PRIx64 " - 0x%08" PRIx64 "\n",
 					 function,
 					 last_record_offset,
 					 io_handle->file_size );
@@ -1323,7 +1393,7 @@ int libevt_io_handle_recover_records(
 				else
 				{
 					libcnotify_printf(
-					 "%s: scanning unused space after header at offset: %" PRIi64 " - %" PRIu64 "\n",
+					 "%s: scanning unused space after header at offset: 0x%08" PRIx64 " - 0x%08" PRIx64 "\n",
 					 function,
 					 last_record_offset,
 					 io_handle->file_size );
@@ -1338,6 +1408,17 @@ int libevt_io_handle_recover_records(
 			     recovered_records_array,
 			     error ) != 1 )
 			{
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcerror_error_free(
+						 error );
+					}
+				}
+#endif
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
@@ -1369,7 +1450,7 @@ int libevt_io_handle_recover_records(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: scanning unused space between records at offset: %" PRIi64 " - %" PRIu32 "\n",
+				 "%s: scanning unused space between records at offset: 0x%08" PRIx64 " - 0x%08" PRIx32 "\n",
 				 function,
 				 last_record_offset,
 				 first_record_offset );
@@ -1383,6 +1464,17 @@ int libevt_io_handle_recover_records(
 			     recovered_records_array,
 			     error ) != 1 )
 			{
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcerror_error_free(
+						 error );
+					}
+				}
+#endif
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
