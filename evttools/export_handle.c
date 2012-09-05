@@ -245,7 +245,7 @@ int export_handle_free(
 		}
 		if( ( *export_handle )->system_registry_file != NULL )
 		{
-			if( libregf_file_free(
+			if( registry_file_free(
 			     &( ( *export_handle )->system_registry_file ),
 			     error ) != 1 )
 			{
@@ -317,7 +317,7 @@ int export_handle_signal_abort(
 
 	if( export_handle->system_registry_file != NULL )
 	{
-		if( libregf_file_signal_abort(
+		if( registry_file_signal_abort(
 		     export_handle->system_registry_file,
 		     error ) != 1 )
 		{
@@ -575,17 +575,7 @@ int export_handle_open_system_registry_file(
      const libcstring_system_character_t *filename,
      libcerror_error_t **error )
 {
-	libregf_key_t *base_key    = NULL;
-	libregf_key_t *root_key    = NULL;
-	libregf_key_t *sub_key     = NULL;
-	libregf_value_t *value     = NULL;
-	const char *sub_key_path   = NULL;
-	const char *value_name     = NULL;
-	static char *function      = "export_handle_open_system_registry_file";
-	size_t sub_key_path_length = 0;
-	size_t value_name_length   = 0;
-	int number_of_sub_keys     = 0;
-	int result                 = 0;
+	static char *function = "export_handle_open_system_registry_file";
 
 	if( export_handle == NULL )
 	{
@@ -598,7 +588,7 @@ int export_handle_open_system_registry_file(
 
 		return( -1 );
 	}
-	if( libregf_file_initialize(
+	if( registry_file_initialize(
 	     &( export_handle->system_registry_file ),
 	     error ) != 1 )
 	{
@@ -609,9 +599,9 @@ int export_handle_open_system_registry_file(
 		 "%s: unable to initialize system registry file.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
-	if( libregf_file_set_ascii_codepage(
+	if( registry_file_set_ascii_codepage(
 	     export_handle->system_registry_file,
 	     export_handle->ascii_codepage,
 	     error ) != 1 )
@@ -625,19 +615,10 @@ int export_handle_open_system_registry_file(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libregf_file_open_wide(
+	if( registry_file_open(
 	     export_handle->system_registry_file,
 	     filename,
-	     LIBREGF_OPEN_READ,
 	     error ) != 1 )
-#else
-	if( libregf_file_open(
-	     export_handle->system_registry_file,
-	     filename,
-	     LIBREGF_OPEN_READ,
-	     error ) != 1 )
-#endif
 	{
 		libcerror_error_set(
 		 error,
@@ -646,165 +627,11 @@ int export_handle_open_system_registry_file(
 		 "%s: unable to open system registry file.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
-	if( libregf_file_get_root_key(
-	     export_handle->system_registry_file,
-	     &root_key,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve root key.",
-		 function );
+	return( 1 );
 
-		goto on_error;
-	}
-	if( libregf_key_get_number_of_sub_keys(
-	     root_key,
-	     &number_of_sub_keys,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of sub keys.",
-		 function );
-
-		goto on_error;
-	}
-	if( number_of_sub_keys == 1 )
-	{
-		if( libregf_key_get_sub_key(
-		     root_key,
-		     0,
-		     &base_key,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve base key.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	else if( number_of_sub_keys > 1 )
-	{
-		base_key = root_key;
-	}
-	/* Get the current control set from:
-	 * SYSTEM\Select\Current
-	 */
-	sub_key_path = "Select";
-
-	sub_key_path_length = libcstring_narrow_string_length(
-	                       sub_key_path );
-
-	result = libregf_key_get_sub_key_by_utf8_path(
-		  base_key,
-		  (uint8_t *) sub_key_path,
-		  sub_key_path_length,
-		  &sub_key,
-		  error );
-
-	if( result == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub key: %s.",
-		 function,
-		 sub_key_path );
-
-		goto on_error;
-	}
-	else if( result != 0 )
-	{
-		value_name = "Current";
-
-		value_name_length = libcstring_narrow_string_length(
-		                     value_name );
-
-		result = libregf_key_get_value_by_utf8_name(
-			  sub_key,
-			  (uint8_t *) value_name,
-			  value_name_length,
-			  &value,
-			  error );
-
-		if( result == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value: %s.",
-			 function,
-			 value_name );
-
-			goto on_error;
-		}
-		else if( result != 0 )
-		{
-			if( libregf_value_get_value_32bit(
-			     value,
-			     &( export_handle->current_control_set ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve 32-bit value: %s.",
-				 function,
-				 value_name );
-
-				goto on_error;
-			}
-			if( libregf_value_free(
-			     &value,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free value.",
-				 function );
-
-				goto on_error;
-			}
-		}
-		if( ( export_handle->current_control_set != 1 )
-		 && ( export_handle->current_control_set != 2 ) )
-		{
-			fprintf(
-			 export_handle->notify_stream,
-			 "Unsupported current control set defaulting to 1.\n" );
-
-			export_handle->current_control_set = 1;
-		}
-	}
-	if( libregf_key_free(
-	     &sub_key,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free sub key.",
-		 function );
-
-		goto on_error;
-	}
+/* TODO refactor */
 	/* Get the control set 1 event log key:
 	 * SYSTEM\ControlSet001\Services\Eventlog
 	 */
@@ -941,82 +768,6 @@ int export_handle_open_system_registry_file(
 
 		goto on_error;
 	}
-	if( base_key != root_key )
-	{
-		if( libregf_key_free(
-		     &base_key,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free base key.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	if( libregf_key_free(
-	     &root_key,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free root key.",
-		 function );
-
-		goto on_error;
-	}
-	return( 1 );
-
-on_error:
-	if( value != NULL )
-	{
-		libregf_value_free(
-		 &value,
-		 NULL );
-	}
-	if( sub_key != NULL )
-	{
-		libregf_key_free(
-		 &sub_key,
-		 NULL );
-	}
-	if( ( base_key != NULL )
-	 && ( base_key != root_key ) )
-	{
-		libregf_key_free(
-		 &base_key,
-		 NULL );
-	}
-	if( root_key != NULL )
-	{
-		libregf_key_free(
-		 &root_key,
-		 NULL );
-	}
-	if( export_handle->control_set1_key != NULL )
-	{
-		libregf_key_free(
-		 &( export_handle->control_set1_key ),
-		 NULL );
-	}
-	if( export_handle->control_set2_key != NULL )
-	{
-		libregf_key_free(
-		 &( export_handle->control_set2_key ),
-		 NULL );
-	}
-	if( export_handle->system_registry_file != NULL )
-	{
-		libregf_file_free(
-		 &( export_handle->system_registry_file ),
-		 NULL );
-	}
-	return( -1 );
 }
 
 /* Opens the input
@@ -1133,41 +884,9 @@ int export_handle_close_input(
 	}
 	if( export_handle->input_is_open != 0 )
 	{
-		if( export_handle->control_set1_key != NULL )
-		{
-			if( libregf_key_free(
-			     &( export_handle->control_set1_key ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free control set 1 key.",
-				 function );
-
-				result = -1;
-			}
-		}
-		if( export_handle->control_set2_key != NULL )
-		{
-			if( libregf_key_free(
-			     &( export_handle->control_set2_key ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free control set 2 key.",
-				 function );
-
-				result = -1;
-			}
-		}
 		if( export_handle->system_registry_file != NULL )
 		{
-			if( libregf_file_close(
+			if( registry_file_close(
 			     export_handle->system_registry_file,
 			     error ) != 0 )
 			{

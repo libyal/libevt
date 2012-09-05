@@ -1,10 +1,20 @@
 TODO:
+* create registy file handle, that deals with the root/base key issue
+  - detect the file type based on the base sub keys?
+  - add file type specific support e.g. CurrentControlSet
+  - support use of CurrentControlSet in key names ?
+    or be more generic and allow HKEY_ ... type of keys and detect
+    registry file type
+
 * get %SystemRoot% from:
   SOFTWARE\Microsoft\Windows NT\CurrentVersion\
+* get %WinDir%
+  SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
 
 * msvscpp build
   - fix libwrc
   - add libcdata support
+  - evtexport: registy file
 
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
@@ -17,6 +27,7 @@ Tools:
 * API
   - functionality to parse event identifier ?
 * evtexport/export handle
+  - add support for -S and -r options
   - validate eventlog/computername in system registry ?
   - use current control set nr ?
   - print if message file key not found
@@ -24,7 +35,6 @@ Tools:
   - print if message file has no resources
   - user sid - find corresponding user name ?
   - output data as CSV/TSV, DFXML ?
-  - %SystemRoot% expansion support for WINNT and WINNT35
   - print data
   - move output to separate code, e.g. libpff
 * evtinfo
@@ -36,6 +46,10 @@ Tools:
 Format:
 * event flags ? (debug function)
 * closing record number ?
+
+Notes
+* %SystemRoot% expansion support for WINNT and WINNT35
+  is this set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
 20120905
 * applied updates

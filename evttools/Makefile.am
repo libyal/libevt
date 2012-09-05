@@ -50,7 +50,8 @@ evtexport_SOURCES = \
 	evttools_libuna.h \
 	evttools_libwrc.h \
 	log_handle.c log_handle.h \
-	message_file.c message_file.h
+	message_file.c message_file.h \
+	registry_file.c registry_file.h
 
 evtexport_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \

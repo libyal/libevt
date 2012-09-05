@@ -32,6 +32,7 @@
 #include "evttools_libfcache.h"
 #include "evttools_libregf.h"
 #include "log_handle.h"
+#include "registry_file.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -56,9 +57,9 @@ struct export_handle
 	 */
 	libevt_file_t *input_file;
 
-	/* The libregf system registry file
+	/* The system registry file
 	 */
-	libregf_file_t *system_registry_file;
+	registry_file_t *system_registry_file;
 
 	/* The current control set
 	 */
@@ -92,7 +93,11 @@ struct export_handle
 	 */
 	const libcstring_system_character_t *message_files_path;
 
-	/* The system registry filename
+	/* The SOFTWARE registry filename
+	 */
+	const libcstring_system_character_t *software_registry_filename;
+
+	/* The SYSTEM registry filename
 	 */
 	const libcstring_system_character_t *system_registry_filename;
 
@@ -141,6 +146,11 @@ int export_handle_set_event_log_type(
      libcerror_error_t **error );
 
 int export_handle_set_event_log_type_from_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     libcerror_error_t **error );
+
+int export_handle_open_software_registry_file(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
      libcerror_error_t **error );
