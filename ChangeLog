@@ -53,6 +53,7 @@ Notes
 
 20120905
 * applied updates
+* evtexport moved -f to -t and an implementation
 
 20120904
 * added debug output

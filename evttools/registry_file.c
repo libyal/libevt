@@ -200,7 +200,7 @@ int registry_file_signal_abort(
 	}
 	if( registry_file->regf_file != NULL )
 	{
-		if( libevt_file_signal_abort(
+		if( libregf_file_signal_abort(
 		     registry_file->regf_file,
 		     error ) != 1 )
 		{
@@ -718,6 +718,60 @@ int registry_file_close(
 			result = -1;
 		}
 		registry_file->is_open = 0;
+	}
+	return( result );
+}
+
+/* Retrieves the key specified by the path
+ * Returns 1 if successful or -1 on error
+ */
+int registry_file_get_key_by_path(
+     registry_file_t *registry_file,
+     const libcstring_system_character_t *key_path,
+     size_t key_path_length,
+     libregf_key_t **key,
+     libcerror_error_t **error )
+{
+	static char *function = "registry_file_get_key_by_path";
+	int result            = 0;
+
+	if( registry_file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid registry file.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libregf_key_get_sub_key_by_utf16_path(
+	          registry_file->base_key,
+	          (uint16_t *) key_path,
+	          key_path_length,
+	          key,
+	          error );
+#else
+	result = libregf_key_get_sub_key_by_utf8_path(
+	          registry_file->base_key,
+	          (uint8_t *) key_path,
+	          key_path_length,
+	          key,
+	          error );
+#endif
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve key by path: %" PRIs_LIBCSTRING_SYSTEM ".",
+		 function,
+		 key_path );
+
+		return( -1 );
 	}
 	return( result );
 }

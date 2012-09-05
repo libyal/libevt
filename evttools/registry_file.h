@@ -110,6 +110,13 @@ int registry_file_close(
      registry_file_t *registry_file,
      libcerror_error_t **error );
 
+int registry_file_get_key_by_path(
+     registry_file_t *registry_file,
+     const libcstring_system_character_t *key_path,
+     size_t key_path_length,
+     libregf_key_t **key,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

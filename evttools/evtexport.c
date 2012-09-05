@@ -57,10 +57,10 @@ void usage_fprint(
 	fprintf( stream, "Use evtexport to export items stored in a Windows Event\n"
 	                 "Log (EVT) file.\n\n" );
 
-	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -f log_type ] [ -l log_file ]\n"
-	                 "                 [ -m mode ] [ -p message_files_path ]\n"
-	                 "                 [ -r registy_file_path ] [ -s system_file ]\n"
-	                 "                 [ -S software_file ] [ -hvV ] source\n\n" );
+	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -l log_file ] [ -m mode ]\n"
+	                 "                 [ -p message_files_path ] [ -r registy_files_path ]\n"
+	                 "                 [ -s system_file ] [ -S software_file ]\n"
+	                 "                 [ -t event_log_type ] [ -hvV ] source\n\n" );
 
 	fprintf( stream, "\tsource: the source file\n\n" );
 
@@ -69,9 +69,6 @@ void usage_fprint(
 	                 "\t        windows-1250, windows-1251, windows-1252 (default),\n"
 	                 "\t        windows-1253, windows-1254, windows-1255, windows-1256\n"
 	                 "\t        windows-1257 or windows-1258\n" );
-	fprintf( stream, "\t-f:     event log type, options: application, security, system\n"
-	                 "\t        if not specified the event log type is determined based\n"
-	                 "\t        on the filename.\n" );
 	fprintf( stream, "\t-h:     shows this help\n" );
 	fprintf( stream, "\t-l:     logs information about the exported items\n" );
 	fprintf( stream, "\t-m:     export mode, option: all, items (default), recovered\n"
@@ -80,12 +77,15 @@ void usage_fprint(
 	                 "\t        the recovered items\n" );
 	fprintf( stream, "\t-p:     search PATH for the message files (default is the current\n"
 	                 "\t        working directory)\n" );
-	fprintf( stream, "\t-r:     name of the direcotry containing the SOFTWARE and SYSTEM\n"
+	fprintf( stream, "\t-r:     name of the directory containing the SOFTWARE and SYSTEM\n"
 	                 "\t        (Windows) Registry file\n" );
 	fprintf( stream, "\t-s:     filename of the SYSTEM (Windows) Registry file.\n"
 	                 "\t        This option overrides the path provided by -r" );
 	fprintf( stream, "\t-S:     filename of the SOFTWARE (Windows) Registry file.\n"
 	                 "\t        This option overrides the path provided by -r" );
+	fprintf( stream, "\t-t:     event log type, options: application, security, system\n"
+	                 "\t        if not specified the event log type is determined based\n"
+	                 "\t        on the filename.\n" );
 	fprintf( stream, "\t-v:     verbose output to stderr\n" );
 	fprintf( stream, "\t-V:     print version\n" );
 }
@@ -187,7 +187,7 @@ int main( int argc, char * const argv[] )
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "c:hl:m:p:r:s:S:vV" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _LIBCSTRING_SYSTEM_STRING( "c:hl:m:p:r:s:S:t:vV" ) ) ) != (libcstring_system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -241,6 +241,11 @@ int main( int argc, char * const argv[] )
 
 			case (libcstring_system_integer_t) 'S':
 				option_software_registry_filename = optarg;
+
+				break;
+
+			case (libcstring_system_integer_t) 't':
+				option_event_log_type = optarg;
 
 				break;
 

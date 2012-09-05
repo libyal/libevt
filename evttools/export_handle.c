@@ -575,7 +575,13 @@ int export_handle_open_system_registry_file(
      const libcstring_system_character_t *filename,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_open_system_registry_file";
+	libcstring_system_character_t *key_path = NULL;
+	libregf_key_t *sub_key                  = NULL;
+	const char *sub_key_path                = NULL;
+	static char *function                   = "export_handle_open_system_registry_file";
+	size_t key_path_length                  = 0;
+	size_t sub_key_path_length              = 0;
+	int result                              = 0;
 
 	if( export_handle == NULL )
 	{
@@ -629,21 +635,19 @@ int export_handle_open_system_registry_file(
 
 		return( -1 );
 	}
-	return( 1 );
-
 /* TODO refactor */
 	/* Get the control set 1 event log key:
 	 * SYSTEM\ControlSet001\Services\Eventlog
 	 */
-	sub_key_path = "ControlSet001\\Services\\Eventlog";
+	key_path = _LIBCSTRING_SYSTEM_STRING( "ControlSet001\\Services\\Eventlog" );
 
-	sub_key_path_length = libcstring_narrow_string_length(
-	                       sub_key_path );
+	key_path_length = libcstring_system_string_length(
+	                   key_path );
 
-	result = libregf_key_get_sub_key_by_utf8_path(
-		  base_key,
-		  (uint8_t *) sub_key_path,
-		  sub_key_path_length,
+	result = registry_file_get_key_by_path(
+		  export_handle->system_registry_file,
+		  key_path,
+		  key_path_length,
 		  &sub_key,
 		  error );
 
@@ -653,7 +657,7 @@ int export_handle_open_system_registry_file(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub key: %s.",
+		 "%s: unable to retrieve sub key: %" PRIs_LIBCSTRING_SYSTEM ".",
 		 function,
 		 sub_key_path );
 
@@ -703,15 +707,15 @@ int export_handle_open_system_registry_file(
 	/* Get the control set 2 event log key:
 	 * SYSTEM\ControlSet002\Services\Eventlog
 	 */
-	sub_key_path = "ControlSet002\\Services\\Eventlog";
+	key_path = _LIBCSTRING_SYSTEM_STRING( "ControlSet002\\Services\\Eventlog" );
 
-	sub_key_path_length = libcstring_narrow_string_length(
-	                       sub_key_path );
+	key_path_length = libcstring_system_string_length(
+	                   key_path );
 
-	result = libregf_key_get_sub_key_by_utf8_path(
-		  base_key,
-		  (uint8_t *) sub_key_path,
-		  sub_key_path_length,
+	result = registry_file_get_key_by_path(
+		  export_handle->system_registry_file,
+		  key_path,
+		  key_path_length,
 		  &sub_key,
 		  error );
 
@@ -721,7 +725,7 @@ int export_handle_open_system_registry_file(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve sub key: %s.",
+		 "%s: unable to retrieve sub key: %" PRIs_LIBCSTRING_SYSTEM ".",
 		 function,
 		 sub_key_path );
 
@@ -768,6 +772,18 @@ int export_handle_open_system_registry_file(
 
 		goto on_error;
 	}
+/* TODO refactor */
+	return( 1 );
+
+/* TODO refactor */
+on_error:
+	if( sub_key != NULL )
+	{
+		libregf_key_free(
+		 &sub_key,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Opens the input

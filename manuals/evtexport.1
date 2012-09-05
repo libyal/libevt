@@ -1,4 +1,4 @@
-.Dd August 14, 2012
+.Dd September 5, 2012
 .Dt evtexport
 .Os libevt
 .Sh NAME
@@ -7,11 +7,13 @@
 .Sh SYNOPSIS
 .Nm evtexport
 .Op Fl c Ar codepage
-.Op Fl f Ar log_type
 .Op Fl l Ar log_file
 .Op Fl m Ar mode
 .Op Fl p Ar message_files_path
+.Op Fl r Ar registy_files_path
 .Op Fl s Ar system_file
+.Op Fl S Ar software_file
+.Op Fl t Ar event_log_type
 .Op Fl hvV
 .Va Ar source
 .Sh DESCRIPTION
@@ -32,8 +34,6 @@ The options are as follows:
 .Bl -tag -width Ds
 .It Fl c Ar codepage
 specify the codepage of ASCII strings, options: ascii, windows-874, windows-932, windows-936, windows-949, windows-950, windows-1250, windows-1251, windows-1252 (default), windows-1253, windows-1254, windows-1255, windows-1256, windows-1257 or windows-1258
-.It Fl f Ar log_type
-event log type, options: application, security, system if not specified the event log type is determined based on the filename.
 .It Fl h
 shows this help
 .It Fl l Ar log_file
@@ -42,8 +42,16 @@ specify the file in which to log information about the exported items
 export mode, option: all, items (default), recovered 'all' exports the (allocated) items and recovered items, 'items' exports the (allocated) items and 'recovered' exports the recovered items
 .It Fl p Ar message_files_path
 search PATH for the message files (default is the current working directory)
+.It Fl r Ar registy_files_path
+name of the directory containing the SOFTWARE and SYSTEM (Windows) Registry file
 .It Fl s Ar system_file
 filename of the SYSTEM (Windows) Registry file
+This option overrides the path provided by -r"
+.It Fl S Ar software_file
+filename of the SOFTWARE (Windows) Registry file
+This option overrides the path provided by -r"
+.It Fl t Ar event_log_type
+event log type, options: application, security, system if not specified the event log type is determined based on the filename.
 .It Fl v
 verbose output to stderr
 .It Fl V
