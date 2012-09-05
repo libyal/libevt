@@ -4,6 +4,7 @@ TODO:
 
 * msvscpp build
   - fix libwrc
+  - add libcdata support
 
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
@@ -35,6 +36,9 @@ Tools:
 Format:
 * event flags ? (debug function)
 * closing record number ?
+
+20120905
+* applied updates
 
 20120904
 * added debug output

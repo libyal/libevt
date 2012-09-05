@@ -2,6 +2,7 @@ EXTRA_DIST = \
 	evtexport/evtexport.vcproj \
 	evtinfo/evtinfo.vcproj \
 	libbfio/libbfio.vcproj \
+	libcdata/libcdata.vcproj \
 	libcdirectory/libcdirectory.vcproj \
 	libcerror/libcerror.vcproj \
 	libcfile/libcfile.vcproj \
