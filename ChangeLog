@@ -51,6 +51,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   is this set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20120906
+* worked on evtexport
+
 20120905
 * applied updates
 * evtexport moved -f to -t and an implementation

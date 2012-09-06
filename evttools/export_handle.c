@@ -39,7 +39,7 @@
 #include "log_handle.h"
 #include "message_file.h"
 
-#define EXPORT_HANDLE_NOTIFY_STREAM	stdout
+#define EXPORT_HANDLE_NOTIFY_STREAM		stdout
 
 const char *export_handle_get_event_log_type(
              int event_log_type )
@@ -284,6 +284,21 @@ int export_handle_free(
 			 function );
 
 			result = -1;
+		}
+		if( ( *export_handle )->software_registry_filename != NULL )
+		{
+			memory_free(
+			 ( *export_handle )->software_registry_filename );
+		}
+		if( ( *export_handle )->system_registry_filename != NULL )
+		{
+			memory_free(
+			 ( *export_handle )->system_registry_filename );
+		}
+		if( ( *export_handle )->registry_directory_name != NULL )
+		{
+			memory_free(
+			 ( *export_handle )->registry_directory_name );
 		}
 		memory_free(
 		 *export_handle );
@@ -567,6 +582,300 @@ int export_handle_set_event_log_type_from_filename(
 	return( result );
 }
 
+/* Sets the name of the software registry file
+ * Returns 1 if successful or -1 error
+ */
+int export_handle_set_software_registry_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "export_handle_set_software_registry_filename";
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename_length > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid filename length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( export_handle->software_registry_filename != NULL )
+	{
+		memory_free(
+		 export_handle->software_registry_filename );
+
+		export_handle->software_registry_filename = NULL;
+	}
+	export_handle->software_registry_filename_size = filename_length + 1;
+
+	export_handle->software_registry_filename = libcstring_system_string_allocate(
+	                                             export_handle->software_registry_filename_size );
+
+	if( export_handle->software_registry_filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create software registry filename.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcstring_system_string_copy(
+	     export_handle->software_registry_filename,
+	     filename,
+	     filename_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy software registry filename.",
+		 function );
+
+		goto on_error;
+	}
+	( export_handle->software_registry_filename )[ filename_length ] = 0;
+
+	return( 1 );
+
+on_error:
+	if( export_handle->software_registry_filename != NULL )
+	{
+		memory_free(
+		 export_handle->software_registry_filename );
+
+		export_handle->software_registry_filename = NULL;
+	}
+	export_handle->software_registry_filename_size = 0;
+
+	return( -1 );
+}
+
+/* Sets the name of the system registry file
+ * Returns 1 if successful or -1 error
+ */
+int export_handle_set_system_registry_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "export_handle_set_system_registry_filename";
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename_length > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid filename length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( export_handle->system_registry_filename != NULL )
+	{
+		memory_free(
+		 export_handle->system_registry_filename );
+
+		export_handle->system_registry_filename = NULL;
+	}
+	export_handle->system_registry_filename_size = filename_length + 1;
+
+	export_handle->system_registry_filename = libcstring_system_string_allocate(
+	                                           export_handle->system_registry_filename_size );
+
+	if( export_handle->system_registry_filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create system registry filename.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcstring_system_string_copy(
+	     export_handle->system_registry_filename,
+	     filename,
+	     filename_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy system registry filename.",
+		 function );
+
+		goto on_error;
+	}
+	( export_handle->system_registry_filename )[ filename_length ] = 0;
+
+	return( 1 );
+
+on_error:
+	if( export_handle->system_registry_filename != NULL )
+	{
+		memory_free(
+		 export_handle->system_registry_filename );
+
+		export_handle->system_registry_filename = NULL;
+	}
+	export_handle->system_registry_filename_size = 0;
+
+	return( -1 );
+}
+
+/* Sets the name of the directory containing the software and system registry file
+ * Returns 1 if successful or -1 error
+ */
+int export_handle_set_registry_directory_name(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "export_handle_set_registry_directory_name";
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename_length > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid filename length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( export_handle->registry_directory_name != NULL )
+	{
+		memory_free(
+		 export_handle->registry_directory_name );
+
+		export_handle->registry_directory_name = NULL;
+	}
+	export_handle->registry_directory_name_size = filename_length + 1;
+
+	export_handle->registry_directory_name = libcstring_system_string_allocate(
+	                                          export_handle->registry_directory_name_size );
+
+	if( export_handle->registry_directory_name == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create registry directory name.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcstring_system_string_copy(
+	     export_handle->registry_directory_name,
+	     filename,
+	     filename_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy registry directory name.",
+		 function );
+
+		goto on_error;
+	}
+	( export_handle->registry_directory_name )[ filename_length ] = 0;
+
+	return( 1 );
+
+on_error:
+	if( export_handle->registry_directory_name != NULL )
+	{
+		memory_free(
+		 export_handle->registry_directory_name );
+
+		export_handle->registry_directory_name = NULL;
+	}
+	export_handle->registry_directory_name_size = 0;
+
+	return( -1 );
+}
+
 /* Opens the system registry file
  * Returns 1 if successful or -1 on error
  */
@@ -795,6 +1104,7 @@ int export_handle_open_input(
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_open_input";
+	size_t filename_size  = 0;
 
 	if( export_handle == NULL )
 	{
@@ -817,6 +1127,78 @@ int export_handle_open_input(
 		 function );
 
 		return( -1 );
+	}
+	if( ( export_handle->software_registry_filename == NULL )
+	 && ( export_handle->registry_directory_name != NULL ) )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libcpath_path_join_wide(
+			  &( export_handle->software_registry_filename ),
+			  &( export_handle->software_registry_filename_size ),
+			  &( export_handle->registry_directory_name ),
+			  &( export_handle->registry_directory_name_size ),
+			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
+			  8,
+			  error );
+#else
+		result = libcpath_path_join(
+			  &( export_handle->software_registry_filename ),
+			  &( export_handle->software_registry_filename_size ),
+			  &( export_handle->registry_directory_name ),
+			  &( export_handle->registry_directory_name_size ),
+			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
+			  8,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable create software registry filename.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	if( export_handle->software_registry_filename != NULL )
+	{
+/* TODO */
+	}
+	if( ( export_handle->system_registry_filename == NULL )
+	 && ( export_handle->registry_directory_name != NULL ) )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libcpath_path_join_wide(
+			  &( export_handle->system_registry_filename ),
+			  &( export_handle->system_registry_filename_size ),
+			  &( export_handle->registry_directory_name ),
+			  &( export_handle->registry_directory_name_size ),
+			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
+			  6,
+			  error );
+#else
+		result = libcpath_path_join(
+			  &( export_handle->system_registry_filename ),
+			  &( export_handle->system_registry_filename_size ),
+			  &( export_handle->registry_directory_name ),
+			  &( export_handle->registry_directory_name_size ),
+			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
+			  6,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable create system registry filename.",
+			 function );
+
+			return( -1 );
+		}
 	}
 	if( export_handle->system_registry_filename != NULL )
 	{

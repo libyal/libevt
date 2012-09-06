@@ -95,11 +95,27 @@ struct export_handle
 
 	/* The SOFTWARE registry filename
 	 */
-	const libcstring_system_character_t *software_registry_filename;
+	libcstring_system_character_t *software_registry_filename;
+
+	/* The SOFTWARE registry filename size
+	 */
+	size_t software_registry_filename_size;
 
 	/* The SYSTEM registry filename
 	 */
-	const libcstring_system_character_t *system_registry_filename;
+	libcstring_system_character_t *system_registry_filename;
+
+	/* The SYSTEM registry filename size
+	 */
+	size_t system_registry_filename_size;
+
+	/* The name of the directory containing the SOFTWARE and SYSTEM registry filename
+	 */
+	libcstring_system_character_t *registry_directory_name;
+
+	/* The size of the name of the directory containing the SOFTWARE and SYSTEM registry filename
+	 */
+	size_t registry_directory_name_size;
 
 	/* Value to indicate the input is open
 	 */
@@ -148,6 +164,24 @@ int export_handle_set_event_log_type(
 int export_handle_set_event_log_type_from_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
+     libcerror_error_t **error );
+
+int export_handle_set_software_registry_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error );
+
+int export_handle_set_system_registry_filename(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error );
+
+int export_handle_set_registry_directory(
+     export_handle_t *export_handle,
+     const libcstring_system_character_t *filename,
+     size_t filename_length,
      libcerror_error_t **error );
 
 int export_handle_open_software_registry_file(

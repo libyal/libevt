@@ -145,7 +145,7 @@ int main( int argc, char * const argv[] )
 	libcstring_system_character_t *option_log_filename               = NULL;
 	libcstring_system_character_t *option_message_files_path         = NULL;
 	libcstring_system_character_t *option_preferred_language         = NULL;
-	libcstring_system_character_t *option_registry_directory         = NULL;
+	libcstring_system_character_t *option_registry_directory_name    = NULL;
 	libcstring_system_character_t *option_software_registry_filename = NULL;
 	libcstring_system_character_t *option_system_registry_filename   = NULL;
 	libcstring_system_character_t *source                            = NULL;
@@ -230,7 +230,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (libcstring_system_integer_t) 'r':
-				option_registry_directory = optarg;
+				option_registry_directory_name = optarg;
 
 				break;
 
@@ -383,14 +383,47 @@ int main( int argc, char * const argv[] )
 	{
 		evtexport_export_handle->message_files_path = option_message_files_path;
 	}
-/* TODO add support for option_registry_directory */
 	if( option_software_registry_filename != NULL )
 	{
-		evtexport_export_handle->software_registry_filename = option_software_registry_filename;
+		if( export_handle_set_software_registry_filename(
+		     evtexport_export_handle,
+		     option_software_registry_filename,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set software registry filename in export handle.\n" );
+
+			goto on_error;
+		}
 	}
 	if( option_system_registry_filename != NULL )
 	{
-		evtexport_export_handle->system_registry_filename = option_system_registry_filename;
+		if( export_handle_set_system_registry_filename(
+		     evtexport_export_handle,
+		     option_system_registry_filename,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set system registry filename in export handle.\n" );
+
+			goto on_error;
+		}
+	}
+	if( option_registry_directory_name != NULL )
+	{
+		if( export_handle_set_registry_directory_name(
+		     evtexport_export_handle,
+		     option_registry_directory_name,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to set registry directory name in export handle.\n" );
+
+			goto on_error;
+		}
 	}
 	if( option_preferred_language != NULL )
 	{
