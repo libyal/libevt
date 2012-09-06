@@ -57,7 +57,19 @@ struct export_handle
 	 */
 	libevt_file_t *input_file;
 
-	/* The system registry file
+	/* The SOFTWARE registry file
+	 */
+	registry_file_t *software_registry_file;
+
+	/* The %SystemRoot% path
+	 */
+	libcstring_system_character_t *system_root_path;
+
+	/* The %SystemRoot% path size
+	 */
+	size_t system_root_path_size;
+
+	/* The SYSTEM registry file
 	 */
 	registry_file_t *system_registry_file;
 
@@ -183,12 +195,10 @@ int export_handle_set_registry_directory_name(
 
 int export_handle_open_software_registry_file(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
      libcerror_error_t **error );
 
 int export_handle_open_system_registry_file(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
      libcerror_error_t **error );
 
 int export_handle_open_input(

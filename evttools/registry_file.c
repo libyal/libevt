@@ -263,15 +263,17 @@ int registry_file_open(
      const libcstring_system_character_t *filename,
      libcerror_error_t **error )
 {
-	libregf_key_t *sub_key     = NULL;
-	libregf_value_t *value     = NULL;
-	static char *function      = "registry_file_open";
-	const char *sub_key_path   = NULL;
-	const char *value_name     = NULL;
-	size_t sub_key_path_length = 0;
-	size_t value_name_length   = 0;
-	int number_of_sub_keys     = 0;
-	int result                 = 0;
+	libcstring_system_character_t *name = NULL;
+	libregf_key_t *sub_key              = NULL;
+	libregf_value_t *value              = NULL;
+	static char *function               = "registry_file_open";
+	const char *sub_key_path            = NULL;
+	const char *value_name              = NULL;
+	size_t name_size                    = 0;
+	size_t sub_key_path_length          = 0;
+	size_t value_name_length            = 0;
+	int number_of_sub_keys              = 0;
+	int result                          = 0;
 
 	if( registry_file == NULL )
 	{
@@ -348,21 +350,148 @@ int registry_file_open(
 	}
 	if( number_of_sub_keys == 1 )
 	{
-/* TODO make sure to check key name */
-		if( libregf_key_get_sub_key(
-		     registry_file->root_key,
-		     0,
-		     &( registry_file->base_key ),
-		     error ) != 1 )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libregf_key_get_utf16_name_size(
+		          registry_file->root_key,
+		          &name_size,
+		          error );
+#else
+		result = libregf_key_get_utf8_name_size(
+		          registry_file->root_key,
+		          &name_size,
+		          error );
+#endif
+		if( result != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve base key.",
+			 "%s: unable to retrieve root key name size.",
 			 function );
 
 			goto on_error;
+		}
+		if( ( result != 0 )
+		 && ( name_size > 0 ) )
+		{
+			if( ( name_size > (size_t) SSIZE_MAX )
+			 || ( ( sizeof( libcstring_system_character_t ) * name_size ) > (size_t) SSIZE_MAX ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+				 "%s: invalid name size value exceeds maximum.",
+				 function );
+
+				goto on_error;
+			}
+			name = libcstring_system_string_allocate(
+				name_size );
+
+			if( name == NULL )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_MEMORY,
+				 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+				 "%s: unable to create name string.",
+				 function );
+
+				goto on_error;
+			}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libregf_key_get_utf16_name(
+				  registry_file->root_key,
+				  (uint16_t *) name,
+				  name_size,
+				  error );
+#else
+			result = libregf_key_get_utf8_name(
+				  registry_file->root_key,
+				  (uint8_t *) name,
+				  name_size,
+				  error );
+#endif
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve root key name.",
+				 function );
+
+				goto on_error;
+			}
+			result = 0;
+
+/* TODO what about Windows NT4 */
+			if( name_size == 13 )
+			{
+				/* Root key used by Windows 2000, XP, 2003
+				 */
+				if( libcstring_system_string_compare_no_case(
+				     name,
+				     _LIBCSTRING_SYSTEM_STRING( "$$$PROTO.HIV" ),
+				     12 ) == 0 )
+				{
+					result = 1;
+				}
+			}
+			else if( name_size == 53 )
+			{
+				/* Root key used by Windows Vista, 2008, 7
+				 */
+				if( libcstring_system_string_compare_no_case(
+				     name,
+				     _LIBCSTRING_SYSTEM_STRING( "CMI-CreateHive{" ),
+				     15 ) == 0 )
+				{
+					if( name[ 51 ] == (libcstring_system_character_t) '}' )
+					{
+						result = 1;
+					}
+				}
+			}
+			else if( name_size == 58 )
+			{
+				/* Root key used by Windows 8
+				 */
+				if( libcstring_system_string_compare_no_case(
+				     name,
+				     _LIBCSTRING_SYSTEM_STRING( "CsiTool-CreateHive-{" ),
+				     20 ) == 0 )
+				{
+					if( name[ 56 ] == (libcstring_system_character_t) '}' )
+					{
+						result = 1;
+					}
+				}
+			}
+			memory_free(
+			 name );
+
+			name = NULL;
+		}
+		if( result != 0 )
+		{
+			if( libregf_key_get_sub_key(
+			     registry_file->root_key,
+			     0,
+			     &( registry_file->base_key ),
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve base key.",
+				 function );
+
+				goto on_error;
+			}
 		}
 	}
 	else if( number_of_sub_keys > 1 )
@@ -383,19 +512,6 @@ int registry_file_open(
 
 		goto on_error;
 	}
-/* TODO - or look for specific keys that are useful to have in the first place ? */
-#ifdef TODO
-	int sub_key_index          = 0;
-
-	/* Determine which registry file type this is based on
-	 * the sub keys of the base key
-	 */
-	for( sub_key_index = 0;
-	     sub_key_index < number_of_sub_keys;
-	     sub_key_index++ )
-	{
-	}
-#endif
 	/* Get the current control set from:
 	 * SYSTEM\Select\Current
 	 */
@@ -602,6 +718,11 @@ on_error:
 		libregf_key_free(
 		 &( registry_file->base_key ),
 		 NULL );
+	}
+	if( name != NULL )
+	{
+		memory_free(
+		 name );
 	}
 	if( registry_file->root_key != NULL )
 	{

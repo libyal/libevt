@@ -1,15 +1,15 @@
 TODO:
-* create registy file handle, that deals with the root/base key issue
-  - detect the file type based on the base sub keys?
-  - add file type specific support e.g. CurrentControlSet
-  - support use of CurrentControlSet in key names ?
-    or be more generic and allow HKEY_ ... type of keys and detect
-    registry file type
-
-* get %SystemRoot% from:
-  SOFTWARE\Microsoft\Windows NT\CurrentVersion\
+* Fix: libevt_io_handle_read_records: file has wrapped but file flags indicate
+otherwise.
+* registry path (-r option) - deal with case insensitive filenames for SYSTEM and SOFTWARE
+* %SystemRoot% - check string for drive letter
 * get %WinDir%
   SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
+* registry file:
+  - detect the file type + version based on the base sub keys?
+  - add file type specific support e.g. CurrentControlSet in key names ?
+    or be more generic and allow HKEY_ ... type of keys and detect
+    registry file type
 
 * msvscpp build
   - fix libwrc
@@ -26,15 +26,16 @@ TODO:
 Tools:
 * API
   - functionality to parse event identifier ?
+* registy file
+  - what about NT4 root/base key support ?
 * evtexport/export handle
-  - add support for -S and -r options
   - validate eventlog/computername in system registry ?
   - use current control set nr ?
   - print if message file key not found
   - print if message file not found
   - print if message file has no resources
   - user sid - find corresponding user name ?
-  - output data as CSV/TSV, DFXML ?
+  - output data as CSV/TSV, DFXML ? (different output formatting modules)
   - print data
   - move output to separate code, e.g. libpff
 * evtinfo
@@ -49,14 +50,17 @@ Format:
 
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
-  is this set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+  check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
 20120906
 * worked on evtexport
+* worked on registry file
+* worked on determining %SystemRoot% from SOFTWARE registry
 
 20120905
 * applied updates
 * evtexport moved -f to -t and an implementation
+* worked on registry file
 
 20120904
 * added debug output

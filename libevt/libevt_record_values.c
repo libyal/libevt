@@ -1026,10 +1026,7 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-		else
-		{
-			data_offset = record_data_size - 4;
-		}
+		data_offset = record_data_size - 4;
 	}
 	if( ( (size_t) strings_offset == ( record_data_size - 4 ) )
 	 && ( strings_offset != data_offset ) )
@@ -1051,8 +1048,10 @@ int libevt_record_values_read_event(
 	{
 		members_data_size = strings_offset - record_data_offset;
 	}
-	strings_size = data_offset - strings_offset;
-
+	if( strings_offset != 0 )
+	{
+		strings_size = data_offset - strings_offset;
+	}
 	if( data_size != 0 )
 	{
 		if( (size_t) ( data_offset + data_size ) > ( record_data_size - 4 ) )
@@ -1532,7 +1531,7 @@ int libevt_record_values_read_end_of_file(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: size\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: size\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 size );
 
@@ -1540,7 +1539,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->signature1,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature1\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature1\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1548,7 +1547,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->signature2,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature2\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature2\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1556,7 +1555,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->signature3,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature3\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature3\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1564,7 +1563,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->signature4,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature4\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature4\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1572,7 +1571,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->first_record_offset,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: first record offset\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: first record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1580,7 +1579,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->end_of_file_record_offset,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
+		 "%s: end of file record offset\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1588,7 +1587,7 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->last_record_number,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: last record number\t\t\t: %" PRIu32 "\n",
+		 "%s: last record number\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
@@ -1596,12 +1595,12 @@ int libevt_record_values_read_end_of_file(
 		 ( (evt_record_end_of_file_t *) record_data )->first_record_number,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: first record number\t\t\t: %" PRIu32 "\n",
+		 "%s: first record number\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
 		libcnotify_printf(
-		 "%s: size copy\t\t\t\t: %" PRIu32 "\n",
+		 "%s: size copy\t\t\t: %" PRIu32 "\n",
 		 function,
 		 size_copy );
 
