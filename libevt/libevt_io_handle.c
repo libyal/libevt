@@ -24,12 +24,12 @@
 #include <memory.h>
 #include <types.h>
 
-#include "libevt_array_type.h"
 #include "libevt_debug.h"
 #include "libevt_codepage.h"
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
 #include "libevt_record_values.h"
@@ -429,7 +429,7 @@ int libevt_io_handle_read_records(
      libbfio_handle_t *file_io_handle,
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
-     libevt_array_t *records_array,
+     libcdata_array_t *records_array,
      off64_t *last_record_offset,
      libcerror_error_t **error )
 {
@@ -557,7 +557,7 @@ int libevt_io_handle_read_records(
 
 		if( record_type == LIBEVT_RECORD_TYPE_EVENT )
 		{
-			if( libevt_array_append_entry(
+			if( libcdata_array_append_entry(
 			     records_array,
 			     &record_entry_index,
 			     (intptr_t *) record_values,
@@ -920,7 +920,7 @@ int libevt_io_handle_event_record_scan(
      libbfio_handle_t *file_io_handle,
      off64_t file_offset,
      size64_t size,
-     libevt_array_t *recovered_records_array,
+     libcdata_array_t *recovered_records_array,
      libcerror_error_t **error )
 {
 	libevt_record_values_t *record_values = NULL;
@@ -1140,7 +1140,7 @@ int libevt_io_handle_event_record_scan(
 					{
 						if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
 						{
-							if( libevt_array_append_entry(
+							if( libcdata_array_append_entry(
 							     recovered_records_array,
 							     &record_entry_index,
 							     (intptr_t *) record_values,
@@ -1213,8 +1213,8 @@ int libevt_io_handle_recover_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      off64_t last_record_offset,
-     libevt_array_t *records_array,
-     libevt_array_t *recovered_records_array,
+     libcdata_array_t *records_array,
+     libcdata_array_t *recovered_records_array,
      libcerror_error_t **error )
 {
 	static char *function  = "libevt_io_handle_recover_records";

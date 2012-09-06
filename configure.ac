@@ -246,8 +246,8 @@ AC_MSG_NOTICE([
 Building:
    libcstring support:                       $ac_cv_libcstring
    libcerror support:                        $ac_cv_libcerror
-   libclocale support:                       $ac_cv_libclocale
    libcdata support:                         $ac_cv_libcdata
+   libclocale support:                       $ac_cv_libclocale
    libcnotify support:                       $ac_cv_libcnotify
    libcsplit support:                        $ac_cv_libcsplit
    libuna support:                           $ac_cv_libuna

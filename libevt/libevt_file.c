@@ -23,13 +23,13 @@
 #include <memory.h>
 #include <types.h>
 
-#include "libevt_array_type.h"
 #include "libevt_codepage.h"
 #include "libevt_debug.h"
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_file.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
 #include "libevt_libcstring.h"
@@ -100,7 +100,7 @@ int libevt_file_initialize(
 
 		return( -1 );
 	}
-	if( libevt_array_initialize(
+	if( libcdata_array_initialize(
 	     &( internal_file->records_array ),
 	     0,
 	     error ) != 1 )
@@ -114,7 +114,7 @@ int libevt_file_initialize(
 
 		goto on_error;
 	}
-	if( libevt_array_initialize(
+	if( libcdata_array_initialize(
 	     &( internal_file->recovered_records_array ),
 	     0,
 	     error ) != 1 )
@@ -150,14 +150,14 @@ on_error:
 	{
 		if( internal_file->recovered_records_array != NULL )
 		{
-			libevt_array_free(
+			libcdata_array_free(
 			 &( internal_file->recovered_records_array ),
 			 NULL,
 			 NULL );
 		}
 		if( internal_file->records_array != NULL )
 		{
-			libevt_array_free(
+			libcdata_array_free(
 			 &( internal_file->records_array ),
 			 NULL,
 			 NULL );
@@ -212,7 +212,7 @@ int libevt_file_free(
 		}
 		*file = NULL;
 
-		if( libevt_array_free(
+		if( libcdata_array_free(
 		     &( internal_file->records_array ),
 		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
 		     error ) != 1 )
@@ -226,7 +226,7 @@ int libevt_file_free(
 
 			result = -1;
 		}
-		if( libevt_array_free(
+		if( libcdata_array_free(
 		     &( internal_file->recovered_records_array ),
 		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
 		     error ) != 1 )
@@ -783,7 +783,7 @@ int libevt_file_close(
 	internal_file->file_io_handle                    = NULL;
 	internal_file->file_io_handle_created_in_library = 0;
 
-	if( libevt_array_resize(
+	if( libcdata_array_resize(
 	     internal_file->records_array,
 	     0,
 	     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
@@ -1258,7 +1258,7 @@ int libevt_file_get_number_of_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( libevt_array_get_number_of_entries(
+	if( libcdata_array_get_number_of_entries(
 	     internal_file->records_array,
 	     number_of_records,
 	     error ) != 1 )
@@ -1312,7 +1312,7 @@ int libevt_file_get_record(
 
 		return( -1 );
 	}
-	if( libevt_array_get_entry_by_index(
+	if( libcdata_array_get_entry_by_index(
 	     internal_file->records_array,
 	     record_index,
 	     (intptr_t **) &record_values,
@@ -1372,7 +1372,7 @@ int libevt_file_get_number_of_recovered_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( libevt_array_get_number_of_entries(
+	if( libcdata_array_get_number_of_entries(
 	     internal_file->recovered_records_array,
 	     number_of_records,
 	     error ) != 1 )
@@ -1426,7 +1426,7 @@ int libevt_file_get_recovered_record(
 
 		return( -1 );
 	}
-	if( libevt_array_get_entry_by_index(
+	if( libcdata_array_get_entry_by_index(
 	     internal_file->recovered_records_array,
 	     record_index,
 	     (intptr_t **) &record_values,

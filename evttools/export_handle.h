@@ -169,19 +169,16 @@ int export_handle_set_event_log_type_from_filename(
 int export_handle_set_software_registry_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error );
 
 int export_handle_set_system_registry_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error );
 
-int export_handle_set_registry_directory(
+int export_handle_set_registry_directory_name(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error );
 
 int export_handle_open_software_registry_file(

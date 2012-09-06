@@ -171,10 +171,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libevt\libevt_array_type.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libevt\libevt_debug.c"
 				>
 			</File>
@@ -221,10 +217,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libevt\libevt_array_type.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libevt\libevt_codepage.h"
 				>
 			</File>
@@ -254,6 +246,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libevt\libevt_libbfio.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\libevt_libcdata.h"
 				>
 			</File>
 			<File

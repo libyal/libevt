@@ -25,10 +25,10 @@
 #include <common.h>
 #include <types.h>
 
-#include "libevt_array_type.h"
 #include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
+#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
 #include "libevt_types.h"
 
@@ -42,11 +42,11 @@ struct libevt_internal_file
 {
 	/* The records array
 	 */
-	libevt_array_t *records_array;
+	libcdata_array_t *records_array;
 
 	/* The recovered records array
 	 */
-	libevt_array_t *recovered_records_array;
+	libcdata_array_t *recovered_records_array;
 
 	/* The IO handle
 	 */

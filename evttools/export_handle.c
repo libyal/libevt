@@ -588,10 +588,10 @@ int export_handle_set_event_log_type_from_filename(
 int export_handle_set_software_registry_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_set_software_registry_filename";
+	static char *function  = "export_handle_set_software_registry_filename";
+	size_t filename_length = 0;
 
 	if( export_handle == NULL )
 	{
@@ -615,16 +615,19 @@ int export_handle_set_software_registry_filename(
 
 		return( -1 );
 	}
+	filename_length = libcstring_system_string_length(
+	                    filename );
+
 	if( filename_length > (size_t) SSIZE_MAX )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filename length value exceeds maximum.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid filename length value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( export_handle->software_registry_filename != NULL )
 	{
@@ -686,10 +689,10 @@ on_error:
 int export_handle_set_system_registry_filename(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_set_system_registry_filename";
+	static char *function  = "export_handle_set_system_registry_filename";
+	size_t filename_length = 0;
 
 	if( export_handle == NULL )
 	{
@@ -713,16 +716,19 @@ int export_handle_set_system_registry_filename(
 
 		return( -1 );
 	}
+	filename_length = libcstring_system_string_length(
+	                    filename );
+
 	if( filename_length > (size_t) SSIZE_MAX )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filename length value exceeds maximum.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid filename length value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( export_handle->system_registry_filename != NULL )
 	{
@@ -784,10 +790,10 @@ on_error:
 int export_handle_set_registry_directory_name(
      export_handle_t *export_handle,
      const libcstring_system_character_t *filename,
-     size_t filename_length,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_set_registry_directory_name";
+	static char *function  = "export_handle_set_registry_directory_name";
+	size_t filename_length = 0;
 
 	if( export_handle == NULL )
 	{
@@ -811,16 +817,19 @@ int export_handle_set_registry_directory_name(
 
 		return( -1 );
 	}
+	filename_length = libcstring_system_string_length(
+	                    filename );
+
 	if( filename_length > (size_t) SSIZE_MAX )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filename length value exceeds maximum.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid filename length value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( export_handle->registry_directory_name != NULL )
 	{
@@ -1104,7 +1113,7 @@ int export_handle_open_input(
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_open_input";
-	size_t filename_size  = 0;
+	int result            = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1135,8 +1144,8 @@ int export_handle_open_input(
 		result = libcpath_path_join_wide(
 			  &( export_handle->software_registry_filename ),
 			  &( export_handle->software_registry_filename_size ),
-			  &( export_handle->registry_directory_name ),
-			  &( export_handle->registry_directory_name_size ),
+			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size,
 			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
 			  8,
 			  error );
@@ -1144,8 +1153,8 @@ int export_handle_open_input(
 		result = libcpath_path_join(
 			  &( export_handle->software_registry_filename ),
 			  &( export_handle->software_registry_filename_size ),
-			  &( export_handle->registry_directory_name ),
-			  &( export_handle->registry_directory_name_size ),
+			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size,
 			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
 			  8,
 			  error );
@@ -1173,8 +1182,8 @@ int export_handle_open_input(
 		result = libcpath_path_join_wide(
 			  &( export_handle->system_registry_filename ),
 			  &( export_handle->system_registry_filename_size ),
-			  &( export_handle->registry_directory_name ),
-			  &( export_handle->registry_directory_name_size ),
+			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size,
 			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
 			  6,
 			  error );
@@ -1182,8 +1191,8 @@ int export_handle_open_input(
 		result = libcpath_path_join(
 			  &( export_handle->system_registry_filename ),
 			  &( export_handle->system_registry_filename_size ),
-			  &( export_handle->registry_directory_name ),
-			  &( export_handle->registry_directory_name_size ),
+			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size,
 			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
 			  6,
 			  error );

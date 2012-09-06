@@ -23,7 +23,6 @@ libevt_la_SOURCES = \
 	evt_file_header.h \
 	evt_record.h \
 	libevt.c \
-	libevt_array_type.c libevt_array_type.h \
 	libevt_codepage.h \
 	libevt_debug.c libevt_debug.h \
 	libevt_definitions.h \
@@ -32,6 +31,7 @@ libevt_la_SOURCES = \
 	libevt_file.c libevt_file.h \
 	libevt_io_handle.c libevt_io_handle.h \
 	libevt_libbfio.h \
+	libevt_libcdata.h \
 	libevt_libcerror.h \
 	libevt_libclocale.h \
 	libevt_libcnotify.h \
