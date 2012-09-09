@@ -1,4 +1,5 @@
 TODO:
+* test find paths on windows
 * registry path (-r option) - deal with case insensitive filenames for SYSTEM and SOFTWARE
   - move path handling code to separate path handler
   - add callback for dealing with path expansion ?

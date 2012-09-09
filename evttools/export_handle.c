@@ -38,6 +38,7 @@
 #include "export_handle.h"
 #include "log_handle.h"
 #include "message_file.h"
+#include "path_handle.h"
 
 #define EXPORT_HANDLE_NOTIFY_STREAM		stdout
 
@@ -152,6 +153,19 @@ int export_handle_initialize(
 
 		goto on_error;
 	}
+	if( path_handle_initialize(
+	     &( ( *export_handle )->path_handle ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create path handle.",
+		 function );
+
+		goto on_error;
+	}
 	if( libfcache_cache_initialize(
 	     &( ( *export_handle )->message_file_cache ),
 	     16,
@@ -194,6 +208,12 @@ on_error:
 		{
 			libfcache_cache_free(
 			 &( ( *export_handle )->message_file_cache ),
+			 NULL );
+		}
+		if( ( *export_handle )->path_handle != NULL )
+		{
+			path_handle_free(
+			 &( ( *export_handle )->path_handle ),
 			 NULL );
 		}
 		memory_free(
@@ -276,6 +296,19 @@ int export_handle_free(
 		{
 			memory_free(
 			 ( *export_handle )->system_root_path );
+		}
+		if( path_handle_free(
+		     &( ( *export_handle )->path_handle ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free path handle.",
+			 function );
+
+			result = -1;
 		}
 		if( ( *export_handle )->system_registry_file != NULL )
 		{
@@ -929,15 +962,16 @@ int export_handle_open_software_registry_file(
      export_handle_t *export_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *key_path = NULL;
-	libregf_key_t *sub_key                  = NULL;
-	libregf_value_t *value                  = NULL;
-	const char *sub_key_path                = NULL;
-	const char *value_name                  = NULL;
-	static char *function                   = "export_handle_open_software_registry_file";
-	size_t key_path_length                  = 0;
-	size_t value_name_length                = 0;
-	int result                              = 0;
+	libcstring_system_character_t *key_path          = NULL;
+	libcstring_system_character_t *software_filename = NULL;
+	libregf_key_t *sub_key                           = NULL;
+	libregf_value_t *value                           = NULL;
+	const char *sub_key_path                         = NULL;
+	const char *value_name                           = NULL;
+	static char *function                            = "export_handle_open_software_registry_file";
+	size_t key_path_length                           = 0;
+	size_t value_name_length                         = 0;
+	int result                                       = 0;
 
 	if( export_handle == NULL )
 	{
@@ -953,13 +987,35 @@ int export_handle_open_software_registry_file(
 	if( ( export_handle->software_registry_filename == NULL )
 	 && ( export_handle->registry_directory_name != NULL ) )
 	{
+		software_filename = _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" );
+
+		result = path_handle_get_directory_entry_by_name_no_case(
+		          export_handle->path_handle,
+			  export_handle->registry_directory_name,
+			  software_filename,
+			  8,
+		          LIBCDIRECTORY_ENTRY_TYPE_FILE,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_GENERIC,
+			 "%s: unable to determine if directory has entry: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 function,
+			 software_filename );
+
+			goto on_error;
+		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libcpath_path_join_wide(
 			  &( export_handle->software_registry_filename ),
 			  &( export_handle->software_registry_filename_size ),
 			  export_handle->registry_directory_name,
 			  export_handle->registry_directory_name_size - 1,
-			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
+			  software_filename,
 			  8,
 			  error );
 #else
@@ -968,7 +1024,7 @@ int export_handle_open_software_registry_file(
 			  &( export_handle->software_registry_filename_size ),
 			  export_handle->registry_directory_name,
 			  export_handle->registry_directory_name_size - 1,
-			  _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
+			  software_filename,
 			  8,
 			  error );
 #endif
@@ -983,7 +1039,6 @@ int export_handle_open_software_registry_file(
 
 			return( -1 );
 		}
-/* TODO support case insensitive paths of the filename */
 	}
 	if( export_handle->software_registry_filename != NULL )
 	{
@@ -1198,6 +1253,7 @@ int export_handle_open_software_registry_file(
 	}
 	/* Check if %SystemRoot% contains a sane value
 	 */
+/* TODO what if system root constists of multiple paths */
 	if( export_handle->system_root_path != NULL )
 	{
 		if( ( export_handle->system_root_path_size < 4 )
@@ -1278,13 +1334,14 @@ int export_handle_open_system_registry_file(
      export_handle_t *export_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *key_path = NULL;
-	libregf_key_t *sub_key                  = NULL;
-	const char *sub_key_path                = NULL;
-	static char *function                   = "export_handle_open_system_registry_file";
-	size_t key_path_length                  = 0;
-	size_t sub_key_path_length              = 0;
-	int result                              = 0;
+	libcstring_system_character_t *key_path        = NULL;
+	libcstring_system_character_t *system_filename = NULL;
+	libregf_key_t *sub_key                         = NULL;
+	const char *sub_key_path                       = NULL;
+	static char *function                          = "export_handle_open_system_registry_file";
+	size_t key_path_length                         = 0;
+	size_t sub_key_path_length                     = 0;
+	int result                                     = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1300,13 +1357,35 @@ int export_handle_open_system_registry_file(
 	if( ( export_handle->system_registry_filename == NULL )
 	 && ( export_handle->registry_directory_name != NULL ) )
 	{
+		system_filename = _LIBCSTRING_SYSTEM_STRING( "SYSTEM" );
+
+		result = path_handle_get_directory_entry_by_name_no_case(
+		          export_handle->path_handle,
+			  export_handle->registry_directory_name,
+			  system_filename,
+			  6,
+		          LIBCDIRECTORY_ENTRY_TYPE_FILE,
+		          error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_GENERIC,
+			 "%s: unable to determine if directory has entry: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 function,
+			 system_filename );
+
+			goto on_error;
+		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libcpath_path_join_wide(
 			  &( export_handle->system_registry_filename ),
 			  &( export_handle->system_registry_filename_size ),
 			  export_handle->registry_directory_name,
 			  export_handle->registry_directory_name_size - 1,
-			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
+			  system_filename,
 			  6,
 			  error );
 #else
@@ -1315,7 +1394,7 @@ int export_handle_open_system_registry_file(
 			  &( export_handle->system_registry_filename_size ),
 			  export_handle->registry_directory_name,
 			  export_handle->registry_directory_name_size - 1,
-			  _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
+			  system_filename,
 			  6,
 			  error );
 #endif
@@ -1330,7 +1409,6 @@ int export_handle_open_system_registry_file(
 
 			return( -1 );
 		}
-/* TODO support case insensitive paths of the filename */
 	}
 	if( export_handle->system_registry_filename == NULL )
 	{
@@ -1958,12 +2036,8 @@ int export_handle_get_message_file_path(
      size_t *message_file_path_size,
      libcerror_error_t **error )
 {
-	libcdirectory_directory_t *directory                           = NULL;
-	libcdirectory_directory_entry_t *directory_entry               = NULL;
-	libcstring_system_character_t *directory_entry_name            = NULL;
 	libcstring_system_character_t *message_filename_string_segment = NULL;
 	static char *function                                          = "export_handle_get_message_file_path";
-	size_t directory_entry_name_length                             = 0;
 	size_t message_file_path_index                                 = 0;
 	size_t message_files_path_length                               = 0;
 	size_t message_filename_directory_name_index                   = 0;
@@ -2423,65 +2497,6 @@ int export_handle_get_message_file_path(
 				}
 			}
 		}
-		/* Terminate the path string we currently have
-		 * WINAPI requires a glob character
-		 */
-#if defined( WINAPI )
-		( *message_file_path )[ message_file_path_index ]     = (libcstring_system_character_t) '*';
-		( *message_file_path )[ message_file_path_index + 1 ] = 0;
-#else
-		( *message_file_path )[ message_file_path_index ] = 0;
-#endif
-
-		if( libcdirectory_directory_initialize(
-		     &directory,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create directory.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libcdirectory_directory_open_wide(
-		          directory,
-		          *message_file_path,
-		          error );
-#else
-		result = libcdirectory_directory_open(
-		          directory,
-		          *message_file_path,
-		          error );
-#endif
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_OPEN_FAILED,
-			 "%s: unable to open directory: %" PRIs_LIBCSTRING_SYSTEM ".",
-			 function,
-			 message_file_path );
-
-			goto on_error;
-		}
-		if( libcdirectory_directory_entry_initialize(
-		     &directory_entry,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create directory entry.",
-			 function );
-
-			goto on_error;
-		}
 		if( message_filename_segment_index < ( message_filename_number_of_segments - 1 ) )
 		{
 			directory_entry_type = LIBCDIRECTORY_ENTRY_TYPE_DIRECTORY;
@@ -2490,25 +2505,16 @@ int export_handle_get_message_file_path(
 		{
 			directory_entry_type = LIBCDIRECTORY_ENTRY_TYPE_FILE;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libcdirectory_directory_has_entry_wide(
-			  directory,
-			  directory_entry,
+		( *message_file_path )[ message_file_path_index ] = 0;
+
+		result = path_handle_get_directory_entry_by_name_no_case(
+		          export_handle->path_handle,
+		          *message_file_path,
 			  message_filename_string_segment,
-			  message_filename_string_segment_size - 1,
-			  directory_entry_type,
-			  LIBCDIRECTORY_COMPARE_FLAG_NO_CASE,
-			  error );
-#else
-		result = libcdirectory_directory_has_entry(
-			  directory,
-			  directory_entry,
-			  message_filename_string_segment,
-			  message_filename_string_segment_size - 1,
-			  directory_entry_type,
-			  LIBCDIRECTORY_COMPARE_FLAG_NO_CASE,
-			  error );
-#endif
+			  message_filename_string_segment_size,
+		          directory_entry_type,
+		          error );
+
 		if( result == -1 )
 		{
 			libcerror_error_set(
@@ -2523,46 +2529,10 @@ int export_handle_get_message_file_path(
 		}
 		else if( result != 0 )
 		{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			result = libcdirectory_directory_entry_get_name_wide(
-			          directory_entry,
-			          &directory_entry_name,
-			          error );
-#else
-			result = libcdirectory_directory_entry_get_name(
-			          directory_entry,
-			          &directory_entry_name,
-			          error );
-#endif
-			if( result != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve directory entry name.",
-				 function );
-
-				goto on_error;
-			}
-			directory_entry_name_length = libcstring_system_string_length(
-			                               directory_entry_name );
-
-			if( directory_entry_name_length != ( message_filename_string_segment_size - 1 ) )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: directory entry name length value out of bounds.",
-				 function );
-
-				goto on_error;
-			}
 			if( libcstring_system_string_copy(
 			     &( ( *message_file_path )[ message_file_path_index ] ),
-			     directory_entry_name,
-			     directory_entry_name_length ) == NULL )
+			     message_filename_string_segment,
+			     message_filename_string_segment_size - 1 ) == NULL )
 			{
 				libcerror_error_set(
 				 error,
@@ -2574,52 +2544,11 @@ int export_handle_get_message_file_path(
 
 				goto on_error;
 			}
-		}
-		message_file_path_index += message_filename_string_segment_size - 1;
+			message_file_path_index += message_filename_string_segment_size - 1;
 
-		( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
+			( *message_file_path )[ message_file_path_index ] = (libcstring_system_character_t) LIBCPATH_SEPARATOR;
 
-		message_file_path_index += 1;
-
-		if( libcdirectory_directory_entry_free(
-		     &directory_entry,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free directory entry.",
-			 function );
-
-			goto on_error;
-		}
-		if( libcdirectory_directory_close(
-		     directory,
-		     error ) != 0 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-			 "%s: unable to close directory.",
-			 function,
-			 message_file_path );
-
-			goto on_error;
-		}
-		if( libcdirectory_directory_free(
-		     &directory,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free directory.",
-			 function );
-
-			goto on_error;
+			message_file_path_index += 1;
 		}
 		if( result == 0 )
 		{
@@ -2650,18 +2579,6 @@ int export_handle_get_message_file_path(
 	return( result );
 
 on_error:
-	if( directory_entry != NULL )
-	{
-		libcdirectory_directory_entry_free(
-		 &directory_entry,
-		 NULL );
-	}
-	if( directory != NULL )
-	{
-		libcdirectory_directory_free(
-		 &directory,
-		 NULL );
-	}
 	if( message_filename_split_string != NULL )
 	{
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )

@@ -32,6 +32,7 @@
 #include "evttools_libfcache.h"
 #include "evttools_libregf.h"
 #include "log_handle.h"
+#include "path_handle.h"
 #include "registry_file.h"
 
 #if defined( __cplusplus )
@@ -68,6 +69,10 @@ struct export_handle
 	/* The %SystemRoot% path size
 	 */
 	size_t system_root_path_size;
+
+	/* The path handle
+	 */
+	path_handle_t *path_handle;
 
 	/* The SYSTEM registry file
 	 */
