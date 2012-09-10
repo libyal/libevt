@@ -136,13 +136,15 @@ int path_handle_free(
 	return( result );
 }
 
-/* Retrieves a directory entry by name ignoring case
+/* Retrieves the name of a directory entry by name ignoring case
  * If a corresponding entry is found entry name is update
+ * This function is neede to find case insensitive directory entries on a case sensitive system
  * Return 1 if successful, 0 if no corresponding entry was found or -1 on error
  */
-int path_handle_get_directory_entry_by_name_no_case(
+int path_handle_get_directory_entry_name_by_name_no_case(
      path_handle_t *path_handle,
-     const libcstring_system_character_t *directory_name,
+     const libcstring_system_character_t *path,
+     size_t path_length,
      libcstring_system_character_t *entry_name,
      size_t entry_name_size,
      uint8_t entry_type,
@@ -151,7 +153,7 @@ int path_handle_get_directory_entry_by_name_no_case(
 	libcdirectory_directory_t *directory                = NULL;
 	libcdirectory_directory_entry_t *directory_entry    = NULL;
 	libcstring_system_character_t *directory_entry_name = NULL;
-	static char *function                               = "path_handle_get_directory_entry_by_name_no_case";
+	static char *function                               = "path_handle_get_directory_entry_name_by_name_no_case";
 	size_t directory_entry_name_length                  = 0;
 	int result                                          = 0;
 
@@ -162,6 +164,17 @@ int path_handle_get_directory_entry_by_name_no_case(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid path handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( path_length > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid path length value exceeds maximum.",
 		 function );
 
 		return( -1 );
@@ -215,12 +228,12 @@ int path_handle_get_directory_entry_by_name_no_case(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libcdirectory_directory_open_wide(
 		  directory,
-		  directory_name,
+		  path,
 		  error );
 #else
 	result = libcdirectory_directory_open(
 		  directory,
-		  directory_name,
+		  path,
 		  error );
 #endif
 	if( result != 1 )
@@ -231,7 +244,7 @@ int path_handle_get_directory_entry_by_name_no_case(
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open directory: %" PRIs_LIBCSTRING_SYSTEM ".",
 		 function,
-		 directory_name );
+		 path );
 
 		goto on_error;
 	}

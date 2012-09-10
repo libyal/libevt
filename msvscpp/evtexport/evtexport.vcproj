@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\path_handle.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\registry_file.c"
 				>
 			</File>
@@ -290,6 +294,10 @@
 			</File>
 			<File
 				RelativePath="..\..\evttools\message_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\path_handle.h"
 				>
 			</File>
 			<File

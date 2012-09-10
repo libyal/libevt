@@ -1,4 +1,4 @@
-.Dd September 5, 2012
+.Dd September 10, 2012
 .Dt evtexport
 .Os libevt
 .Sh NAME
@@ -46,10 +46,10 @@ search PATH for the message files (default is the current working directory)
 name of the directory containing the SOFTWARE and SYSTEM (Windows) Registry file
 .It Fl s Ar system_file
 filename of the SYSTEM (Windows) Registry file
-This option overrides the path provided by -r"
+This option overrides the path provided by \-r
 .It Fl S Ar software_file
 filename of the SOFTWARE (Windows) Registry file
-This option overrides the path provided by -r"
+This option overrides the path provided by \-r
 .It Fl t Ar event_log_type
 event log type, options: application, security, system if not specified the event log type is determined based on the filename.
 .It Fl v
@@ -63,8 +63,8 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# evtexport evtexport -p c/ -s c/Windows/System32/config/system c/Windows/System32/config/AppEvent.Evt
-evtexport 20120624
+# evtexport evtexport -p c/ -r c/Windows/System32/config/ c/Windows/System32/config/AppEvent.Evt
+evtexport 20120910
 
 .Dl ...
 

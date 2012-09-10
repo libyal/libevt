@@ -151,14 +151,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\libregf\libregf_array_type.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libregf\libregf_cell_values.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libregf\libregf_checksum.c"
 				>
 			</File>
@@ -233,14 +225,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\libregf\libregf_array_type.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libregf\libregf_cell_values.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libregf\libregf_checksum.h"
 				>
 			</File>
@@ -302,6 +286,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_libbfio.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_libcdata.h"
 				>
 			</File>
 			<File

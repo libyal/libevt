@@ -3,8 +3,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/common \
 	-I$(top_srcdir)/libcstring \
 	-I$(top_srcdir)/liberror \
-	-I$(top_srcdir)/libsystem \
-	@MEMWATCH_CPPFLAGS@
+	-I$(top_srcdir)/libsystem
 
 TESTS = 
 

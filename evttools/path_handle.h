@@ -53,9 +53,10 @@ int path_handle_free(
      path_handle_t **path_handle,
      libcerror_error_t **error );
 
-int path_handle_get_directory_entry_by_name_no_case(
+int path_handle_get_directory_entry_name_by_name_no_case(
      path_handle_t *path_handle,
-     const libcstring_system_character_t *directory_name,
+     const libcstring_system_character_t *path,
+     size_t path_length,
      libcstring_system_character_t *entry_name,
      size_t entry_name_size,
      uint8_t entry_type,

@@ -987,13 +987,42 @@ int export_handle_open_software_registry_file(
 	if( ( export_handle->software_registry_filename == NULL )
 	 && ( export_handle->registry_directory_name != NULL ) )
 	{
-		software_filename = _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" );
+		software_filename = libcstring_system_string_allocate(
+		                     9 );
 
-		result = path_handle_get_directory_entry_by_name_no_case(
+		if( software_filename == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create software filename.",
+			 function );
+
+			goto on_error;
+		}
+		if( libcstring_system_string_copy(
+		     software_filename,
+		     _LIBCSTRING_SYSTEM_STRING( "SOFTWARE" ),
+		     8 ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to set software filename.",
+			 function );
+
+			goto on_error;
+		}
+		software_filename[ 8 ] = 0;
+
+		result = path_handle_get_directory_entry_name_by_name_no_case(
 		          export_handle->path_handle,
 			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size - 1,
 			  software_filename,
-			  8,
+			  9,
 		          LIBCDIRECTORY_ENTRY_TYPE_FILE,
 		          error );
 
@@ -1039,6 +1068,10 @@ int export_handle_open_software_registry_file(
 
 			return( -1 );
 		}
+		memory_free(
+		 software_filename );
+
+		software_filename = NULL;
 	}
 	if( export_handle->software_registry_filename != NULL )
 	{
@@ -1324,6 +1357,11 @@ on_error:
 		 &sub_key,
 		 NULL );
 	}
+	if( software_filename != NULL )
+	{
+		memory_free(
+		 software_filename );
+	}
 	return( -1 );
 }
 
@@ -1357,13 +1395,42 @@ int export_handle_open_system_registry_file(
 	if( ( export_handle->system_registry_filename == NULL )
 	 && ( export_handle->registry_directory_name != NULL ) )
 	{
-		system_filename = _LIBCSTRING_SYSTEM_STRING( "SYSTEM" );
+		system_filename = libcstring_system_string_allocate(
+		                   7 );
 
-		result = path_handle_get_directory_entry_by_name_no_case(
+		if( system_filename == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create system filename.",
+			 function );
+
+			goto on_error;
+		}
+		if( libcstring_system_string_copy(
+		     system_filename,
+		     _LIBCSTRING_SYSTEM_STRING( "SYSTEM" ),
+		     6 ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to set system filename.",
+			 function );
+
+			goto on_error;
+		}
+		system_filename[ 6 ] = 0;
+
+		result = path_handle_get_directory_entry_name_by_name_no_case(
 		          export_handle->path_handle,
 			  export_handle->registry_directory_name,
+			  export_handle->registry_directory_name_size - 1,
 			  system_filename,
-			  6,
+			  7,
 		          LIBCDIRECTORY_ENTRY_TYPE_FILE,
 		          error );
 
@@ -1409,6 +1476,10 @@ int export_handle_open_system_registry_file(
 
 			return( -1 );
 		}
+		memory_free(
+		 system_filename );
+
+		system_filename = NULL;
 	}
 	if( export_handle->system_registry_filename == NULL )
 	{
@@ -1600,6 +1671,11 @@ on_error:
 		libregf_key_free(
 		 &sub_key,
 		 NULL );
+	}
+	if( system_filename != NULL )
+	{
+		memory_free(
+		 system_filename );
 	}
 	return( -1 );
 }
@@ -2336,7 +2412,7 @@ int export_handle_get_message_file_path(
 				{
 					message_filename_string_segment_size = export_handle->system_root_path_size - 3;
 #if defined( WINAPI )
-					volume_letter = ( export_handle->system_root_path )[ 0 ];
+					volume_letter = export_handle->system_root_path;
 #endif
 				}
 			}
@@ -2507,9 +2583,10 @@ int export_handle_get_message_file_path(
 		}
 		( *message_file_path )[ message_file_path_index ] = 0;
 
-		result = path_handle_get_directory_entry_by_name_no_case(
+		result = path_handle_get_directory_entry_name_by_name_no_case(
 		          export_handle->path_handle,
 		          *message_file_path,
+		          message_file_path_index + 1,
 			  message_filename_string_segment,
 			  message_filename_string_segment_size,
 		          directory_entry_type,

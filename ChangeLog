@@ -1,21 +1,14 @@
 TODO:
 * test find paths on windows
-* registry path (-r option) - deal with case insensitive filenames for SYSTEM and SOFTWARE
-  - move path handling code to separate path handler
-  - add callback for dealing with path expansion ?
 * get %WinDir%
   SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
+  - add callback for dealing with path expansion ?
 * Fix: libevt_io_handle_read_records: file has wrapped but file flags indicate otherwise.
 * registry file:
   - detect the file type + version based on the base sub keys?
   - add file type specific support e.g. CurrentControlSet in key names ?
     or be more generic and allow HKEY_ ... type of keys and detect
     registry file type
-
-* msvscpp build
-  - fix libwrc
-  - add libcdata support
-  - evtexport: registy file
 
 * libcdirectory:
   - move WINAPI * path expansion from export handle to libcdirectory
@@ -52,6 +45,15 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20120910
+* code clean up
+* update dependencies
+* worked on -r caseless filename support
+* update msvscpp files
+
+20120909
+* worked on -r caseless filename support
 
 20120907
 * worked on determining %SystemRoot% from SOFTWARE registry
