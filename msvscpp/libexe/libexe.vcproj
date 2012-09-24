@@ -151,10 +151,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\libexe\libexe_array_type.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libexe\libexe_debug.c"
 				>
 			</File>
@@ -205,10 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libexe\libexe_array_type.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libexe\libexe_codepage.h"
 				>
 			</File>
@@ -238,6 +230,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libexe\libexe_libbfio.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libexe\libexe_libcdata.h"
 				>
 			</File>
 			<File

@@ -1,4 +1,6 @@
 TODO:
+* check and fix evtexport
+
 * test find paths on windows
 * get %WinDir%
   SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
@@ -45,6 +47,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20120924
+* update dependencies
 
 20120910
 * code clean up

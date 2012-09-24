@@ -151,10 +151,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\libwrc\libwrc_array_type.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_data_descriptor.c"
 				>
 			</File>
@@ -180,10 +176,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_language_table.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_list_type.c"
 				>
 			</File>
 			<File
@@ -235,10 +227,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_tree_type.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_version.c"
 				>
 			</File>
@@ -252,10 +240,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\..\libwrc\libwrc_array_type.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_codepage.h"
 				>
@@ -301,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libwrc\libwrc_libcdata.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libwrc\libwrc_libcerror.h"
 				>
 			</File>
@@ -342,10 +330,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_libuna.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_list_type.h"
 				>
 			</File>
 			<File
@@ -394,10 +378,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_support.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_tree_type.h"
 				>
 			</File>
 			<File
