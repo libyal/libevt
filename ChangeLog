@@ -1,5 +1,6 @@
 TODO:
 * check and fix evtexport
+  - libwrc_resource_read_value: invalid leaf resource values: 0.
 
 * test find paths on windows
 * get %WinDir%
@@ -47,6 +48,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20120925
+* bug fix export handle in error handling
 
 20120924
 * update dependencies

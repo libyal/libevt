@@ -2716,6 +2716,28 @@ int export_handle_get_message_string(
 
 		return( -1 );
 	}
+	if( message_string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid message string.",
+		 function );
+
+		return( -1 );
+	}
+	if( message_string_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid message string size.",
+		 function );
+
+		return( -1 );
+	}
 	/* The message filename can contain multiple file names
 	 * separated by ;
 	 */
@@ -2856,11 +2878,15 @@ int export_handle_get_message_string(
 	return( result );
 
 on_error:
-	if( message_string != NULL )
+	if( *message_string != NULL )
 	{
 		memory_free(
-		 message_string );
+		 *message_string );
+
+		*message_string = NULL;
 	}
+	*message_string_size = 0;
+
 	if( message_filename_split_string != NULL )
 	{
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -3149,7 +3175,7 @@ on_error:
 		memory_free(
 		 message_file_path );
 	}
-	if( message_string != NULL )
+	if( *message_string != NULL )
 	{
 		memory_free(
 		 *message_string );
