@@ -51,7 +51,7 @@ PyMethodDef pyevt_module_methods[] = {
 	{ "check_file_signature",
 	  (PyCFunction) pyevt_check_file_signature,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "Checks if a file has a Windows Shortcut File (LNK) signature" },
+	  "Checks if a file has a Windows Event Log file signature" },
 
 	{ "open",
 	  (PyCFunction) pyevt_file_new_open,
@@ -97,7 +97,7 @@ PyObject *pyevt_get_access_flags_read(
 	         (long) libevt_get_access_flags_read() ) );
 }
 
-/* Checks if the file has a Windows NT Registy File signature
+/* Checks if the file has a Windows Event Log file signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature(

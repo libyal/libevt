@@ -49,7 +49,7 @@ extern PyMethodDef pyevt_record_object_methods[];
 extern PyTypeObject pyevt_record_type_object;
 
 PyObject *pyevt_record_new(
-           PyObject *self );
+           libevt_record_t *record );
 
 int pyevt_record_init(
      pyevt_record_t *pyevt_record );

@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libevt record
  *
- * Copyright (c) 2009-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -77,21 +77,21 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_source_name",
 	  (PyCFunction) pyevt_record_get_source_name,
 	  METH_NOARGS,
-	  "get_source_name -> Unicode string or None\n"
+	  "get_source_name() -> Unicode string or None\n"
 	  "\n"
 	  "Retrieves the source name" },
 
 	{ "get_computer_name",
 	  (PyCFunction) pyevt_record_get_computer_name,
 	  METH_NOARGS,
-	  "get_computer_name -> Unicode string or None\n"
+	  "get_computer_name() -> Unicode string or None\n"
 	  "\n"
 	  "Retrieves the computer name" },
 
 	{ "get_user_security_identifier",
 	  (PyCFunction) pyevt_record_get_user_security_identifier,
 	  METH_NOARGS,
-	  "get_user_security_identifier -> Unicode string or None\n"
+	  "get_user_security_identifier() -> Unicode string or None\n"
 	  "\n"
 	  "Retrieves the user security identifier (SID)" },
 
@@ -276,14 +276,23 @@ PyTypeObject pyevt_record_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_new(
-           PyObject *self )
+           libevt_record_t *record )
 {
 	pyevt_record_t *pyevt_record = NULL;
-	static char *function    = "pyevt_record_new";
+	static char *function        = "pyevt_record_new";
 
+	if( record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
 	pyevt_record = PyObject_New(
-	              struct pyevt_record,
-	              &pyevt_record_type_object );
+	                struct pyevt_record,
+	                &pyevt_record_type_object );
 
 	if( pyevt_record == NULL )
 	{
@@ -304,6 +313,8 @@ PyObject *pyevt_record_new(
 
 		goto on_error;
 	}
+	pyevt_record->record = record;
+
 	return( (PyObject *) pyevt_record );
 
 on_error:

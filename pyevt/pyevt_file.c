@@ -29,7 +29,6 @@
 
 #include "pyevt.h"
 #include "pyevt_codepage.h"
-#include "pyevt_datetime.h"
 #include "pyevt_file.h"
 #include "pyevt_file_object_io_handle.h"
 #include "pyevt_libbfio.h"
