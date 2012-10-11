@@ -39,6 +39,7 @@
 #include "log_handle.h"
 #include "message_file.h"
 #include "path_handle.h"
+#include "registry_file.h"
 
 #define EXPORT_HANDLE_NOTIFY_STREAM		stdout
 
@@ -1803,6 +1804,22 @@ int export_handle_close_input(
 	}
 	if( export_handle->input_is_open != 0 )
 	{
+		if( export_handle->software_registry_file != NULL )
+		{
+			if( registry_file_close(
+			     export_handle->software_registry_file,
+			     error ) != 0 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+				 "%s: unable to close software registry file.",
+				 function );
+
+				result = -1;
+			}
+		}
 		if( export_handle->system_registry_file != NULL )
 		{
 			if( registry_file_close(
