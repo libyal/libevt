@@ -61,7 +61,7 @@ int message_file_initialize(
 		return( -1 );
 	}
 	*message_file = memory_allocate_structure(
-	                message_file_t );
+	                 message_file_t );
 
 	if( *message_file == NULL )
 	{
