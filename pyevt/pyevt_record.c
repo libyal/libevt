@@ -276,7 +276,8 @@ PyTypeObject pyevt_record_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_new(
-           libevt_record_t *record )
+           libevt_record_t *record,
+           pyevt_file_t *file_object )
 {
 	pyevt_record_t *pyevt_record = NULL;
 	static char *function        = "pyevt_record_new";
@@ -313,7 +314,11 @@ PyObject *pyevt_record_new(
 
 		goto on_error;
 	}
-	pyevt_record->record = record;
+	pyevt_record->record      = record;
+	pyevt_record->file_object = file_object;
+
+	Py_IncRef(
+	 (PyObject *) pyevt_record->file_object );
 
 	return( (PyObject *) pyevt_record );
 
@@ -420,6 +425,11 @@ void pyevt_record_free(
 		}
 		libcerror_error_free(
 		 &error );
+	}
+	if( pyevt_record->file_object != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyevt_record->file_object );
 	}
 	pyevt_record->ob_type->tp_free(
 	 (PyObject*) pyevt_record );

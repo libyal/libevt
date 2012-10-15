@@ -41,7 +41,7 @@ struct pyevt_records
 	 */
 	PyObject_HEAD
 
-	/* The pyevt file object
+	/* The file object
 	 */
 	pyevt_file_t *file_object;
 

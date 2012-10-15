@@ -440,7 +440,7 @@ int main( int argc, char * const argv[] )
 /* TODO set preferred language identifier from input */
 		if( export_handle_set_preferred_language_identifier(
 		     evtexport_export_handle,
-		     0x0413,
+		     0x0409,
 		     &error ) != 1 )
 		{
 			fprintf(

@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "pyevt_file.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 
@@ -43,13 +44,18 @@ struct pyevt_record
 	/* The libevt record
 	 */
 	libevt_record_t *record;
+
+	/* The file object
+	 */
+	pyevt_file_t *file_object;
 };
 
 extern PyMethodDef pyevt_record_object_methods[];
 extern PyTypeObject pyevt_record_type_object;
 
 PyObject *pyevt_record_new(
-           libevt_record_t *record );
+           libevt_record_t *record,
+           pyevt_file_t *file_object );
 
 int pyevt_record_init(
      pyevt_record_t *pyevt_record );

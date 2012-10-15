@@ -1103,7 +1103,8 @@ PyObject *pyevt_file_get_record_by_index(
 		goto on_error;
 	}
 	record_object = pyevt_record_new(
-	                 record );
+	                 record,
+	                 pyevt_file );
 
 	if( record_object == NULL )
 	{
@@ -1351,7 +1352,8 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 		goto on_error;
 	}
 	record_object = pyevt_record_new(
-	                 record );
+	                 record,
+	                 pyevt_file );
 
 	if( record_object == NULL )
 	{
