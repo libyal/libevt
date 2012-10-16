@@ -1030,7 +1030,7 @@ int libevt_record_values_read_event(
 	}
 	if( ( (size_t) strings_offset == ( record_data_size - 4 ) )
 	 && ( strings_offset != data_offset ) )
-	{       
+	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,

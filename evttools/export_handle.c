@@ -1,4 +1,4 @@
-/* 
+/*
  * Export handle
  *
  * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -1323,16 +1323,26 @@ int export_handle_export_record_event_message(
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *message_filename = NULL;
-	libcstring_system_character_t *message_string   = NULL;
-	libcstring_system_character_t *value_string     = NULL;
-	static char *function                           = "export_handle_export_record_event_message";
-	size_t message_filename_size                    = 0;
-	size_t message_string_size                      = 0;
-	size_t value_string_size                        = 0;
-	int number_of_strings                           = 0;
-	int result                                      = 0;
-	int value_string_index                          = 0;
+	libcstring_system_character_t *message_filename                = NULL;
+	libcstring_system_character_t *message_filename_string_segment = NULL;
+	libcstring_system_character_t *message_string                  = NULL;
+	libcstring_system_character_t *value_string                    = NULL;
+	static char *function                                          = "export_handle_export_record_event_message";
+	size_t message_filename_size                                   = 0;
+	size_t message_filename_string_segment_size                    = 0;
+	size_t message_string_size                                     = 0;
+	size_t value_string_size                                       = 0;
+	int message_filename_number_of_segments                        = 0;
+	int message_filename_segment_index                             = 0;
+	int number_of_strings                                          = 0;
+	int result                                                     = 0;
+	int value_string_index                                         = 0;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	libcsplit_wide_split_string_t *message_filename_split_string   = NULL;
+#else
+	libcsplit_narrow_split_string_t *message_filename_split_string = NULL;
+#endif
 
 	if( export_handle == NULL )
 	{
@@ -1375,25 +1385,141 @@ int export_handle_export_record_event_message(
 			 "Message filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 			 message_filename );
 
-			result = message_handle_get_message_string(
-				  export_handle->message_handle,
-				  message_filename,
-				  message_filename_size - 1,
-				  event_identifier,
-				  &message_string,
-				  &message_string_size,
-				  error );
+			/* The message filename can contain multiple file names
+			 * separated by ;
+			 */
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcsplit_wide_string_split(
+			     message_filename,
+			     message_filename_size,
+			     (libcstring_system_character_t) ';',
+			     &message_filename_split_string,
+			     error ) != 1 )
+#else
+			if( libcsplit_narrow_string_split(
+			     message_filename,
+			     message_filename_size,
+			     (libcstring_system_character_t) ';',
+			     &message_filename_split_string,
+			     error ) != 1 )
+#endif
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to split message filename.",
+				 function );
 
-			if( result == -1 )
+				goto on_error;
+			}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcsplit_wide_split_string_get_number_of_segments(
+			     message_filename_split_string,
+			     &message_filename_number_of_segments,
+			     error ) != 1 )
+#else
+			if( libcsplit_narrow_split_string_get_number_of_segments(
+			     message_filename_split_string,
+			     &message_filename_number_of_segments,
+			     error ) != 1 )
+#endif
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
-				 function,
-				 event_identifier,
-				 message_filename );
+				 "%s: unable to retrieve number of message filename string segments.",
+				 function );
+
+				goto on_error;
+			}
+			for( message_filename_segment_index = 0;
+			     message_filename_segment_index < message_filename_number_of_segments;
+			     message_filename_segment_index++ )
+			{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+				if( libcsplit_wide_split_string_get_segment_by_index(
+				     message_filename_split_string,
+				     message_filename_segment_index,
+				     &message_filename_string_segment,
+				     &message_filename_string_segment_size,
+				     error ) != 1 )
+#else
+				if( libcsplit_narrow_split_string_get_segment_by_index(
+				     message_filename_split_string,
+				     message_filename_segment_index,
+				     &message_filename_string_segment,
+				     &message_filename_string_segment_size,
+				     error ) != 1 )
+#endif
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve message filename string segment: %d.",
+					 function,
+					 message_filename_segment_index );
+
+					goto on_error;
+				}
+				if( message_filename_string_segment == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: missing message filename string segment: %d.",
+					 function,
+					 message_filename_segment_index );
+
+					goto on_error;
+				}
+/* TODO check if file is a MUI file and bail out ? */
+				result = message_handle_get_message_string(
+					  export_handle->message_handle,
+					  message_filename_string_segment,
+					  message_filename_string_segment_size - 1,
+					  event_identifier,
+					  &message_string,
+					  &message_string_size,
+					  error );
+
+				if( result == -1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
+					 function,
+					 event_identifier,
+					 message_filename_string_segment );
+
+					goto on_error;
+				}
+				else if( result != 0 )
+				{
+					break;
+				}
+			}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libcsplit_wide_split_string_free(
+			     &message_filename_split_string,
+			     error ) != 1 )
+#else
+			if( libcsplit_narrow_split_string_free(
+			     &message_filename_split_string,
+			     error ) != 1 )
+#endif
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free message filename split string.",
+				 function );
 
 				goto on_error;
 			}
@@ -1551,6 +1677,18 @@ on_error:
 	{
 		memory_free(
 		 message_string );
+	}
+	if( message_filename_split_string != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libcsplit_wide_split_string_free(
+		 &message_filename_split_string,
+		 NULL );
+#else
+		libcsplit_narrow_split_string_free(
+		 &message_filename_split_string,
+		 NULL );
+#endif
 	}
 	if( message_filename != NULL )
 	{

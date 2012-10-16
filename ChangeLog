@@ -49,8 +49,14 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20121017
+* code clean up
+* update message handle
+* added support for multiple message filenames separated by ;
+
 20121016
 * changed default language
+* changes to pyevt
 
 20121013
 * worked on message handle

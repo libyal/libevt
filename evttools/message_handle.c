@@ -1,4 +1,4 @@
-/* 
+/*
  * Message handle
  *
  * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -1430,6 +1430,7 @@ int message_handle_open_input(
      libcerror_error_t **error )
 {
 	static char *function = "message_handle_open_input";
+	int result            = 0;
 
 	if( message_handle == NULL )
 	{
@@ -1442,9 +1443,11 @@ int message_handle_open_input(
 
 		return( -1 );
 	}
-	if( message_handle_open_software_registry_file(
-	     message_handle,
-	     error ) != 1 )
+	result = message_handle_open_software_registry_file(
+	          message_handle,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1455,10 +1458,12 @@ int message_handle_open_input(
 
 		return( -1 );
 	}
-	if( message_handle_open_system_registry_file(
-	     message_handle,
-	     eventlog_key_name,
-	     error ) != 1 )
+	result = message_handle_open_system_registry_file(
+	          message_handle,
+	          eventlog_key_name,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
