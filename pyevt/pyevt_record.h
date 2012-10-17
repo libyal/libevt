@@ -69,7 +69,13 @@ PyObject *pyevt_record_get_identifier(
 PyObject *pyevt_record_get_creation_time(
            pyevt_record_t *pyevt_record );
 
+PyObject *pyevt_record_get_creation_time_as_integer(
+           pyevt_record_t *pyevt_record );
+
 PyObject *pyevt_record_get_written_time(
+           pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_written_time_as_integer(
            pyevt_record_t *pyevt_record );
 
 PyObject *pyevt_record_get_event_identifier(

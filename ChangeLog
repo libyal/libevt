@@ -49,6 +49,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20121018
+* worked on pyevt
+* updated libcerror, libcpath
+* updated message handle, message file, export handle
+
 20121017
 * code clean up
 * update message handle

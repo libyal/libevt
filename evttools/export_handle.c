@@ -984,6 +984,7 @@ int export_handle_message_string_fprint(
 /* TODO add support for more conversion specifiers */
 			/* Ignore %0 = end of string, %r = cariage return */
 			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
+			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
 			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
 			{
 				message_string_index += 2;
@@ -1019,42 +1020,41 @@ int export_handle_message_string_fprint(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-				 "%s: unsupported conversion specifier: %%"
-				 "%" PRIc_LIBCSTRING_SYSTEM ".",
-				 function,
-				 message_string[ message_string_index + 1 ] );
+				 "%s: unsupported conversion specifier.",
+				 function );
 
 				goto on_error;
 			}
+			value_string_index = (int) message_string[ message_string_index + 1 ] - (int) '0' - 1;
+
 			conversion_specifier_length = 2;
 
-		 	if( ( ( message_string_index + 4 ) < message_string_length )
-			 && ( message_string[ message_string_index + 2 ] == (libcstring_system_character_t) '!' ) )
+		 	if( ( ( message_string_index + 3 ) < message_string_length )
+			 && ( message_string[ message_string_index + 2 ] >= (libcstring_system_character_t) '0' )
+			 && ( message_string[ message_string_index + 2 ] <= (libcstring_system_character_t) '9' ) )
 			{
-				if( ( message_string[ message_string_index + 3 ] != (libcstring_system_character_t) 's' )
-				 || ( message_string[ message_string_index + 4 ] != (libcstring_system_character_t) '!' ) )
+				value_string_index *= 10;
+				value_string_index += (int) message_string[ message_string_index + 2 ] - (int) '0';
+
+				conversion_specifier_length += 1;
+			}
+		 	if( ( ( message_string_index + conversion_specifier_length + 3 ) < message_string_length )
+			 && ( message_string[ message_string_index + conversion_specifier_length ] == (libcstring_system_character_t) '!' ) )
+			{
+				if( ( message_string[ message_string_index + conversion_specifier_length ] != (libcstring_system_character_t) 's' )
+				 || ( message_string[ message_string_index + conversion_specifier_length + 1 ] != (libcstring_system_character_t) '!' ) )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-					 "%s: unsupported conversion specifier: %%"
-					 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM
-					 "%" PRIc_LIBCSTRING_SYSTEM "%" PRIc_LIBCSTRING_SYSTEM ".",
-					 function,
-					 message_string[ message_string_index + 1 ],
-					 message_string[ message_string_index + 2 ],
-					 message_string[ message_string_index + 3 ],
-					 message_string[ message_string_index + 4 ] );
+					 "%s: unsupported conversion specifier.",
+					 function );
 
 					goto on_error;
 				}
-				conversion_specifier_length = 5;
+				conversion_specifier_length += 3;
 			}
-			value_string_index = (int) message_string[ message_string_index + 1 ]
-			                   - (int) '0'
-			                   - 1;
-
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libevt_record_get_utf16_string_size(
 				  record,
@@ -1580,7 +1580,7 @@ int export_handle_export_record_event_message(
 			fprintf(
 			 export_handle->notify_stream,
 			 "String: %d\t\t\t: ",
-			 value_string_index );
+			 value_string_index + 1 );
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libevt_record_get_utf16_string_size(

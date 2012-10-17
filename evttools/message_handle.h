@@ -30,6 +30,7 @@
 #include "evttools_libfcache.h"
 /* TODO refactor ? */
 #include "evttools_libregf.h"
+#include "message_file.h"
 #include "path_handle.h"
 #include "registry_file.h"
 
@@ -77,6 +78,14 @@ struct message_handle
 	 */
 	size_t system_root_path_size;
 
+	/* The %WinDir% path
+	 */
+	libcstring_system_character_t *windows_directory_path;
+
+	/* The %WinDir% path size
+	 */
+	size_t windows_directory_path_size;
+
 	/* The SYSTEM registry file
 	 */
 	registry_file_t *system_registry_file;
@@ -108,6 +117,14 @@ struct message_handle
 	/* The next available message file cache index
 	 */
 	int next_message_file_cache_index;
+
+	/* The MUI message file cache
+	 */
+	libfcache_cache_t *mui_message_file_cache;
+
+	/* The next available MUI message file cache index
+	 */
+	int next_mui_message_file_cache_index;
 
 	/* The ascii codepage
 	 */
@@ -174,7 +191,6 @@ int message_handle_open_system_registry_file(
      const char *eventlog_key_name,
      libcerror_error_t **error );
 
-/* TODO support message database */
 int message_handle_open_input(
      message_handle_t *message_handle,
      const char *eventlog_key_name,
@@ -200,6 +216,44 @@ int message_handle_get_message_file_path(
      size_t message_filename_length,
      libcstring_system_character_t **message_file_path,
      size_t *message_file_path_size,
+     libcerror_error_t **error );
+
+int message_handle_get_message_file(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     const libcstring_system_character_t *message_file_path,
+     message_file_t **message_file,
+     libcerror_error_t **error );
+
+int message_handle_get_message_file_from_cache(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     message_file_t **message_file,
+     libcerror_error_t **error );
+
+int message_handle_get_mui_message_file_path(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     libcstring_system_character_t **message_file_path,
+     size_t *message_file_path_size,
+     libcerror_error_t **error );
+
+int message_handle_get_mui_message_file(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     const libcstring_system_character_t *message_file_path,
+     message_file_t **message_file,
+     libcerror_error_t **error );
+
+int message_handle_get_mui_message_file_from_cache(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *message_filename,
+     size_t message_filename_length,
+     message_file_t **message_file,
      libcerror_error_t **error );
 
 int message_handle_get_message_string_from_message_file(
