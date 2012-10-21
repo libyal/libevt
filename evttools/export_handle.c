@@ -1020,8 +1020,9 @@ int export_handle_message_string_fprint(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-				 "%s: unsupported conversion specifier.",
-				 function );
+				 "%s: unsupported conversion specifier: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 function,
+				 &( message_string[ message_string_index ] ) );
 
 				goto on_error;
 			}
@@ -1041,15 +1042,16 @@ int export_handle_message_string_fprint(
 		 	if( ( ( message_string_index + conversion_specifier_length + 3 ) < message_string_length )
 			 && ( message_string[ message_string_index + conversion_specifier_length ] == (libcstring_system_character_t) '!' ) )
 			{
-				if( ( message_string[ message_string_index + conversion_specifier_length ] != (libcstring_system_character_t) 's' )
-				 || ( message_string[ message_string_index + conversion_specifier_length + 1 ] != (libcstring_system_character_t) '!' ) )
+				if( ( message_string[ message_string_index + conversion_specifier_length + 1 ] != (libcstring_system_character_t) 's' )
+				 || ( message_string[ message_string_index + conversion_specifier_length + 2 ] != (libcstring_system_character_t) '!' ) )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-					 "%s: unsupported conversion specifier.",
-					 function );
+					 "%s: unsupported conversion specifier: %" PRIs_LIBCSTRING_SYSTEM ".",
+					 function,
+					 &( message_string[ message_string_index ] ) );
 
 					goto on_error;
 				}
