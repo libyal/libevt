@@ -984,9 +984,19 @@ int export_handle_message_string_fprint(
 /* TODO add support for more conversion specifiers */
 			/* Ignore %0 = end of string, %r = cariage return */
 			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
-			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
 			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
 			{
+				message_string_index += 2;
+
+				continue;
+			}
+			/* Replace %b = space */
+			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
+			{
+				fprintf(
+				 export_handle->notify_stream,
+				 " " );
+
 				message_string_index += 2;
 
 				continue;
@@ -1711,11 +1721,11 @@ int export_handle_export_record(
 {
 	libcstring_system_character_t posix_time_string[ 32 ];
 
-	libcstring_system_character_t *event_source = NULL;
+	libcstring_system_character_t *source_name  = NULL;
 	libcstring_system_character_t *value_string = NULL;
 	libfdatetime_posix_time_t *posix_time       = NULL;
 	static char *function                       = "export_handle_export_record";
-	size_t event_source_size                    = 0;
+	size_t source_name_size                     = 0;
 	size_t value_string_size                    = 0;
 	uint32_t event_identifier                   = 0;
 	uint32_t value_32bit                        = 0;
@@ -2068,12 +2078,12 @@ int export_handle_export_record(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_source_name_size(
 	          record,
-	          &event_source_size,
+	          &source_name_size,
 	          error );
 #else
 	result = libevt_record_get_utf8_source_name_size(
 	          record,
-	          &event_source_size,
+	          &source_name_size,
 	          error );
 #endif
 	if( result == -1 )
@@ -2088,12 +2098,12 @@ int export_handle_export_record(
 		goto on_error;
 	}
 	if( ( result != 0 )
-	 && ( event_source_size > 0 ) )
+	 && ( source_name_size > 0 ) )
 	{
-		event_source = libcstring_system_string_allocate(
-		                event_source_size );
+		source_name = libcstring_system_string_allocate(
+		               source_name_size );
 
-		if( event_source == NULL )
+		if( source_name == NULL )
 		{
 			libcerror_error_set(
 			 error,
@@ -2107,14 +2117,14 @@ int export_handle_export_record(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_source_name(
 		          record,
-		          (uint16_t *) event_source,
-		          event_source_size,
+		          (uint16_t *) source_name,
+		          source_name_size,
 		          error );
 #else
 		result = libevt_record_get_utf8_source_name(
 		          record,
-		          (uint8_t *) event_source,
-		          event_source_size,
+		          (uint8_t *) source_name,
+		          source_name_size,
 		          error );
 #endif
 		if( result != 1 )
@@ -2131,13 +2141,13 @@ int export_handle_export_record(
 		fprintf(
 		 export_handle->notify_stream,
 		 "Source name\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-		 event_source );
+		 source_name );
 	}
 	if( export_handle_export_record_event_category(
 	     export_handle,
 	     record,
-	     event_source,
-	     event_source_size - 1,
+	     source_name,
+	     source_name_size - 1,
 	     log_handle,
 	     error ) != 1 )
 	{
@@ -2172,8 +2182,8 @@ int export_handle_export_record(
 	if( export_handle_export_record_event_message(
 	     export_handle,
 	     record,
-	     event_source,
-	     event_source_size - 1,
+	     source_name,
+	     source_name_size - 1,
 	     event_identifier,
 	     log_handle,
 	     error ) != 1 )
@@ -2191,20 +2201,20 @@ int export_handle_export_record(
 	 export_handle->notify_stream,
 	 "\n" );
 
-	if( event_source != NULL )
+	if( source_name != NULL )
 	{
 		memory_free(
-		 event_source );
+		 source_name );
 
-		event_source = NULL;
+		source_name = NULL;
 	}
 	return( 1 );
 
 on_error:
-	if( event_source != NULL )
+	if( source_name != NULL )
 	{
 		memory_free(
-		 event_source );
+		 source_name );
 	}
 	if( value_string != NULL )
 	{
