@@ -150,10 +150,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\libfwevt\libfwevt_array_type.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libfwevt\libfwevt_debug.c"
 				>
 			</File>
@@ -188,10 +184,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\libfwevt\libfwevt_array_type.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libfwevt\libfwevt_debug.h"
 				>
 			</File>
@@ -208,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_libcdata.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_libcerror.h"
 				>
 			</File>
@@ -217,14 +213,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libfwevt\libfwevt_libcstring.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libfwevt\libfwevt_libfdatetime.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libfwevt\libfwevt_libfguid.h"
 				>
 			</File>
 			<File

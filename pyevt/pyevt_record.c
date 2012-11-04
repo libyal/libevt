@@ -56,7 +56,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyevt_record_get_creation_time_as_integer,
 	  METH_NOARGS,
-	  "get_creation_time_as_integer() -> Integer\n"
+	  "get_creation_time_as_integer() -> Long\n"
 	  "\n"
 	  "Returns the creation date and time as a 64-bit integer containing a FILETIME value" },
 
@@ -70,7 +70,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_written_time_as_integer",
 	  (PyCFunction) pyevt_record_get_written_time_as_integer,
 	  METH_NOARGS,
-	  "get_written_time_as_integer() -> Integer\n"
+	  "get_written_time_as_integer() -> Long\n"
 	  "\n"
 	  "Returns the written date and time as a 64-bit integer containing a FILETIME value" },
 
@@ -510,7 +510,7 @@ PyObject *pyevt_record_get_identifier(
 }
 
 /* Retrieves the creation date and time
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time(
            pyevt_record_t *pyevt_record )
@@ -573,7 +573,7 @@ PyObject *pyevt_record_get_creation_time(
 }
 
 /* Retrieves the creation date and time as an integer
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time_as_integer(
            pyevt_record_t *pyevt_record )
@@ -628,6 +628,19 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 		return( NULL );
 	}
+#if defined( HAVE_LONG_LONG )
+	if( (uint64_t) posix_time > (uint64_t) LLONG_MAX )
+	{
+		PyErr_Format(
+		 PyExc_OverflowError,
+		 "%s: POSIX time value exceeds maximum.",
+		 function );
+
+		return( NULL );
+	}
+	return( PyLong_FromLongLong(
+	         (long long) posix_time ) );
+#else
 	if( (uint64_t) posix_time > (uint64_t) LONG_MAX )
 	{
 		PyErr_Format(
@@ -637,12 +650,13 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 		return( NULL );
 	}
-	return( PyInt_FromLong(
+	return( PyLong_FromLong(
 	         (long) posix_time ) );
+#endif
 }
 
 /* Retrieves the written date and time
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time(
            pyevt_record_t *pyevt_record )
@@ -705,7 +719,7 @@ PyObject *pyevt_record_get_written_time(
 }
 
 /* Retrieves the written date and time as an integer
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time_as_integer(
            pyevt_record_t *pyevt_record )
@@ -760,6 +774,19 @@ PyObject *pyevt_record_get_written_time_as_integer(
 
 		return( NULL );
 	}
+#if defined( HAVE_LONG_LONG )
+	if( (uint64_t) posix_time > (uint64_t) LLONG_MAX )
+	{
+		PyErr_Format(
+		 PyExc_OverflowError,
+		 "%s: POSIX time value exceeds maximum.",
+		 function );
+
+		return( NULL );
+	}
+	return( PyLong_FromLongLong(
+	         (long long) posix_time ) );
+#else
 	if( (uint64_t) posix_time > (uint64_t) LONG_MAX )
 	{
 		PyErr_Format(
@@ -769,8 +796,9 @@ PyObject *pyevt_record_get_written_time_as_integer(
 
 		return( NULL );
 	}
-	return( PyInt_FromLong(
+	return( PyLong_FromLong(
 	         (long) posix_time ) );
+#endif
 }
 
 /* Retrieves the event identifier

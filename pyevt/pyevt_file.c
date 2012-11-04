@@ -788,7 +788,7 @@ PyObject *pyevt_file_close(
 }
 
 /* Retrieves the codepage used for ASCII strings in the file
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_ascii_codepage(
            pyevt_file_t *pyevt_file )
@@ -867,7 +867,7 @@ PyObject *pyevt_file_get_ascii_codepage(
 }
 
 /* Sets the codepage used for ASCII strings in the file
- * Returns a Python object holding the offset if successful or NULL on error
+ * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_set_ascii_codepage(
            pyevt_file_t *pyevt_file,

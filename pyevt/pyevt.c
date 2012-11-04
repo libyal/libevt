@@ -97,7 +97,7 @@ PyObject *pyevt_get_access_flags_read(
 	         (long) libevt_get_access_flags_read() ) );
 }
 
-/* Checks if the file has a Windows Event Log file signature
+/* Checks if the file has a Windows Event Log (EVT) file signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature(
