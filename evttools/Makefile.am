@@ -49,10 +49,11 @@ evtexport_SOURCES = \
 	evttools_libuna.h \
 	evttools_libwrc.h \
 	log_handle.c log_handle.h \
-	message_file.c message_file.h \
 	message_handle.c message_handle.h \
+	message_string.c message_string.h \
 	path_handle.c path_handle.h \
-	registry_file.c registry_file.h
+	registry_file.c registry_file.h \
+	resource_file.c resource_file.h
 
 evtexport_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
@@ -105,8 +106,8 @@ distclean: clean
 	/bin/rm -f Makefile
 
 splint:
-	@echo "Running splint on evtexport ..." 
-	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(evtexport_SOURCES) 
-	@echo "Running splint on evtinfo ..." 
-	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(evtinfo_SOURCES) 
+	@echo "Running splint on evtexport ..."
+	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(evtexport_SOURCES)
+	@echo "Running splint on evtinfo ..."
+	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(evtinfo_SOURCES)
 

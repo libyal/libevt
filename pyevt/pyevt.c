@@ -51,7 +51,7 @@ PyMethodDef pyevt_module_methods[] = {
 	{ "check_file_signature",
 	  (PyCFunction) pyevt_check_file_signature,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "Checks if a file has a Windows Event Log file signature" },
+	  "Checks if a file has a Windows Event Log (EVT) file signature" },
 
 	{ "open",
 	  (PyCFunction) pyevt_file_new_open,
@@ -175,16 +175,18 @@ PyMODINIT_FUNC initpyevt(
 	PyTypeObject *records_type_object = NULL;
 	PyGILState_STATE gil_state        = 0;
 
-	PyEval_InitThreads();
-
-	gil_state = PyGILState_Ensure();
-
 	/* Create the module
+	 * This function must be called before grabbing the GIL
+	 * otherwise the module will segfault on a version mismatch
 	 */
 	module = Py_InitModule3(
 	          "pyevt",
-	           pyevt_module_methods,
-	           "Python libevt module (pyevt)." );
+	          pyevt_module_methods,
+	          "Python libevt module (pyevt)." );
+
+	PyEval_InitThreads();
+
+	gil_state = PyGILState_Ensure();
 
 	/* Setup the file type object
 	 */
@@ -193,7 +195,7 @@ PyMODINIT_FUNC initpyevt(
 	if( PyType_Ready(
 	     &pyevt_file_type_object ) < 0 )
 	{
-		return;
+		goto on_error;
 	}
 	Py_IncRef(
 	 (PyObject *) &pyevt_file_type_object );
@@ -212,7 +214,7 @@ PyMODINIT_FUNC initpyevt(
 	if( PyType_Ready(
 	     &pyevt_records_type_object ) < 0 )
 	{
-		return;
+		goto on_error;
 	}
 	Py_IncRef(
 	 (PyObject *) &pyevt_records_type_object );
@@ -231,7 +233,7 @@ PyMODINIT_FUNC initpyevt(
 	if( PyType_Ready(
 	     &pyevt_record_type_object ) < 0 )
 	{
-		return;
+		goto on_error;
 	}
 	Py_IncRef(
 	 (PyObject *) &pyevt_record_type_object );
@@ -243,6 +245,7 @@ PyMODINIT_FUNC initpyevt(
 	 "record",
 	 (PyObject *) record_type_object );
 
+on_error:
 	PyGILState_Release(
 	 gil_state );
 }

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="evtexport"
-	ProjectGUID="{C27BEBA4-D27C-4E67-96D4-B5B8DD355641}"
-	RootNamespace="evtexport"
+	Name="pyevt"
+	ProjectGUID="{E221DB4C-B254-47CB-993D-DC7FED580DA1}"
+	RootNamespace="pyevt"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -20,7 +20,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -41,8 +41,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libexe;..\..\libregf;..\..\libwrc;..\..\libcsystem"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBEXE;HAVE_LOCAL_LIBREGF;HAVE_LOCAL_LIBWRC;HAVE_LOCAL_LIBCSYSTEM;LIBEVT_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;C:\Python27\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;LIBEVT_DLL_IMPORT"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
@@ -61,8 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName).pyd"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;C:\Python27\libs"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -119,8 +120,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt;..\..\libexe;..\..\libregf;..\..\libwrc;..\..\libcsystem"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBEXE;HAVE_LOCAL_LIBREGF;HAVE_LOCAL_LIBWRC;HAVE_LOCAL_LIBCSYSTEM;LIBEVT_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;C:\Python27\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCSTRING;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;LIBEVT_DLL_IMPORT"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
@@ -141,8 +142,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName).pyd"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;C:\Python27\libs"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -183,43 +185,39 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtexport.c"
+				RelativePath="..\..\pyevt\pyevt.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evtinput.c"
+				RelativePath="..\..\pyevt\pyevt_codepage.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evtoutput.c"
+				RelativePath="..\..\pyevt\pyevt_datetime.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\export_handle.c"
+				RelativePath="..\..\pyevt\pyevt_file.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\log_handle.c"
+				RelativePath="..\..\pyevt\pyevt_file_object_io_handle.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\message_handle.c"
+				RelativePath="..\..\pyevt\pyevt_key.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\message_string.c"
+				RelativePath="..\..\pyevt\pyevt_keys.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\path_handle.c"
+				RelativePath="..\..\pyevt\pyevt_value.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\registry_file.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\resource_file.c"
+				RelativePath="..\..\pyevt\pyevt_values.c"
 				>
 			</File>
 		</Filter>
@@ -229,95 +227,63 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtinput.h"
+				RelativePath="..\..\pyevt\pyevt.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evtoutput.h"
+				RelativePath="..\..\pyevt\pyevt_codepage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcdirectory.h"
+				RelativePath="..\..\pyevt\pyevt_datetime.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcerror.h"
+				RelativePath="..\..\pyevt\pyevt_file.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libclocale.h"
+				RelativePath="..\..\pyevt\pyevt_file_object_io_handle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcnotify.h"
+				RelativePath="..\..\pyevt\pyevt_key.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcpath.h"
+				RelativePath="..\..\pyevt\pyevt_keys.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcstring.h"
+				RelativePath="..\..\pyevt\pyevt_libbfio.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libcsystem.h"
+				RelativePath="..\..\pyevt\pyevt_libcerror.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libevt.h"
+				RelativePath="..\..\pyevt\pyevt_libclocale.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libexe.h"
+				RelativePath="..\..\pyevt\pyevt_libcstring.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libfcache.h"
+				RelativePath="..\..\pyevt\pyevt_libevt.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libfdatetime.h"
+				RelativePath="..\..\pyevt\pyevt_python.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libregf.h"
+				RelativePath="..\..\pyevt\pyevt_value.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\evttools_libuna.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\evttools_libwrc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\export_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\log_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\message_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\message_string.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\path_handle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\registry_file.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\resource_file.h"
+				RelativePath="..\..\pyevt\pyevt_values.h"
 				>
 			</File>
 		</Filter>

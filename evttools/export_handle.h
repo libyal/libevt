@@ -31,6 +31,7 @@
 #include "evttools_libevt.h"
 #include "log_handle.h"
 #include "message_handle.h"
+#include "message_string.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -138,7 +139,7 @@ int export_handle_set_registry_directory_name(
      const libcstring_system_character_t *name,
      libcerror_error_t **error );
 
-int export_handle_set_message_files_path(
+int export_handle_set_resource_files_path(
      export_handle_t *export_handle,
      const libcstring_system_character_t *path,
      libcerror_error_t **error );
@@ -156,8 +157,7 @@ int export_handle_close_input(
  */
 int export_handle_message_string_fprint(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *message_string,
-     size_t message_string_length,
+     message_string_t *message_string,
      libevt_record_t *record,
      libcerror_error_t **error );
 

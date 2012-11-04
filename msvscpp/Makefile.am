@@ -24,6 +24,7 @@ EXTRA_DIST = \
 	libregf/libregf.vcproj \
 	libuna/libuna.vcproj \
 	libwrc/libwrc.vcproj \
+	pyevt/pyevt.vcproj \
 	libevt.sln
 
 MAINTAINERCLEANFILES = \

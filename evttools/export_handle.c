@@ -33,8 +33,9 @@
 #include "evttools_libfdatetime.h"
 #include "export_handle.h"
 #include "log_handle.h"
-#include "message_file.h"
 #include "message_handle.h"
+#include "message_string.h"
+#include "resource_file.h"
 
 #define EXPORT_HANDLE_NOTIFY_STREAM		stdout
 
@@ -712,15 +713,15 @@ int export_handle_set_registry_directory_name(
 	return( 1 );
 }
 
-/* Sets the path of the message files
+/* Sets the path of the resource files
  * Returns 1 if successful or -1 error
  */
-int export_handle_set_message_files_path(
+int export_handle_set_resource_files_path(
      export_handle_t *export_handle,
      const libcstring_system_character_t *path,
      libcerror_error_t **error )
 {
-	static char *function = "export_handle_set_message_files_path";
+	static char *function = "export_handle_set_resource_files_path";
 
 	if( export_handle == NULL )
 	{
@@ -733,7 +734,7 @@ int export_handle_set_message_files_path(
 
 		return( -1 );
 	}
-	if( message_handle_set_message_files_path(
+	if( message_handle_set_resource_files_path(
 	     export_handle->message_handle,
 	     path,
 	     error ) != 1 )
@@ -742,7 +743,7 @@ int export_handle_set_message_files_path(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set message files path in message handle.",
+		 "%s: unable to set resource files path in message handle.",
 		 function );
 
 		return( -1 );
@@ -898,8 +899,7 @@ int export_handle_close_input(
  */
 int export_handle_message_string_fprint(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *message_string,
-     size_t message_string_length,
+     message_string_t *message_string,
      libevt_record_t *record,
      libcerror_error_t **error )
 {
@@ -907,6 +907,7 @@ int export_handle_message_string_fprint(
 	static char *function                       = "export_handle_message_string_fprint";
 	size_t conversion_specifier_length          = 0;
 	size_t message_string_index                 = 0;
+	size_t message_string_length                = 0;
 	size_t value_string_size                    = 0;
 	int number_of_strings                       = 0;
 	int result                                  = 0;
@@ -934,17 +935,6 @@ int export_handle_message_string_fprint(
 
 		return( -1 );
 	}
-	if( message_string_length > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid message string length value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
 	if( libevt_record_get_number_of_strings(
 	     record,
 	     &number_of_strings,
@@ -963,7 +953,7 @@ int export_handle_message_string_fprint(
 	fprintf(
 	 export_handle->notify_stream,
 	 "Message format string\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
-	 message_string );
+	 message_string->string );
 
 	fprintf(
 	 export_handle->notify_stream,
@@ -974,24 +964,25 @@ int export_handle_message_string_fprint(
 	 export_handle->notify_stream,
 	 "Message string\t\t\t: " );
 
-	message_string_index = 0;
+	message_string_length = message_string->string_size - 1;
+	message_string_index  = 0;
 
 	while( message_string_index < message_string_length )
 	{
-		if( ( message_string[ message_string_index ] == (libcstring_system_character_t) '%' )
+		if( ( ( message_string->string )[ message_string_index ] == (libcstring_system_character_t) '%' )
 		 && ( ( message_string_index + 1 ) < message_string_length ) )
 		{
 /* TODO add support for more conversion specifiers */
 			/* Ignore %0 = end of string, %r = cariage return */
-			if( ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
-			 || ( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
+			if( ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '0' )
+			 || ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 'r' ) )
 			{
 				message_string_index += 2;
 
 				continue;
 			}
 			/* Replace %b = space */
-			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
+			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
 			{
 				fprintf(
 				 export_handle->notify_stream,
@@ -1002,7 +993,7 @@ int export_handle_message_string_fprint(
 				continue;
 			}
 			/* Replace %n = new line */
-			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
+			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
 			{
 				fprintf(
 				 export_handle->notify_stream,
@@ -1013,7 +1004,7 @@ int export_handle_message_string_fprint(
 				continue;
 			}
 			/* Replace %t = tab */
-			if( message_string[ message_string_index + 1 ] == (libcstring_system_character_t) 't' )
+			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 't' )
 			{
 				fprintf(
 				 export_handle->notify_stream,
@@ -1023,8 +1014,8 @@ int export_handle_message_string_fprint(
 
 				continue;
 			}
-			if( ( message_string[ message_string_index + 1 ] < (libcstring_system_character_t) '1' )
-			 || ( message_string[ message_string_index + 1 ] > (libcstring_system_character_t) '9' ) )
+			if( ( ( message_string->string )[ message_string_index + 1 ] < (libcstring_system_character_t) '1' )
+			 || ( ( message_string->string )[ message_string_index + 1 ] > (libcstring_system_character_t) '9' ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1032,28 +1023,28 @@ int export_handle_message_string_fprint(
 				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
 				 "%s: unsupported conversion specifier: %" PRIs_LIBCSTRING_SYSTEM ".",
 				 function,
-				 &( message_string[ message_string_index ] ) );
+				 &( ( message_string->string )[ message_string_index ] ) );
 
 				goto on_error;
 			}
-			value_string_index = (int) message_string[ message_string_index + 1 ] - (int) '0' - 1;
+			value_string_index = (int) ( message_string->string )[ message_string_index + 1 ] - (int) '0' - 1;
 
 			conversion_specifier_length = 2;
 
 		 	if( ( ( message_string_index + 3 ) < message_string_length )
-			 && ( message_string[ message_string_index + 2 ] >= (libcstring_system_character_t) '0' )
-			 && ( message_string[ message_string_index + 2 ] <= (libcstring_system_character_t) '9' ) )
+			 && ( ( message_string->string )[ message_string_index + 2 ] >= (libcstring_system_character_t) '0' )
+			 && ( ( message_string->string )[ message_string_index + 2 ] <= (libcstring_system_character_t) '9' ) )
 			{
 				value_string_index *= 10;
-				value_string_index += (int) message_string[ message_string_index + 2 ] - (int) '0';
+				value_string_index += (int) ( message_string->string )[ message_string_index + 2 ] - (int) '0';
 
 				conversion_specifier_length += 1;
 			}
 		 	if( ( ( message_string_index + conversion_specifier_length + 3 ) < message_string_length )
-			 && ( message_string[ message_string_index + conversion_specifier_length ] == (libcstring_system_character_t) '!' ) )
+			 && ( ( message_string->string )[ message_string_index + conversion_specifier_length ] == (libcstring_system_character_t) '!' ) )
 			{
-				if( ( message_string[ message_string_index + conversion_specifier_length + 1 ] != (libcstring_system_character_t) 's' )
-				 || ( message_string[ message_string_index + conversion_specifier_length + 2 ] != (libcstring_system_character_t) '!' ) )
+				if( ( ( message_string->string )[ message_string_index + conversion_specifier_length + 1 ] != (libcstring_system_character_t) 's' )
+				 || ( ( message_string->string )[ message_string_index + conversion_specifier_length + 2 ] != (libcstring_system_character_t) '!' ) )
 				{
 					libcerror_error_set(
 					 error,
@@ -1061,7 +1052,7 @@ int export_handle_message_string_fprint(
 					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
 					 "%s: unsupported conversion specifier: %" PRIs_LIBCSTRING_SYSTEM ".",
 					 function,
-					 &( message_string[ message_string_index ] ) );
+					 &( ( message_string->string )[ message_string_index ] ) );
 
 					goto on_error;
 				}
@@ -1149,12 +1140,12 @@ int export_handle_message_string_fprint(
 		}
 		else
 		{
-			if( message_string[ message_string_index ] != 0 )
+			if( ( message_string->string )[ message_string_index ] != 0 )
 			{
 				fprintf(
 				 export_handle->notify_stream,
 				 "%" PRIc_LIBCSTRING_SYSTEM "",
-				 message_string[ message_string_index ] );
+				 ( message_string->string )[ message_string_index ] );
 			}
 			message_string_index += 1;
 		}
@@ -1186,11 +1177,10 @@ int export_handle_export_record_event_category(
      libcerror_error_t **error )
 {
 	libcstring_system_character_t *message_filename = NULL;
-	libcstring_system_character_t *message_string   = NULL;
+	message_string_t *message_string                = NULL;
 	static char *function                           = "export_handle_export_record_event_category";
 	size_t message_filename_size                    = 0;
 	size_t message_string_index                     = 0;
-	size_t message_string_size                      = 0;
 	uint16_t event_category                         = 0;
 	int result                                      = 0;
 
@@ -1221,7 +1211,7 @@ int export_handle_export_record_event_category(
 	}
 	if( event_source != NULL )
 	{
-		result = message_handle_get_message_filename(
+		result = message_handle_get_value_by_event_source(
 		          export_handle->message_handle,
 		          event_source,
 		          event_source_length,
@@ -1237,7 +1227,7 @@ int export_handle_export_record_event_category(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve message filename.",
+			 "%s: unable to retrieve category message filename.",
 			 function );
 
 			goto on_error;
@@ -1255,7 +1245,6 @@ int export_handle_export_record_event_category(
 				  message_filename_size - 1,
 				  (uint32_t) event_category,
 				  &message_string,
-				  &message_string_size,
 				  error );
 
 			if( result == -1 )
@@ -1280,25 +1269,20 @@ int export_handle_export_record_event_category(
 	if( message_string != NULL )
 	{
 		for( message_string_index = 0;
-		     message_string_index < message_string_size;
+		     message_string_index < message_string->string_size;
 		     message_string_index++ )
 		{
-			if( ( message_string[ message_string_index ] == (libcstring_system_character_t) '\n' )
-			 || ( message_string[ message_string_index ] == (libcstring_system_character_t) '\r' ) )
+			if( ( ( message_string->string )[ message_string_index ] == (libcstring_system_character_t) '\n' )
+			 || ( ( message_string->string )[ message_string_index ] == (libcstring_system_character_t) '\r' ) )
 			{
-				message_string[ message_string_index ] = 0;
+				( message_string->string )[ message_string_index ] = 0;
 			}
 		}
 		fprintf(
 		 export_handle->notify_stream,
 		 "Event category\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " (%" PRIu16 ")\n",
-		 message_string,
+		 message_string->string,
 		 event_category );
-
-		memory_free(
-		 message_string );
-
-		message_string = NULL;
 	}
 	else
 	{
@@ -1310,11 +1294,6 @@ int export_handle_export_record_event_category(
 	return( 1 );
 
 on_error:
-	if( message_string != NULL )
-	{
-		memory_free(
-		 message_string );
-	}
 	if( message_filename != NULL )
 	{
 		memory_free(
@@ -1335,26 +1314,15 @@ int export_handle_export_record_event_message(
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *message_filename                = NULL;
-	libcstring_system_character_t *message_filename_string_segment = NULL;
-	libcstring_system_character_t *message_string                  = NULL;
-	libcstring_system_character_t *value_string                    = NULL;
-	static char *function                                          = "export_handle_export_record_event_message";
-	size_t message_filename_size                                   = 0;
-	size_t message_filename_string_segment_size                    = 0;
-	size_t message_string_size                                     = 0;
-	size_t value_string_size                                       = 0;
-	int message_filename_number_of_segments                        = 0;
-	int message_filename_segment_index                             = 0;
-	int number_of_strings                                          = 0;
-	int result                                                     = 0;
-	int value_string_index                                         = 0;
-
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	libcsplit_wide_split_string_t *message_filename_split_string   = NULL;
-#else
-	libcsplit_narrow_split_string_t *message_filename_split_string = NULL;
-#endif
+	libcstring_system_character_t *message_filename = NULL;
+	message_string_t *message_string                = NULL;
+	libcstring_system_character_t *value_string     = NULL;
+	static char *function                           = "export_handle_export_record_event_message";
+	size_t message_filename_size                    = 0;
+	size_t value_string_size                        = 0;
+	int number_of_strings                           = 0;
+	int result                                      = 0;
+	int value_string_index                          = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1369,7 +1337,7 @@ int export_handle_export_record_event_message(
 	}
 	if( event_source != NULL )
 	{
-		result = message_handle_get_message_filename(
+		result = message_handle_get_value_by_event_source(
 		          export_handle->message_handle,
 		          event_source,
 		          event_source_length,
@@ -1397,141 +1365,24 @@ int export_handle_export_record_event_message(
 			 "Message filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 			 message_filename );
 
-			/* The message filename can contain multiple file names
-			 * separated by ;
-			 */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libcsplit_wide_string_split(
-			     message_filename,
-			     message_filename_size,
-			     (libcstring_system_character_t) ';',
-			     &message_filename_split_string,
-			     error ) != 1 )
-#else
-			if( libcsplit_narrow_string_split(
-			     message_filename,
-			     message_filename_size,
-			     (libcstring_system_character_t) ';',
-			     &message_filename_split_string,
-			     error ) != 1 )
-#endif
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to split message filename.",
-				 function );
+			result = message_handle_get_message_string(
+				  export_handle->message_handle,
+				  message_filename,
+				  message_filename_size - 1,
+				  event_identifier,
+				  &message_string,
+				  error );
 
-				goto on_error;
-			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libcsplit_wide_split_string_get_number_of_segments(
-			     message_filename_split_string,
-			     &message_filename_number_of_segments,
-			     error ) != 1 )
-#else
-			if( libcsplit_narrow_split_string_get_number_of_segments(
-			     message_filename_split_string,
-			     &message_filename_number_of_segments,
-			     error ) != 1 )
-#endif
+			if( result == -1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve number of message filename string segments.",
-				 function );
-
-				goto on_error;
-			}
-			for( message_filename_segment_index = 0;
-			     message_filename_segment_index < message_filename_number_of_segments;
-			     message_filename_segment_index++ )
-			{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-				if( libcsplit_wide_split_string_get_segment_by_index(
-				     message_filename_split_string,
-				     message_filename_segment_index,
-				     &message_filename_string_segment,
-				     &message_filename_string_segment_size,
-				     error ) != 1 )
-#else
-				if( libcsplit_narrow_split_string_get_segment_by_index(
-				     message_filename_split_string,
-				     message_filename_segment_index,
-				     &message_filename_string_segment,
-				     &message_filename_string_segment_size,
-				     error ) != 1 )
-#endif
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to retrieve message filename string segment: %d.",
-					 function,
-					 message_filename_segment_index );
-
-					goto on_error;
-				}
-				if( message_filename_string_segment == NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-					 "%s: missing message filename string segment: %d.",
-					 function,
-					 message_filename_segment_index );
-
-					goto on_error;
-				}
-/* TODO check if file is a MUI file and bail out ? */
-				result = message_handle_get_message_string(
-					  export_handle->message_handle,
-					  message_filename_string_segment,
-					  message_filename_string_segment_size - 1,
-					  event_identifier,
-					  &message_string,
-					  &message_string_size,
-					  error );
-
-				if( result == -1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
-					 function,
-					 event_identifier,
-					 message_filename_string_segment );
-
-					goto on_error;
-				}
-				else if( result != 0 )
-				{
-					break;
-				}
-			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libcsplit_wide_split_string_free(
-			     &message_filename_split_string,
-			     error ) != 1 )
-#else
-			if( libcsplit_narrow_split_string_free(
-			     &message_filename_split_string,
-			     error ) != 1 )
-#endif
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free message filename split string.",
-				 function );
+				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 function,
+				 event_identifier,
+				 message_filename );
 
 				goto on_error;
 			}
@@ -1546,7 +1397,6 @@ int export_handle_export_record_event_message(
 		if( export_handle_message_string_fprint(
 		     export_handle,
 		     message_string,
-		     message_string_size - 1,
 		     record,
 		     error ) != 1 )
 		{
@@ -1559,10 +1409,6 @@ int export_handle_export_record_event_message(
 
 			goto on_error;
 		}
-		memory_free(
-		 message_string );
-
-		message_string = NULL;
 	}
 	else
 	{
@@ -1684,23 +1530,6 @@ on_error:
 	{
 		memory_free(
 		 value_string );
-	}
-	if( message_string != NULL )
-	{
-		memory_free(
-		 message_string );
-	}
-	if( message_filename_split_string != NULL )
-	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		libcsplit_wide_split_string_free(
-		 &message_filename_split_string,
-		 NULL );
-#else
-		libcsplit_narrow_split_string_free(
-		 &message_filename_split_string,
-		 NULL );
-#endif
 	}
 	if( message_filename != NULL )
 	{

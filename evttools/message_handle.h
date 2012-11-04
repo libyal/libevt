@@ -28,11 +28,11 @@
 #include "evttools_libcerror.h"
 #include "evttools_libcstring.h"
 #include "evttools_libfcache.h"
-/* TODO refactor ? */
 #include "evttools_libregf.h"
-#include "message_file.h"
+#include "message_string.h"
 #include "path_handle.h"
 #include "registry_file.h"
+#include "resource_file.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -98,33 +98,37 @@ struct message_handle
 	 */
 	uint32_t current_control_set;
 
-	/* The control set 1 key
+	/* The SOFTWARE WinEvt publishers key
 	 */
-	libregf_key_t *control_set1_key;
+	libregf_key_t *winevt_publishers_key;
 
-	/* The control set 2 key
+	/* The SYSTEM (control set 1) eventlog services key
 	 */
-	libregf_key_t *control_set2_key;
+	libregf_key_t *control_set_1_eventlog_services_key;
 
-	/* The messages files path
+	/* The SYSTEM (control set 2) eventlog services key
 	 */
-	const libcstring_system_character_t *message_files_path;
+	libregf_key_t *control_set_2_eventlog_services_key;
 
-	/* The message file cache
+	/* The resource files path
 	 */
-	libfcache_cache_t *message_file_cache;
+	const libcstring_system_character_t *resource_files_path;
 
-	/* The next available message file cache index
+	/* The resource file cache
 	 */
-	int next_message_file_cache_index;
+	libfcache_cache_t *resource_file_cache;
 
-	/* The MUI message file cache
+	/* The next available resource file cache index
 	 */
-	libfcache_cache_t *mui_message_file_cache;
+	int next_resource_file_cache_index;
 
-	/* The next available MUI message file cache index
+	/* The MUI resource file cache
 	 */
-	int next_mui_message_file_cache_index;
+	libfcache_cache_t *mui_resource_file_cache;
+
+	/* The next available MUI resource file cache index
+	 */
+	int next_mui_resource_file_cache_index;
 
 	/* The ascii codepage
 	 */
@@ -177,7 +181,7 @@ int message_handle_set_registry_directory_name(
      const libcstring_system_character_t *name,
      libcerror_error_t **error );
 
-int message_handle_set_message_files_path(
+int message_handle_set_resource_files_path(
      message_handle_t *message_handle,
      const libcstring_system_character_t *path,
      libcerror_error_t **error );
@@ -200,78 +204,97 @@ int message_handle_close_input(
      message_handle_t *message_handle,
      libcerror_error_t **error );
 
-int message_handle_get_message_filename(
+int message_handle_get_value_by_event_source(
      message_handle_t *message_handle,
      const libcstring_system_character_t *event_source,
      size_t event_source_length,
      const libcstring_system_character_t *value_name,
      size_t value_name_length,
-     libcstring_system_character_t **message_filename,
-     size_t *message_filename_size,
+     libcstring_system_character_t **value_string,
+     size_t *value_string_size,
      libcerror_error_t **error );
 
-int message_handle_get_message_file_path(
+int message_handle_get_value_by_provider_identifier(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     libcstring_system_character_t **message_file_path,
-     size_t *message_file_path_size,
+     const libcstring_system_character_t *provider_identifier,
+     size_t provider_identifier_length,
+     const libcstring_system_character_t *value_name,
+     size_t value_name_length,
+     libcstring_system_character_t **value_string,
+     size_t *value_string_size,
      libcerror_error_t **error );
 
-int message_handle_get_message_file(
+int message_handle_get_resource_file_path(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     const libcstring_system_character_t *message_file_path,
-     message_file_t **message_file,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     const libcstring_system_character_t *language_string,
+     size_t language_string_length,
+     libcstring_system_character_t **resource_file_path,
+     size_t *resource_file_path_size,
      libcerror_error_t **error );
 
-int message_handle_get_message_file_from_cache(
+int message_handle_get_resource_file(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     message_file_t **message_file,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     const libcstring_system_character_t *resource_file_path,
+     resource_file_t **resource_file,
      libcerror_error_t **error );
 
-int message_handle_get_mui_message_file_path(
+int message_handle_get_resource_file_from_cache(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     libcstring_system_character_t **message_file_path,
-     size_t *message_file_path_size,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     resource_file_t **resource_file,
      libcerror_error_t **error );
 
-int message_handle_get_mui_message_file(
+int message_handle_get_mui_resource_file_path(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     const libcstring_system_character_t *message_file_path,
-     message_file_t **message_file,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     libcstring_system_character_t **resource_file_path,
+     size_t *resource_file_path_size,
      libcerror_error_t **error );
 
-int message_handle_get_mui_message_file_from_cache(
+int message_handle_get_mui_resource_file(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
-     message_file_t **message_file,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     const libcstring_system_character_t *resource_file_path,
+     resource_file_t **resource_file,
      libcerror_error_t **error );
 
-int message_handle_get_message_string_from_message_file(
+int message_handle_get_mui_resource_file_from_cache(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     resource_file_t **resource_file,
+     libcerror_error_t **error );
+
+int message_handle_get_message_string_from_resource_file(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
      uint32_t message_identifier,
-     libcstring_system_character_t **message_string,
-     size_t *message_string_size,
+     message_string_t **message_string,
      libcerror_error_t **error );
 
 int message_handle_get_message_string(
      message_handle_t *message_handle,
-     const libcstring_system_character_t *message_filename,
-     size_t message_filename_length,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
      uint32_t message_identifier,
-     libcstring_system_character_t **message_string,
-     size_t *message_string_size,
+     message_string_t **message_string,
+     libcerror_error_t **error );
+
+int message_handle_get_resource_file_by_provider_identifier(
+     message_handle_t *message_handle,
+     const libcstring_system_character_t *resource_filename,
+     size_t resource_filename_length,
+     const uint8_t *provider_identifier,
+     size_t provider_identifier_size,
+     resource_file_t **resource_file,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

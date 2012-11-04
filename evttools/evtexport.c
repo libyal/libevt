@@ -58,7 +58,7 @@ void usage_fprint(
 	                 "Log (EVT) file.\n\n" );
 
 	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -l log_file ] [ -m mode ]\n"
-	                 "                 [ -p message_files_path ] [ -r registy_files_path ]\n"
+	                 "                 [ -p resource_files_path ] [ -r registy_files_path ]\n"
 	                 "                 [ -s system_file ] [ -S software_file ]\n"
 	                 "                 [ -t event_log_type ] [ -hvV ] source\n\n" );
 
@@ -75,7 +75,7 @@ void usage_fprint(
 	                 "\t        'all' exports the (allocated) items and recovered items,\n"
 	                 "\t        'items' exports the (allocated) items and 'recovered' exports\n"
 	                 "\t        the recovered items\n" );
-	fprintf( stream, "\t-p:     search PATH for the message files (default is the current\n"
+	fprintf( stream, "\t-p:     search PATH for the resource files (default is the current\n"
 	                 "\t        working directory)\n" );
 	fprintf( stream, "\t-r:     name of the directory containing the SOFTWARE and SYSTEM\n"
 	                 "\t        (Windows) Registry file\n" );
@@ -143,7 +143,7 @@ int main( int argc, char * const argv[] )
 	libcstring_system_character_t *option_event_log_type             = NULL;
 	libcstring_system_character_t *option_export_mode                = NULL;
 	libcstring_system_character_t *option_log_filename               = NULL;
-	libcstring_system_character_t *option_message_files_path         = NULL;
+	libcstring_system_character_t *option_resource_files_path        = NULL;
 	libcstring_system_character_t *option_preferred_language         = NULL;
 	libcstring_system_character_t *option_registry_directory_name    = NULL;
 	libcstring_system_character_t *option_software_registry_filename = NULL;
@@ -225,7 +225,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (libcstring_system_integer_t) 'p':
-				option_message_files_path = optarg;
+				option_resource_files_path = optarg;
 
 				break;
 
@@ -379,16 +379,16 @@ int main( int argc, char * const argv[] )
 			goto on_error;
 		}
 	}
-	if( option_message_files_path != NULL )
+	if( option_resource_files_path != NULL )
 	{
-		if( export_handle_set_message_files_path(
+		if( export_handle_set_resource_files_path(
 		     evtexport_export_handle,
-		     option_message_files_path,
+		     option_resource_files_path,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
-			 "Unable to set message files path in export handle.\n" );
+			 "Unable to set resource files path in export handle.\n" );
 
 			goto on_error;
 		}

@@ -5,14 +5,14 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/liberror \
 	-I$(top_srcdir)/libsystem
 
-TESTS = 
+TESTS =
 
 check_SCRIPTS =
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
-check_PROGRAMS = 
+check_PROGRAMS =
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
