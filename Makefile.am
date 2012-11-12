@@ -30,8 +30,8 @@ SUBDIRS = \
 	pyevt \
 	po \
 	manuals \
-	examples \
 	tests \
+	examples \
 	msvscpp
 
 DPKG_FILES = \
