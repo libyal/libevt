@@ -20,7 +20,6 @@
  */
 
 #include <common.h>
-#include <memory.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
@@ -988,7 +987,7 @@ PyObject *pyevt_record_get_source_name(
 
 		return( Py_None );
 	}
-	source_name = (uint8_t *) memory_allocate(
+	source_name = (uint8_t *) PyMem_Malloc(
 	                           sizeof( uint8_t ) * source_name_size );
 
 	if( source_name == NULL )
@@ -1044,7 +1043,7 @@ PyObject *pyevt_record_get_source_name(
 			 (Py_ssize_t) source_name_size - 1,
 			 errors );
 
-	memory_free(
+	PyMem_Free(
 	 source_name );
 
 	return( string_object );
@@ -1052,7 +1051,7 @@ PyObject *pyevt_record_get_source_name(
 on_error:
 	if( source_name != NULL )
 	{
-		memory_free(
+		PyMem_Free(
 		 source_name );
 	}
 	return( NULL );
@@ -1125,7 +1124,7 @@ PyObject *pyevt_record_get_computer_name(
 
 		return( Py_None );
 	}
-	computer_name = (uint8_t *) memory_allocate(
+	computer_name = (uint8_t *) PyMem_Malloc(
 	                             sizeof( uint8_t ) * computer_name_size );
 
 	if( computer_name == NULL )
@@ -1181,7 +1180,7 @@ PyObject *pyevt_record_get_computer_name(
 			 (Py_ssize_t) computer_name_size - 1,
 			 errors );
 
-	memory_free(
+	PyMem_Free(
 	 computer_name );
 
 	return( string_object );
@@ -1189,7 +1188,7 @@ PyObject *pyevt_record_get_computer_name(
 on_error:
 	if( computer_name != NULL )
 	{
-		memory_free(
+		PyMem_Free(
 		 computer_name );
 	}
 	return( NULL );
@@ -1262,7 +1261,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 
 		return( Py_None );
 	}
-	user_security_identifier = (uint8_t *) memory_allocate(
+	user_security_identifier = (uint8_t *) PyMem_Malloc(
 	                                        sizeof( uint8_t ) * user_security_identifier_size );
 
 	if( user_security_identifier == NULL )
@@ -1318,7 +1317,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 			 (Py_ssize_t) user_security_identifier_size - 1,
 			 errors );
 
-	memory_free(
+	PyMem_Free(
 	 user_security_identifier );
 
 	return( string_object );
@@ -1326,7 +1325,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 on_error:
 	if( user_security_identifier != NULL )
 	{
-		memory_free(
+		PyMem_Free(
 		 user_security_identifier );
 	}
 	return( NULL );
@@ -1475,7 +1474,7 @@ PyObject *pyevt_record_get_string(
 
 		return( Py_None );
 	}
-	string = (uint8_t *) memory_allocate(
+	string = (uint8_t *) PyMem_Malloc(
 	                      sizeof( uint8_t ) * string_size );
 
 	if( string == NULL )
@@ -1535,7 +1534,7 @@ PyObject *pyevt_record_get_string(
 			 (Py_ssize_t) string_size - 1,
 			 errors );
 
-	memory_free(
+	PyMem_Free(
 	 string );
 
 	return( string_object );
@@ -1543,7 +1542,7 @@ PyObject *pyevt_record_get_string(
 on_error:
 	if( string != NULL )
 	{
-		memory_free(
+		PyMem_Free(
 		 string );
 	}
 	return( NULL );
