@@ -1443,6 +1443,12 @@ on_error:
 		 &( record_values->strings ),
 		 NULL );
 	}
+	if( record_values->user_security_identifier != NULL )
+	{
+		libfvalue_value_free(
+		 &( record_values->user_security_identifier ),
+		 NULL );
+	}
 	if( record_values->computer_name != NULL )
 	{
 		libfvalue_value_free(

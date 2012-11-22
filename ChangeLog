@@ -51,6 +51,7 @@ Notes
 
 20121122
 * pyevt: code clean up
+* fixes in record recovery scan
 
 20121103
 * pyevt: bug fixes

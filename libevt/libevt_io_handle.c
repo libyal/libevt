@@ -1025,8 +1025,6 @@ int libevt_io_handle_event_record_scan(
 
 			goto on_error;
 		}
-		size -= read_count;
-
 		scan_block_offset = 0;
 
 		while( scan_block_offset < read_size )
@@ -1089,17 +1087,6 @@ int libevt_io_handle_event_record_scan(
 
 				if( read_count == -1 )
 				{
-#if defined( HAVE_DEBUG_OUTPUT )
-					if( libcnotify_verbose != 0 )
-					{
-						if( ( error != NULL )
-						 && ( *error != NULL ) )
-						{
-							libcerror_error_free(
-							 error );
-						}
-					}
-#endif
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_IO,
@@ -1136,7 +1123,7 @@ int libevt_io_handle_event_record_scan(
 					}
 					/* Ignore records that cross the scan range
 					 */
-					if( scan_record_size <= size )
+					if( ( scan_block_offset + scan_record_size ) < read_size )
 					{
 						if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
 						{
@@ -1157,14 +1144,14 @@ int libevt_io_handle_event_record_scan(
 							}
 							record_values = NULL;
 						}
-						file_offset += scan_record_size;
-						size        -= scan_record_size;
+						scan_block_offset += scan_record_size;
 					}
 				}
 			}
 			scan_block_offset += 4;
 		}
-		file_offset += read_count;
+		file_offset += read_size;
+		size        -= read_size;
 	}
 	if( record_values != NULL )
 	{
