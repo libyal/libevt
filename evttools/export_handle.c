@@ -902,15 +902,16 @@ int export_handle_message_string_fprint(
      libevt_record_t *record,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *value_string = NULL;
-	static char *function                       = "export_handle_message_string_fprint";
-	size_t conversion_specifier_length          = 0;
-	size_t message_string_index                 = 0;
-	size_t message_string_length                = 0;
-	size_t value_string_size                    = 0;
-	int number_of_strings                       = 0;
-	int result                                  = 0;
-	int value_string_index                      = 0;
+	libcstring_system_character_t *value_string  = NULL;
+	static char *function                        = "export_handle_message_string_fprint";
+	size_t conversion_specifier_length           = 0;
+	size_t message_string_index                  = 0;
+	size_t message_string_length                 = 0;
+	size_t value_string_size                     = 0;
+	libcstring_system_character_t last_character = 0;
+	int number_of_strings                        = 0;
+	int result                                   = 0;
+	int value_string_index                       = 0;
 
 	if( export_handle == NULL )
 	{
@@ -987,6 +988,8 @@ int export_handle_message_string_fprint(
 				 export_handle->notify_stream,
 				 " " );
 
+				last_character = (libcstring_system_character_t) ' ';
+
 				message_string_index += 2;
 
 				continue;
@@ -994,10 +997,14 @@ int export_handle_message_string_fprint(
 			/* Replace %n = new line */
 			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 'n' )
 			{
-				fprintf(
-				 export_handle->notify_stream,
-				 "\n" );
+				if( last_character != (libcstring_system_character_t) '\n' )
+				{
+					fprintf(
+					 export_handle->notify_stream,
+					 "\n" );
 
+					last_character = (libcstring_system_character_t) '\n';
+				}
 				message_string_index += 2;
 
 				continue;
@@ -1008,6 +1015,8 @@ int export_handle_message_string_fprint(
 				fprintf(
 				 export_handle->notify_stream,
 				 "\t" );
+
+				last_character = (libcstring_system_character_t) '\t';
 
 				message_string_index += 2;
 
@@ -1141,10 +1150,16 @@ int export_handle_message_string_fprint(
 		{
 			if( ( message_string->string )[ message_string_index ] != 0 )
 			{
-				fprintf(
-				 export_handle->notify_stream,
-				 "%" PRIc_LIBCSTRING_SYSTEM "",
-				 ( message_string->string )[ message_string_index ] );
+				if( ( ( message_string->string )[ message_string_index ] != (libcstring_system_character_t) '\n' )
+				 && ( last_character != (libcstring_system_character_t) '\n' ) )
+				{
+					fprintf(
+					 export_handle->notify_stream,
+					 "%" PRIc_LIBCSTRING_SYSTEM "",
+					 ( message_string->string )[ message_string_index ] );
+
+					last_character = ( message_string->string )[ message_string_index ];
+				}
 			}
 			message_string_index += 1;
 		}

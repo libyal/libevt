@@ -49,9 +49,12 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20121125
+* evtexport: remove multiple successive new lines from message string
+* fixes and improvement to record recovery
+
 20121122
 * pyevt: code clean up
-* fixes in record recovery scan
 
 20121103
 * pyevt: bug fixes

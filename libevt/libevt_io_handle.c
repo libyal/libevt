@@ -930,7 +930,6 @@ int libevt_io_handle_event_record_scan(
 	size_t read_size                      = 0;
 	size_t scan_block_offset              = 0;
 	size_t scan_block_size                = 8192;
-	size_t scan_record_size               = 0;
 	ssize_t read_count                    = 0;
 	int record_entry_index                = 0;
 
@@ -1032,126 +1031,135 @@ int libevt_io_handle_event_record_scan(
 			if( memory_compare(
 			     &( scan_block[ scan_block_offset ] ),
 			     evt_file_signature,
-			     4 ) == 0 )
+			     4 ) != 0 )
 			{
-				record_offset = file_offset + scan_block_offset - 4;
+				scan_block_offset += 4;
 
-				if( record_values == NULL )
-				{
-					if( libevt_record_values_initialize(
-					     &record_values,
-					     error ) != 1 )
-					{
-						libcerror_error_set(
-						 error,
-						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-						 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-						 "%s: unable to create record values.",
-						 function );
+				continue;
+			}
+			record_offset = file_offset + scan_block_offset - 4;
 
-						goto on_error;
-					}
-				}
 #if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
-				{
-					libcnotify_printf(
-					 "%s: reading recovered record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-					 function,
-					 record_offset,
-					 record_offset );
-				}
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: reading recovered record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 function,
+				 record_offset,
+				 record_offset );
+			}
 #endif
-				if( libbfio_handle_seek_offset(
-				     file_io_handle,
-				     record_offset,
-				     SEEK_SET,
-				     error ) == -1 )
+			if( libbfio_handle_seek_offset(
+			     file_io_handle,
+			     record_offset,
+			     SEEK_SET,
+			     error ) == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_SEEK_FAILED,
+				 "%s: unable to seek record offset: %" PRIi64 ".",
+				 function,
+				 record_offset );
+
+				goto on_error;
+			}
+			if( record_values == NULL )
+			{
+				if( libevt_record_values_initialize(
+				     &record_values,
+				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_SEEK_FAILED,
-					 "%s: unable to seek record offset: %" PRIi64 ".",
-					 function,
-					 record_offset );
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 "%s: unable to create record values.",
+					 function );
 
 					goto on_error;
 				}
-				read_count = libevt_record_values_read(
-					      record_values,
-					      file_io_handle,
-					      io_handle,
-					      &record_offset,
-					      error );
+			}
+			read_count = libevt_record_values_read(
+				      record_values,
+				      file_io_handle,
+				      io_handle,
+				      &record_offset,
+				      error );
 
-				if( read_count == -1 )
+			if( read_count == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read record at offset: %" PRIi64 ".",
+				 function,
+				 file_offset + scan_block_offset - 4 );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					if( ( error != NULL )
+					 && ( *error != NULL ) )
+					{
+						libcnotify_print_error_backtrace(
+						 *error );
+					}
+				}
+#endif
+				libcerror_error_free(
+				 error );
+
+				scan_block_offset += 4;
+
+				continue;
+			}
+			if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
+			{
+				if( libcdata_array_append_entry(
+				     recovered_records_array,
+				     &record_entry_index,
+				     (intptr_t *) record_values,
+				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read record at offset: %" PRIi64 ".",
-					 function,
-					 file_offset + scan_block_offset - 4 );
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+					 "%s: unable to append record values to records array.",
+					 function );
 
-#if defined( HAVE_DEBUG_OUTPUT )
-					if( libcnotify_verbose != 0 )
-					{
-						if( ( error != NULL )
-						 && ( *error != NULL ) )
-						{
-							libcnotify_print_error_backtrace(
-							 *error );
-						}
-					}
-#endif
-					libcerror_error_free(
-					 error );
+					goto on_error;
 				}
-				else
+				record_values = NULL;
+			}
+			else
+			{
+				if( libevt_record_values_free(
+				     &record_values,
+				     error ) != 1 )
 				{
-					scan_block_offset += read_count - 8;
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+					 "%s: unable to free record values.",
+					 function );
 
-					if( scan_block_offset > read_size )
-					{
-						scan_record_size = scan_block_offset - read_size;
-					}
-					else
-					{
-						scan_record_size = 0;
-					}
-					/* Ignore records that cross the scan range
-					 */
-					if( ( scan_block_offset + scan_record_size ) < read_size )
-					{
-						if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
-						{
-							if( libcdata_array_append_entry(
-							     recovered_records_array,
-							     &record_entry_index,
-							     (intptr_t *) record_values,
-							     error ) != 1 )
-							{
-								libcerror_error_set(
-								 error,
-								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-								 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-								 "%s: unable to append record values to records array.",
-								 function );
-
-								goto on_error;
-							}
-							record_values = NULL;
-						}
-						scan_block_offset += scan_record_size;
-					}
+					goto on_error;
 				}
 			}
-			scan_block_offset += 4;
+			scan_block_offset += read_count - 4;
+
+			if( ( scan_block_offset + read_count - 4 ) > read_size )
+			{
+				break;
+			}
 		}
-		file_offset += read_size;
-		size        -= read_size;
+		file_offset += scan_block_offset;
+		size        -= scan_block_offset;
 	}
 	if( record_values != NULL )
 	{
