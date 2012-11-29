@@ -49,6 +49,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20121129
+* evtexport: remove cariage returns from message string
+
 20121125
 * evtexport: remove multiple successive new lines from message string
 * fixes and improvement to record recovery
