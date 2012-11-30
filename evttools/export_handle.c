@@ -981,6 +981,19 @@ int export_handle_message_string_fprint(
 
 				continue;
 			}
+			/* Replace %% = % */
+			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '%' )
+			{
+				fprintf(
+				 export_handle->notify_stream,
+				 "%%" );
+
+				last_character = (libcstring_system_character_t) '%';
+
+				message_string_index += 2;
+
+				continue;
+			}
 			/* Replace %b = space */
 			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) 'b' )
 			{
@@ -1165,8 +1178,9 @@ int export_handle_message_string_fprint(
 					 export_handle->notify_stream,
 					 "%" PRIc_LIBCSTRING_SYSTEM "",
 					 ( message_string->string )[ message_string_index ] );
+
+					last_character = ( message_string->string )[ message_string_index ];
 				}
-				last_character = ( message_string->string )[ message_string_index ];
 			}
 			message_string_index += 1;
 		}
