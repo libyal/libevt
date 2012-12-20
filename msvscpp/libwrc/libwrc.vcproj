@@ -239,15 +239,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_channel_descriptor.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_event.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_event_descriptor.c"
 				>
 			</File>
 			<File
@@ -255,15 +247,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_keyword_descriptor.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_level.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_level_descriptor.c"
 				>
 			</File>
 			<File
@@ -271,15 +255,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_map_descriptor.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_opcode.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_opcode_descriptor.c"
 				>
 			</File>
 			<File
@@ -287,15 +263,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_provider_descriptor.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_task.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_task_descriptor.c"
 				>
 			</File>
 			<File
@@ -304,10 +272,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_template_definition.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_descriptor.c"
 				>
 			</File>
 			<File
@@ -481,15 +445,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_channel_descriptor.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_event.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_event_descriptor.h"
 				>
 			</File>
 			<File
@@ -497,15 +453,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_keyword_descriptor.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_level.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_level_descriptor.h"
 				>
 			</File>
 			<File
@@ -513,15 +461,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_map_descriptor.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_opcode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_opcode_descriptor.h"
 				>
 			</File>
 			<File
@@ -529,15 +469,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_provider_descriptor.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_task.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_task_descriptor.h"
 				>
 			</File>
 			<File
@@ -546,10 +478,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_wevt_template_definition.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_descriptor.h"
 				>
 			</File>
 			<File
@@ -574,10 +502,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libwrc\wrc_version_resource.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\wrc_wevt_template_resource.h"
 				>
 			</File>
 		</Filter>

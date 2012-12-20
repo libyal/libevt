@@ -150,6 +150,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_channel.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_debug.c"
 				>
 			</File>
@@ -158,7 +162,43 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_event.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_keyword.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_level.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_manifest.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_map.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_opcode.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_provider.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_support.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_task.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_template.c"
 				>
 			</File>
 			<File
@@ -184,6 +224,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\libfwevt\fwevt_template.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_channel.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_debug.h"
 				>
 			</File>
@@ -196,7 +244,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_event.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_extern.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_keyword.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_level.h"
 				>
 			</File>
 			<File
@@ -216,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_libfguid.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_libfvalue.h"
 				>
 			</File>
@@ -224,7 +288,31 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libfwevt\libfwevt_manifest.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_map.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_opcode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_provider.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libfwevt\libfwevt_support.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_task.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfwevt\libfwevt_template.h"
 				>
 			</File>
 			<File

@@ -49,6 +49,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20121220
+* evtexport: bug fix in message string formatting
+
 20121214
 * evtexport: added decimal event number
 
