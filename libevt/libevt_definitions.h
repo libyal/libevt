@@ -1,7 +1,7 @@
 /*
  * The internal definitions
  *
- * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -37,11 +37,11 @@
  * for local use of libevt
  */
 #else
-#define LIBEVT_VERSION						20121220
+#define LIBEVT_VERSION						20130107
 
 /* The version string
  */
-#define LIBEVT_VERSION_STRING					"20121220"
+#define LIBEVT_VERSION_STRING					"20130107"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access

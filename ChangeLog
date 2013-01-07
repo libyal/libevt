@@ -49,6 +49,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130107
+* bug fix in pyevt
+* 2013 update
+* updated dependencies
+
 20121220
 * evtexport: bug fix in message string formatting
 

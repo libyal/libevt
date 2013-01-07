@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libevt file
  *
- * Copyright (c) 2011-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -155,7 +155,7 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 	  "The number of records",
 	  NULL },
 
-	{ "recoverd_records",
+	{ "recovered_records",
 	  (getter) pyevt_file_get_recovered_records,
 	  (setter) 0,
 	  "The recovered records",
