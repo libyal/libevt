@@ -63,6 +63,9 @@ int pyevt_record_init(
 void pyevt_record_free(
       pyevt_record_t *pyevt_record );
 
+PyObject *pyevt_record_get_offset(
+           pyevt_record_t *pyevt_record );
+
 PyObject *pyevt_record_get_identifier(
            pyevt_record_t *pyevt_record );
 
@@ -96,10 +99,17 @@ PyObject *pyevt_record_get_user_security_identifier(
 PyObject *pyevt_record_get_number_of_strings(
            pyevt_record_t *pyevt_record );
 
+PyObject *pyevt_record_get_string_by_index(
+           pyevt_record_t *pyevt_record,
+           int string_index );
+
 PyObject *pyevt_record_get_string(
            pyevt_record_t *pyevt_record,
            PyObject *arguments,
            PyObject *keywords );
+
+PyObject *pyevt_record_get_strings(
+           pyevt_record_t *pyevt_record );
 
 #if defined( __cplusplus )
 }

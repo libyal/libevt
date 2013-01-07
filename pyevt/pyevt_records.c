@@ -189,8 +189,8 @@ PyObject *pyevt_records_new(
 	/* Make sure the records values are initialized
 	 */
 	pyevt_records = PyObject_New(
-	                  struct pyevt_records,
-	                  &pyevt_records_type_object );
+	                 struct pyevt_records,
+	                 &pyevt_records_type_object );
 
 	if( pyevt_records == NULL )
 	{

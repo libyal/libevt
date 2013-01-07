@@ -347,6 +347,15 @@ int libevt_record_free(
      libevt_record_t **record,
      libevt_error_t **error );
 
+/* Retrieves the offset
+ * Returns 1 if successful or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_record_get_offset(
+     libevt_record_t *record,
+     off64_t *offset,
+     libevt_error_t **error );
+
 /* Retrieves the identifier (record number)
  * Returns 1 if successful or -1 on error
  */

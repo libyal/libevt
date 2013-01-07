@@ -71,6 +71,12 @@ int libevt_record_free(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_record_get_offset(
+     libevt_record_t *record,
+     off64_t *offset,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_record_get_identifier(
      libevt_record_t *record,
      uint32_t *identifier,

@@ -269,7 +269,7 @@ PyObject *pyevt_file_new(
            PyObject *self )
 {
 	pyevt_file_t *pyevt_file = NULL;
-	static char *function      = "pyevt_file_new";
+	static char *function    = "pyevt_file_new";
 
 	pyevt_file = PyObject_New(
 	              struct pyevt_file,
@@ -1050,7 +1050,7 @@ PyObject *pyevt_file_get_record_by_index(
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
-	libevt_record_t *record = NULL;
+	libevt_record_t *record  = NULL;
 	PyObject *record_object  = NULL;
 	static char *function    = "pyevt_file_get_record_by_index";
 	int result               = 0;
@@ -1299,7 +1299,7 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
-	libevt_record_t *record = NULL;
+	libevt_record_t *record  = NULL;
 	PyObject *record_object  = NULL;
 	static char *function    = "pyevt_file_get_recovered_record_by_index";
 	int result               = 0;

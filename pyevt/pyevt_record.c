@@ -33,10 +33,18 @@
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 #include "pyevt_record.h"
+#include "pyevt_strings.h"
 
 PyMethodDef pyevt_record_object_methods[] = {
 
 	/* Functions to access the record values */
+
+	{ "get_offset",
+	  (PyCFunction) pyevt_record_get_offset,
+	  METH_NOARGS,
+	  "get_offset() -> Long\n"
+	  "\n"
+	  "Retrieves the offset" },
 
 	{ "get_identifier",
 	  (PyCFunction) pyevt_record_get_identifier,
@@ -130,6 +138,12 @@ PyMethodDef pyevt_record_object_methods[] = {
 
 PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 
+	{ "offset",
+	  (getter) pyevt_record_get_offset,
+	  (setter) 0,
+	  "The offset",
+	  NULL },
+
 	{ "identifier",
 	  (getter) pyevt_record_get_identifier,
 	  (setter) 0,
@@ -182,6 +196,12 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	  (getter) pyevt_record_get_number_of_strings,
 	  (setter) 0,
 	  "The number of strings",
+	  NULL },
+
+	{ "strings",
+	  (getter) pyevt_record_get_strings,
+	  (setter) 0,
+	  "The strings",
 	  NULL },
 
 	/* Sentinel */
@@ -446,6 +466,89 @@ void pyevt_record_free(
 	}
 	pyevt_record->ob_type->tp_free(
 	 (PyObject*) pyevt_record );
+}
+
+/* Retrieves the offset
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_offset(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_record_get_offset";
+	off64_t offset           = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_offset(
+	          pyevt_record->record,
+	          &offset,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve offset.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve offset.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if defined( HAVE_LONG_LONG )
+	if( offset > (off64_t) LLONG_MAX )
+	{
+		PyErr_Format(
+		 PyExc_OverflowError,
+		 "%s: offset value exceeds maximum.",
+		 function );
+
+		return( NULL );
+	}
+	return( PyLong_FromLongLong(
+	         (long long) offset ) );
+#else
+	if( offset > (off64_t) LONG_MAX )
+	{
+		PyErr_Format(
+		 PyExc_OverflowError,
+		 "%s: offset value exceeds maximum.",
+		 function );
+
+		return( NULL );
+	}
+	return( PyLong_FromLong(
+	         (long) offset ) );
+#endif
 }
 
 /* Retrieves the identifier
@@ -1391,25 +1494,22 @@ PyObject *pyevt_record_get_number_of_strings(
 	         (long) number_of_strings ) );
 }
 
-/* Retrieves a specific string
+/* Retrieves a specific string by index
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyevt_record_get_string(
+PyObject *pyevt_record_get_string_by_index(
            pyevt_record_t *pyevt_record,
-           PyObject *arguments,
-           PyObject *keywords )
+           int string_index )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
-	libcerror_error_t *error    = NULL;
-	PyObject *string_object     = NULL;
-	uint8_t *string             = NULL;
-	const char *errors          = NULL;
-	static char *keyword_list[] = { "string_index", NULL };
-	static char *function       = "pyevt_record_get_string";
-	size_t string_size          = 0;
-	int string_index            = 0;
-	int result                  = 0;
+	libcerror_error_t *error = NULL;
+	PyObject *string_object  = NULL;
+	uint8_t *string          = NULL;
+	const char *errors       = NULL;
+	static char *function    = "pyevt_record_get_string_by_index";
+	size_t string_size       = 0;
+	int result               = 0;
 
 	if( pyevt_record == NULL )
 	{
@@ -1420,15 +1520,6 @@ PyObject *pyevt_record_get_string(
 
 		return( NULL );
 	}
-	if( PyArg_ParseTupleAndKeywords(
-	     arguments,
-	     keywords,
-	     "i",
-	     keyword_list,
-	     &string_index ) == 0 )
-        {
-		goto on_error;
-        }
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_string_size(
@@ -1546,5 +1637,108 @@ on_error:
 		 string );
 	}
 	return( NULL );
+}
+
+/* Retrieves a specific string
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_string(
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *string_object     = NULL;
+	static char *keyword_list[] = { "string_index", NULL };
+	static char *function       = "pyevt_record_get_string";
+	int string_index            = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &string_index ) == 0 )
+        {
+		return( NULL );
+        }
+	string_object = pyevt_record_get_string_by_index(
+	                 pyevt_record,
+	                 string_index );
+
+	return( string_object );
+}
+
+/* Retrieves a strings sequence and iterator object for the strings
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_strings(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	PyObject *strings_object = NULL;
+	static char *function    = "pyevt_record_get_strings";
+	int number_of_strings    = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_number_of_strings(
+	          pyevt_record->record,
+	          &number_of_strings,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of strings.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve number of strings.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	strings_object = pyevt_strings_new(
+	                  pyevt_record,
+	                  &pyevt_record_get_string_by_index,
+	                  number_of_strings );
+
+	if( strings_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create strings object.",
+		 function );
+
+		return( NULL );
+	}
+	return( strings_object );
 }
 

@@ -49,6 +49,10 @@ typedef struct libevt_record_values libevt_record_values_t;
 
 struct libevt_record_values
 {
+	/* The offset
+	 */
+	off64_t offset;
+
 	/* The (record) type
 	 */
 	uint8_t type;

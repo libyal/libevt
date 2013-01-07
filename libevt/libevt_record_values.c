@@ -358,6 +358,8 @@ ssize_t libevt_record_values_read(
 
 		return( -1 );
 	}
+	record_values->offset = *file_offset;
+
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
 	              record_size_data,

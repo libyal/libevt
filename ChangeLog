@@ -53,6 +53,7 @@ Notes
 * bug fix in pyevt
 * 2013 update
 * updated dependencies
+* added get offset functionality
 
 20121220
 * evtexport: bug fix in message string formatting
