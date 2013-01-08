@@ -42,8 +42,8 @@ install_libevt_tools:
 
 install_libevt_python:
 	# Set up libevt-python package directories and files
-	mkdir -p debian/libvshadow-python/$(PYTHON_PACKAGE_DIR)
-	install -p -m775 debian/tmp$(PYTHON_PACKAGE_DIR)/pyvshadow.* debian/libvshadow-python$(PYTHON_PACKAGE_DIR)
+	mkdir -p debian/libevt-python/$(PYTHON_PACKAGE_DIR)
+	install -p -m775 debian/tmp$(PYTHON_PACKAGE_DIR)/pyevt.* debian/libevt-python$(PYTHON_PACKAGE_DIR)
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-python
