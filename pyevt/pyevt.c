@@ -34,6 +34,7 @@
 #include "pyevt_python.h"
 #include "pyevt_record.h"
 #include "pyevt_records.h"
+#include "pyevt_strings.h"
 
 /* The pyevt module methods
  */
@@ -173,6 +174,7 @@ PyMODINIT_FUNC initpyevt(
 	PyTypeObject *file_type_object    = NULL;
 	PyTypeObject *record_type_object  = NULL;
 	PyTypeObject *records_type_object = NULL;
+	PyTypeObject *strings_type_object = NULL;
 	PyGILState_STATE gil_state        = 0;
 
 	/* Create the module
@@ -244,6 +246,25 @@ PyMODINIT_FUNC initpyevt(
 	 module,
 	 "record",
 	 (PyObject *) record_type_object );
+
+	/* Setup the strings type object
+	 */
+	pyevt_strings_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyevt_strings_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyevt_strings_type_object );
+
+	strings_type_object = &pyevt_strings_type_object;
+
+	PyModule_AddObject(
+	 module,
+	"_strings",
+	(PyObject *) strings_type_object );
 
 on_error:
 	PyGILState_Release(

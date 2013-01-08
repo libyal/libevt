@@ -49,8 +49,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130108
+* worked on pyevt
+
 20130107
-* bug fix in pyevt
+* worked on pyevt
 * 2013 update
 * updated dependencies
 * added get offset functionality
