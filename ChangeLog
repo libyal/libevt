@@ -51,6 +51,7 @@ Notes
 
 20130108
 * worked on pyevt
+* pyevt changed access flags into Python-like mode
 
 20130107
 * worked on pyevt

@@ -1649,7 +1649,6 @@ PyObject *pyevt_record_get_string(
 {
 	PyObject *string_object     = NULL;
 	static char *keyword_list[] = { "string_index", NULL };
-	static char *function       = "pyevt_record_get_string";
 	int string_index            = 0;
 
 	if( PyArg_ParseTupleAndKeywords(

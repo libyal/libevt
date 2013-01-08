@@ -28,6 +28,7 @@
 
 #include "pyevt.h"
 #include "pyevt_file.h"
+#include "pyevt_file_object_io_handle.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libcstring.h"
 #include "pyevt_libevt.h"
@@ -36,28 +37,50 @@
 #include "pyevt_records.h"
 #include "pyevt_strings.h"
 
+#if !defined( LIBEVT_HAVE_BFIO )
+LIBEVT_EXTERN \
+int libevt_check_file_signature_file_io_handle(
+     libbfio_handle_t *file_io_handle,
+     libevt_error_t **error );
+#endif
+
 /* The pyevt module methods
  */
 PyMethodDef pyevt_module_methods[] = {
 	{ "get_version",
 	  (PyCFunction) pyevt_get_version,
 	  METH_NOARGS,
+	  "get_version() -> String\n"
+	  "\n"
 	  "Retrieves the version" },
-
-	{ "get_access_flags_read",
-	  (PyCFunction) pyevt_get_access_flags_read,
-	  METH_NOARGS,
-	  "Retrieves the read access flags" },
 
 	{ "check_file_signature",
 	  (PyCFunction) pyevt_check_file_signature,
 	  METH_VARARGS | METH_KEYWORDS,
+	  "check_file_signature(filename) -> Boolean\n"
+	  "\n"
 	  "Checks if a file has a Windows Event Log (EVT) file signature" },
+
+	{ "check_file_signature_file_object",
+	  (PyCFunction) pyevt_check_file_signature_file_object,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "check_file_signature_file_object(file_object) -> Boolean\n"
+	  "\n"
+	  "Checks if a file has a Windows Event Log (EVT) file signature using a file-like object" },
 
 	{ "open",
 	  (PyCFunction) pyevt_file_new_open,
 	  METH_VARARGS | METH_KEYWORDS,
+	  "open(filename, mode) -> Object\n"
+	  "\n"
 	  "Creates a new file and opens it" },
+
+	{ "open_file_object",
+	  (PyCFunction) pyevt_file_new_open,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "open_file_object(file_object, mode) -> Object\n"
+	  "\n"
+	  "Creates a new file and opens it using a file-like object" },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -75,8 +98,12 @@ PyObject *pyevt_get_version(
 
 	version_string = libevt_get_version();
 
+	Py_BEGIN_ALLOW_THREADS
+
 	version_string_length = libcstring_narrow_string_length(
 	                         version_string );
+
+	Py_END_ALLOW_THREADS
 
 	/* Pass the string length to PyUnicode_DecodeUTF8
 	 * otherwise it makes the end of string character is part
@@ -86,16 +113,6 @@ PyObject *pyevt_get_version(
 	         version_string,
 	         (Py_ssize_t) version_string_length,
 	         errors ) );
-}
-
-/* Retrieves the pyevt/libevt read access flags
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyevt_get_access_flags_read(
-           PyObject *self )
-{
-	return( PyInt_FromLong(
-	         (long) libevt_get_access_flags_read() ) );
 }
 
 /* Checks if the file has a Windows Event Log (EVT) file signature
@@ -123,9 +140,13 @@ PyObject *pyevt_check_file_signature(
 	{
 		return( NULL );
 	}
+	Py_BEGIN_ALLOW_THREADS
+
 	result = libevt_check_file_signature(
 	          filename,
 	          &error );
+
+	Py_END_ALLOW_THREADS
 
 	if( result == -1 )
 	{
@@ -157,6 +178,136 @@ PyObject *pyevt_check_file_signature(
 		return( Py_True );
 	}
 	return( Py_False );
+}
+
+/* Checks if the file has a Windows Event Log (EVT) file signature using a file-like object
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_check_file_signature_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error         = NULL;
+	libbfio_handle_t *file_io_handle = NULL;
+	PyObject *file_object            = NULL;
+	static char *function            = "pyevt_check_file_signature_file_object";
+	static char *keyword_list[]      = { "file_object", NULL };
+	int result                       = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "|O",
+	     keyword_list,
+	     &file_object ) == 0 )
+	{
+		return( NULL );
+	}
+	if( pyevt_file_object_initialize(
+	     &file_io_handle,
+	     file_object,
+	     &error ) != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_MemoryError,
+			 "%s: unable to initialize file IO handle.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_MemoryError,
+			 "%s: unable to initialize file IO handle.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_check_file_signature_file_io_handle(
+	          file_io_handle,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to check file signature.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to check file signature.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	if( libbfio_handle_free(
+	     &file_io_handle,
+	     &error ) != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_MemoryError,
+			 "%s: unable to free file IO handle.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_MemoryError,
+			 "%s: unable to free file IO handle.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	if( result != 0 )
+	{
+		return( Py_True );
+	}
+	return( Py_False );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	return( NULL );
 }
 
 /* Declarations for DLL import/export

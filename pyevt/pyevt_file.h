@@ -56,6 +56,11 @@ PyObject *pyevt_file_new_open(
            PyObject *arguments,
            PyObject *keywords );
 
+PyObject *pyevt_file_new_open_file_objec(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
 int pyevt_file_init(
      pyevt_file_t *pyevt_file );
 

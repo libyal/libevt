@@ -62,14 +62,14 @@ PyMethodDef pyevt_file_object_methods[] = {
 	{ "open",
 	  (PyCFunction) pyevt_file_open,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open(filename, access_flags) -> None\n"
+	  "open(filename, mode='r') -> None\n"
 	  "\n"
 	  "Opens a file" },
 
 	{ "open_file_object",
 	  (PyCFunction) pyevt_file_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open(file_object, access_flags) -> None\n"
+	  "open(file_object, mode='r') -> None\n"
 	  "\n"
 	  "Opens a file using a file-like object" },
 
@@ -326,6 +326,27 @@ PyObject *pyevt_file_new_open(
 	return( pyevt_file );
 }
 
+/* Creates a new file object and opens it
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_new_open_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *pyevt_file = NULL;
+
+	pyevt_file = pyevt_file_new(
+	              self );
+
+	pyevt_file_open_file_object(
+	 (pyevt_file_t *) pyevt_file,
+	 arguments,
+	 keywords );
+
+	return( pyevt_file );
+}
+
 /* Intializes a file object
  * Returns 0 if successful or -1 on error
  */
@@ -534,9 +555,9 @@ PyObject *pyevt_file_open(
 
 	libcerror_error_t *error    = NULL;
 	char *filename              = NULL;
-	static char *keyword_list[] = { "filename", "access_flags", NULL };
+	char *mode                  = NULL;
+	static char *keyword_list[] = { "filename", "mode", NULL };
 	static char *function       = "pyevt_file_open";
-	int access_flags            = 0;
 	int result                  = 0;
 
 	if( pyevt_file == NULL )
@@ -551,25 +572,30 @@ PyObject *pyevt_file_open(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "s|i",
+	     "s|s",
 	     keyword_list,
 	     &filename,
-	     &access_flags ) == 0 )
+	     &mode ) == 0 )
         {
                 return( NULL );
         }
-	/* Default to read-only if no access flags were provided
-	 */
-	if( access_flags == 0 )
+        if( ( mode != NULL )
+	 && ( mode[ 0 ] != 'r' ) )
 	{
-		access_flags = libevt_get_access_flags_read();
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: mode: %s.",
+		 function,
+		 mode );
+
+		return( NULL );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_file_open(
 	          pyevt_file->file,
                   filename,
-                  access_flags,
+                  LIBEVT_OPEN_READ,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -618,9 +644,9 @@ PyObject *pyevt_file_open_file_object(
 	PyObject *file_object            = NULL;
 	libbfio_handle_t *file_io_handle = NULL;
 	libcerror_error_t *error         = NULL;
-	static char *keyword_list[]      = { "file_object", "access_flags", NULL };
+        char *mode                       = NULL;
+	static char *keyword_list[]      = { "file_object", "mode", NULL };
 	static char *function            = "pyevt_file_open_file_object";
-	int access_flags                 = 0;
 	int result                       = 0;
 
 	if( pyevt_file == NULL )
@@ -635,18 +661,23 @@ PyObject *pyevt_file_open_file_object(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "O|i",
+	     "O|s",
 	     keyword_list,
 	     &file_object,
-	     &access_flags ) == 0 )
+	     &mode ) == 0 )
         {
                 return( NULL );
         }
-	/* Default to read-only if no access flags were provided
-	 */
-	if( access_flags == 0 )
+        if( ( mode != NULL )
+	 && ( mode[ 0 ] != 'r' ) )
 	{
-		access_flags = libevt_get_access_flags_read();
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: mode: %s.",
+		 function,
+		 mode );
+
+		return( NULL );
 	}
 	if( pyevt_file_object_initialize(
 	     &file_io_handle,
@@ -681,7 +712,7 @@ PyObject *pyevt_file_open_file_object(
 	result = libevt_file_open_file_io_handle(
 	          pyevt_file->file,
                   file_io_handle,
-                  access_flags,
+                  LIBEVT_OPEN_READ,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1136,7 +1167,6 @@ PyObject *pyevt_file_get_record(
 {
 	PyObject *record_object     = NULL;
 	static char *keyword_list[] = { "record_index", NULL };
-	static char *function       = "pyevt_file_get_record";
 	int record_index            = 0;
 
 	if( PyArg_ParseTupleAndKeywords(
@@ -1385,7 +1415,6 @@ PyObject *pyevt_file_get_recovered_record(
 {
 	PyObject *record_object     = NULL;
 	static char *keyword_list[] = { "record_index", NULL };
-	static char *function       = "pyevt_file_get_recovered_record";
 	int record_index            = 0;
 
 	if( PyArg_ParseTupleAndKeywords(
