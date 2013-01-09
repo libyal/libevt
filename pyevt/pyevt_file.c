@@ -266,7 +266,7 @@ PyTypeObject pyevt_file_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_new(
-           PyObject *self )
+           void )
 {
 	pyevt_file_t *pyevt_file = NULL;
 	static char *function    = "pyevt_file_new";
@@ -282,7 +282,7 @@ PyObject *pyevt_file_new(
 		 "%s: unable to initialize file.",
 		 function );
 
-		return( NULL );
+		goto on_error;
 	}
 	if( pyevt_file_init(
 	     pyevt_file ) != 0 )
@@ -315,8 +315,7 @@ PyObject *pyevt_file_new_open(
 {
 	PyObject *pyevt_file = NULL;
 
-	pyevt_file = pyevt_file_new(
-	              self );
+	pyevt_file = pyevt_file_new();
 
 	pyevt_file_open(
 	 (pyevt_file_t *) pyevt_file,
@@ -336,8 +335,7 @@ PyObject *pyevt_file_new_open_file_object(
 {
 	PyObject *pyevt_file = NULL;
 
-	pyevt_file = pyevt_file_new(
-	              self );
+	pyevt_file = pyevt_file_new();
 
 	pyevt_file_open_file_object(
 	 (pyevt_file_t *) pyevt_file,

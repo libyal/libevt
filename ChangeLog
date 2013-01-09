@@ -49,6 +49,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130109
+* worked on pyevt
+
 20130108
 * worked on pyevt
 * pyevt changed access flags into Python-like mode

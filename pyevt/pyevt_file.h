@@ -49,14 +49,14 @@ extern PyMethodDef pyevt_file_object_methods[];
 extern PyTypeObject pyevt_file_type_object;
 
 PyObject *pyevt_file_new(
-           PyObject *self );
+           void );
 
 PyObject *pyevt_file_new_open(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyevt_file_new_open_file_objec(
+PyObject *pyevt_file_new_open_file_object(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );

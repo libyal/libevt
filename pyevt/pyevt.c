@@ -76,7 +76,7 @@ PyMethodDef pyevt_module_methods[] = {
 	  "Creates a new file and opens it" },
 
 	{ "open_file_object",
-	  (PyCFunction) pyevt_file_new_open,
+	  (PyCFunction) pyevt_file_new_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open_file_object(file_object, mode) -> Object\n"
 	  "\n"
