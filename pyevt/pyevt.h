@@ -46,11 +46,6 @@ PyObject *pyevt_check_file_signature_file_object(
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyevt_set_notify_values(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
 PyMODINIT_FUNC initpyevt(
                 void );
 

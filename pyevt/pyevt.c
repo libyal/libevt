@@ -71,16 +71,16 @@ PyMethodDef pyevt_module_methods[] = {
 	{ "open",
 	  (PyCFunction) pyevt_file_new_open,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open(filename, mode) -> Object\n"
+	  "open(filename, mode='r') -> Object\n"
 	  "\n"
-	  "Creates a new file and opens it" },
+	  "Opens a file" },
 
 	{ "open_file_object",
 	  (PyCFunction) pyevt_file_new_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open_file_object(file_object, mode) -> Object\n"
+	  "open_file_object(file_object, mode='r') -> Object\n"
 	  "\n"
-	  "Creates a new file and opens it using a file-like object" },
+	  "Opens a file using a file-like object" },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -96,14 +96,14 @@ PyObject *pyevt_get_version(
 	const char *version_string   = NULL;
 	size_t version_string_length = 0;
 
+	Py_BEGIN_ALLOW_THREADS
+
 	version_string = libevt_get_version();
 
-	Py_BEGIN_ALLOW_THREADS
+	Py_END_ALLOW_THREADS
 
 	version_string_length = libcstring_narrow_string_length(
 	                         version_string );
-
-	Py_END_ALLOW_THREADS
 
 	/* Pass the string length to PyUnicode_DecodeUTF8
 	 * otherwise it makes the end of string character is part

@@ -198,7 +198,7 @@ PyObject *pyevt_records_new(
 		 "%s: unable to initialize records.",
 		 function );
 
-		return( NULL );
+		goto on_error;
 	}
 	if( pyevt_records_init(
 	     pyevt_records ) != 0 )

@@ -65,7 +65,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_NOARGS,
 	  "get_creation_time_as_integer() -> Long\n"
 	  "\n"
-	  "Returns the creation date and time as a 64-bit integer containing a FILETIME value" },
+	  "Returns the creation date and time as a 32-bit integer containing a POSIX timestamp value" },
 
 	{ "get_written_time",
 	  (PyCFunction) pyevt_record_get_written_time,
@@ -79,7 +79,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_NOARGS,
 	  "get_written_time_as_integer() -> Long\n"
 	  "\n"
-	  "Returns the written date and time as a 64-bit integer containing a FILETIME value" },
+	  "Returns the written date and time as a 32-bit integer containing a POSIX timestamp value" },
 
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
@@ -94,6 +94,13 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  "get_event_type() -> Integer\n"
 	  "\n"
 	  "Retrieves the event type" },
+
+	{ "get_event_category",
+	  (PyCFunction) pyevt_record_get_event_category,
+	  METH_NOARGS,
+	  "get_event_category() -> Integer\n"
+	  "\n"
+	  "Retrieves the event category" },
 
 	{ "get_source_name",
 	  (PyCFunction) pyevt_record_get_source_name,
@@ -128,9 +135,16 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_string",
 	  (PyCFunction) pyevt_record_get_string,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_string(string_index) -> Object or None\n"
+	  "get_string(string_index) -> Unicode string or None\n"
 	  "\n"
 	  "Retrieves a specific string" },
+
+	{ "get_data",
+	  (PyCFunction) pyevt_record_get_data,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_data(string_index) -> String or None\n"
+	  "\n"
+	  "Retrieves the data as a binary string" },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -174,6 +188,12 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	  "The event type",
 	  NULL },
 
+	{ "event_category",
+	  (getter) pyevt_record_get_event_category,
+	  (setter) 0,
+	  "The event category",
+	  NULL },
+
 	{ "source_name",
 	  (getter) pyevt_record_get_source_name,
 	  (setter) 0,
@@ -202,6 +222,12 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	  (getter) pyevt_record_get_strings,
 	  (setter) 0,
 	  "The strings",
+	  NULL },
+
+	{ "data",
+	  (getter) pyevt_record_get_data,
+	  (setter) 0,
+	  "The data",
 	  NULL },
 
 	/* Sentinel */
@@ -335,7 +361,7 @@ PyObject *pyevt_record_new(
 		 "%s: unable to initialize record.",
 		 function );
 
-		return( NULL );
+		goto on_error;
 	}
 	if( pyevt_record_init(
 	     pyevt_record ) != 0 )
@@ -1021,6 +1047,66 @@ PyObject *pyevt_record_get_event_type(
 	}
 	return( PyInt_FromLong(
 	         (long) event_type ) );
+}
+
+/* Retrieves the event category
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_event_category(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_record_get_event_category";
+	uint16_t event_category  = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_event_category(
+	          pyevt_record->record,
+	          &event_category,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve event category.",
+			 function );
+		}
+		else
+		{
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve event category.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyInt_FromLong(
+	         (long) event_category ) );
 }
 
 /* Retrieves the source name
@@ -1739,5 +1825,136 @@ PyObject *pyevt_record_get_strings(
 		return( NULL );
 	}
 	return( strings_object );
+}
+
+/* Retrieves the data
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_record_get_data(
+           pyevt_record_t *pyevt_record )
+{
+	char error_string[ PYEVT_ERROR_STRING_SIZE ];
+
+	libcerror_error_t *error = NULL;
+	PyObject *string_object  = NULL;
+	uint8_t *data            = NULL;
+	static char *function    = "pyevt_record_get_data";
+	size_t data_size         = 0;
+	int result               = 0;
+
+	if( pyevt_record == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid record.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_data_size(
+	          pyevt_record->record,
+	          &data_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve data size.",
+			 function );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve data size.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( data_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	data = (uint8_t *) PyMem_Malloc(
+	                    sizeof( uint8_t ) * data_size );
+
+	if( data == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create data.",
+		 function );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_get_data(
+		  pyevt_record->record,
+		  data,
+		  data_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		if( libcerror_error_backtrace_sprint(
+		     error,
+		     error_string,
+		     PYEVT_ERROR_STRING_SIZE ) == -1 )
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve data.",
+			 function );
+		}
+		else
+                {
+			PyErr_Format(
+			 PyExc_IOError,
+			 "%s: unable to retrieve data.\n%s",
+			 function,
+			 error_string );
+		}
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	string_object = PyString_FromStringAndSize(
+			 (char *) data,
+			 (Py_ssize_t) data_size );
+
+	PyMem_Free(
+	 data );
+
+	return( string_object );
+
+on_error:
+	if( data != NULL )
+	{
+		PyMem_Free(
+		 data );
+	}
+	return( NULL );
 }
 

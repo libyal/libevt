@@ -198,7 +198,7 @@ PyObject *pyevt_strings_new(
 		 "%s: unable to initialize strings.",
 		 function );
 
-		return( NULL );
+		goto on_error;
 	}
 	if( pyevt_strings_init(
 	     pyevt_strings ) != 0 )

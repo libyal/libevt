@@ -84,6 +84,9 @@ PyObject *pyevt_record_get_written_time_as_integer(
 PyObject *pyevt_record_get_event_identifier(
            pyevt_record_t *pyevt_record );
 
+PyObject *pyevt_record_get_event_category(
+           pyevt_record_t *pyevt_record );
+
 PyObject *pyevt_record_get_event_type(
            pyevt_record_t *pyevt_record );
 
@@ -109,6 +112,9 @@ PyObject *pyevt_record_get_string(
            PyObject *keywords );
 
 PyObject *pyevt_record_get_strings(
+           pyevt_record_t *pyevt_record );
+
+PyObject *pyevt_record_get_data(
            pyevt_record_t *pyevt_record );
 
 #if defined( __cplusplus )
