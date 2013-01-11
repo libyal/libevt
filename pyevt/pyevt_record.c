@@ -243,7 +243,7 @@ PyTypeObject pyevt_record_type_object = {
 	"pyevt.record",
 	/* tp_basicsize */
 	sizeof( pyevt_record_t ),
-	/* tp_recordsize */
+	/* tp_itemsize */
 	0,
 	/* tp_dealloc */
 	(destructor) pyevt_record_free,
