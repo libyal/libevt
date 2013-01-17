@@ -139,6 +139,13 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  "\n"
 	  "Retrieves a specific string" },
 
+	{ "get_strings",
+	  (PyCFunction) pyevt_record_get_strings,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_strings() -> Object\n"
+	  "\n"
+	  "Retrieves the strings as a sequence" },
+
 	{ "get_data",
 	  (PyCFunction) pyevt_record_get_data,
 	  METH_VARARGS | METH_KEYWORDS,

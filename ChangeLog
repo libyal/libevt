@@ -49,6 +49,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130116
+* pyevt: added missing function pyevt_record.get_strings()
+
 20130113
 * updated msvscpp files
 * updated examples

@@ -111,6 +111,13 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  "\n"
 	  "Retrieves a specific record" },
 
+	{ "get_records",
+	  (PyCFunction) pyevt_file_get_records,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_records() -> Object\n"
+	  "\n"
+	  "Retrieves the records as a sequence" },
+
 	{ "get_number_of_recovered_records",
 	  (PyCFunction) pyevt_file_get_number_of_recovered_records,
 	  METH_NOARGS,
@@ -124,6 +131,13 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  "get_recovered_record(record_index) -> Object or None\n"
 	  "\n"
 	  "Retrieves a specific recovered record" },
+
+	{ "get_recovered_records",
+	  (PyCFunction) pyevt_file_get_recovered_records,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_records() -> Object\n"
+	  "\n"
+	  "Retrieves the recovered records as a sequence" },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
