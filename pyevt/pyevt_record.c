@@ -139,13 +139,6 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  "\n"
 	  "Retrieves a specific string" },
 
-	{ "get_strings",
-	  (PyCFunction) pyevt_record_get_strings,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "get_strings() -> Object\n"
-	  "\n"
-	  "Retrieves the strings as a sequence" },
-
 	{ "get_data",
 	  (PyCFunction) pyevt_record_get_data,
 	  METH_VARARGS | METH_KEYWORDS,
@@ -430,6 +423,7 @@ void pyevt_record_free(
 
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_free";
+	int result               = 0;
 
 	if( pyevt_record == NULL )
 	{
@@ -467,9 +461,15 @@ void pyevt_record_free(
 
 		return;
 	}
-	if( libevt_record_free(
-	     &( pyevt_record->record ),
-	     &error ) != 1 )
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_record_free(
+	          &( pyevt_record->record ),
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
 	{
 		if( libcerror_error_backtrace_sprint(
 		     error,

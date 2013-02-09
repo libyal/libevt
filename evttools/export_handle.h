@@ -155,12 +155,6 @@ int export_handle_close_input(
 
 /* Record specific export functions
  */
-int export_handle_message_string_fprint(
-     export_handle_t *export_handle,
-     message_string_t *message_string,
-     libevt_record_t *record,
-     libcerror_error_t **error );
-
 int export_handle_export_record_event_category(
      export_handle_t *export_handle,
      libevt_record_t *record,

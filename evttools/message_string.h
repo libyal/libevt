@@ -23,10 +23,12 @@
 #define _MESSAGE_STRING_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
 
 #include "evttools_libcerror.h"
 #include "evttools_libcstring.h"
+#include "evttools_libevt.h"
 #include "evttools_libwrc.h"
 
 #if defined( __cplusplus )
@@ -63,6 +65,12 @@ int message_string_get_from_message_table_resource(
      message_string_t *message_string,
      libwrc_resource_t *message_table_resource,
      uint32_t language_identifier,
+     libcerror_error_t **error );
+
+int message_string_fprint(
+     message_string_t *message_string,
+     libevt_record_t *record,
+     FILE *stream,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

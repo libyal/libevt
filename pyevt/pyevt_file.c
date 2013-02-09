@@ -111,13 +111,6 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  "\n"
 	  "Retrieves a specific record" },
 
-	{ "get_records",
-	  (PyCFunction) pyevt_file_get_records,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "get_records() -> Object\n"
-	  "\n"
-	  "Retrieves the records as a sequence" },
-
 	{ "get_number_of_recovered_records",
 	  (PyCFunction) pyevt_file_get_number_of_recovered_records,
 	  METH_NOARGS,
@@ -131,13 +124,6 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  "get_recovered_record(record_index) -> Object or None\n"
 	  "\n"
 	  "Retrieves a specific recovered record" },
-
-	{ "get_recovered_records",
-	  (PyCFunction) pyevt_file_get_recovered_records,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "get_records() -> Object\n"
-	  "\n"
-	  "Retrieves the recovered records as a sequence" },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -842,6 +828,7 @@ PyObject *pyevt_file_get_ascii_codepage(
 	const char *codepage_string = NULL;
 	static char *function       = "pyevt_file_get_ascii_codepage";
 	int ascii_codepage          = 0;
+	int result                  = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -852,10 +839,16 @@ PyObject *pyevt_file_get_ascii_codepage(
 
 		return( NULL );
 	}
-	if( libevt_file_get_ascii_codepage(
-	     pyevt_file->file,
-	     &ascii_codepage,
-	     &error ) != 1 )
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_get_ascii_codepage(
+	          pyevt_file->file,
+	          &ascii_codepage,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
 	{
 		if( libcerror_error_backtrace_sprint(
 		     error,
@@ -925,6 +918,7 @@ PyObject *pyevt_file_set_ascii_codepage(
 	size_t codepage_string_length = 0;
 	uint32_t feature_flags        = 0;
 	int ascii_codepage            = 0;
+	int result                    = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -989,10 +983,16 @@ PyObject *pyevt_file_set_ascii_codepage(
 
 		return( NULL );
 	}
-	if( libevt_file_set_ascii_codepage(
-	     pyevt_file->file,
-	     ascii_codepage,
-	     &error ) != 1 )
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libevt_file_set_ascii_codepage(
+	          pyevt_file->file,
+	          ascii_codepage,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
 	{
 		if( libcerror_error_backtrace_sprint(
 		     error,

@@ -1,12 +1,8 @@
 TODO:
-* check and fix evtexport
-  - libwrc_resource_read_value: invalid leaf resource values: 0.
-
 * test find paths on windows
 * get %WinDir%
   SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
   - add callback for dealing with path expansion ?
-* Fix: libevt_io_handle_read_records: file has wrapped but file flags indicate otherwise.
 * registry file:
   - detect the file type + version based on the base sub keys?
   - add file type specific support e.g. CurrentControlSet in key names ?
@@ -49,8 +45,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
-20130116
-* pyevt: added missing function pyevt_record.get_strings()
+20130209
+* small fix in the libcdirectory msvscpp files
+* updated dependencies
 
 20130113
 * updated msvscpp files
