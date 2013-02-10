@@ -273,7 +273,7 @@ int libevt_io_handle_read_file_header(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: invalid file signature.",
+		 "%s: unsupported file signature.",
 		 function );
 
 		return( -1 );

@@ -1,4 +1,6 @@
 TODO:
+* msvscpp files: check and fix debug output generation
+* check signal abort
 * test find paths on windows
 * get %WinDir%
   SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir
@@ -44,6 +46,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20130210
+* updated libcfile to allow reading from open files
 
 20130209
 * small fix in the libcdirectory msvscpp files
