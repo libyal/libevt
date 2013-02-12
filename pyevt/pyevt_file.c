@@ -55,7 +55,7 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  METH_NOARGS,
 	  "signal_abort() -> None\n"
 	  "\n"
-	  "Signals the file to abort the current activity" },
+	  "Signals the file to abort the current activity." },
 
 	/* Functions to access the file */
 
@@ -64,36 +64,36 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> None\n"
 	  "\n"
-	  "Opens a file" },
+	  "Opens a file." },
 
 	{ "open_file_object",
 	  (PyCFunction) pyevt_file_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(file_object, mode='r') -> None\n"
 	  "\n"
-	  "Opens a file using a file-like object" },
+	  "Opens a file using a file-like object." },
 
 	{ "close",
 	  (PyCFunction) pyevt_file_close,
 	  METH_NOARGS,
 	  "close() -> None\n"
 	  "\n"
-	  "Closes a file" },
+	  "Closes a file." },
 
 	{ "get_ascii_codepage",
 	  (PyCFunction) pyevt_file_get_ascii_codepage,
 	  METH_NOARGS,
 	  "get_ascii_codepage() -> String\n"
 	  "\n"
-	  "Returns the codepage used for ASCII strings in the file" },
+	  "Returns the codepage used for ASCII strings in the file." },
 
 	{ "set_ascii_codepage",
 	  (PyCFunction) pyevt_file_set_ascii_codepage,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "set_ascii_codepage(codepage) -> None\n"
 	  "\n"
-	  "Set the codepage used for ASCII strings in the file\n"
-	  "Expects the codepage to be a String containing a Python codec definition" },
+	  "Set the codepage used for ASCII strings in the file.\n"
+	  "Expects the codepage to be a String containing a Python codec definition." },
 
 	/* Functions to access the records */
 
@@ -102,28 +102,28 @@ PyMethodDef pyevt_file_object_methods[] = {
 	  METH_NOARGS,
 	  "get_number_of_records() -> Integer\n"
 	  "\n"
-	  "Retrieves the number of records" },
+	  "Retrieves the number of records." },
 
 	{ "get_record",
 	  (PyCFunction) pyevt_file_get_record,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_record(record_index) -> Object or None\n"
 	  "\n"
-	  "Retrieves a specific record" },
+	  "Retrieves a specific record." },
 
 	{ "get_number_of_recovered_records",
 	  (PyCFunction) pyevt_file_get_number_of_recovered_records,
 	  METH_NOARGS,
 	  "get_number_of_recovered_records() -> Integer\n"
 	  "\n"
-	  "Retrieves the number of recovered records" },
+	  "Retrieves the number of recovered records." },
 
 	{ "get_recovered_record",
 	  (PyCFunction) pyevt_file_get_recovered_record,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_recovered_record(record_index) -> Object or None\n"
 	  "\n"
-	  "Retrieves a specific recovered record" },
+	  "Retrieves a specific recovered record." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -134,13 +134,13 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 	{ "ascii_codepage",
 	  (getter) pyevt_file_get_ascii_codepage,
 	  (setter) pyevt_file_set_ascii_codepage,
-	  "The codepage used for ASCII strings in the file",
+	  "The codepage used for ASCII strings in the file.",
 	  NULL },
 
 	{ "number_of_records",
 	  (getter) pyevt_file_get_number_of_records,
 	  (setter) 0,
-	  "The number of records",
+	  "The number of records.",
 	  NULL },
 
 	{ "records",
@@ -152,13 +152,13 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 	{ "number_of_recovered_records",
 	  (getter) pyevt_file_get_number_of_recovered_records,
 	  (setter) 0,
-	  "The number of records",
+	  "The number of recovered records.",
 	  NULL },
 
 	{ "recovered_records",
 	  (getter) pyevt_file_get_recovered_records,
 	  (setter) 0,
-	  "The recovered records",
+	  "The recovered records.",
 	  NULL },
 
 	/* Sentinel */

@@ -52,35 +52,35 @@ PyMethodDef pyevt_module_methods[] = {
 	  METH_NOARGS,
 	  "get_version() -> String\n"
 	  "\n"
-	  "Retrieves the version" },
+	  "Retrieves the version." },
 
 	{ "check_file_signature",
 	  (PyCFunction) pyevt_check_file_signature,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature(filename) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) file signature" },
+	  "Checks if a file has a Windows Event Log (EVT) file signature." },
 
 	{ "check_file_signature_file_object",
 	  (PyCFunction) pyevt_check_file_signature_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature_file_object(file_object) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) file signature using a file-like object" },
+	  "Checks if a file has a Windows Event Log (EVT) file signature using a file-like object." },
 
 	{ "open",
 	  (PyCFunction) pyevt_file_new_open,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> Object\n"
 	  "\n"
-	  "Opens a file" },
+	  "Opens a file." },
 
 	{ "open_file_object",
 	  (PyCFunction) pyevt_file_new_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open_file_object(file_object, mode='r') -> Object\n"
 	  "\n"
-	  "Opens a file using a file-like object" },
+	  "Opens a file using a file-like object." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }

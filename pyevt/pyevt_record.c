@@ -44,84 +44,84 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_NOARGS,
 	  "get_offset() -> Long\n"
 	  "\n"
-	  "Retrieves the offset" },
+	  "Retrieves the offset." },
 
 	{ "get_identifier",
 	  (PyCFunction) pyevt_record_get_identifier,
 	  METH_NOARGS,
 	  "get_identifier() -> Integer\n"
 	  "\n"
-	  "Retrieves the identifier (number)" },
+	  "Retrieves the identifier (number)." },
 
 	{ "get_creation_time",
 	  (PyCFunction) pyevt_record_get_creation_time,
 	  METH_NOARGS,
 	  "get_creation_time() -> Datetime\n"
 	  "\n"
-	  "Returns the creation date and time" },
+	  "Returns the creation date and time." },
 
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyevt_record_get_creation_time_as_integer,
 	  METH_NOARGS,
 	  "get_creation_time_as_integer() -> Long\n"
 	  "\n"
-	  "Returns the creation date and time as a 32-bit integer containing a POSIX timestamp value" },
+	  "Returns the creation date and time as a 32-bit integer containing a POSIX timestamp value." },
 
 	{ "get_written_time",
 	  (PyCFunction) pyevt_record_get_written_time,
 	  METH_NOARGS,
 	  "get_written_time() -> Datetime\n"
 	  "\n"
-	  "Returns the written date and time" },
+	  "Returns the written date and time." },
 
 	{ "get_written_time_as_integer",
 	  (PyCFunction) pyevt_record_get_written_time_as_integer,
 	  METH_NOARGS,
 	  "get_written_time_as_integer() -> Long\n"
 	  "\n"
-	  "Returns the written date and time as a 32-bit integer containing a POSIX timestamp value" },
+	  "Returns the written date and time as a 32-bit integer containing a POSIX timestamp value." },
 
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
 	  METH_NOARGS,
 	  "get_event_identifier() -> Integer\n"
 	  "\n"
-	  "Retrieves the event identifier" },
+	  "Retrieves the event identifier." },
 
 	{ "get_event_type",
 	  (PyCFunction) pyevt_record_get_event_type,
 	  METH_NOARGS,
 	  "get_event_type() -> Integer\n"
 	  "\n"
-	  "Retrieves the event type" },
+	  "Retrieves the event type." },
 
 	{ "get_event_category",
 	  (PyCFunction) pyevt_record_get_event_category,
 	  METH_NOARGS,
 	  "get_event_category() -> Integer\n"
 	  "\n"
-	  "Retrieves the event category" },
+	  "Retrieves the event category." },
 
 	{ "get_source_name",
 	  (PyCFunction) pyevt_record_get_source_name,
 	  METH_NOARGS,
 	  "get_source_name() -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves the source name" },
+	  "Retrieves the source name." },
 
 	{ "get_computer_name",
 	  (PyCFunction) pyevt_record_get_computer_name,
 	  METH_NOARGS,
 	  "get_computer_name() -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves the computer name" },
+	  "Retrieves the computer name." },
 
 	{ "get_user_security_identifier",
 	  (PyCFunction) pyevt_record_get_user_security_identifier,
 	  METH_NOARGS,
 	  "get_user_security_identifier() -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves the user security identifier (SID)" },
+	  "Retrieves the user security identifier (SID)." },
 
 	/* Functions to access the string */
 
@@ -130,21 +130,21 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_NOARGS,
 	  "get_number_of_strings() -> Integer\n"
 	  "\n"
-	  "Retrieves the number of strings" },
+	  "Retrieves the number of strings." },
 
 	{ "get_string",
 	  (PyCFunction) pyevt_record_get_string,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_string(string_index) -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves a specific string" },
+	  "Retrieves a specific string." },
 
 	{ "get_data",
 	  (PyCFunction) pyevt_record_get_data,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_data(string_index) -> String or None\n"
 	  "\n"
-	  "Retrieves the data as a binary string" },
+	  "Retrieves the data as a binary string." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -155,79 +155,79 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	{ "offset",
 	  (getter) pyevt_record_get_offset,
 	  (setter) 0,
-	  "The offset",
+	  "The offset.",
 	  NULL },
 
 	{ "identifier",
 	  (getter) pyevt_record_get_identifier,
 	  (setter) 0,
-	  "The identifier (number)",
+	  "The identifier (number).",
 	  NULL },
 
 	{ "creation_time",
 	  (getter) pyevt_record_get_creation_time,
 	  (setter) 0,
-	  "The creation date and time",
+	  "The creation date and time.",
 	  NULL },
 
 	{ "written_time",
 	  (getter) pyevt_record_get_written_time,
 	  (setter) 0,
-	  "The written date and time",
+	  "The written date and time.",
 	  NULL },
 
 	{ "event_identifier",
 	  (getter) pyevt_record_get_event_identifier,
 	  (setter) 0,
-	  "The event identifier",
+	  "The event identifier.",
 	  NULL },
 
 	{ "event_type",
 	  (getter) pyevt_record_get_event_type,
 	  (setter) 0,
-	  "The event type",
+	  "The event type.",
 	  NULL },
 
 	{ "event_category",
 	  (getter) pyevt_record_get_event_category,
 	  (setter) 0,
-	  "The event category",
+	  "The event category.",
 	  NULL },
 
 	{ "source_name",
 	  (getter) pyevt_record_get_source_name,
 	  (setter) 0,
-	  "The source name",
+	  "The source name.",
 	  NULL },
 
 	{ "computer_name",
 	  (getter) pyevt_record_get_computer_name,
 	  (setter) 0,
-	  "The computer name",
+	  "The computer name.",
 	  NULL },
 
 	{ "user_security_identifier",
 	  (getter) pyevt_record_get_user_security_identifier,
 	  (setter) 0,
-	  "The user security identifier (SID)",
+	  "The user security identifier (SID).",
 	  NULL },
 
 	{ "number_of_strings",
 	  (getter) pyevt_record_get_number_of_strings,
 	  (setter) 0,
-	  "The number of strings",
+	  "The number of strings.",
 	  NULL },
 
 	{ "strings",
 	  (getter) pyevt_record_get_strings,
 	  (setter) 0,
-	  "The strings",
+	  "The strings.",
 	  NULL },
 
 	{ "data",
 	  (getter) pyevt_record_get_data,
 	  (setter) 0,
-	  "The data",
+	  "The data.",
 	  NULL },
 
 	/* Sentinel */
