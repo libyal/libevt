@@ -47,6 +47,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130226
+* fixed some typos in comment
+
 20130210
 * updated libcfile to allow reading from open files
 

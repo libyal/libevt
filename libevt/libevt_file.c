@@ -965,7 +965,7 @@ int libevt_file_open_read(
 	return( result );
 }
 
-/* Determine if the fil ecorrupted
+/* Determine if the file corrupted
  * Returns 1 if corrupted, 0 if not or -1 on error
  */
 int libevt_file_is_corrupted(

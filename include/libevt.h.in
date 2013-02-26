@@ -252,7 +252,7 @@ int libevt_file_close(
      libevt_file_t *file,
      libevt_error_t **error );
 
-/* Determine if the fil ecorrupted
+/* Determine if the file corrupted
  * Returns 1 if corrupted, 0 if not or -1 on error
  */
 LIBEVT_EXTERN \
