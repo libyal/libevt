@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20130226],
+ [20130303],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -178,6 +178,11 @@ AC_SUBST(
  [SPEC_DATE],
  [`date +"%a %b %e %Y" 2> /dev/null`])
 
+dnl Set the current working directory for PackageMaker files
+AC_SUBST(
+ [PWD],
+ [`pwd`])
+
 dnl Have configure make the Makefiles
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([include/Makefile])
@@ -212,6 +217,7 @@ AC_CONFIG_FILES([po/Makevars])
 AC_CONFIG_FILES([manuals/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([examples/Makefile])
+AC_CONFIG_FILES([macosx/Makefile])
 AC_CONFIG_FILES([msvscpp/Makefile])
 dnl Have configure make the include files
 AC_CONFIG_FILES([include/libevt.h])
@@ -223,6 +229,13 @@ dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
 AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([dpkg/copyright])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/01bin.xml])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/02include.xml])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/03lib.xml])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/04share.xml])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/05python.xml])
+AC_CONFIG_FILES([macosx/libevt.pmdoc/index.xml])
+AC_CONFIG_FILES([macosx/Introduction.rtf])
 AC_CONFIG_FILES([libevt/libevt.rc])
 AC_CONFIG_FILES([libevt.pc])
 AC_CONFIG_FILES([libevt.spec])

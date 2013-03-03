@@ -1,5 +1,7 @@
 TODO:
-* msvscpp files: check and fix debug output generation
+* msvscpp:
+  - check and fix debug output generation
+  - check 64-bit compilation output
 * check signal abort
 * test find paths on windows
 * get %WinDir%
@@ -46,6 +48,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20130303
+* added PackageMaker files
 
 20130226
 * fixed some typos in comment
