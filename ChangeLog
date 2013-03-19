@@ -49,6 +49,10 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20120319
+* updated dependencies
+* changes for libfdata update
+
 20130303
 * added PackageMaker files
 
@@ -156,7 +160,7 @@ Notes
 * worked on determining %SystemRoot% from SOFTWARE registry
 
 20120905
-* applied updates
+* updated dependencies
 * evtexport moved -f to -t and an implementation
 * worked on registry file
 
@@ -166,7 +170,7 @@ Notes
 * fix in configure for missing libfwevt
 
 20120819
-* applied updates
+* updated dependencies
 * worked on printing category name
 * worked on API - access to data
 
@@ -180,14 +184,14 @@ Notes
 * worked on tools
 
 20120805
-* applied updates
+* updated dependencies
 * added libcsplit support
 
 20120625
 * moved language support to libclocale
 
 20120624
-* applied updates
+* updated dependencies
 * fixed TODO in export handle fixes issue
 * reversed library order in evttools Makefile for MinGW
 * worked on msvscpp files
@@ -195,7 +199,7 @@ Notes
 * fixes for WINAPI support in libcdirectory
 
 20120517
-* applied updates
+* updated dependencies
 * export_handle_get_message_file_path now returns 0
   if no corresponding file has been found
 
@@ -203,7 +207,7 @@ Notes
 * small change to recovered record scan
 
 20120424
-* applied updates
+* updated dependencies
 
 20120423
 * worked on msvscpp files
@@ -231,7 +235,7 @@ Notes
 * libregf now is case insensitive regarding key/value names
 
 20120408
-* applied updates
+* updated dependencies
 
 20120321
 * fix for libexe Makefile
