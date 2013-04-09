@@ -1096,6 +1096,8 @@ int libevt_file_set_ascii_codepage(
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_874 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_932 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_936 )
+	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_949 )
+	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_950 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1250 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1251 )
 	 && ( ascii_codepage != LIBEVT_CODEPAGE_WINDOWS_1252 )

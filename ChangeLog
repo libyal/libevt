@@ -1,4 +1,5 @@
 TODO:
+* use libfdata
 * msvscpp:
   - check and fix debug output generation
   - check 64-bit compilation output
@@ -48,6 +49,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20120409
+* fixed codepage 949 and 950 restriction bug
 
 20120319
 * updated dependencies
