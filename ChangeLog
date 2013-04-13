@@ -50,6 +50,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130413
+* updated dependencies
+
 20120409
 * fixed codepage 949 and 950 restriction bug
 
