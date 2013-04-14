@@ -360,10 +360,18 @@ int message_string_fprint(
 
 				continue;
 			}
-			/* Replace %% = % */
-			if( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '%' )
+			/* Replace:
+			 *  %<space> = <space>
+			 *  %! = !
+			 *  %% = %
+			 *  %. = .
+			 */
+			if( ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) ' ' )
+			 || ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '!' )
+			 || ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '%' )
+			 || ( ( message_string->string )[ message_string_index + 1 ] == (libcstring_system_character_t) '.' ) )
 			{
-				last_character = (libcstring_system_character_t) '%';
+				last_character = ( message_string->string )[ message_string_index + 1 ];
 
 				fprintf(
 				 stream,

@@ -34,6 +34,7 @@
 #include "pyevt_python.h"
 #include "pyevt_record.h"
 #include "pyevt_strings.h"
+#include "pyevt_unused.h"
 
 PyMethodDef pyevt_record_object_methods[] = {
 
@@ -505,7 +506,8 @@ void pyevt_record_free(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_offset(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -513,6 +515,8 @@ PyObject *pyevt_record_get_offset(
 	static char *function    = "pyevt_record_get_offset";
 	off64_t offset           = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -588,7 +592,8 @@ PyObject *pyevt_record_get_offset(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_identifier(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -596,6 +601,8 @@ PyObject *pyevt_record_get_identifier(
 	static char *function    = "pyevt_record_get_identifier";
 	uint32_t identifier      = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -648,7 +655,8 @@ PyObject *pyevt_record_get_identifier(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -657,6 +665,8 @@ PyObject *pyevt_record_get_creation_time(
 	static char *function      = "pyevt_record_get_creation_time";
 	uint32_t posix_time        = 0;
 	int result                 = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -711,7 +721,8 @@ PyObject *pyevt_record_get_creation_time(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time_as_integer(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -719,6 +730,8 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 	static char *function    = "pyevt_record_get_creation_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -794,7 +807,8 @@ PyObject *pyevt_record_get_creation_time_as_integer(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -803,6 +817,8 @@ PyObject *pyevt_record_get_written_time(
 	static char *function      = "pyevt_record_get_written_time";
 	uint32_t posix_time        = 0;
 	int result                 = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -857,7 +873,8 @@ PyObject *pyevt_record_get_written_time(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time_as_integer(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -865,6 +882,8 @@ PyObject *pyevt_record_get_written_time_as_integer(
 	static char *function    = "pyevt_record_get_written_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -940,7 +959,8 @@ PyObject *pyevt_record_get_written_time_as_integer(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_event_identifier(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -948,6 +968,8 @@ PyObject *pyevt_record_get_event_identifier(
 	static char *function     = "pyevt_record_get_event_identifier";
 	uint32_t event_identifier = 0;
 	int result                = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1000,7 +1022,8 @@ PyObject *pyevt_record_get_event_identifier(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_event_type(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1008,6 +1031,8 @@ PyObject *pyevt_record_get_event_type(
 	static char *function    = "pyevt_record_get_event_type";
 	uint16_t event_type      = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1060,7 +1085,8 @@ PyObject *pyevt_record_get_event_type(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_event_category(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1068,6 +1094,8 @@ PyObject *pyevt_record_get_event_category(
 	static char *function    = "pyevt_record_get_event_category";
 	uint16_t event_category  = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1120,7 +1148,8 @@ PyObject *pyevt_record_get_event_category(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_source_name(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1131,6 +1160,8 @@ PyObject *pyevt_record_get_source_name(
 	static char *function    = "pyevt_record_get_source_name";
 	size_t source_name_size  = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1257,7 +1288,8 @@ on_error:
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_computer_name(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1268,6 +1300,8 @@ PyObject *pyevt_record_get_computer_name(
 	static char *function     = "pyevt_record_get_computer_name";
 	size_t computer_name_size = 0;
 	int result                = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1394,7 +1428,8 @@ on_error:
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_user_security_identifier(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1405,6 +1440,8 @@ PyObject *pyevt_record_get_user_security_identifier(
 	static char *function                = "pyevt_record_get_user_security_identifier";
 	size_t user_security_identifier_size = 0;
 	int result                           = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1531,7 +1568,8 @@ on_error:
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_number_of_strings(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1539,6 +1577,8 @@ PyObject *pyevt_record_get_number_of_strings(
 	static char *function    = "pyevt_record_get_number_of_strings";
 	int number_of_strings    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1764,7 +1804,8 @@ PyObject *pyevt_record_get_string(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_strings(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1773,6 +1814,8 @@ PyObject *pyevt_record_get_strings(
 	static char *function    = "pyevt_record_get_strings";
 	int number_of_strings    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
@@ -1838,7 +1881,8 @@ PyObject *pyevt_record_get_strings(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_data(
-           pyevt_record_t *pyevt_record )
+           pyevt_record_t *pyevt_record,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1848,6 +1892,8 @@ PyObject *pyevt_record_get_data(
 	static char *function    = "pyevt_record_get_data";
 	size_t data_size         = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{

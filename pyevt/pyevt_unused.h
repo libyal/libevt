@@ -1,7 +1,7 @@
 /*
- * Date and time functions
+ * The internal unused definition
  *
- * Copyright (c) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,29 +19,25 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYEVT_DATETIME_H )
-#define _PYEVT_DATETIME_H
+#if !defined( _PYEVT_INTERNAL_UNUSED_H )
+#define _PYEVT_INTERNAL_UNUSED_H
 
 #include <common.h>
-#include <types.h>
 
-#include "pyevt_python.h"
-
-#if defined( __cplusplus )
-extern "C" {
+#if !defined( PYEVT_ATTRIBUTE_UNUSED )
+#if defined( __GNUC__ ) && __GNUC__ >= 3
+#define PYEVT_ATTRIBUTE_UNUSED	__attribute__ ((__unused__))
+#else
+#define PYEVT_ATTRIBUTE_UNUSED
+#endif
 #endif
 
-PyObject *pyevt_datetime_new_from_fat_date_time(
-           uint32_t fat_date_time );
-
-PyObject *pyevt_datetime_new_from_filetime(
-           uint64_t filetime );
-
-PyObject *pyevt_datetime_new_from_posix_time(
-           uint32_t posix_time );
-
-#if defined( __cplusplus )
-}
+#if defined( _MSC_VER )
+#define PYEVT_UNREFERENCED_PARAMETER( parameter ) \
+	UNREFERENCED_PARAMETER( parameter );
+#else
+#define PYEVT_UNREFERENCED_PARAMETER( parameter ) \
+	/* parameter */
 #endif
 
 #endif

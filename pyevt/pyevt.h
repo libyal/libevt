@@ -34,7 +34,8 @@ extern "C" {
 #define PYEVT_ERROR_STRING_SIZE		512
 
 PyObject *pyevt_get_version(
-           PyObject *self );
+           PyObject *self,
+           PyObject *arguments );
 
 PyObject *pyevt_check_file_signature(
            PyObject *self,

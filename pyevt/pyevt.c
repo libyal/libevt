@@ -36,6 +36,7 @@
 #include "pyevt_record.h"
 #include "pyevt_records.h"
 #include "pyevt_strings.h"
+#include "pyevt_unused.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
 LIBEVT_EXTERN \
@@ -90,11 +91,14 @@ PyMethodDef pyevt_module_methods[] = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_get_version(
-           PyObject *self )
+           PyObject *self,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	const char *errors           = NULL;
 	const char *version_string   = NULL;
 	size_t version_string_length = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	Py_BEGIN_ALLOW_THREADS
 

@@ -38,6 +38,7 @@
 #include "pyevt_python.h"
 #include "pyevt_record.h"
 #include "pyevt_records.h"
+#include "pyevt_unused.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
 LIBEVT_EXTERN \
@@ -133,7 +134,7 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 
 	{ "ascii_codepage",
 	  (getter) pyevt_file_get_ascii_codepage,
-	  (setter) pyevt_file_set_ascii_codepage,
+	  (setter) pyevt_file_set_ascii_codepage_setter,
 	  "The codepage used for ASCII strings in the file.",
 	  NULL },
 
@@ -485,13 +486,16 @@ void pyevt_file_free(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_signal_abort(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_file_signal_abort";
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -759,13 +763,16 @@ on_error:
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_close(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_file_close";
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -819,7 +826,8 @@ PyObject *pyevt_file_close(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_ascii_codepage(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -829,6 +837,8 @@ PyObject *pyevt_file_get_ascii_codepage(
 	static char *function       = "pyevt_file_get_ascii_codepage";
 	int ascii_codepage          = 0;
 	int result                  = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -902,19 +912,16 @@ PyObject *pyevt_file_get_ascii_codepage(
 }
 
 /* Sets the codepage used for ASCII strings in the file
- * Returns a Python object if successful or NULL on error
+ * Returns 1 if successful or -1 on error
  */
-PyObject *pyevt_file_set_ascii_codepage(
-           pyevt_file_t *pyevt_file,
-           PyObject *arguments,
-           PyObject *keywords )
+int pyevt_file_set_ascii_codepage_from_string(
+     pyevt_file_t *pyevt_file,
+     const char *codepage_string )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error      = NULL;
-	char *codepage_string         = NULL;
-	static char *keyword_list[]   = { "codepage", NULL };
-	static char *function         = "pyevt_file_set_ascii_codepage";
+	static char *function         = "pyevt_file_set_ascii_codepage_from_string";
 	size_t codepage_string_length = 0;
 	uint32_t feature_flags        = 0;
 	int ascii_codepage            = 0;
@@ -927,17 +934,8 @@ PyObject *pyevt_file_set_ascii_codepage(
 		 "%s: invalid file.",
 		 function );
 
-		return( NULL );
+		return( -1 );
 	}
-	if( PyArg_ParseTupleAndKeywords(
-	     arguments,
-	     keywords,
-	     "s",
-	     keyword_list,
-	     &codepage_string ) == 0 )
-        {
-                return( NULL );
-        }
 	if( codepage_string == NULL )
 	{
 		PyErr_Format(
@@ -945,13 +943,12 @@ PyObject *pyevt_file_set_ascii_codepage(
 		 "%s: invalid codepage string.",
 		 function );
 
-		return( NULL );
+		return( -1 );
 	}
 	codepage_string_length = libcstring_narrow_string_length(
 	                          codepage_string );
 
-	feature_flags = LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_KOI8
-	              | LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS;
+	feature_flags = LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS;
 
 	if( libclocale_codepage_copy_from_string(
 	     &ascii_codepage,
@@ -981,7 +978,7 @@ PyObject *pyevt_file_set_ascii_codepage(
 		libcerror_error_free(
 		 &error );
 
-		return( NULL );
+		return( -1 );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
@@ -1015,6 +1012,38 @@ PyObject *pyevt_file_set_ascii_codepage(
 		libcerror_error_free(
 		 &error );
 
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Sets the codepage used for ASCII strings in the file
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_file_set_ascii_codepage(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	static char *keyword_list[] = { "codepage", NULL };
+	char *codepage_string       = NULL;
+	int result                  = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "s",
+	     keyword_list,
+	     &codepage_string ) == 0 )
+        {
+                return( NULL );
+        }
+	result = pyevt_file_set_ascii_codepage_from_string(
+	          pyevt_file,
+	          codepage_string );
+
+	if( result != 1 )
+	{
 		return( NULL );
 	}
 	Py_IncRef(
@@ -1023,11 +1052,43 @@ PyObject *pyevt_file_set_ascii_codepage(
 	return( Py_None );
 }
 
+/* Sets the codepage used for ASCII strings in the file
+ * Returns a Python object if successful or NULL on error
+ */
+int pyevt_file_set_ascii_codepage_setter(
+     pyevt_file_t *pyevt_file,
+     PyObject *value_object,
+     void *closure PYEVT_ATTRIBUTE_UNUSED )
+{
+	char *codepage_string = NULL;
+	int result            = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( closure )
+
+	codepage_string = PyString_AsString(
+	                   value_object );
+
+	if( codepage_string == NULL )
+	{
+		return( -1 );
+	}
+	result = pyevt_file_set_ascii_codepage_from_string(
+	          pyevt_file,
+	          codepage_string );
+
+	if( result != 1 )
+	{
+		return( -1 );
+	}
+	return( 0 );
+}
+
 /* Retrieves the number of records
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_number_of_records(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1035,6 +1096,8 @@ PyObject *pyevt_file_get_number_of_records(
 	static char *function    = "pyevt_file_get_number_of_records";
 	int number_of_records    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -1201,7 +1264,8 @@ PyObject *pyevt_file_get_record(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_records(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1210,6 +1274,8 @@ PyObject *pyevt_file_get_records(
 	static char *function    = "pyevt_file_get_records";
 	int number_of_records    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -1275,7 +1341,8 @@ PyObject *pyevt_file_get_records(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_number_of_recovered_records(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1283,6 +1350,8 @@ PyObject *pyevt_file_get_number_of_recovered_records(
 	static char *function    = "pyevt_file_get_number_of_recovered_records";
 	int number_of_records    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{
@@ -1449,7 +1518,8 @@ PyObject *pyevt_file_get_recovered_record(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_recovered_records(
-           pyevt_file_t *pyevt_file )
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
@@ -1458,6 +1528,8 @@ PyObject *pyevt_file_get_recovered_records(
 	static char *function    = "pyevt_file_get_recovered_records";
 	int number_of_records    = 0;
 	int result               = 0;
+
+	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_file == NULL )
 	{

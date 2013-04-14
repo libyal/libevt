@@ -430,7 +430,7 @@ int resource_file_close(
 	}
 	if( resource_file->is_open != 0 )
 	{
-		if( libfcache_cache_clear(
+		if( libfcache_cache_empty(
 		     resource_file->message_string_cache,
 		     error ) != 1 )
 		{
@@ -438,7 +438,7 @@ int resource_file_close(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to clear message string cache.",
+			 "%s: unable to empty message string cache.",
 			 function );
 
 			result = -1;

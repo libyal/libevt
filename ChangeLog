@@ -52,9 +52,12 @@ Notes
 
 20130413
 * updated dependencies
+* fixed codepage 1255 restriction
+* worked on tests
+* updates and bug fixes in pyevt
 
 20120409
-* fixed codepage 949 and 950 restriction bug
+* fixed codepage 949 and 950 restriction
 
 20120319
 * updated dependencies

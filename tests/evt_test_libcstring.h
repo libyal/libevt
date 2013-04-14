@@ -1,7 +1,7 @@
 /*
- * Date and time functions
+ * The internal libcstring header
  *
- * Copyright (c) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2009-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,29 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYEVT_DATETIME_H )
-#define _PYEVT_DATETIME_H
+#if !defined( _EVT_TEST_LIBCSTRING_H )
+#define _EVT_TEST_LIBCSTRING_H
 
 #include <common.h>
-#include <types.h>
 
-#include "pyevt_python.h"
+/* Define HAVE_LOCAL_LIBCSTRING for local use of libcstring
+ */
+#if defined( HAVE_LOCAL_LIBCSTRING )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcstring_definitions.h>
+#include <libcstring_narrow_string.h>
+#include <libcstring_system_string.h>
+#include <libcstring_types.h>
+#include <libcstring_wide_string.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBCSTRING_DLL_IMPORT
+ * before including libcstring.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCSTRING_DLL_IMPORT
 #endif
 
-PyObject *pyevt_datetime_new_from_fat_date_time(
-           uint32_t fat_date_time );
+#include <libcstring.h>
 
-PyObject *pyevt_datetime_new_from_filetime(
-           uint64_t filetime );
-
-PyObject *pyevt_datetime_new_from_posix_time(
-           uint32_t posix_time );
-
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

@@ -278,6 +278,10 @@
 				RelativePath="..\..\pyevt\pyevt_strings.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\pyevt\pyevt_unused.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

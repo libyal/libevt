@@ -1,7 +1,7 @@
 /*
- * Date and time functions
+ * The internal libcerror header
  *
- * Copyright (c) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2009-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,29 +19,31 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYEVT_DATETIME_H )
-#define _PYEVT_DATETIME_H
+#if !defined( _EVT_TEST_LIBCERROR_H )
+#define _EVT_TEST_LIBCERROR_H
 
 #include <common.h>
-#include <types.h>
 
-#include "pyevt_python.h"
+/* Define HAVE_LOCAL_LIBCERROR for local use of libcerror
+ */
+#if defined( HAVE_LOCAL_LIBCERROR )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcerror_definitions.h>
+#include <libcerror_error.h>
+#include <libcerror_system.h>
+#include <libcerror_types.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBCERROR_DLL_IMPORT
+ * before including libcerror.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCERROR_DLL_IMPORT
 #endif
 
-PyObject *pyevt_datetime_new_from_fat_date_time(
-           uint32_t fat_date_time );
+#include <libcerror.h>
 
-PyObject *pyevt_datetime_new_from_filetime(
-           uint64_t filetime );
-
-PyObject *pyevt_datetime_new_from_posix_time(
-           uint32_t posix_time );
-
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

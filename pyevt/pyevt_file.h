@@ -68,7 +68,8 @@ void pyevt_file_free(
       pyevt_file_t *pyevt_file );
 
 PyObject *pyevt_file_signal_abort(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 PyObject *pyevt_file_open(
            pyevt_file_t *pyevt_file,
@@ -81,18 +82,30 @@ PyObject *pyevt_file_open_file_object(
            PyObject *keywords );
 
 PyObject *pyevt_file_close(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 PyObject *pyevt_file_get_ascii_codepage(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
+
+int pyevt_file_set_ascii_codepage_from_string(
+     pyevt_file_t *pyevt_file,
+     const char *codepage_string );
 
 PyObject *pyevt_file_set_ascii_codepage(
            pyevt_file_t *pyevt_file,
            PyObject *arguments,
            PyObject *keywords );
 
+int pyevt_file_set_ascii_codepage_setter(
+     pyevt_file_t *pyevt_file,
+     PyObject *value_object,
+     void *closure );
+
 PyObject *pyevt_file_get_number_of_records(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 PyObject *pyevt_file_get_record_by_index(
            pyevt_file_t *pyevt_file,
@@ -104,10 +117,12 @@ PyObject *pyevt_file_get_record(
            PyObject *keywords );
 
 PyObject *pyevt_file_get_records(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 PyObject *pyevt_file_get_number_of_recovered_records(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 PyObject *pyevt_file_get_recovered_record_by_index(
            pyevt_file_t *pyevt_file,
@@ -119,7 +134,8 @@ PyObject *pyevt_file_get_recovered_record(
            PyObject *keywords );
 
 PyObject *pyevt_file_get_recovered_records(
-           pyevt_file_t *pyevt_file );
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
 
 #if defined( __cplusplus )
 }
