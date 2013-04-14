@@ -11,6 +11,8 @@ AM_CPPFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
+	@LIBFDATA_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFGUID_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
@@ -35,6 +37,8 @@ libevt_la_SOURCES = \
 	libevt_libclocale.h \
 	libevt_libcnotify.h \
 	libevt_libcstring.h \
+	libevt_libfcache.h \
+	libevt_libfdata.h \
 	libevt_libfdatetime.h \
 	libevt_libfvalue.h \
 	libevt_libfwnt.h \
@@ -57,6 +61,8 @@ libevt_la_LIBADD = \
 	@LIBCFILE_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
+	@LIBFCACHE_LIBADD@ \
+	@LIBFDATA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFGUID_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \

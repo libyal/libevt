@@ -1,5 +1,5 @@
 /*
- * Date and time functions
+ * The libfdata header wrapper
  *
  * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,29 +19,38 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYEVT_DATETIME_H )
-#define _PYEVT_DATETIME_H
+#if !defined( _LIBEVT_LIBFDATA_H )
+#define _LIBEVT_LIBFDATA_H
 
 #include <common.h>
-#include <types.h>
 
-#include "pyevt_python.h"
+/* Define HAVE_LOCAL_LIBFDATA for local use of libfdata
+ */
+#if defined( HAVE_LOCAL_LIBFDATA )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libfdata_buffer.h>
+#include <libfdata_buffer_reference.h>
+#include <libfdata_definitions.h>
+#include <libfdata_list.h>
+#include <libfdata_list_element.h>
+#include <libfdata_reference.h>
+#include <libfdata_stream.h>
+#include <libfdata_tree.h>
+#include <libfdata_tree_node.h>
+#include <libfdata_types.h>
+#include <libfdata_vector.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBFDATA_DLL_IMPORT
+ * before including libfdata.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBFDATA_DLL_IMPORT
 #endif
 
-PyObject *pyevt_datetime_new_from_fat_date_time(
-           uint32_t fat_date_time );
+#include <libfdata.h>
 
-PyObject *pyevt_datetime_new_from_filetime(
-           uint64_t filetime );
-
-PyObject *pyevt_datetime_new_from_posix_time(
-           uint32_t posix_time );
-
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

@@ -31,7 +31,8 @@
 #include "message_string.h"
 #include "resource_file.h"
 
-/* Initializes the resource file
+/* Creates a resource file
+ * Make sure the value resource_file is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int resource_file_initialize(
@@ -163,7 +164,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the resource file and its elements
+/* Frees a resource file
  * Returns 1 if successful or -1 on error
  */
 int resource_file_free(

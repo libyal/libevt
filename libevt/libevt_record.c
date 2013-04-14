@@ -30,7 +30,8 @@
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
-/* Initializes the record and its values
+/* Creates record
+ * Make sure the value record is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_initialize(
@@ -38,7 +39,6 @@ int libevt_record_initialize(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libevt_record_values_t *record_values,
-     uint8_t flags,
      libcerror_error_t **error )
 {
 	libevt_internal_record_t *internal_record = NULL;
@@ -77,18 +77,6 @@ int libevt_record_initialize(
 
 		return( -1 );
 	}
-	if( ( flags & ~( LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) ) != 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags: 0x%02" PRIx8 ".",
-		 function,
-		 flags );
-
-		return( -1 );
-	}
 	internal_record = memory_allocate_structure(
 	                 libevt_internal_record_t );
 
@@ -120,44 +108,9 @@ int libevt_record_initialize(
 
 		return( -1 );
 	}
-	if( ( flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) == 0 )
-	{
-		internal_record->file_io_handle = file_io_handle;
-	}
-	else
-	{
-		if( libbfio_handle_clone(
-		     &( internal_record->file_io_handle ),
-		     file_io_handle,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy file IO handle.",
-			 function );
-
-			goto on_error;
-		}
-		if( libbfio_handle_set_open_on_demand(
-		     internal_record->file_io_handle,
-		     1,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to set open on demand in file IO handle.",
-			 function );
-
-			goto on_error;
-		}
-	}
-	internal_record->io_handle     = io_handle;
-	internal_record->record_values = record_values;
-	internal_record->flags         = flags;
+	internal_record->file_io_handle = file_io_handle;
+	internal_record->io_handle      = io_handle;
+	internal_record->record_values  = record_values;
 
 	*record = (libevt_record_t *) internal_record;
 
@@ -166,15 +119,6 @@ int libevt_record_initialize(
 on_error:
 	if( internal_record != NULL )
 	{
-		if( ( flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) != 0 )
-		{
-			if( internal_record->file_io_handle != NULL )
-			{
-				libbfio_handle_free(
-				 &( internal_record->file_io_handle ),
-				 NULL );
-			}
-		}
 		memory_free(
 		 internal_record );
 	}
@@ -207,40 +151,8 @@ int libevt_record_free(
 		internal_record = (libevt_internal_record_t *) *record;
 		*record         = NULL;
 
-		/* The io_handle and record_values references are freed elsewhere
+		/* The file_io_handle, io_handle and record_values references are freed elsewhere
 		 */
-		if( ( internal_record->flags & LIBEVT_RECORD_FLAG_MANAGED_FILE_IO_HANDLE ) != 0 )
-		{
-			if( internal_record->file_io_handle != NULL )
-			{
-				if( libbfio_handle_close(
-				     internal_record->file_io_handle,
-				     error ) != 0 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-					 "%s: unable to close file IO handle.",
-					 function );
-
-					return( -1 );
-				}
-				if( libbfio_handle_free(
-				     &( internal_record->file_io_handle ),
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-					 "%s: unable to free file IO handle.",
-					 function );
-
-					return( -1 );
-				}
-			}
-		}
 		memory_free(
 		 internal_record );
 	}

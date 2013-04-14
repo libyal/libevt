@@ -30,7 +30,8 @@
 #include "evttools_libwrc.h"
 #include "message_string.h"
 
-/* Initializes the message string
+/* Creates a message string
+ * Make sure the value message_string is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int message_string_initialize(
@@ -110,7 +111,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the message string and its elements
+/* Frees a message string
  * Returns 1 if successful or -1 on error
  */
 int message_string_free(

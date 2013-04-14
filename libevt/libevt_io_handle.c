@@ -39,8 +39,8 @@
 
 const char *evt_file_signature = "LfLe";
 
-/* Initialize an IO handle
- * Make sure the value io_handle is pointing to is set to NULL
+/* Creates an IO handle
+ * Make sure the value io_handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libevt_io_handle_initialize(
@@ -114,7 +114,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees a IO handle
+/* Frees an IO handle
  * Returns 1 if successful or -1 on error
  */
 int libevt_io_handle_free(
@@ -429,7 +429,7 @@ int libevt_io_handle_read_records(
      libbfio_handle_t *file_io_handle,
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
-     libcdata_array_t *records_array,
+     libfdata_list_t *records_list,
      off64_t *last_record_offset,
      libcerror_error_t **error )
 {
@@ -439,7 +439,7 @@ int libevt_io_handle_read_records(
 	ssize_t read_count                    = 0;
 	uint32_t record_iterator              = 0;
 	uint8_t record_type                   = 0;
-	int record_entry_index                = 0;
+	int element_index                     = 0;
 
 	if( io_handle == NULL )
 	{
@@ -526,6 +526,7 @@ int libevt_io_handle_read_records(
 		              file_io_handle,
 		              io_handle,
 		              &file_offset,
+		              1,
 		              error );
 
 		if( read_count == -1 )
@@ -557,24 +558,39 @@ int libevt_io_handle_read_records(
 
 		if( record_type == LIBEVT_RECORD_TYPE_EVENT )
 		{
-			if( libcdata_array_append_entry(
-			     records_array,
-			     &record_entry_index,
-			     (intptr_t *) record_values,
+			if( libfdata_list_append_element(
+			     records_list,
+			     &element_index,
+			     0,
+			     *last_record_offset,
+			     (size64_t) read_count,
+			     0,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append record values to records array.",
+				 "%s: unable to append record to records list.",
 				 function );
 
 				goto on_error;
 			}
-			record_values = NULL;
 		}
-		else if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
+		if( libevt_record_values_free(
+		     &record_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free record values.",
+			 function );
+
+			goto on_error;
+		}
+		if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 		{
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -606,21 +622,6 @@ int libevt_io_handle_read_records(
 	}
 	while( record_type != LIBEVT_RECORD_TYPE_END_OF_FILE );
 
-	if( libevt_record_values_free(
-	     &record_values,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free record values.",
-		 function );
-
-		record_values = NULL;
-
-		goto on_error;
-	}
 	if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 	{
 		if( *last_record_offset != (off64_t) end_of_file_record_offset )
@@ -920,7 +921,7 @@ int libevt_io_handle_event_record_scan(
      libbfio_handle_t *file_io_handle,
      off64_t file_offset,
      size64_t size,
-     libcdata_array_t *recovered_records_array,
+     libfdata_list_t *recovered_records_list,
      libcerror_error_t **error )
 {
 	libevt_record_values_t *record_values = NULL;
@@ -931,7 +932,7 @@ int libevt_io_handle_event_record_scan(
 	size_t scan_block_offset              = 0;
 	size_t scan_block_size                = 8192;
 	ssize_t read_count                    = 0;
-	int record_entry_index                = 0;
+	int element_index                     = 0;
 
 	if( io_handle == NULL )
 	{
@@ -1086,6 +1087,7 @@ int libevt_io_handle_event_record_scan(
 				      file_io_handle,
 				      io_handle,
 				      &record_offset,
+				      0,
 				      error );
 
 			if( read_count == -1 )
@@ -1096,7 +1098,7 @@ int libevt_io_handle_event_record_scan(
 				 LIBCERROR_IO_ERROR_READ_FAILED,
 				 "%s: unable to read record at offset: %" PRIi64 ".",
 				 function,
-				 file_offset + scan_block_offset - 4 );
+				 record_offset );
 
 #if defined( HAVE_DEBUG_OUTPUT )
 				if( libcnotify_verbose != 0 )
@@ -1118,38 +1120,37 @@ int libevt_io_handle_event_record_scan(
 			}
 			if( record_values->type == LIBEVT_RECORD_TYPE_EVENT )
 			{
-				if( libcdata_array_append_entry(
-				     recovered_records_array,
-				     &record_entry_index,
-				     (intptr_t *) record_values,
+				if( libfdata_list_append_element(
+				     recovered_records_list,
+				     &element_index,
+				     0,
+				     file_offset + scan_block_offset - 4,
+				     (size64_t) read_count,
+				     0,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-					 "%s: unable to append record values to records array.",
+					 "%s: unable to append recovered record to records list.",
 					 function );
 
 					goto on_error;
 				}
-				record_values = NULL;
 			}
-			else
+			if( libevt_record_values_free(
+			     &record_values,
+			     error ) != 1 )
 			{
-				if( libevt_record_values_free(
-				     &record_values,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-					 "%s: unable to free record values.",
-					 function );
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free record values.",
+				 function );
 
-					goto on_error;
-				}
+				goto on_error;
 			}
 			scan_block_offset += read_count - 4;
 
@@ -1208,8 +1209,8 @@ int libevt_io_handle_recover_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      off64_t last_record_offset,
-     libcdata_array_t *records_array,
-     libcdata_array_t *recovered_records_array,
+     libfdata_list_t *records_list,
+     libfdata_list_t *recovered_records_list,
      libcerror_error_t **error )
 {
 	static char *function  = "libevt_io_handle_recover_records";
@@ -1272,7 +1273,7 @@ int libevt_io_handle_recover_records(
 			          file_io_handle,
 			          first_record_offset,
 			          end_of_file_record_offset,
-			          records_array,
+			          records_list,
 			          &last_record_offset,
 			          error );
 
@@ -1336,7 +1337,7 @@ int libevt_io_handle_recover_records(
 			     file_io_handle,
 			     (off64_t) sizeof( evt_file_header_t ),
 			     (size64_t) ( first_record_offset - sizeof( evt_file_header_t ) ),
-			     recovered_records_array,
+			     recovered_records_list,
 			     error ) != 1 )
 			{
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1400,7 +1401,7 @@ int libevt_io_handle_recover_records(
 			     file_io_handle,
 			     last_record_offset,
 			     io_handle->file_size - last_record_offset,
-			     recovered_records_array,
+			     recovered_records_list,
 			     error ) != 1 )
 			{
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1456,7 +1457,7 @@ int libevt_io_handle_recover_records(
 			     file_io_handle,
 			     last_record_offset,
 			     (size64_t) first_record_offset - last_record_offset,
-			     recovered_records_array,
+			     recovered_records_list,
 			     error ) != 1 )
 			{
 #if defined( HAVE_DEBUG_OUTPUT )

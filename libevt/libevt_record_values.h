@@ -28,6 +28,8 @@
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
+#include "libevt_libfcache.h"
+#include "libevt_libfdata.h"
 #include "libevt_libfvalue.h"
 
 #if defined( __cplusplus )
@@ -120,12 +122,14 @@ ssize_t libevt_record_values_read(
          libbfio_handle_t *file_io_handle,
          libevt_io_handle_t *io_handle,
          off64_t *file_offset,
+         uint8_t strict_mode,
          libcerror_error_t **error );
 
 int libevt_record_values_read_event(
      libevt_record_values_t *record_values,
      uint8_t *record_values_data,
      size_t record_values_data_size,
+     uint8_t strict_mode,
      libcerror_error_t **error );
 
 int libevt_record_values_read_end_of_file(
@@ -137,6 +141,18 @@ int libevt_record_values_read_end_of_file(
 int libevt_record_values_get_type(
      libevt_record_values_t *record_values,
      uint8_t *type,
+     libcerror_error_t **error );
+
+int libevt_record_values_read_element_data(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     libfdata_list_element_t *element,
+     libfcache_cache_t *cache,
+     int element_file_index,
+     off64_t element_offset,
+     size64_t element_size,
+     uint32_t element_flags,
+     uint8_t read_flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

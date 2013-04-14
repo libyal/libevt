@@ -29,15 +29,16 @@
 #include "libevt_io_handle.h"
 #include "libevt_file.h"
 #include "libevt_libbfio.h"
-#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
 #include "libevt_libcstring.h"
+#include "libevt_libfcache.h"
+#include "libevt_libfdata.h"
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
-/* Initializes a file
- * Make sure the value file is pointing to is set to NULL
+/* Creates a file
+ * Make sure the value file is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libevt_file_initialize(
@@ -100,34 +101,6 @@ int libevt_file_initialize(
 
 		return( -1 );
 	}
-	if( libcdata_array_initialize(
-	     &( internal_file->records_array ),
-	     0,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create records array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_initialize(
-	     &( internal_file->recovered_records_array ),
-	     0,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create recovered records array.",
-		 function );
-
-		goto on_error;
-	}
 	if( libevt_io_handle_initialize(
 	     &( internal_file->io_handle ),
 	     error ) != 1 )
@@ -141,6 +114,58 @@ int libevt_file_initialize(
 
 		goto on_error;
 	}
+	if( libfdata_list_initialize(
+	     &( internal_file->records_list ),
+	     (intptr_t *) internal_file->io_handle,
+	     NULL,
+	     NULL,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
+	     NULL,
+	     LIBFDATA_FLAG_DATA_HANDLE_NON_MANAGED,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create records list.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfdata_list_initialize(
+	     &( internal_file->recovered_records_list ),
+	     (intptr_t *) internal_file->io_handle,
+	     NULL,
+	     NULL,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
+	     NULL,
+	     LIBFDATA_FLAG_DATA_HANDLE_NON_MANAGED,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create recovered records list.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfcache_cache_initialize(
+	     &( internal_file->records_cache ),
+	     LIBEVT_MAXIMUM_CACHE_ENTRIES_RECORDS,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create records cache.",
+		 function );
+
+		goto on_error;
+	}
 	*file = (libevt_file_t *) internal_file;
 
 	return( 1 );
@@ -148,18 +173,22 @@ int libevt_file_initialize(
 on_error:
 	if( internal_file != NULL )
 	{
-		if( internal_file->recovered_records_array != NULL )
+		if( internal_file->recovered_records_list != NULL )
 		{
-			libcdata_array_free(
-			 &( internal_file->recovered_records_array ),
-			 NULL,
+			libfdata_list_free(
+			 &( internal_file->recovered_records_list ),
 			 NULL );
 		}
-		if( internal_file->records_array != NULL )
+		if( internal_file->records_list != NULL )
 		{
-			libcdata_array_free(
-			 &( internal_file->records_array ),
-			 NULL,
+			libfdata_list_free(
+			 &( internal_file->records_list ),
+			 NULL );
+		}
+		if( internal_file->io_handle != NULL )
+		{
+			libevt_io_handle_free(
+			 &( internal_file->io_handle ),
 			 NULL );
 		}
 		memory_free(
@@ -212,30 +241,41 @@ int libevt_file_free(
 		}
 		*file = NULL;
 
-		if( libcdata_array_free(
-		     &( internal_file->records_array ),
-		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
+		if( libfcache_cache_free(
+		     &( internal_file->records_cache ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free records array.",
+			 "%s: unable to free records cache.",
 			 function );
 
 			result = -1;
 		}
-		if( libcdata_array_free(
-		     &( internal_file->recovered_records_array ),
-		     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
+		if( libfdata_list_free(
+		     &( internal_file->recovered_records_list ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free recovered records array.",
+			 "%s: unable to free recovered records list.",
+			 function );
+
+			result = -1;
+		}
+		if( libfdata_list_free(
+		     &( internal_file->records_list ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free records list.",
 			 function );
 
 			result = -1;
@@ -783,17 +823,28 @@ int libevt_file_close(
 	internal_file->file_io_handle                    = NULL;
 	internal_file->file_io_handle_created_in_library = 0;
 
-	if( libcdata_array_resize(
-	     internal_file->records_array,
-	     0,
-	     (int(*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
+	if( libfdata_list_empty(
+	     internal_file->records_list,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to resize records array.",
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty records list.",
+		 function );
+
+		result = -1;
+	}
+	if( libfdata_list_empty(
+	     internal_file->recovered_records_list,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty recovered records list.",
 		 function );
 
 		result = -1;
@@ -814,7 +865,6 @@ int libevt_file_open_read(
 	uint32_t first_record_offset       = 0;
 	int result_record_read             = 0;
 	int result_record_recovery         = 0;
-	int result                         = 0;
 
 	if( internal_file == NULL )
 	{
@@ -877,7 +927,7 @@ int libevt_file_open_read(
 	                      internal_file->file_io_handle,
 	                      first_record_offset,
 	                      end_of_file_record_offset,
-	                      internal_file->records_array,
+	                      internal_file->records_list,
 	                      &last_record_offset,
 	                      error );
 
@@ -910,8 +960,8 @@ int libevt_file_open_read(
 		                          first_record_offset,
 		                          end_of_file_record_offset,
 		                          last_record_offset,
-		                          internal_file->records_array,
-		                          internal_file->recovered_records_array,
+		                          internal_file->records_list,
+		                          internal_file->recovered_records_list,
 		                          error );
 
 		if( result_record_recovery != 1 )
@@ -943,26 +993,22 @@ int libevt_file_open_read(
 #endif
 		}
 	}
-	if( ( result_record_read == 1 )
-	 || ( result_record_recovery == 1 ) )
+	if( ( result_record_read != 1 )
+	 && ( result_record_recovery != 1 ) )
 	{
-		if( ( error != NULL )
-		 && ( *error != NULL ) )
-		{
-			libcerror_error_free(
-			 error );
-		}
-		result = 1;
+		return( -1 );
 	}
-	else
+	if( ( error != NULL )
+	 && ( *error != NULL ) )
 	{
-		result = -1;
+		libcerror_error_free(
+		 error );
 	}
 	if( internal_file->io_handle->abort != 0 )
 	{
 		internal_file->io_handle->abort = 0;
 	}
-	return( result );
+	return( 1 );
 }
 
 /* Determine if the file corrupted
@@ -1261,8 +1307,8 @@ int libevt_file_get_number_of_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( libcdata_array_get_number_of_entries(
-	     internal_file->records_array,
+	if( libfdata_list_get_number_of_elements(
+	     internal_file->records_list,
 	     number_of_records,
 	     error ) != 1 )
 	{
@@ -1270,7 +1316,7 @@ int libevt_file_get_number_of_records(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of records.",
+		 "%s: unable to retrieve number of elements from records list.",
 		 function );
 
 		return( -1 );
@@ -1315,10 +1361,13 @@ int libevt_file_get_record(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_entry_by_index(
-	     internal_file->records_array,
+	if( libfdata_list_get_element_value_by_index(
+	     internal_file->records_list,
+	     (intptr_t *) internal_file->file_io_handle,
+	     internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
+	     0,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1336,7 +1385,6 @@ int libevt_file_get_record(
 	     internal_file->io_handle,
 	     internal_file->file_io_handle,
 	     record_values,
-	     LIBEVT_RECORD_FLAGS_DEFAULT,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1375,8 +1423,8 @@ int libevt_file_get_number_of_recovered_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( libcdata_array_get_number_of_entries(
-	     internal_file->recovered_records_array,
+	if( libfdata_list_get_number_of_elements(
+	     internal_file->recovered_records_list,
 	     number_of_records,
 	     error ) != 1 )
 	{
@@ -1384,7 +1432,7 @@ int libevt_file_get_number_of_recovered_records(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of recovered records.",
+		 "%s: unable to retrieve number of elements from recovered records list.",
 		 function );
 
 		return( -1 );
@@ -1429,10 +1477,13 @@ int libevt_file_get_recovered_record(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_entry_by_index(
-	     internal_file->recovered_records_array,
+	if( libfdata_list_get_element_value_by_index(
+	     internal_file->recovered_records_list,
+	     (intptr_t *) internal_file->file_io_handle,
+	     internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
+	     0,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1450,7 +1501,6 @@ int libevt_file_get_recovered_record(
 	     internal_file->io_handle,
 	     internal_file->file_io_handle,
 	     record_values,
-	     LIBEVT_RECORD_FLAGS_DEFAULT,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

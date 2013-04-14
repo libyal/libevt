@@ -51,10 +51,6 @@ struct libevt_internal_record
 	/* The (event) record values
 	 */
 	libevt_record_values_t *record_values;
-
-	/* The flags
-	 */
-	uint8_t flags;
 };
 
 int libevt_record_initialize(
@@ -62,7 +58,6 @@ int libevt_record_initialize(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libevt_record_values_t *record_values,
-     uint8_t flags,
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \

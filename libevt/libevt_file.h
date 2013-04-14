@@ -28,8 +28,9 @@
 #include "libevt_extern.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
-#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
+#include "libevt_libfcache.h"
+#include "libevt_libfdata.h"
 #include "libevt_types.h"
 
 #if defined( __cplusplus )
@@ -40,17 +41,21 @@ typedef struct libevt_internal_file libevt_internal_file_t;
 
 struct libevt_internal_file
 {
-	/* The records array
-	 */
-	libcdata_array_t *records_array;
-
-	/* The recovered records array
-	 */
-	libcdata_array_t *recovered_records_array;
-
 	/* The IO handle
 	 */
 	libevt_io_handle_t *io_handle;
+
+	/* The records list
+	 */
+	libfdata_list_t *records_list;
+
+	/* The recovered records list
+	 */
+	libfdata_list_t *recovered_records_list;
+
+	/* The records cache
+	 */
+	libfcache_cache_t *records_cache;
 
 	/* The file IO handle
 	 */

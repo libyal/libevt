@@ -26,8 +26,9 @@
 #include <types.h>
 
 #include "libevt_libbfio.h"
-#include "libevt_libcdata.h"
 #include "libevt_libcerror.h"
+#include "libevt_libfcache.h"
+#include "libevt_libfdata.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -92,7 +93,7 @@ int libevt_io_handle_read_records(
      libbfio_handle_t *file_io_handle,
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
-     libcdata_array_t *records_array,
+     libfdata_list_t *records_list,
      off64_t *last_record_offset,
      libcerror_error_t **error );
 
@@ -108,7 +109,7 @@ int libevt_io_handle_event_record_scan(
      libbfio_handle_t *file_io_handle,
      off64_t file_offset,
      size64_t size,
-     libcdata_array_t *recovered_records_array,
+     libfdata_list_t *recovered_records_list,
      libcerror_error_t **error );
 
 int libevt_io_handle_recover_records(
@@ -117,8 +118,8 @@ int libevt_io_handle_recover_records(
      uint32_t first_record_offset,
      uint32_t end_of_file_record_offset,
      off64_t last_record_offset,
-     libcdata_array_t *records_array,
-     libcdata_array_t *recovered_records_array,
+     libfdata_list_t *records_list,
+     libfdata_list_t *recovered_records_list,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

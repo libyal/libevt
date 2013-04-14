@@ -38,7 +38,8 @@
 #include "registry_file.h"
 #include "resource_file.h"
 
-/* Initializes the message handle
+/* Creates a message handle
+ * Make sure the value message_handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int message_handle_initialize(
@@ -171,7 +172,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the message handle and its elements
+/* Frees a message handle
  * Returns 1 if successful or -1 on error
  */
 int message_handle_free(

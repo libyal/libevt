@@ -1,8 +1,8 @@
 TODO:
-* use libfdata
+* recovery: what about record that is recoverable but has a size mismatch
 * msvscpp:
   - check and fix debug output generation
-  - check 64-bit compilation output
+  - check 64-bit compilation output (warnings)
 * check signal abort
 * test find paths on windows
 * get %WinDir%
@@ -50,11 +50,14 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
-20130413
+20130414
 * updated dependencies
 * fixed codepage 1255 restriction
 * worked on tests
 * updates and bug fixes in pyevt
+* implemented libfdata support to improve handling of large EVT files
+* remove item flags
+* added support for truncated event record corruption scenario
 
 20120409
 * fixed codepage 949 and 950 restriction

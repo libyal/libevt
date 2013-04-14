@@ -34,6 +34,7 @@
 #include "libevt_libfvalue.h"
 #include "libevt_libfwnt.h"
 #include "libevt_record_values.h"
+#include "libevt_unused.h"
 
 #include "evt_file_header.h"
 #include "evt_record.h"
@@ -43,7 +44,8 @@ const uint8_t evt_end_of_file_record_signature2[ 4 ] = { 0x22, 0x22, 0x22, 0x22 
 const uint8_t evt_end_of_file_record_signature3[ 4 ] = { 0x33, 0x33, 0x33, 0x33 };
 const uint8_t evt_end_of_file_record_signature4[ 4 ] = { 0x44, 0x44, 0x44, 0x44 };
 
-/* Initialize the record_values
+/* Creates record values
+ * Make sure the value record_values is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_values_initialize(
@@ -115,7 +117,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the record values including elements
+/* Frees record values
  * Returns 1 if successful or -1 on error
  */
 int libevt_record_values_free(
@@ -313,6 +315,7 @@ ssize_t libevt_record_values_read(
          libbfio_handle_t *file_io_handle,
          libevt_io_handle_t *io_handle,
          off64_t *file_offset,
+         uint8_t strict_mode,
          libcerror_error_t **error )
 {
 	uint8_t record_size_data[ 4 ];
@@ -543,6 +546,7 @@ ssize_t libevt_record_values_read(
 		     record_values,
 		     record_data,
 		     (size_t) record_data_size,
+		     strict_mode,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -594,10 +598,12 @@ int libevt_record_values_read_event(
      libevt_record_values_t *record_values,
      uint8_t *record_data,
      size_t record_data_size,
+     uint8_t strict_mode,
      libcerror_error_t **error )
 {
 	static char *function                 = "libevt_record_values_read_event";
 	size_t record_data_offset             = 0;
+	size_t strings_data_offset            = 0;
 	ssize_t value_data_size               = 0;
 	uint32_t data_offset                  = 0;
 	uint32_t data_size                    = 0;
@@ -1297,6 +1303,25 @@ int libevt_record_values_read_event(
 			 0 );
 		}
 #endif
+		if( size_copy == 0 )
+		{
+			/* If the strings data is truncated 
+			 */
+			strings_data_offset = strings_offset + strings_size - 2;
+
+			while( strings_data_offset > strings_offset )
+			{
+				if( ( record_data[ strings_data_offset ] != 0 )
+				 || ( record_data[ strings_data_offset + 1 ] != 0 ) )
+				{
+					strings_size += 2;
+
+					break;
+				}
+				strings_data_offset -= 2;
+				strings_size        -= 2;
+			}
+		}
 		if( libfvalue_value_type_initialize(
 		     &( record_values->strings ),
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
@@ -1400,6 +1425,11 @@ int libevt_record_values_read_event(
 		 "\n" );
 	}
 #endif
+	if( ( strict_mode == 0 )
+	 && ( size_copy == 0 ) )
+	{
+		size_copy = size;
+	}
 	if( size != size_copy )
 	{
 		libcerror_error_set(
@@ -1678,5 +1708,119 @@ int libevt_record_values_get_type(
 	*type = record_values->type;
 
 	return( 1 );
+}
+
+/* Reads record values
+ * Callback for the (recovered) records list
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_record_values_read_element_data(
+     libevt_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     libfdata_list_element_t *element,
+     libfcache_cache_t *cache,
+     int element_file_index LIBEVT_ATTRIBUTE_UNUSED,
+     off64_t element_offset,
+     size64_t element_size LIBEVT_ATTRIBUTE_UNUSED,
+     uint32_t element_flags LIBEVT_ATTRIBUTE_UNUSED,
+     uint8_t read_flags LIBEVT_ATTRIBUTE_UNUSED,
+     libcerror_error_t **error )
+{
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_record_values_read_element_data";
+	off64_t file_offset                   = 0;
+	ssize_t read_count                    = 0;
+
+	LIBEVT_UNREFERENCED_PARAMETER( element_size )
+	LIBEVT_UNREFERENCED_PARAMETER( element_file_index )
+	LIBEVT_UNREFERENCED_PARAMETER( element_flags )
+	LIBEVT_UNREFERENCED_PARAMETER( read_flags )
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading record  at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+		 function,
+		 file_offset,
+		 file_offset );
+	}
+#endif
+	if( libbfio_handle_seek_offset(
+	     file_io_handle,
+	     element_offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek record offset: %" PRIi64 ".",
+		 function,
+		 element_offset );
+
+		goto on_error;
+	}
+	if( libevt_record_values_initialize(
+	     &record_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create record values.",
+		 function );
+
+		goto on_error;
+	}
+	read_count = libevt_record_values_read(
+		      record_values,
+		      file_io_handle,
+		      io_handle,
+		      &file_offset,
+		      0,
+		      error );
+
+	if( read_count == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read record at offset: %" PRIi64 ".",
+		 function,
+		 element_offset );
+
+		goto on_error;
+	}
+	if( libfdata_list_element_set_element_value(
+	     element,
+	     cache,
+	     (intptr_t *) record_values,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
+	     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set record values as element value.",
+		 function );
+
+		goto on_error;
+	}
+	return( 1 );
+
+on_error:
+	if( record_values != NULL )
+	{
+		libevt_record_values_free(
+		 &record_values,
+		 NULL );
+	}
+	return( -1 );
 }
 
