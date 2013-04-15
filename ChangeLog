@@ -41,6 +41,8 @@ Tools:
   - functionality to parse event identifier ?
   - string representations of event type ?
   - access to data
+* tests
+  - file wrap
 
 Format:
 * event flags ? (debug function)
@@ -49,6 +51,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20130415
+* bug fix for wrapped event record
 
 20130414
 * updated dependencies

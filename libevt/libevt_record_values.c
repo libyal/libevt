@@ -1742,8 +1742,8 @@ int libevt_record_values_read_element_data(
 		libcnotify_printf(
 		 "%s: reading record  at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 		 function,
-		 file_offset,
-		 file_offset );
+		 element_offset,
+		 element_offset );
 	}
 #endif
 	if( libbfio_handle_seek_offset(
@@ -1775,6 +1775,10 @@ int libevt_record_values_read_element_data(
 
 		goto on_error;
 	}
+	/* File offset must be before being passed to libevt_record_values_read
+	 */
+	file_offset = element_offset;
+
 	read_count = libevt_record_values_read(
 		      record_values,
 		      file_io_handle,
