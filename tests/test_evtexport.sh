@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Library open close testing script
+# evtexport tool testing script
 #
 # Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -24,31 +24,56 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-test_open_close()
+test_export()
 { 
-	INPUT_FILE=$1;
+	DIRNAME=$1;
+	INPUT_FILE=$2;
+	BASENAME=`basename ${INPUT_FILE}`;
 
-	echo "Testing open close of input: ${INPUT_FILE}";
+	if [ -d tmp ];
+	then
+		rm -rf tmp;
+	fi
+	mkdir tmp;
 
-	./${EVT_TEST_OPEN_CLOSE} ${INPUT_FILE};
+	${EVTEXPORT} ${INPUT_FILE} | sed '1,2d' > tmp/${BASENAME}.log;
 
 	RESULT=$?;
 
-	echo "";
+	if [ -f "input/.evtexport/${DIRNAME}/${BASENAME}.log.gz" ];
+	then
+		zdiff "input/.evtexport/${DIRNAME}/${BASENAME}.log.gz" "tmp/${BASENAME}.log";
 
+		RESULT=$?;
+	else
+		mv "tmp/${BASENAME}.log" "input/.evtexport/${DIRNAME}";
+
+		gzip "input/.evtexport/${DIRNAME}/${BASENAME}.log";
+	fi
+
+	rm -rf tmp;
+
+	echo -n "Testing evtexport of input: ${INPUT_FILE} ";
+
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		echo " (FAIL)";
+	else
+		echo " (PASS)";
+	fi
 	return ${RESULT};
 }
 
-EVT_TEST_OPEN_CLOSE="evt_test_open_close";
+EVTEXPORT="../evttools/evtexport";
 
-if ! test -x ${EVT_TEST_OPEN_CLOSE};
+if ! test -x ${EVTEXPORT};
 then
-	EVT_TEST_OPEN_CLOSE="evt_test_open_close.exe";
+	EVTEXPORT="../evttools/evtexport.exe";
 fi
 
-if ! test -x ${EVT_TEST_OPEN_CLOSE};
+if ! test -x ${EVTEXPORT};
 then
-	echo "Missing executable: ${EVT_TEST_OPEN_CLOSE}";
+	echo "Missing executable: ${EVTEXPORT}";
 
 	exit ${EXIT_FAILURE};
 fi
@@ -72,15 +97,24 @@ then
 
 	EXIT_RESULT=${EXIT_IGNORE};
 else
+	if ! test -d "input/.evtexport";
+	then
+		mkdir "input/.evtexport";
+	fi
+
 	for TESTDIR in input/*;
 	do
 		if [ -d "${TESTDIR}" ];
 		then
 			DIRNAME=`basename ${TESTDIR}`;
 
+			if [ ! -d "input/.evtexport/${DIRNAME}" ];
+			then
+				mkdir "input/.evtexport/${DIRNAME}";
+			fi
 			for TESTFILE in ${TESTDIR}/*;
 			do
-				if ! test_open_close "${TESTFILE}";
+				if ! test_export "${DIRNAME}" "${TESTFILE}";
 				then
 					exit ${EXIT_FAILURE};
 				fi

@@ -24,8 +24,6 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-INPUT="input";
-
 PYTHON="/usr/bin/python";
 
 if ! test -x ${PYTHON};
@@ -35,9 +33,9 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if ! test -d ${INPUT};
+if ! test -d "input";
 then
-	echo "No input directory found, to test pyevt create a directory named input and fill it with test files.";
+	echo "No input directory found.";
 
 	exit ${EXIT_IGNORE};
 fi
@@ -46,15 +44,34 @@ OLDIFS=${IFS};
 IFS="
 ";
 
-for FILENAME in ${INPUT}/*;
-do
-	if ! PYTHONPATH=../pyevt/.libs/ ${PYTHON} pyevt_test_open_close.py ${FILENAME};
-	then
-		exit ${EXIT_FAILURE};
-	fi
-done
+RESULT=`ls input/* | tr ' ' '\n' | wc -l`;
+
+if test ${RESULT} -eq 0;
+then
+	echo "No files or directories found in the input directory.";
+
+	EXIT_RESULT=${EXIT_IGNORE};
+else
+	for TESTDIR in input/*;
+	do
+		if [ -d "${TESTDIR}" ];
+		then
+			DIRNAME=`basename ${TESTDIR}`;
+
+			for TESTFILE in ${TESTDIR}/*;
+			do
+				if ! PYTHONPATH=../pyevt/.libs/ ${PYTHON} pyevt_test_open_close.py ${TESTFILE};
+				then
+					exit ${EXIT_FAILURE};
+				fi
+			done
+		fi
+	done
+
+	EXIT_RESULT=${EXIT_SUCCESS};
+fi
 
 IFS=${OLDIFS};
 
-exit ${EXIT_SUCCESS};
+exit ${EXIT_RESULT};
 

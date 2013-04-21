@@ -1034,7 +1034,7 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-		data_offset = record_data_size - 4;
+		data_offset = (uint32_t) record_data_size - 4;
 	}
 	if( ( (size_t) strings_offset == ( record_data_size - 4 ) )
 	 && ( strings_offset != data_offset ) )
@@ -1050,11 +1050,11 @@ int libevt_record_values_read_event(
 	}
 	if( user_sid_offset != 0 )
 	{
-		members_data_size = user_sid_offset - record_data_offset;
+		members_data_size = user_sid_offset - (uint32_t) record_data_offset;
 	}
 	else if( strings_offset != 0 )
 	{
-		members_data_size = strings_offset - record_data_offset;
+		members_data_size = strings_offset - (uint32_t) record_data_offset;
 	}
 	if( strings_offset != 0 )
 	{
@@ -1801,6 +1801,7 @@ int libevt_record_values_read_element_data(
 	}
 	if( libfdata_list_element_set_element_value(
 	     element,
+	     (intptr_t *) file_io_handle,
 	     cache,
 	     (intptr_t *) record_values,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &libevt_record_values_free,
