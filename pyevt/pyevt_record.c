@@ -85,7 +85,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
 	  METH_NOARGS,
-	  "get_event_identifier() -> Integer\n"
+	  "get_event_identifier() -> Long\n"
 	  "\n"
 	  "Retrieves the event identifier." },
 
@@ -1014,8 +1014,8 @@ PyObject *pyevt_record_get_event_identifier(
 
 		return( NULL );
 	}
-	return( PyInt_FromLong(
-	         (long) event_identifier ) );
+	return( PyLong_FromUnsignedLong(
+	         (unsigned long) event_identifier ) );
 }
 
 /* Retrieves the event type

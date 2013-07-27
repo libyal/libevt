@@ -37,20 +37,20 @@ def pyevt_test_multi_open_close_file( filename, mode ):
 	evt_file.close()
 
 def pyevt_test_single_open_close_file_object( filename, mode ):
-	file_object = open(filename, mode)
+	file_object = open( filename, mode )
 	evt_file = pyevt.file()
 	evt_file.open_file_object( file_object, mode )
 	evt_file.close()
 
 def pyevt_test_single_open_close_file_object_with_dereference( filename, mode ):
-	file_object = open(filename, mode)
+	file_object = open( filename, mode )
 	evt_file = pyevt.file()
 	evt_file.open_file_object( file_object, mode )
 	del file_object
 	evt_file.close()
 
 def pyevt_test_multi_open_close_file_object( filename, mode ):
-	file_object = open(filename, mode)
+	file_object = open( filename, mode )
 	evt_file = pyevt.file()
 	evt_file.open_file_object( file_object, mode )
 	evt_file.close()

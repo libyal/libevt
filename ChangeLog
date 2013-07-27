@@ -52,6 +52,14 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130727
+* updated dependencies
+
+20130726
+* pyevt
+  - changed event identifier to an unsigned long
+  - fixes for >2G file objects in BFIO glue code
+
 20130609
 * updated dependencies
 

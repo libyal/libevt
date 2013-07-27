@@ -1305,7 +1305,7 @@ int libevt_record_values_read_event(
 #endif
 		if( size_copy == 0 )
 		{
-			/* If the strings data is truncated 
+			/* If the strings data is truncated
 			 */
 			strings_data_offset = strings_offset + strings_size - 2;
 
