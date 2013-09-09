@@ -3,6 +3,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/common \
 	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
+	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
 	@LIBCNOTIFY_CPPFLAGS@ \
@@ -33,6 +34,7 @@ check_SCRIPTS = \
 	test_pyevt_set_ascii_codepage.sh \
 	test_evtexport.sh \
 	test_evtinfo.sh \
+	test_runner.sh \
 	test_set_ascii_codepage.sh
 
 EXTRA_DIST = \

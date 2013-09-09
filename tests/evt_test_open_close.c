@@ -140,7 +140,7 @@ int evt_test_multi_open_close_file(
      int expected_result )
 {
 	libcerror_error_t *error = NULL;
-	libevt_file_t *file     = NULL;
+	libevt_file_t *file      = NULL;
 	static char *function    = "evt_test_multi_open_close_file";
 	int result               = 0;
 
