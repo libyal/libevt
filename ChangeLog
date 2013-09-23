@@ -52,6 +52,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20130923
+* updated dependencies
+
 20130909
 * updated dependencies
 * worked on libcthreads build support
