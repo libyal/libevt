@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20130923],
+ [20130928],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -241,6 +241,7 @@ AC_CONFIG_FILES([macosx/libevt.pmdoc/05python.xml])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/index.xml])
 AC_CONFIG_FILES([macosx/Introduction.rtf])
 AC_CONFIG_FILES([libevt/libevt.rc])
+AC_CONFIG_FILES([pyevt/setup.py])
 AC_CONFIG_FILES([libevt.pc])
 AC_CONFIG_FILES([libevt.spec])
 dnl Have configure write its configuration
