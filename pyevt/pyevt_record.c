@@ -28,6 +28,7 @@
 
 #include "pyevt.h"
 #include "pyevt_datetime.h"
+#include "pyevt_integer.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libcstring.h"
 #include "pyevt_libevt.h"
@@ -43,7 +44,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_offset",
 	  (PyCFunction) pyevt_record_get_offset,
 	  METH_NOARGS,
-	  "get_offset() -> Long\n"
+	  "get_offset() -> Integer\n"
 	  "\n"
 	  "Retrieves the offset." },
 
@@ -64,7 +65,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyevt_record_get_creation_time_as_integer,
 	  METH_NOARGS,
-	  "get_creation_time_as_integer() -> Long\n"
+	  "get_creation_time_as_integer() -> Integer\n"
 	  "\n"
 	  "Returns the creation date and time as a 32-bit integer containing a POSIX timestamp value." },
 
@@ -78,14 +79,14 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_written_time_as_integer",
 	  (PyCFunction) pyevt_record_get_written_time_as_integer,
 	  METH_NOARGS,
-	  "get_written_time_as_integer() -> Long\n"
+	  "get_written_time_as_integer() -> Integer\n"
 	  "\n"
 	  "Returns the written date and time as a 32-bit integer containing a POSIX timestamp value." },
 
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
 	  METH_NOARGS,
-	  "get_event_identifier() -> Long\n"
+	  "get_event_identifier() -> Integer\n"
 	  "\n"
 	  "Retrieves the event identifier." },
 
@@ -512,6 +513,7 @@ PyObject *pyevt_record_get_offset(
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
 	static char *function    = "pyevt_record_get_offset";
 	off64_t offset           = 0;
 	int result               = 0;
@@ -561,31 +563,10 @@ PyObject *pyevt_record_get_offset(
 
 		return( NULL );
 	}
-#if defined( HAVE_LONG_LONG )
-	if( offset > (off64_t) LLONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: offset value exceeds maximum.",
-		 function );
+	integer_object = pyevt_integer_signed_new_from_64bit(
+	                  (int64_t) offset );
 
-		return( NULL );
-	}
-	return( PyLong_FromLongLong(
-	         (long long) offset ) );
-#else
-	if( offset > (off64_t) LONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: offset value exceeds maximum.",
-		 function );
-
-		return( NULL );
-	}
-	return( PyLong_FromLong(
-	         (long) offset ) );
-#endif
+	return( integer_object );
 }
 
 /* Retrieves the identifier
@@ -727,6 +708,7 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
 	static char *function    = "pyevt_record_get_creation_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
@@ -776,31 +758,10 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 		return( NULL );
 	}
-#if defined( HAVE_LONG_LONG )
-	if( (uint64_t) posix_time > (uint64_t) LLONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: POSIX time value exceeds maximum.",
-		 function );
+	integer_object = pyevt_integer_signed_new_from_64bit(
+	                  (int32_t) posix_time );
 
-		return( NULL );
-	}
-	return( PyLong_FromLongLong(
-	         (long long) posix_time ) );
-#else
-	if( (uint64_t) posix_time > (uint64_t) LONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: POSIX time value exceeds maximum.",
-		 function );
-
-		return( NULL );
-	}
-	return( PyLong_FromLong(
-	         (long) posix_time ) );
-#endif
+	return( integer_object );
 }
 
 /* Retrieves the written date and time
@@ -879,6 +840,7 @@ PyObject *pyevt_record_get_written_time_as_integer(
 	char error_string[ PYEVT_ERROR_STRING_SIZE ];
 
 	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
 	static char *function    = "pyevt_record_get_written_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
@@ -928,31 +890,10 @@ PyObject *pyevt_record_get_written_time_as_integer(
 
 		return( NULL );
 	}
-#if defined( HAVE_LONG_LONG )
-	if( (uint64_t) posix_time > (uint64_t) LLONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: POSIX time value exceeds maximum.",
-		 function );
+	integer_object = pyevt_integer_signed_new_from_64bit(
+	                  (int32_t) posix_time );
 
-		return( NULL );
-	}
-	return( PyLong_FromLongLong(
-	         (long long) posix_time ) );
-#else
-	if( (uint64_t) posix_time > (uint64_t) LONG_MAX )
-	{
-		PyErr_Format(
-		 PyExc_OverflowError,
-		 "%s: POSIX time value exceeds maximum.",
-		 function );
-
-		return( NULL );
-	}
-	return( PyLong_FromLong(
-	         (long) posix_time ) );
-#endif
+	return( integer_object );
 }
 
 /* Retrieves the event identifier

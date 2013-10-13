@@ -20,6 +20,7 @@ pyevt_la_SOURCES = \
 	pyevt_datetime.c pyevt_datetime.h \
 	pyevt_file.c pyevt_file.h \
 	pyevt_file_object_io_handle.c pyevt_file_object_io_handle.h \
+	pyevt_integer.c pyevt_integer.h \
 	pyevt_libbfio.h \
 	pyevt_libcerror.h \
 	pyevt_libclocale.h \

@@ -100,7 +100,7 @@ stamp-h1
 /include/libevt/features.h
 /include/libevt/types.h
 /libevt/libevt.rc
-/libevt/libevt.h
+/libevt/libevt_definitions.h
 /macosx/Introduction.rtf
 /macosx/libevt.pmdoc/01bin.xml
 /macosx/libevt.pmdoc/02include.xml
