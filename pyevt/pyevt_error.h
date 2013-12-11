@@ -1,5 +1,5 @@
 /*
- * Integer functions
+ * Error functions
  *
  * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYEVT_INTEGER_H )
-#define _PYEVT_INTEGER_H
+#if !defined( _PYEVT_ERROR_H )
+#define _PYEVT_ERROR_H
 
 #include <common.h>
 #include <types.h>
@@ -28,25 +28,17 @@
 #include "pyevt_libcerror.h"
 #include "pyevt_python.h"
 
+#define PYEVT_ERROR_STRING_SIZE		768
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-PyObject *pyevt_integer_signed_new_from_64bit(
-           int64_t value_64bit );
-
-PyObject *pyevt_integer_unsigned_new_from_64bit(
-           uint64_t value_64bit );
-
-int pyevt_integer_signed_copy_to_64bit(
-     PyObject *integer_object,
-     int64_t *value_64bit,
-     libcerror_error_t **error );
-
-int pyevt_integer_unsigned_copy_to_64bit(
-     PyObject *integer_object,
-     uint64_t *value_64bit,
-     libcerror_error_t **error );
+void pyevt_error_raise(
+      libcerror_error_t *error,
+      PyObject *exception_object,
+      const char *format_string,
+      ... );
 
 #if defined( __cplusplus )
 }

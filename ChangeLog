@@ -52,6 +52,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20132111
+* small fix in evtexport -h output
+* updated dependencies
+* worked on Python bindings
+
 20131013
 * updated dependencies
 

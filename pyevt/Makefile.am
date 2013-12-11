@@ -18,6 +18,7 @@ pyevt_la_SOURCES = \
 	pyevt.c pyevt.h \
 	pyevt_codepage.c pyevt_codepage.h \
 	pyevt_datetime.c pyevt_datetime.h \
+	pyevt_error.c pyevt_error.h \
 	pyevt_file.c pyevt_file.h \
 	pyevt_file_object_io_handle.c pyevt_file_object_io_handle.h \
 	pyevt_integer.c pyevt_integer.h \

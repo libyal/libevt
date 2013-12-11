@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20131013],
+ [20131211],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -233,6 +233,7 @@ dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
 AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([dpkg/copyright])
+AC_CONFIG_FILES([libevt/libevt.rc])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/01bin.xml])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/02include.xml])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/03lib.xml])
@@ -240,7 +241,6 @@ AC_CONFIG_FILES([macosx/libevt.pmdoc/04share.xml])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/05python.xml])
 AC_CONFIG_FILES([macosx/libevt.pmdoc/index.xml])
 AC_CONFIG_FILES([macosx/Introduction.rtf])
-AC_CONFIG_FILES([libevt/libevt.rc])
 AC_CONFIG_FILES([pyevt/setup.py])
 AC_CONFIG_FILES([libevt.pc])
 AC_CONFIG_FILES([libevt.spec])
