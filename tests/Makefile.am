@@ -51,7 +51,7 @@ evt_test_open_close_SOURCES = \
 	evt_test_open_close.c
 
 evt_test_open_close_LDADD = \
-	../libevt/libevt.la
+	../libevt/libevt.la \
 	@LIBBFIO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCFILE_LIBADD@ \
@@ -71,7 +71,7 @@ evt_test_set_ascii_codepage_SOURCES = \
 	evt_test_set_ascii_codepage.c
 
 evt_test_set_ascii_codepage_LDADD = \
-	../libevt/libevt.la
+	../libevt/libevt.la \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@

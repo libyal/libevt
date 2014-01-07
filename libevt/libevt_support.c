@@ -1,7 +1,7 @@
 /*
  * Support functions
  *
- * Copyright (c) 2011-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2014, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -322,7 +322,7 @@ int libevt_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	uint8_t signature[ 4 ];
+	uint8_t signature[ 8 ];
 
 	static char *function      = "libevt_check_file_signature_file_io_handle";
 	ssize_t read_count         = 0;
@@ -374,7 +374,7 @@ int libevt_check_file_signature_file_io_handle(
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
 	              signature,
-	              4,
+	              8,
 	              error );
 
 	if( read_count != 4 )
@@ -410,7 +410,7 @@ int libevt_check_file_signature_file_io_handle(
 	}
 	if( memory_compare(
 	     evt_file_signature,
-	     signature,
+	     &( signature[ 4 ] ),
 	     4 ) == 0 )
 	{
 		return( 1 );

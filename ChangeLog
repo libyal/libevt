@@ -52,6 +52,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140105
+* bug fix in check signature
+* 2014 update
+* updated dependencies
+
 20132111
 * small fix in evtexport -h output
 * updated dependencies
