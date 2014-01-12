@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #endif
 
-#include "pyevt.h"
 #include "pyevt_codepage.h"
 #include "pyevt_error.h"
 #include "pyevt_file.h"

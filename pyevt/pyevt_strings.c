@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "pyevt.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
