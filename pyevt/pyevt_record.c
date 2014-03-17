@@ -392,7 +392,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes an record object
+/* Intializes a record object
  * Returns 0 if successful or -1 on error
  */
 int pyevt_record_init(
@@ -416,7 +416,7 @@ int pyevt_record_init(
 	return( 0 );
 }
 
-/* Frees an record object
+/* Frees a record object
  */
 void pyevt_record_free(
       pyevt_record_t *pyevt_record )

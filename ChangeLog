@@ -52,6 +52,11 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140317
+* updated dependencies
+* worked on setup.py
+* worked on Python-bindings
+
 20140131
 * removed examples
 

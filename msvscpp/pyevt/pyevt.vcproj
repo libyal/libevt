@@ -201,7 +201,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyevt\pyevt_event_types.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyevt\pyevt_file.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyevt\pyevt_file_flags.c"
 				>
 			</File>
 			<File
@@ -247,7 +255,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyevt\pyevt_event_types.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyevt\pyevt_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyevt\pyevt_file_flags.h"
 				>
 			</File>
 			<File

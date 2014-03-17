@@ -19,7 +19,9 @@ pyevt_la_SOURCES = \
 	pyevt_codepage.c pyevt_codepage.h \
 	pyevt_datetime.c pyevt_datetime.h \
 	pyevt_error.c pyevt_error.h \
+	pyevt_event_types.c pyevt_event_types.h \
 	pyevt_file.c pyevt_file.h \
+	pyevt_file_flags.c pyevt_file_flags.h \
 	pyevt_file_object_io_handle.c pyevt_file_object_io_handle.h \
 	pyevt_integer.c pyevt_integer.h \
 	pyevt_libbfio.h \
