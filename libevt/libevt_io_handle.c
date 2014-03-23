@@ -144,6 +144,45 @@ int libevt_io_handle_free(
 	return( 1 );
 }
 
+/* Clears the IO handle
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_io_handle_clear(
+     libevt_io_handle_t *io_handle,
+     libcerror_error_t **error )
+{
+	static char *function = "libevt_io_handle_clear";
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( memory_set(
+	     io_handle,
+	     0,
+	     sizeof( libevt_io_handle_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	io_handle->ascii_codepage = LIBEVT_CODEPAGE_WINDOWS_1252;
+
+	return( 1 );
+}
+
 /* Reads the file header
  * Returns 1 if successful or -1 on error
  */

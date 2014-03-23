@@ -81,6 +81,10 @@ int libevt_io_handle_free(
      libevt_io_handle_t **io_handle,
      libcerror_error_t **error );
 
+int libevt_io_handle_clear(
+     libevt_io_handle_t *io_handle,
+     libcerror_error_t **error );
+
 int libevt_io_handle_read_file_header(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,

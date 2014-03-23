@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "pyevt_libbfio.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 
@@ -43,6 +44,10 @@ struct pyevt_file
 	/* The libevt file
 	 */
 	libevt_file_t *file;
+
+	/* The libbfio file IO handle
+	 */
+	libbfio_handle_t *file_io_handle;
 };
 
 extern PyMethodDef pyevt_file_object_methods[];

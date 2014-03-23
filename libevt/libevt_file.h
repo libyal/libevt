@@ -45,6 +45,18 @@ struct libevt_internal_file
 	 */
 	libevt_io_handle_t *io_handle;
 
+	/* The file IO handle
+	 */
+	libbfio_handle_t *file_io_handle;
+
+	/* Value to indicate if the file IO handle was created inside the library
+	 */
+	uint8_t file_io_handle_created_in_library;
+
+	/* Value to indicate if the file IO handle was opened inside the library
+	 */
+	uint8_t file_io_handle_opened_in_library;
+
 	/* The records list
 	 */
 	libfdata_list_t *records_list;
@@ -56,14 +68,6 @@ struct libevt_internal_file
 	/* The records cache
 	 */
 	libfcache_cache_t *records_cache;
-
-	/* The file IO handle
-	 */
-	libbfio_handle_t *file_io_handle;
-
-	/* Value to indicate if the file IO handle was created inside the library
-	 */
-	uint8_t file_io_handle_created_in_library;
 };
 
 LIBEVT_EXTERN \
@@ -111,6 +115,7 @@ int libevt_file_close(
 
 int libevt_file_open_read(
      libevt_internal_file_t *internal_file,
+     libbfio_handle_t *file_io_handle,
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
