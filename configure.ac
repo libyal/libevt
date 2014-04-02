@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20140323],
+ [20140402],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -105,11 +105,11 @@ AX_LIBEVT_CHECK_LOCAL
 dnl Check for enabling libfcache for file value cache support
 AX_LIBFCACHE_CHECK_ENABLE
 
-dnl Check for enabling libfwevt for Windows Event Log binary XML support
-AX_LIBFWEVT_CHECK_ENABLE
-
 dnl Check for enabling libfdata for file data types support
 AX_LIBFDATA_CHECK_ENABLE
+
+dnl Check for enabling libfwevt for Windows Event Log binary XML support
+AX_LIBFWEVT_CHECK_ENABLE
 
 dnl Check for enabling libexe for MZ, PE/COFF executable support
 AX_LIBEXE_CHECK_ENABLE

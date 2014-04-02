@@ -189,7 +189,7 @@ int libevt_record_get_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -240,7 +240,7 @@ int libevt_record_get_identifier(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -292,7 +292,7 @@ int libevt_record_get_creation_time(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -344,7 +344,7 @@ int libevt_record_get_written_time(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -395,7 +395,7 @@ int libevt_record_get_event_identifier(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -446,7 +446,7 @@ int libevt_record_get_event_type(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -497,7 +497,7 @@ int libevt_record_get_event_category(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -549,7 +549,7 @@ int libevt_record_get_utf8_source_name_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -604,7 +604,7 @@ int libevt_record_get_utf8_source_name(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -659,7 +659,7 @@ int libevt_record_get_utf16_source_name_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -714,7 +714,7 @@ int libevt_record_get_utf16_source_name(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -769,7 +769,7 @@ int libevt_record_get_utf8_computer_name_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -824,7 +824,7 @@ int libevt_record_get_utf8_computer_name(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -879,7 +879,7 @@ int libevt_record_get_utf16_computer_name_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -934,7 +934,7 @@ int libevt_record_get_utf16_computer_name(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -989,7 +989,7 @@ int libevt_record_get_utf8_user_security_identifier_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1048,7 +1048,7 @@ int libevt_record_get_utf8_user_security_identifier(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1107,7 +1107,7 @@ int libevt_record_get_utf16_user_security_identifier_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1162,7 +1162,7 @@ int libevt_record_get_utf16_user_security_identifier(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1216,7 +1216,7 @@ int libevt_record_get_number_of_strings(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1288,7 +1288,7 @@ int libevt_record_get_utf8_string_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1356,7 +1356,7 @@ int libevt_record_get_utf8_string(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1424,7 +1424,7 @@ int libevt_record_get_utf16_string_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1492,7 +1492,7 @@ int libevt_record_get_utf16_string(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1558,7 +1558,7 @@ int libevt_record_get_data_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );
@@ -1615,7 +1615,7 @@ int libevt_record_get_data(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal record - missing record values.",
+		 "%s: invalid record - missing record values.",
 		 function );
 
 		return( -1 );

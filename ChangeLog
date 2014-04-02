@@ -52,6 +52,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140402
+* code clean up
+
 20140323
 * worked on Python-bindings
 

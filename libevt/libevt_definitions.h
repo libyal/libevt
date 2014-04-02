@@ -37,11 +37,11 @@
  * for local use of libevt
  */
 #else
-#define LIBEVT_VERSION						20140323
+#define LIBEVT_VERSION						20140402
 
 /* The version string
  */
-#define LIBEVT_VERSION_STRING					"20140323"
+#define LIBEVT_VERSION_STRING					"20140402"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
