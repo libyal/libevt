@@ -1210,15 +1210,12 @@ int libevt_record_values_read_event(
 		}
 #endif
 		record_data_offset += value_data_size;
+		members_data_size  -= (uint32_t) value_data_size;
 
-#if defined( HAVE_DEBUG_OUTPUT )
-		members_data_size -= (uint32_t) value_data_size;
-#endif
-
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
+		if( members_data_size > 0 )
 		{
-			if( members_data_size > 0 )
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
 				 "%s: members trailing data:\n",
@@ -1228,8 +1225,9 @@ int libevt_record_values_read_event(
 				 members_data_size,
 				 0 );
 			}
-		}
 #endif
+			record_data_offset += members_data_size;
+		}
 	}
 	if( user_sid_size != 0 )
 	{

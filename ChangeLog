@@ -52,6 +52,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140411
+* bug fix for strings offset correction if member data > 0
+
 20140402
 * code clean up
 
