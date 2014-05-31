@@ -52,6 +52,14 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140531
+* updated msvscpp files
+
+20140530
+* updated dependencies
+* worked on Python-bindings
+* replaced PackageMaker for pkgbuild
+
 20140411
 * bug fix for strings offset correction if member data > 0
 

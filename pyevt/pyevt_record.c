@@ -28,6 +28,7 @@
 
 #include "pyevt_datetime.h"
 #include "pyevt_error.h"
+#include "pyevt_file.h"
 #include "pyevt_integer.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libcstring.h"
@@ -277,7 +278,7 @@ PyTypeObject pyevt_record_type_object = {
 	0,
 	/* tp_as_buffer */
 	0,
-        /* tp_flags */
+	/* tp_flags */
 	Py_TPFLAGS_DEFAULT,
 	/* tp_doc */
 	"pyevt record object (wraps libevt_record_t)",
@@ -1471,9 +1472,9 @@ PyObject *pyevt_record_get_string(
 	     "i",
 	     keyword_list,
 	     &string_index ) == 0 )
-        {
+	{
 		return( NULL );
-        }
+	}
 	string_object = pyevt_record_get_string_by_index(
 	                 pyevt_record,
 	                 string_index );

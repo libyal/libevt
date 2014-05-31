@@ -72,7 +72,7 @@ PyTypeObject pyevt_file_flags_type_object = {
 	0,
 	/* tp_as_buffer */
 	0,
-        /* tp_flags */
+	/* tp_flags */
 	Py_TPFLAGS_DEFAULT,
 	/* tp_doc */
 	"pyevt file flags object (wraps LIBEVT_FILE_FLAGS)",
@@ -145,34 +145,34 @@ int pyevt_file_flags_init_type(
 		return( -1 );
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "IS_DIRTY",
-             PyInt_FromLong(
-              LIBEVT_FILE_FLAG_IS_DIRTY ) ) != 0 )
+	     type_object->tp_dict,
+	     "IS_DIRTY",
+	     PyInt_FromLong(
+	      LIBEVT_FILE_FLAG_IS_DIRTY ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "HAS_WRAPPED",
-             PyInt_FromLong(
-              LIBEVT_FILE_FLAG_HAS_WRAPPED ) ) != 0 )
+	     type_object->tp_dict,
+	     "HAS_WRAPPED",
+	     PyInt_FromLong(
+	      LIBEVT_FILE_FLAG_HAS_WRAPPED ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "IS_FULL",
-             PyInt_FromLong(
-              LIBEVT_FILE_FLAG_IS_FULL ) ) != 0 )
+	     type_object->tp_dict,
+	     "IS_FULL",
+	     PyInt_FromLong(
+	      LIBEVT_FILE_FLAG_IS_FULL ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "ARCHIVE",
-             PyInt_FromLong(
-              LIBEVT_FILE_FLAG_ARCHIVE ) ) != 0 )
+	     type_object->tp_dict,
+	     "ARCHIVE",
+	     PyInt_FromLong(
+	      LIBEVT_FILE_FLAG_ARCHIVE ) ) != 0 )
 	{
 		goto on_error;
 	}

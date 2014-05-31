@@ -72,7 +72,7 @@ PyTypeObject pyevt_event_types_type_object = {
 	0,
 	/* tp_as_buffer */
 	0,
-        /* tp_flags */
+	/* tp_flags */
 	Py_TPFLAGS_DEFAULT,
 	/* tp_doc */
 	"pyevt event types object (wraps LIBEVT_EVENT_TYPES)",
@@ -145,42 +145,42 @@ int pyevt_event_types_init_type(
 		return( -1 );
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "ERROR",
-             PyInt_FromLong(
-              LIBEVT_EVENT_TYPE_ERROR ) ) != 0 )
+	     type_object->tp_dict,
+	     "ERROR",
+	     PyInt_FromLong(
+	      LIBEVT_EVENT_TYPE_ERROR ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "WARNING",
-             PyInt_FromLong(
-              LIBEVT_EVENT_TYPE_WARNING ) ) != 0 )
+	     type_object->tp_dict,
+	     "WARNING",
+	     PyInt_FromLong(
+	      LIBEVT_EVENT_TYPE_WARNING ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "INFORMATION",
-             PyInt_FromLong(
-              LIBEVT_EVENT_TYPE_INFORMATION ) ) != 0 )
+	     type_object->tp_dict,
+	     "INFORMATION",
+	     PyInt_FromLong(
+	      LIBEVT_EVENT_TYPE_INFORMATION ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "AUDIT_SUCCESS",
-             PyInt_FromLong(
-              LIBEVT_EVENT_TYPE_AUDIT_SUCCESS ) ) != 0 )
+	     type_object->tp_dict,
+	     "AUDIT_SUCCESS",
+	     PyInt_FromLong(
+	      LIBEVT_EVENT_TYPE_AUDIT_SUCCESS ) ) != 0 )
 	{
 		goto on_error;
 	}
 	if( PyDict_SetItemString(
-             type_object->tp_dict,
-             "AUDIT_FAILURE",
-             PyInt_FromLong(
-              LIBEVT_EVENT_TYPE_AUDIT_FAILURE ) ) != 0 )
+	     type_object->tp_dict,
+	     "AUDIT_FAILURE",
+	     PyInt_FromLong(
+	      LIBEVT_EVENT_TYPE_AUDIT_FAILURE ) ) != 0 )
 	{
 		goto on_error;
 	}

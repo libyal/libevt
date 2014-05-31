@@ -101,13 +101,6 @@ stamp-h1
 /include/libevt/types.h
 /libevt/libevt.rc
 /libevt/libevt_definitions.h
-/macosx/Introduction.rtf
-/macosx/libevt.pmdoc/01bin.xml
-/macosx/libevt.pmdoc/02include.xml
-/macosx/libevt.pmdoc/03lib.xml
-/macosx/libevt.pmdoc/04share.xml
-/macosx/libevt.pmdoc/05python.xml
-/macosx/libevt.pmdoc/index.xml
 /pyevt/setup.py
 /tests/input
 /tests/evt_test_open_close
