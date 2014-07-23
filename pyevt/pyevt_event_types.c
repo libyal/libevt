@@ -240,7 +240,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a event types object
+/* Intializes an event types object
  * Returns 0 if successful or -1 on error
  */
 int pyevt_event_types_init(
@@ -260,7 +260,7 @@ int pyevt_event_types_init(
 	return( 0 );
 }
 
-/* Frees a event types object
+/* Frees an event types object
  */
 void pyevt_event_types_free(
       pyevt_event_types_t *pyevt_event_types )

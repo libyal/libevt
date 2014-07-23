@@ -7,82 +7,90 @@
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
-PYTHON_PACKAGE_DIR=$(shell python -c "import distutils.sysconfig;print distutils.sysconfig.get_python_lib(True) ")
-
-
 %:
 	dh  $@
 
-install_libevt:
-	# Set up libevt package directories and files
-	mkdir -p debian/libevt/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.so.*.*.* debian/libevt/usr/lib
-
-install_libevt_dev:
-	# Set up libevt-dev package directories and files
-	mkdir -p debian/libevt-dev/usr/include
-	mkdir -p debian/libevt-dev/usr/include/libevt
-	mkdir -p debian/libevt-dev/usr/lib
-	mkdir -p debian/libevt-dev/usr/lib/pkgconfig
-	mkdir -p debian/libevt-dev/usr/share/man/man3
-	install -p -m755 debian/tmp/usr/include/*.h debian/libevt-dev/usr/include
-	install -p -m755 debian/tmp/usr/include/libevt/*.h debian/libevt-dev/usr/include/libevt
-	install -p -m755 debian/tmp/usr/lib/*.la debian/libevt-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.a debian/libevt-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.so debian/libevt-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/pkgconfig/* debian/libevt-dev/usr/lib/pkgconfig
-	install -p -m755 debian/tmp/usr/share/man/man3/* debian/libevt-dev/usr/share/man/man3
-
-install_libevt_tools:
-	# Set up libevt-tools package directories and files
-	mkdir -p debian/libevt-tools/usr/bin
-	mkdir -p debian/libevt-tools/usr/share/man/man1
-	install -p -m755 debian/tmp/usr/bin/* debian/libevt-tools/usr/bin
-	install -p -m755 debian/tmp/usr/share/man/man1/* debian/libevt-tools/usr/share/man/man1
-
-install_libevt_python:
-	# Set up libevt-python package directories and files
-	mkdir -p debian/libevt-python/$(PYTHON_PACKAGE_DIR)
-	install -p -m775 debian/tmp$(PYTHON_PACKAGE_DIR)/pyevt.* debian/libevt-python$(PYTHON_PACKAGE_DIR)
-
+.PHONY: override_dh_auto_configure
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-python
+	dh_auto_configure -- --enable-python CFLAGS="-g"
 
+.PHONY: override_dh_auto_test
 override_dh_auto_test:
 
-override_dh_installinit: install_libevt install_libevt_dev install_libevt_tools install_libevt_python
+.PHONY: override_dh_install
+override_dh_install:
+	# Create the libevt package.
+	dh_install "debian/tmp/usr/lib/lib*.so.*.*.*" -p libevt
+	# Create the libevt-dev package.
+	dh_install "debian/tmp/usr/include/*.h" -p libevt-dev
+	dh_install "debian/tmp/usr/include/lib*/*.h" -p libevt-dev
+	dh_install "debian/tmp/usr/lib/*.a" -p libevt-dev
+	dh_install "debian/tmp/usr/lib/*.la" -p libevt-dev
+	dh_install "debian/tmp/usr/lib/*.so" -p libevt-dev
+	dh_install "debian/tmp/usr/lib/pkgconfig/*" -p libevt-dev
+	dh_install "debian/tmp/usr/share/man/man3/*" -p libevt-dev
+	# Create the libevt-tools package.
+	dh_install "debian/tmp/usr/bin/*" -p libevt-tools
+	dh_install "debian/tmp/usr/share/man/man1/*" -p libevt-tools
+	# Create the libevt-python package.
+	dh_install -X"*_d.so" "debian/tmp/usr/lib/python*/*" -p libevt-python
+	# The libevt-dbg and libevt-python-dbg packages are created by dh_strip.
+	dh_install
 
+.PHONY: override_dh_installmenu
 override_dh_installmenu:
 
+.PHONY: override_dh_installmime
 override_dh_installmime:
 
+.PHONY: override_dh_installmodules
 override_dh_installmodules:
 
+.PHONY: override_dh_installlogcheck
 override_dh_installlogcheck:
 
+.PHONY: override_dh_installlogrotate
 override_dh_installlogrotate:
 
+.PHONY: override_dh_installpam
 override_dh_installpam:
 
+.PHONY: override_dh_installppp
 override_dh_installppp:
 
+.PHONY: override_dh_installudev
 override_dh_installudev:
 
+.PHONY: override_dh_installwm
 override_dh_installwm:
 
+.PHONY: override_dh_installxfonts
 override_dh_installxfonts:
 
+.PHONY: override_dh_gconf
 override_dh_gconf:
 
+.PHONY: override_dh_icons
 override_dh_icons:
 
+.PHONY: override_dh_perl
 override_dh_perl:
 
+.PHONY: override_dh_pysupport
 override_dh_pysupport:
 
+.PHONY: override_dh_strip
+override_dh_strip:
+ifeq (,$(filter nostrip,$(DEB_BUILD_OPTIONS)))
+	dh_strip -plibevt --dbg-package=libevt-dbg
+	dh_strip -plibevt-python --dbg-package=libevt-python-dbg
+endif
+
+.PHONY: override_dh_shlibdeps
 override_dh_shlibdeps:
 	dh_shlibdeps -Llibevt -l${PWD}/debian/tmp/usr/lib
 
+.PHONY: override_dh_makeshlibs
 override_dh_makeshlibs:
 	dh_makeshlibs -Xlibevt-dev
 

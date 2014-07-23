@@ -52,6 +52,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20140723
+* worked on dpkg debug packages support
+
 20140531
 * updated msvscpp files
 
