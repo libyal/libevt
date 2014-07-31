@@ -1,4 +1,5 @@
 TODO:
+* add parameter expansion support
 * recovery: what about record that is recoverable but has a size mismatch
 * msvscpp:
   - check and fix debug output generation
@@ -51,6 +52,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20140731
+* bug fix in Python-bindings
 
 20140723
 * worked on dpkg debug packages support
