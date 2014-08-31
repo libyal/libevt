@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_libbfio.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\evttools_libcdirectory.h"
 				>
 			</File>

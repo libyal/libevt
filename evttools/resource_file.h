@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "evttools_libbfio.h"
 #include "evttools_libcerror.h"
 #include "evttools_libcstring.h"
 #include "evttools_libexe.h"

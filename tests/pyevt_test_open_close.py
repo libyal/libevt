@@ -83,7 +83,7 @@ def main( argc, argv ):
 	try:
 		pyevt_test_single_open_close_file( None, "r" )
 	except TypeError, exception:
-		if exception.message == "argument 1 must be string, not None":
+		if exception.message == "pyevt_file_open: unsupported string object type":
 			result = 0
 	except:
 		pass
