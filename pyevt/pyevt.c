@@ -375,7 +375,7 @@ PyObject *pyevt_check_file_signature(
 	}
 	PyErr_Format(
 	 PyExc_TypeError,
-	 "%s: unsupported string object type",
+	 "%s: unsupported string object type.",
 	 function );
 
 	return( NULL );

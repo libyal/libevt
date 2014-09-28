@@ -102,6 +102,8 @@ stamp-h1
 /libevt/libevt.rc
 /libevt/libevt_definitions.h
 /pyevt/setup.py
+/evttools/evtexport
+/evttools/evtinfo
 /tests/input
 /tests/evt_test_open_close
 /tests/evt_test_set_ascii_codepage
@@ -117,6 +119,8 @@ stamp-h1
 /libcnotify
 /libcpath
 /libcsplit
+/libcstring
+/libcsystem
 /libcthreads
 /libexe
 /libfcache
