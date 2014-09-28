@@ -1,4 +1,10 @@
-See:
-* http://code.google.com/p/libevt/wiki/Building
-* README.macosx
+libevt is a library to access the Windows Event Log (EVT) format.
+
+Planned:
+* Multi-threading support
+* Python 3 support
+
+For more information see:
+* Project documentation: https://github.com/libyal/libevt/wiki/Home
+* How to build from source: https://github.com/libyal/libevt/wiki/Building
 
