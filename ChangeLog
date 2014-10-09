@@ -1,4 +1,8 @@
 TODO:
+* evtexport, add date time format selection
+* evtexport, add flags to strip strings and messages string of CR-LFs
+* evtexport, add support for CVS and/or TSV format with surrounding quotes
+
 * add parameter expansion support
 * recovery: what about record that is recoverable but has a size mismatch
 * msvscpp:
@@ -52,6 +56,9 @@ Format:
 Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
+
+20141009
+* updated dependencies and corresponding changes
 
 20141004
 * update Python-bindings tests
