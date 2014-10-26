@@ -46,6 +46,7 @@ evtexport_SOURCES = \
 	evttools_libcsystem.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
+	evttools_libfwnt.h \
 	evttools_libevt.h \
 	evttools_libexe.h \
 	evttools_libregf.h \
@@ -89,6 +90,7 @@ evtinfo_SOURCES = \
 	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfdatetime.h \
+	evttools_libfwnt.h \
 	evttools_libevt.h \
 	evttools_libuna.h \
 	info_handle.c info_handle.h

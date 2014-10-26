@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_libfwnt.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\evttools_libuna.h"
 				>
 			</File>

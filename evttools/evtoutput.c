@@ -24,20 +24,10 @@
 #include <memory.h>
 #include <types.h>
 
-#if defined( HAVE_LOCAL_LIBBFIO )
-#include <libbfio_definitions.h>
-#elif defined( HAVE_LIBBFIO_H )
-#include <libbfio.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFWNT )
-#include <libfwnt_definitions.h>
-#elif defined( HAVE_LIBFWNT_H )
-#include <libfwnt.h>
-#endif
-
 #include "evtoutput.h"
+#include "evttools_libbfio.h"
 #include "evttools_libfdatetime.h"
+#include "evttools_libfwnt.h"
 #include "evttools_libevt.h"
 #include "evttools_libuna.h"
 
