@@ -1,5 +1,9 @@
 libevt is a library to access the Windows Event Log (EVT) format.
 
+Project information:
+* Status: alpha
+* Licence: LGPLv3+
+
 Planned:
 * Multi-threading support
 * Python 3 support
