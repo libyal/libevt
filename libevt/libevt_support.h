@@ -61,11 +61,13 @@ int libevt_check_file_signature(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 LIBEVT_EXTERN \
 int libevt_check_file_signature_wide(
      const wchar_t *filename,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBEVT_EXTERN \
 int libevt_check_file_signature_file_io_handle(
