@@ -82,6 +82,7 @@ int libevt_check_file_signature(
      libevt_error_t **error );
 
 #if defined( LIBEVT_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Determines if a file is a Windows Event Log (check for the EVT file signature)
  * Returns 1 if true, 0 if not or -1 on error
  */
@@ -89,9 +90,11 @@ LIBEVT_EXTERN \
 int libevt_check_file_signature_wide(
      const wchar_t *filename,
      libevt_error_t **error );
-#endif
+
+#endif /* defined( LIBEVT_HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBEVT_HAVE_BFIO )
+
 /* Determines if a file is a Windows Event Log (check for the EVT file signature) using a Basic File IO (bfio) handle
  * Returns 1 if true, 0 if not or -1 on error
  */
@@ -99,7 +102,8 @@ LIBEVT_EXTERN \
 int libevt_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libevt_error_t **error );
-#endif
+
+#endif /* defined( LIBEVT_HAVE_BFIO ) */
 
 /* -------------------------------------------------------------------------
  * Notify functions
@@ -221,6 +225,7 @@ int libevt_file_open(
      libevt_error_t **error );
 
 #if defined( LIBEVT_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Opens a file
  * Returns 1 if successful or -1 on error
  */
@@ -230,9 +235,11 @@ int libevt_file_open_wide(
      const wchar_t *filename,
      int access_flags,
      libevt_error_t **error );
-#endif
+
+#endif /* defined( LIBEVT_HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBEVT_HAVE_BFIO )
+
 /* Opens a file using a Basic File IO (bfio) handle
  * Returns 1 if successful or -1 on error
  */
@@ -242,7 +249,8 @@ int libevt_file_open_file_io_handle(
      libbfio_handle_t *file_io_handle,
      int access_flags,
      libevt_error_t **error );
-#endif
+
+#endif /* defined( LIBEVT_HAVE_BFIO ) */
 
 /* Closes a file
  * Returns 0 if successful or -1 on error
