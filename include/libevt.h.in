@@ -73,7 +73,7 @@ int libevt_set_codepage(
      int codepage,
      libevt_error_t **error );
 
-/* Determines if a file is a Windows Event Log (check for the EVT file signature)
+/* Determines if a file contains an EVT file signature
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBEVT_EXTERN \
@@ -83,7 +83,7 @@ int libevt_check_file_signature(
 
 #if defined( LIBEVT_HAVE_WIDE_CHARACTER_TYPE )
 
-/* Determines if a file is a Windows Event Log (check for the EVT file signature)
+/* Determines if a file contains an EVT file signature
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBEVT_EXTERN \
@@ -95,7 +95,7 @@ int libevt_check_file_signature_wide(
 
 #if defined( LIBEVT_HAVE_BFIO )
 
-/* Determines if a file is a Windows Event Log (check for the EVT file signature) using a Basic File IO (bfio) handle
+/* Determines if a file contains an EVT file signature using a Basic File IO (bfio) handle
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBEVT_EXTERN \
