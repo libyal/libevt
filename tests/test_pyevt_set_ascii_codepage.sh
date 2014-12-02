@@ -33,7 +33,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if ! PYTHONPATH=../pyevt/.libs/ ${PYTHON} pyevt_test_set_ascii_codepage.py;
+if ! LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} pyevt_test_set_ascii_codepage.py;
 then
 	exit ${EXIT_FAILURE};
 fi

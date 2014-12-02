@@ -49,7 +49,7 @@ test_open_close()
 
 	echo "Testing open close of input: ${INPUT_FILE}";
 
-	PYTHONPATH=../pyevt/.libs/ ${PYTHON} pyevt_test_open_close.py ${INPUT_FILE};
+	LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} pyevt_test_open_close.py ${INPUT_FILE};
 
 	rm -rf tmp;
 
