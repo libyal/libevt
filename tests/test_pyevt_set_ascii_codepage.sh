@@ -33,7 +33,25 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if ! LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} pyevt_test_set_ascii_codepage.py;
+SCRIPT="pyevt_test_set_ascii_codepage.py";
+
+if ! test -f ${SCRIPT};
+then
+	echo "Missing script: ${SCRIPT}";
+
+	exit ${EXIT_FAILURE};
+fi
+
+if test `uname -s` = 'Darwin';
+then
+	DYLD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT};
+	RESULT=$?;
+else
+	LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT};
+	RESULT=$?;
+fi
+
+if test ${RESULT} -ne ${EXIT_SUCCESS};
 then
 	exit ${EXIT_FAILURE};
 fi

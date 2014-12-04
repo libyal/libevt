@@ -49,11 +49,16 @@ test_open_close()
 
 	echo "Testing open close of input: ${INPUT_FILE}";
 
-	LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} pyevt_test_open_close.py ${INPUT_FILE};
+	if test `uname -s` = 'Darwin';
+	then
+		DYLD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
+		RESULT=$?;
+	else
+		LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
+		RESULT=$?;
+	fi
 
 	rm -rf tmp;
-
-	RESULT=$?;
 
 	return ${RESULT};
 }
@@ -72,6 +77,15 @@ then
 	echo "No input directory found.";
 
 	exit ${EXIT_IGNORE};
+fi
+
+SCRIPT="pyevt_test_open_close.py";
+
+if ! test -f ${SCRIPT};
+then
+	echo "Missing script: ${SCRIPT}";
+
+	exit ${EXIT_FAILURE};
 fi
 
 OLDIFS=${IFS};
