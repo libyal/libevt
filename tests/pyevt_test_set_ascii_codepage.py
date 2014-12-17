@@ -24,87 +24,92 @@ import sys
 
 import pyevt
 
-def main( argc, argv ):
-	result = 0
 
-	if argc != 1:
-		print "Usage: pyevt_test_set_ascii_codepage.py\n"
-		return 1
+def main():
+  supported_codepages = [
+      "ascii", "cp874", "cp932", "cp936", "cp949", "cp950", "cp1250",
+      "cp1251", "cp1252", "cp1253", "cp1254", "cp1255", "cp1256", "cp1257",
+      "cp1258"]
 
-	supported_codepages = [
-		"ascii", "cp874", "cp932", "cp936", "cp949", "cp950", "cp1250", "cp1251",
-		"cp1252", "cp1253", "cp1254", "cp1255", "cp1256", "cp1257", "cp1258" ]
+  unsupported_codepages = [
+      "iso-8859-1", "iso-8859-2", "iso-8859-3", "iso-8859-4", "iso-8859-5",
+      "iso-8859-6", "iso-8859-7", "iso-8859-8", "iso-8859-9", "iso-8859-10",
+      "iso-8859-11", "iso-8859-13", "iso-8859-14", "iso-8859-15",
+      "iso-8859-16", "koi8_r", "koi8_u"]
 
-	unsupported_codepages = [
-		"iso-8859-1", "iso-8859-2", "iso-8859-3", "iso-8859-4", "iso-8859-5",
-		"iso-8859-6", "iso-8859-7", "iso-8859-8", "iso-8859-9", "iso-8859-10",
-		"iso-8859-11", "iso-8859-13", "iso-8859-14", "iso-8859-15", "iso-8859-16",
-		"koi8_r", "koi8_u" ]
+  evt_file = pyevt.file()
 
-	evt_file = pyevt.file()
+  result = True
+  for codepage in supported_codepages:
+    print("Testing setting supported ASCII codepage of: {0:s}:\t".format(
+        codepage)),
+    try:
+      evt_file.ascii_codepage = codepage
+      result = True
+    except:
+      result = False
 
-	for codepage in supported_codepages:
-		print "Testing setting supported ASCII codepage of: %s:\t" %( codepage ),
+    if not result:
+      print("(FAIL)")
+      return False
+    print("(PASS)")
 
-		try:
-			evt_file.ascii_codepage = codepage
-			result = 0
-		except:
-			result = 1
+    print("Testing setting supported ASCII codepage of: {0:s}:\t".format(
+        codepage)),
+    try:
+      evt_file.set_ascii_codepage(codepage)
+      result = True
+    except:
+      result = False
 
-		if result != 0:
-			print "(FAIL)"
-			return 1
-		print "(PASS)"
+    if not result:
+      print("(FAIL)")
+      return False
+    print("(PASS)")
 
-		print "Testing setting supported ASCII codepage of: %s:\t" %( codepage ),
+    for codepage in unsupported_codepages:
+      print("Testing setting unsupported ASCII codepage of: {0:s}:\t".format(
+          codepage)),
 
-		try:
-			evt_file.set_ascii_codepage( codepage )
-			result = 0
-		except:
-			result = 1
+      expected_message = (
+          "{0:s}: unable to determine ASCII codepage.").format(
+              "pyevt_file_set_ascii_codepage_from_string")
+      result = False
+      try:
+        evt_file.ascii_codepage = codepage
+      except RuntimeError as exception:
+        if str(exception) == expected_message:
+          result = True
+      except:
+        pass
 
-		if result != 0:
-			print "(FAIL)"
-			return 1
-		print "(PASS)"
+      if not result:
+        print("(FAIL)")
+        return False
+      print("(PASS)")
 
-	for codepage in unsupported_codepages:
-		print "Testing setting unsupported ASCII codepage of: %s:\t" %( codepage ),
+      print("Testing setting unsupported ASCII codepage of: {0:s}:\t".format(
+          codepage)),
 
-		result = 1
-		try:
-			evt_file.ascii_codepage = codepage
-		except RuntimeError, exception:
-			if exception.message == "pyevt_file_set_ascii_codepage_from_string: unable to determine ASCII codepage.":
-				result = 0
-		except:
-			pass
+      result = False
+      try:
+        evt_file.set_ascii_codepage(codepage)
+      except RuntimeError as exception:
+        if str(exception) == expected_message:
+          result = True
+      except:
+        pass
 
-		if result != 0:
-			print "(FAIL)"
-			return 1
-		print "(PASS)"
+      if not result:
+        print("(FAIL)")
+        return False
+      print("(PASS)")
 
-		print "Testing setting unsupported ASCII codepage of: %s:\t" %( codepage ),
-
-		result = 1
-		try:
-			evt_file.set_ascii_codepage( codepage )
-		except RuntimeError, exception:
-			if exception.message == "pyevt_file_set_ascii_codepage_from_string: unable to determine ASCII codepage.":
-				result = 0
-		except:
-			pass
-
-		if result != 0:
-			print "(FAIL)"
-			return 1
-		print "(PASS)"
-
-	return 0
+  return True
 
 if __name__ == "__main__":
-	sys.exit( main( len( sys.argv ), sys.argv ) )
+  if not main():
+    sys.exit(1)
+  else:
+    sys.exit(0)
 

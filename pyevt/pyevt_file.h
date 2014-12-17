@@ -105,7 +105,7 @@ PyObject *pyevt_file_set_ascii_codepage(
 
 int pyevt_file_set_ascii_codepage_setter(
      pyevt_file_t *pyevt_file,
-     PyObject *value_object,
+     PyObject *string_object,
      void *closure );
 
 PyObject *pyevt_file_get_number_of_records(

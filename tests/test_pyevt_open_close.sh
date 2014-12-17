@@ -63,7 +63,7 @@ test_open_close()
 	return ${RESULT};
 }
 
-PYTHON=`which python`;
+PYTHON=`which python${PYTHON_VERSION}`;
 
 if ! test -x ${PYTHON};
 then
