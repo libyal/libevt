@@ -181,9 +181,13 @@ PyObject *pyevt_check_file_signature(
 		exception_string = PyObject_Repr(
 		                    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+		error_string = PyBytes_AsString(
+		                exception_string );
+#else
 		error_string = PyString_AsString(
 		                exception_string );
-
+#endif
 		if( error_string != NULL )
 		{
 			PyErr_Format(
@@ -232,9 +236,13 @@ PyObject *pyevt_check_file_signature(
 			exception_string = PyObject_Repr(
 					    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+			error_string = PyBytes_AsString(
+					exception_string );
+#else
 			error_string = PyString_AsString(
 					exception_string );
-
+#endif
 			if( error_string != NULL )
 			{
 				PyErr_Format(
@@ -255,9 +263,13 @@ PyObject *pyevt_check_file_signature(
 
 			return( NULL );
 		}
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   utf8_string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   utf8_string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libevt_check_file_signature(
@@ -296,10 +308,15 @@ PyObject *pyevt_check_file_signature(
 	}
 	PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyBytes_Type );
+#else
 	result = PyObject_IsInstance(
 		  string_object,
 		  (PyObject *) &PyString_Type );
-
+#endif
 	if( result == -1 )
 	{
 		PyErr_Fetch(
@@ -310,9 +327,13 @@ PyObject *pyevt_check_file_signature(
 		exception_string = PyObject_Repr(
 				    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+		error_string = PyBytes_AsString(
+				exception_string );
+#else
 		error_string = PyString_AsString(
 				exception_string );
-
+#endif
 		if( error_string != NULL )
 		{
 			PyErr_Format(
@@ -337,9 +358,13 @@ PyObject *pyevt_check_file_signature(
 	{
 		PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libevt_check_file_signature(
@@ -481,16 +506,42 @@ on_error:
 	return( NULL );
 }
 
-/* Declarations for DLL import/export
+#if PY_MAJOR_VERSION >= 3
+
+/* The pyevt module definition
  */
-#ifndef PyMODINIT_FUNC
-#define PyMODINIT_FUNC void
-#endif
+PyModuleDef pyevt_module_definition = {
+	PyModuleDef_HEAD_INIT,
+
+	/* m_name */
+	"pyevt",
+	/* m_doc */
+	"Python libevt module (pyevt).",
+	/* m_size */
+	-1,
+	/* m_methods */
+	pyevt_module_methods,
+	/* m_reload */
+	NULL,
+	/* m_traverse */
+	NULL,
+	/* m_clear */
+	NULL,
+	/* m_free */
+	NULL,
+};
+
+#endif /* PY_MAJOR_VERSION >= 3 */
 
 /* Initializes the pyevt module
  */
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_pyevt(
+                void )
+#else
 PyMODINIT_FUNC initpyevt(
                 void )
+#endif
 {
 	PyObject *module                      = NULL;
 	PyTypeObject *event_types_type_object = NULL;
@@ -505,11 +556,23 @@ PyMODINIT_FUNC initpyevt(
 	 * This function must be called before grabbing the GIL
 	 * otherwise the module will segfault on a version mismatch
 	 */
+#if PY_MAJOR_VERSION >= 3
+	module = PyModule_Create(
+	          &pyevt_module_definition );
+#else
 	module = Py_InitModule3(
 	          "pyevt",
 	          pyevt_module_methods,
 	          "Python libevt module (pyevt)." );
-
+#endif
+	if( module == NULL )
+	{
+#if PY_MAJOR_VERSION >= 3
+		return( NULL );
+#else
+		return;
+#endif
+	}
 	PyEval_InitThreads();
 
 	gil_state = PyGILState_Ensure();
@@ -638,8 +701,23 @@ PyMODINIT_FUNC initpyevt(
 	 "file_flags",
 	 (PyObject *) file_flags_type_object );
 
+	PyGILState_Release(
+	 gil_state );
+
+#if PY_MAJOR_VERSION >= 3
+	return( module );
+#else
+	return;
+#endif
+
 on_error:
 	PyGILState_Release(
 	 gil_state );
+
+#if PY_MAJOR_VERSION >= 3
+	return( NULL );
+#else
+	return;
+#endif
 }
 

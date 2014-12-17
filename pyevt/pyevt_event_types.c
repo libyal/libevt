@@ -32,10 +32,8 @@
 #include "pyevt_unused.h"
 
 PyTypeObject pyevt_event_types_type_object = {
-	PyObject_HEAD_INIT( NULL )
+	PyVarObject_HEAD_INIT( NULL, 0 )
 
-	/* ob_size */
-	0,
 	/* tp_name */
 	"pyevt.event_types",
 	/* tp_basicsize */
@@ -134,6 +132,8 @@ PyTypeObject pyevt_event_types_type_object = {
 int pyevt_event_types_init_type(
      PyTypeObject *type_object )
 {
+	PyObject *value_object = NULL;
+
 	if( type_object == NULL )
 	{
 		return( -1 );
@@ -144,43 +144,73 @@ int pyevt_event_types_init_type(
 	{
 		return( -1 );
 	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBEVT_EVENT_TYPE_ERROR );
+#else
+	value_object = PyInt_FromLong(
+	                LIBEVT_EVENT_TYPE_ERROR );
+#endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
 	     "ERROR",
-	     PyInt_FromLong(
-	      LIBEVT_EVENT_TYPE_ERROR ) ) != 0 )
+	     value_object ) != 0 )
 	{
 		goto on_error;
 	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBEVT_EVENT_TYPE_WARNING );
+#else
+	value_object = PyInt_FromLong(
+	                LIBEVT_EVENT_TYPE_WARNING );
+#endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
 	     "WARNING",
-	     PyInt_FromLong(
-	      LIBEVT_EVENT_TYPE_WARNING ) ) != 0 )
+	     value_object ) != 0 )
 	{
 		goto on_error;
 	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBEVT_EVENT_TYPE_INFORMATION );
+#else
+	value_object = PyInt_FromLong(
+	                LIBEVT_EVENT_TYPE_INFORMATION );
+#endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
 	     "INFORMATION",
-	     PyInt_FromLong(
-	      LIBEVT_EVENT_TYPE_INFORMATION ) ) != 0 )
+	     value_object ) != 0 )
 	{
 		goto on_error;
 	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBEVT_EVENT_TYPE_AUDIT_SUCCESS );
+#else
+	value_object = PyInt_FromLong(
+	                LIBEVT_EVENT_TYPE_AUDIT_SUCCESS );
+#endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
 	     "AUDIT_SUCCESS",
-	     PyInt_FromLong(
-	      LIBEVT_EVENT_TYPE_AUDIT_SUCCESS ) ) != 0 )
+	     value_object ) != 0 )
 	{
 		goto on_error;
 	}
+#if PY_MAJOR_VERSION >= 3
+	value_object = PyLong_FromLong(
+	                LIBEVT_EVENT_TYPE_AUDIT_FAILURE );
+#else
+	value_object = PyInt_FromLong(
+	                LIBEVT_EVENT_TYPE_AUDIT_FAILURE );
+#endif
 	if( PyDict_SetItemString(
 	     type_object->tp_dict,
 	     "AUDIT_FAILURE",
-	     PyInt_FromLong(
-	      LIBEVT_EVENT_TYPE_AUDIT_FAILURE ) ) != 0 )
+	     value_object ) != 0 )
 	{
 		goto on_error;
 	}
@@ -265,7 +295,8 @@ int pyevt_event_types_init(
 void pyevt_event_types_free(
       pyevt_event_types_t *pyevt_event_types )
 {
-	static char *function = "pyevt_event_types_free";
+	struct _typeobject *ob_type = NULL;
+	static char *function       = "pyevt_event_types_free";
 
 	if( pyevt_event_types == NULL )
 	{
@@ -276,25 +307,28 @@ void pyevt_event_types_free(
 
 		return;
 	}
-	if( pyevt_event_types->ob_type == NULL )
+	ob_type = Py_TYPE(
+	           pyevt_event_types );
+
+	if( ob_type == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid event types - missing ob_type.",
+		 PyExc_ValueError,
+		 "%s: missing ob_type.",
 		 function );
 
 		return;
 	}
-	if( pyevt_event_types->ob_type->tp_free == NULL )
+	if( ob_type->tp_free == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid event types - invalid ob_type - missing tp_free.",
+		 PyExc_ValueError,
+		 "%s: invalid ob_type - missing tp_free.",
 		 function );
 
 		return;
 	}
-	pyevt_event_types->ob_type->tp_free(
+	ob_type->tp_free(
 	 (PyObject*) pyevt_event_types );
 }
 

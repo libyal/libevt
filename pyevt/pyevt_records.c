@@ -57,10 +57,8 @@ PySequenceMethods pyevt_records_sequence_methods = {
 };
 
 PyTypeObject pyevt_records_type_object = {
-	PyObject_HEAD_INIT( NULL )
+	PyVarObject_HEAD_INIT( NULL, 0 )
 
-	/* ob_size */
-	0,
 	/* tp_name */
 	"pyevt._records",
 	/* tp_basicsize */
@@ -259,7 +257,8 @@ int pyevt_records_init(
 void pyevt_records_free(
       pyevt_records_t *pyevt_records )
 {
-	static char *function = "pyevt_records_free";
+	struct _typeobject *ob_type = NULL;
+	static char *function       = "pyevt_records_free";
 
 	if( pyevt_records == NULL )
 	{
@@ -270,30 +269,33 @@ void pyevt_records_free(
 
 		return;
 	}
-	if( pyevt_records->ob_type == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid records - missing ob_type.",
-		 function );
-
-		return;
-	}
-	if( pyevt_records->ob_type->tp_free == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid records - invalid ob_type - missing tp_free.",
-		 function );
-
-		return;
-	}
 	if( pyevt_records->file_object != NULL )
 	{
 		Py_DecRef(
 		 (PyObject *) pyevt_records->file_object );
 	}
-	pyevt_records->ob_type->tp_free(
+	ob_type = Py_TYPE(
+	           pyevt_records );
+
+	if( ob_type == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: missing ob_type.",
+		 function );
+
+		return;
+	}
+	if( ob_type->tp_free == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid ob_type - missing tp_free.",
+		 function );
+
+		return;
+	}
+	ob_type->tp_free(
 	 (PyObject*) pyevt_records );
 }
 

@@ -167,10 +167,8 @@ PyGetSetDef pyevt_file_object_get_set_definitions[] = {
 };
 
 PyTypeObject pyevt_file_type_object = {
-	PyObject_HEAD_INIT( NULL )
+	PyVarObject_HEAD_INIT( NULL, 0 )
 
-	/* ob_size */
-	0,
 	/* tp_name */
 	"pyevt.file",
 	/* tp_basicsize */
@@ -394,9 +392,10 @@ int pyevt_file_init(
 void pyevt_file_free(
       pyevt_file_t *pyevt_file )
 {
-	libcerror_error_t *error = NULL;
-	static char *function    = "pyevt_file_free";
-	int result               = 0;
+	libcerror_error_t *error    = NULL;
+	struct _typeobject *ob_type = NULL;
+	static char *function       = "pyevt_file_free";
+	int result                  = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -407,29 +406,32 @@ void pyevt_file_free(
 
 		return;
 	}
-	if( pyevt_file->ob_type == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid file - missing ob_type.",
-		 function );
-
-		return;
-	}
-	if( pyevt_file->ob_type->tp_free == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid file - invalid ob_type - missing tp_free.",
-		 function );
-
-		return;
-	}
 	if( pyevt_file->file == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
 		 "%s: invalid file - missing libevt file.",
+		 function );
+
+		return;
+	}
+	ob_type = Py_TYPE(
+	           pyevt_file );
+
+	if( ob_type == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: missing ob_type.",
+		 function );
+
+		return;
+	}
+	if( ob_type->tp_free == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid ob_type - missing tp_free.",
 		 function );
 
 		return;
@@ -453,7 +455,7 @@ void pyevt_file_free(
 		libcerror_error_free(
 		 &error );
 	}
-	pyevt_file->ob_type->tp_free(
+	ob_type->tp_free(
 	 (PyObject*) pyevt_file );
 }
 
@@ -584,9 +586,13 @@ PyObject *pyevt_file_open(
 		exception_string = PyObject_Repr(
 		                    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+		error_string = PyBytes_AsString(
+		                exception_string );
+#else
 		error_string = PyString_AsString(
 		                exception_string );
-
+#endif
 		if( error_string != NULL )
 		{
 			PyErr_Format(
@@ -637,9 +643,13 @@ PyObject *pyevt_file_open(
 			exception_string = PyObject_Repr(
 					    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+			error_string = PyBytes_AsString(
+					exception_string );
+#else
 			error_string = PyString_AsString(
 					exception_string );
-
+#endif
 			if( error_string != NULL )
 			{
 				PyErr_Format(
@@ -660,9 +670,13 @@ PyObject *pyevt_file_open(
 
 			return( NULL );
 		}
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   utf8_string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   utf8_string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libevt_file_open(
@@ -696,10 +710,15 @@ PyObject *pyevt_file_open(
 	}
 	PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyBytes_Type );
+#else
 	result = PyObject_IsInstance(
 		  string_object,
 		  (PyObject *) &PyString_Type );
-
+#endif
 	if( result == -1 )
 	{
 		PyErr_Fetch(
@@ -710,9 +729,13 @@ PyObject *pyevt_file_open(
 		exception_string = PyObject_Repr(
 				    exception_value );
 
+#if PY_MAJOR_VERSION >= 3
+		error_string = PyBytes_AsString(
+				exception_string );
+#else
 		error_string = PyString_AsString(
 				exception_string );
-
+#endif
 		if( error_string != NULL )
 		{
 			PyErr_Format(
@@ -737,9 +760,13 @@ PyObject *pyevt_file_open(
 	{
 		PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libevt_file_open(
@@ -1008,9 +1035,13 @@ PyObject *pyevt_file_get_ascii_codepage(
 
 		return( NULL );
 	}
+#if PY_MAJOR_VERSION >= 3
+	string_object = PyBytes_FromString(
+	                 codepage_string );
+#else
 	string_object = PyString_FromString(
 	                 codepage_string );
-
+#endif
 	if( string_object == NULL )
 	{
 		PyErr_Format(
@@ -1151,9 +1182,13 @@ int pyevt_file_set_ascii_codepage_setter(
 
 	PYEVT_UNREFERENCED_PARAMETER( closure )
 
+#if PY_MAJOR_VERSION >= 3
+	codepage_string = PyBytes_AsString(
+	                   value_object );
+#else
 	codepage_string = PyString_AsString(
 	                   value_object );
-
+#endif
 	if( codepage_string == NULL )
 	{
 		return( -1 );
@@ -1177,6 +1212,7 @@ PyObject *pyevt_file_get_number_of_records(
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
 	static char *function    = "pyevt_file_get_number_of_records";
 	int number_of_records    = 0;
 	int result               = 0;
@@ -1214,8 +1250,14 @@ PyObject *pyevt_file_get_number_of_records(
 
 		return( NULL );
 	}
-	return( PyInt_FromLong(
-	         (long) number_of_records ) );
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_records );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_records );
+#endif
+	return( integer_object );
 }
 
 /* Retrieves a specific record by index
@@ -1389,6 +1431,7 @@ PyObject *pyevt_file_get_number_of_recovered_records(
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
 	static char *function    = "pyevt_file_get_number_of_recovered_records";
 	int number_of_records    = 0;
 	int result               = 0;
@@ -1426,8 +1469,14 @@ PyObject *pyevt_file_get_number_of_recovered_records(
 
 		return( NULL );
 	}
-	return( PyInt_FromLong(
-	         (long) number_of_records ) );
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_records );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_records );
+#endif
+	return( integer_object );
 }
 
 /* Retrieves a specific recovered record by index
