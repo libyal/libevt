@@ -52,18 +52,24 @@ def pyevt_test_single_open_close_file(filename, mode):
     evt_file.open(filename, mode)
     evt_file.close()
 
-  except TypeError, exception:
-    if (not filename and
-        exception.message == "pyevt_file_open: unsupported string object type."):
+  except TypeError as exception:
+    expected_message = (
+        "{0:s}: unsupported string object type.").format(
+            "pyevt_file_open")
+
+    if not filename and str(exception) == expected_message:
       pass
 
     else:
       print("(FAIL)")
       return False
 
-  except ValueError, exception:
-    if (mode == "w" and
-        exception.message == "pyevt_file_open: unsupported mode: w."):
+  except ValueError as exception:
+    expected_message = (
+        "{0:s}: unsupported mode: w.").format(
+            "pyevt_file_open")
+
+    if mode == "w" and str(exception) == expected_message:
       pass
 
     else:

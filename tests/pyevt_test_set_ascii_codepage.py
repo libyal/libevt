@@ -71,13 +71,14 @@ def main():
       print("Testing setting unsupported ASCII codepage of: {0:s}:\t".format(
           codepage)),
 
-      expected_message = (
-          "{0:s}: unable to determine ASCII codepage.").format(
-              "pyevt_file_set_ascii_codepage_from_string")
       result = False
       try:
         evt_file.ascii_codepage = codepage
       except RuntimeError as exception:
+        expected_message = (
+            "{0:s}: unable to determine ASCII codepage.").format(
+                "pyevt_file_set_ascii_codepage_from_string")
+
         if str(exception) == expected_message:
           result = True
       except:
@@ -95,6 +96,10 @@ def main():
       try:
         evt_file.set_ascii_codepage(codepage)
       except RuntimeError as exception:
+        expected_message = (
+            "{0:s}: unable to determine ASCII codepage.").format(
+                "pyevt_file_set_ascii_codepage_from_string")
+
         if str(exception) == expected_message:
           result = True
       except:

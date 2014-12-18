@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script that runs the tests
 #
-# Version: 20141217
+# Version: 20141218
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -55,9 +55,9 @@ run_tests()
 
 ./configure --help | grep -- '--enable-python' > /dev/null;
 
-HAVE_PYTHON=$?;
+HAVE_ENABLE_PYTHON=$?;
 
-if test ${HAVE_PYTHON} -ne 0;
+if test ${HAVE_ENABLE_PYTHON} -ne 0;
 then
 	if ! run_tests;
 	then
@@ -65,9 +65,9 @@ then
 	fi
 else
 	# Test with Python 2.
-	PYTHON2=`which python2`;
+	PYTHON2=`which python2 2> /dev/null`;
 
-	if test -x ${PYTHON};
+	if test -x ${PYTHON2};
 	then
 		export PYTHON_VERSION=2;
 
@@ -79,9 +79,9 @@ else
 	fi
 
 	# Test with Python 3.
-	PYTHON3=`which python3`;
+	PYTHON3=`which python3 2> /dev/null`;
 
-	if test -x ${PYTHON};
+	if test -x ${PYTHON3};
 	then
 		export PYTHON_VERSION=3;
 
