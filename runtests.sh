@@ -68,7 +68,7 @@ else
 	PYTHON2=`which python2 2> /dev/null`;
 
         # Note that "test -x" on Mac OS X will succeed if the argument is not set.
-	if ! test -z ${PYTHON2} && test -x ${PYTHON2};
+	if test ! -z ${PYTHON2} && test -x ${PYTHON2};
 	then
 		export PYTHON_VERSION=2;
 
@@ -83,7 +83,7 @@ else
 	PYTHON3=`which python3 2> /dev/null`;
 
         # Note that "test -x" on Mac OS X will succeed if the argument is not set.
-	if ! test -z ${PYTHON3} && test -x ${PYTHON3};
+	if test ! -z ${PYTHON3} && test -x ${PYTHON3};
 	then
 		export PYTHON_VERSION=3;
 
