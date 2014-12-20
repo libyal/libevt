@@ -469,7 +469,7 @@ ssize_t pyevt_file_object_read_buffer(
 	if( size > 0 )
 	{
 #if PY_MAJOR_VERSION >= 3
-		method_name = PyBytes_FromString(
+		method_name = PyUnicode_FromString(
 			       "read" );
 #else
 		method_name = PyString_FromString(
@@ -751,7 +751,7 @@ ssize_t pyevt_file_object_write_buffer(
 	if( size > 0 )
 	{
 #if PY_MAJOR_VERSION >= 3
-		method_name = PyBytes_FromString(
+		method_name = PyUnicode_FromString(
 			       "write" );
 #else
 		method_name = PyString_FromString(
@@ -961,7 +961,7 @@ int pyevt_file_object_seek_offset(
 		return( -1 );
 	}
 #if PY_MAJOR_VERSION >= 3
-	method_name = PyBytes_FromString(
+	method_name = PyUnicode_FromString(
 	               "seek" );
 #else
 	method_name = PyString_FromString(
@@ -1111,7 +1111,7 @@ int pyevt_file_object_get_offset(
 		return( -1 );
 	}
 #if PY_MAJOR_VERSION >= 3
-	method_name = PyBytes_FromString(
+	method_name = PyUnicode_FromString(
 	               "get_offset" );
 #else
 	method_name = PyString_FromString(
@@ -1133,7 +1133,7 @@ int pyevt_file_object_get_offset(
 		/* Fall back to the tell method
 		 */
 #if PY_MAJOR_VERSION >= 3
-		method_name = PyBytes_FromString(
+		method_name = PyUnicode_FromString(
 		               "tell" );
 #else
 		method_name = PyString_FromString(
@@ -1394,7 +1394,7 @@ int pyevt_file_object_get_size(
 		return( -1 );
 	}
 #if PY_MAJOR_VERSION >= 3
-	method_name = PyBytes_FromString(
+	method_name = PyUnicode_FromString(
 	               "get_size" );
 #else
 	method_name = PyString_FromString(
@@ -1523,7 +1523,7 @@ int pyevt_file_object_io_handle_get_size(
 	gil_state = PyGILState_Ensure();
 
 #if PY_MAJOR_VERSION >= 3
-	method_name = PyBytes_FromString(
+	method_name = PyUnicode_FromString(
 	               "get_size" );
 #else
 	method_name = PyString_FromString(
