@@ -269,11 +269,6 @@ void pyevt_records_free(
 
 		return;
 	}
-	if( pyevt_records->file_object != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pyevt_records->file_object );
-	}
 	ob_type = Py_TYPE(
 	           pyevt_records );
 
@@ -294,6 +289,11 @@ void pyevt_records_free(
 		 function );
 
 		return;
+	}
+	if( pyevt_records->file_object != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyevt_records->file_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_records );

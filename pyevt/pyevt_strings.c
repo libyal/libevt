@@ -269,11 +269,6 @@ void pyevt_strings_free(
 
 		return;
 	}
-	if( pyevt_strings->record_object != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pyevt_strings->record_object );
-	}
 	ob_type = Py_TYPE(
 	           pyevt_strings );
 
@@ -294,6 +289,11 @@ void pyevt_strings_free(
 		 function );
 
 		return;
+	}
+	if( pyevt_strings->record_object != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyevt_strings->record_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_strings );
