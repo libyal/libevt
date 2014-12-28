@@ -1,13 +1,12 @@
 Source: libevt
-Section: unknown
+Section: libs
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, python-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 Homepage: https://github.com/libyal/libevt/
 
 Package: libevt
-Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libevt-dbg
@@ -17,28 +16,28 @@ Description: Library to access the Windows Event Log (EVT) format
 Package: libevt-dbg
 Architecture: any
 Section: debug
-Depends: libevt (= ${Source-Version}), ${misc:Depends}
+Depends: libevt (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libevt
  Debugging symbols for libevt.
 
 Package: libevt-dev
 Section: libdevel
 Architecture: any
-Depends: libevt (= ${Source-Version})
+Depends: libevt (= ${binary:Version}), ${misc:Depends}
 Description: Header files and libraries for developing applications for libevt
  Header files and libraries for developing applications for libevt.
 
 Package: libevt-tools
 Section: utils
 Architecture: any
-Depends: libevt (= ${Source-Version}), ${shlibs:Depends}
+Depends: libevt (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Several tools for reading Windows Event Log (EVT) files
  Several tools for reading Windows Event Log (EVT) files.
 
 Package: libevt-python
 Section: python
 Architecture: any
-Depends: libevt (= ${Source-Version}), ${shlibs:Depends}, ${python:Depends}
+Depends: libevt (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Suggests: libevt-python-dbg
 Description: Python bindings for libevt
  Python bindings for libevt.
@@ -46,7 +45,7 @@ Description: Python bindings for libevt
 Package: libevt-python-dbg
 Section: debug
 Architecture: any
-Depends: libevt-python (= ${Source-Version})
+Depends: libevt-python (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libevt-python
  Debugging symbols for libevt-python.
 
