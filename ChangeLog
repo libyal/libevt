@@ -57,6 +57,10 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20141229
+* updated dependencies
+* updated version for release
+
 20141228
 * updated dpkg files
 
