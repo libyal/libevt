@@ -1,4 +1,4 @@
-.Dd January 31, 2014
+.Dd January  5, 2015
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -13,7 +13,7 @@ Support functions
 .Ft const char *
 .Fn libevt_get_version "void"
 .Ft int
-.Fn libevt_get_access_flags_read
+.Fn libevt_get_access_flags_read "void"
 .Ft int
 .Fn libevt_get_codepage "int *codepage, libevt_error_t **error"
 .Ft int
@@ -40,13 +40,13 @@ Notify functions
 .Fn libevt_notify_stream_close "libevt_error_t **error"
 .Pp
 Error functions
-.Ft void 
+.Ft void
 .Fn libevt_error_free "libevt_error_t **error"
 .Ft int
 .Fn libevt_error_fprint "libevt_error_t *error, FILE *stream"
 .Ft int
 .Fn libevt_error_sprint "libevt_error_t *error, char *string, size_t size"
-.Ft int 
+.Ft int
 .Fn libevt_error_backtrace_fprint "libevt_error_t *error, FILE *stream"
 .Ft int
 .Fn libevt_error_backtrace_sprint "libevt_error_t *error, char *string, size_t size"
@@ -56,6 +56,8 @@ File functions
 .Fn libevt_file_initialize "libevt_file_t **file, libevt_error_t **error"
 .Ft int
 .Fn libevt_file_free "libevt_file_t **file, libevt_error_t **error"
+.Ft int
+.Fn libevt_file_signal_abort "libevt_file_t *file, libevt_error_t **error"
 .Ft int
 .Fn libevt_file_open "libevt_file_t *file, const char *filename, int access_flags, libevt_error_t **error"
 .Ft int
@@ -78,6 +80,14 @@ File functions
 .Fn libevt_file_get_number_of_recovered_records "libevt_file_t *file, int *number_of_records, libevt_error_t **error"
 .Ft int
 .Fn libevt_file_get_recovered_record "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
+.Pp
+Available when compiled with wide character string support:
+.Ft int
+.Fn libevt_file_open_wide "libevt_file_t *file, const wchar_t *filename, int access_flags, libevt_error_t **error"
+.Pp
+Available when compiled with libbfio support:
+.Ft int
+.Fn libevt_file_open_file_io_handle "libevt_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libevt_error_t **error"
 .Pp
 Record functions
 .Ft int
@@ -134,57 +144,37 @@ Record functions
 .Fn libevt_record_get_data_size "libevt_record_t *record, size_t *data_size, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_data "libevt_record_t *record, uint8_t *data, size_t data_size, libevt_error_t **error"
-.Pp
-Available when compiled with wide character string support:
-.Ft int
-.Fn libevt_file_open_wide "libevt_file_t *file, const wchar_t *filename, int access_flags, libevt_error_t **error"
-.Pp
-Available when compiled with libbfio support:
-.Ft int
-.Fn libevt_file_open_file_io_handle "libevt_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libevt_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libevt_get_version
 function is used to retrieve the library version.
 .Sh RETURN VALUES
-Most of the functions return NULL or \-1 on error, dependent on the return type. For the actual return values refer to libevt.h
+Most of the functions return NULL or \-1 on error, dependent on the return type.
+For the actual return values see "libevt.h".
 .Sh ENVIRONMENT
 None
 .Sh FILES
 None
-.Sh NOTES
-Internally libevt uses both ASCII and Unicode (UTF-16 little-endian) strings, as stored in the EVT file. ASCII strings in a EVT file contain an extended ASCII string using the codepage of the system it was created on. The function
-.Ar libevt_set_ascii_codepage
- allows to set the required codepage for reading and writing. The default codepage is Windows 1252. Unsupported extended characters are replaced to the Unicode replacement character (U+fffd) when reading and the ASCII substitude character (0x1a) when writing.
+libevt allows to be compiled with wide character support (wchar_t).
 
-Libevt uses either the system specific narrow or wide character strings for filenames.
-To compile libevt with wide character support use
+To compile libevt with wide character support use:
 .Ar ./configure --enable-wide-character-type=yes
- or on Windows define
-.Ar WINAPI
- and either
+ or define:
 .Ar _UNICODE
  or
 .Ar UNICODE
+ during compilation.
 
-To have other code to determine if libevt was compiled with wide character support it defines
-.Ar LIBEVT_HAVE_WIDE_CHARACTER_TYPE
- in libevt/features.h.
-
-libevt allows to be compiled with chained IO support using libbfio.
-The libevt configure script will automatically detect if a compatible version of libbfio is available.
-
-To have other code to determine if libevt was compiled with libbfio support it defines
-.Ar LIBEVT_HAVE_BFIO
- in libevt/features.h.
-
+.Ar LIBEVT_WIDE_CHARACTER_TYPE
+ in libevt/features.h can be used to determine if libevt was compiled with wide character support.
 .Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libevt/
+Please report bugs of any kind on the project issue tracker: https://github.com/libyal/libevt/issues
 .Sh AUTHOR
-These man pages were written by Joachim Metz.
+These man pages are generated from "libevt.h".
 .Sh COPYRIGHT
-Copyright 2011-2014, Joachim Metz <joachim.metz@gmail.com>.
-This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>.
+
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO
 the libevt.h include file
