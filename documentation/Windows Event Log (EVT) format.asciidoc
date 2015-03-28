@@ -283,7 +283,8 @@ character and that the name of the event message files is case insensitive.
 Here "%SystemRoot%" is case insensitive and needs to be expanded to the Windows 
 directory. The actual value of %SystemRoot% can be found in the Registry value:
 ....
-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRoot
+Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\
+Value:  SystemRoot
 ....
 
 This value is depended on the Windows version, e.g.
@@ -304,7 +305,8 @@ Other placeholders that found to be used are:
 
 The actual value of e.g. %WinDir% can be found in the Registry value:
 ....
-HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment\windir
+Key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment\
+Value: windir
 ....
 
 Event message files are PE/COFF executables that contains a resource (".rsrc ") 
