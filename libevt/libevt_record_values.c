@@ -512,7 +512,7 @@ ssize_t libevt_record_values_read(
 		libcnotify_print_data(
 		 record_data,
 		 (size_t) record_data_size,
-		 0 );
+		 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 	}
 #endif
 	if( memory_compare(
@@ -1009,7 +1009,7 @@ int libevt_record_values_read_event(
 	 * be the same as the strings offset or the data size 0.
 	 */
 	if( ( (size_t) strings_offset < user_sid_offset )
-	 || ( (size_t) strings_offset > ( record_data_size - 4 ) ) )
+	 || ( (size_t) strings_offset >= ( record_data_size - 4 ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1021,7 +1021,7 @@ int libevt_record_values_read_event(
 		goto on_error;
 	}
 	if( ( (size_t) data_offset < strings_offset )
-	 || ( (size_t) data_offset > ( record_data_size - 4 ) ) )
+	 || ( (size_t) data_offset >= ( record_data_size - 4 ) ) )
 	{
 		if( data_size != 0 )
 		{
@@ -1085,7 +1085,7 @@ int libevt_record_values_read_event(
 			libcnotify_print_data(
 			 &( record_data[ record_data_offset ] ),
 			 members_data_size,
-			 0 );
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 #endif
 		if( libfvalue_value_type_initialize(
@@ -1223,7 +1223,7 @@ int libevt_record_values_read_event(
 				libcnotify_print_data(
 				 &( record_data[ record_data_offset ] ),
 				 members_data_size,
-				 0 );
+				 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 			}
 #endif
 			record_data_offset += members_data_size;
@@ -1301,7 +1301,7 @@ int libevt_record_values_read_event(
 			libcnotify_print_data(
 			 &( record_data[ strings_offset ] ),
 			 strings_size,
-			 0 );
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 #endif
 		if( size_copy == 0 )
@@ -1339,7 +1339,7 @@ int libevt_record_values_read_event(
 		}
 		value_data_size = libfvalue_value_type_set_data_strings_array(
 		                   record_values->strings,
-		                   &( record_data[ record_data_offset ] ),
+		                   &( record_data[ strings_offset ] ),
 		                   strings_size,
 		                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
 		                   error );
@@ -1368,7 +1368,7 @@ int libevt_record_values_read_event(
 			libcnotify_print_data(
 			 &( record_data[ data_offset ] ),
 			 (size_t) data_size,
-			 0 );
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 #endif
 		if( libfvalue_value_type_initialize(
@@ -1417,7 +1417,7 @@ int libevt_record_values_read_event(
 			libcnotify_print_data(
 			 &( record_data[ record_data_offset ] ),
 			 (size_t) record_data_size - record_data_offset - 4,
-			 0 );
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 		libcnotify_printf(
 		 "%s: size copy\t\t\t\t: %" PRIu32 "\n",
