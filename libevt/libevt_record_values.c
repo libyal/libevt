@@ -1036,7 +1036,7 @@ int libevt_record_values_read_event(
 		}
 		data_offset = (uint32_t) record_data_size - 4;
 	}
-	if( ( (size_t) strings_offset == ( record_data_size - 4 ) )
+	if( ( (size_t) strings_offset >= ( record_data_size - 4 ) )
 	 && ( strings_offset != data_offset ) )
 	{
 		libcerror_error_set(
@@ -1047,6 +1047,20 @@ int libevt_record_values_read_event(
 		 function );
 
 		goto on_error;
+	}
+	if( strings_offset != 0 )
+	{
+		if( strings_offset < record_data_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: strings offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 	}
 	if( user_sid_offset != 0 )
 	{
