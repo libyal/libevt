@@ -54,6 +54,9 @@ GETTEXT_FILES = \
 PKGCONFIG_FILES = \
 	libevt.pc.in
 
+SETUP_PY_FILES = \
+	setup.py
+
 SPEC_FILES = \
 	libevt.spec \
 	libevt.spec.in
@@ -62,6 +65,7 @@ EXTRA_DIST = \
 	$(DPKG_FILES) \
 	$(GETTEXT_FILES) \
 	$(PKGCONFIG_FILES) \
+	$(SETUP_PY_FILES) \
 	$(SPEC_FILES)
 
 MAINTAINERCLEANFILES = \

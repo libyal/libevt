@@ -57,6 +57,9 @@ Notes
 * %SystemRoot% expansion support for WINNT and WINNT35
   check if this is set in SOFTWARE\Microsoft\Windows NT\CurrentVersion\ ?
 
+20150725
+* worked on setup.py
+
 20150707
 * worked on check signature
 
