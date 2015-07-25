@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Script to build and install libevt Python-bindings.
+# Script to build and install Python-bindings.
 # Version: 20150725
 
 import glob
