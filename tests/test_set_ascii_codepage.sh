@@ -24,11 +24,13 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TEST_SET_ASCII_CODEPAGE="evt_test_set_ascii_codepage";
+TEST_PREFIX="evt";
+
+TEST_SET_ASCII_CODEPAGE="${TEST_PREFIX}_test_set_ascii_codepage";
 
 if ! test -x ${TEST_SET_ASCII_CODEPAGE};
 then
-	TEST_SET_ASCII_CODEPAGE="evt_test_set_ascii_codepage.exe";
+	TEST_SET_ASCII_CODEPAGE="${TEST_PREFIX}_test_set_ascii_codepage.exe";
 fi
 
 if ! test -x ${TEST_SET_ASCII_CODEPAGE};
