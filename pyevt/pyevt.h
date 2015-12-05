@@ -45,8 +45,13 @@ PyObject *pyevt_check_file_signature_file_object(
            PyObject *arguments,
            PyObject *keywords );
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_pyevt(
+                void );
+#else
 PyMODINIT_FUNC initpyevt(
                 void );
+#endif
 
 #if defined( __cplusplus )
 }
