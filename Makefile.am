@@ -29,6 +29,8 @@ SUBDIRS = \
 	libcsystem \
 	evttools \
 	pyevt \
+	pyevt2 \
+	pyevt3 \
 	po \
 	manuals \
 	tests \
