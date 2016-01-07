@@ -44,8 +44,10 @@ DPKG_FILES = \
        	dpkg/copyright \
        	dpkg/copyright.in \
        	dpkg/rules \
-       	dpkg/libevt-dev.docs \
        	dpkg/libevt.docs \
+       	dpkg/libevt-dev.docs \
+       	dpkg/libevt-python.docs \
+       	dpkg/libevt-python3.docs \
        	dpkg/libevt-tools.docs \
        	dpkg/source/format
 
