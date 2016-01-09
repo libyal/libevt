@@ -61,15 +61,15 @@ pyevt_la_CPPFLAGS = $(PYTHON2_CPPFLAGS)
 pyevt_la_LDFLAGS  = -module -avoid-version $(PYTHON2_LDFLAGS)
 
 $(BUILT_SOURCES):
-	/bin/cp -f $(top_srcdir)/pyevt/pyevt*.[ch] .
-
-clean-local:
-	/bin/rm -f pyevt*.[ch]
+	/bin/cp -f $(top_srcdir)/pyevt/$@ $@
 
 endif
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
+
+clean-local:
+	/bin/rm -f pyevt*.[ch]
 
 distclean: clean
 	/bin/rm -f Makefile
