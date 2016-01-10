@@ -113,7 +113,7 @@ stamp-h[1-9]
 /include/libevt/types.h
 /libevt/libevt.rc
 /libevt/libevt_definitions.h
-/pyevt[23]/*.[ch]
+/pyevt-python[23]/*.[ch]
 /evttools/evtexport
 /evttools/evtinfo
 /tests/input
