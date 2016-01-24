@@ -1,28 +1,14 @@
 #!/bin/bash
-#
 # Python-bindings open close testing script
 #
-# Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
-#
-# Refer to AUTHORS for acknowledgements.
-#
-# This software is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This software is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this software.  If not, see <http://www.gnu.org/licenses/>.
-#
+# Version: 20160124
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
+
+TEST_PREFIX="evt";
+INPUT_GLOB="*";
 
 list_contains()
 {
@@ -51,10 +37,10 @@ test_open_close()
 
 	if test `uname -s` = 'Darwin';
 	then
-		DYLD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
+		DYLD_LIBRARY_PATH="../lib${TEST_PREFIX}/.libs/" PYTHONPATH="../py${TEST_PREFIX}/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
 		RESULT=$?;
 	else
-		LD_LIBRARY_PATH="../libevt/.libs/" PYTHONPATH="../pyevt/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
+		LD_LIBRARY_PATH="../lib${TEST_PREFIX}/.libs/" PYTHONPATH="../py${TEST_PREFIX}/.libs/" ${PYTHON} ${SCRIPT} ${INPUT_FILE};
 		RESULT=$?;
 	fi
 
@@ -62,6 +48,11 @@ test_open_close()
 
 	return ${RESULT};
 }
+
+if ! test -z ${SKIP_PYTHON_TESTS};
+then
+	exit ${EXIT_IGNORE};
+fi
 
 PYTHON=`which python${PYTHON_VERSION} 2> /dev/null`;
 
@@ -79,7 +70,7 @@ then
 	exit ${EXIT_IGNORE};
 fi
 
-SCRIPT="pyevt_test_open_close.py";
+SCRIPT="py${TEST_PREFIX}_test_open_close.py";
 
 if ! test -f ${SCRIPT};
 then
@@ -102,9 +93,9 @@ then
 else
 	IGNORELIST="";
 
-	if test -f "input/.pyevt/ignore";
+	if test -f "input/.py${TEST_PREFIX}/ignore";
 	then
-		IGNORELIST=`cat input/.pyevt/ignore | sed '/^#/d'`;
+		IGNORELIST=`cat input/.py${TEST_PREFIX}/ignore | sed '/^#/d'`;
 	fi
 	for TESTDIR in input/*;
 	do
@@ -114,11 +105,11 @@ else
 
 			if ! list_contains "${IGNORELIST}" "${DIRNAME}";
 			then
-				if test -f "input/.pyevt/${DIRNAME}/files";
+				if test -f "input/.py${TEST_PREFIX}/${DIRNAME}/files";
 				then
-					TEST_FILES=`cat input/.pyevt/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
+					TEST_FILES=`cat input/.py${TEST_PREFIX}/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
 				else
-					TEST_FILES=`ls -1 ${TESTDIR}/* 2> /dev/null`;
+					TEST_FILES=`ls -1 ${TESTDIR}/${INPUT_GLOB} 2> /dev/null`;
 				fi
 				for TEST_FILE in ${TEST_FILES};
 				do
