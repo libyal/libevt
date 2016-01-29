@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
-if HAVE_PYTHON
+if HAVE_PYTHON_TESTS
 TESTS_PYEVT  = \
 	test_pyevt_set_ascii_codepage.sh \
 	test_pyevt_open_close.sh

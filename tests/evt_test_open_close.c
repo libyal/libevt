@@ -20,12 +20,11 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
-
-#include <stdio.h>
 
 #include "evt_test_libcerror.h"
 #include "evt_test_libcstring.h"
@@ -40,7 +39,7 @@ int evt_test_single_open_close_file(
      int expected_result )
 {
 	libcerror_error_t *error = NULL;
-	libevt_file_t *file     = NULL;
+	libevt_file_t *file      = NULL;
 	static char *function    = "evt_test_single_open_close_file";
 	int result               = 0;
 
