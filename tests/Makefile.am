@@ -15,7 +15,7 @@ AM_CPPFLAGS = \
 	@LIBEVT_DLL_IMPORT@
 
 if HAVE_PYTHON_TESTS
-TESTS_PYEVT  = \
+TESTS_PYEVT = \
 	test_pyevt_set_ascii_codepage.sh \
 	test_pyevt_open_close.sh
 endif
@@ -41,7 +41,7 @@ check_SCRIPTS = \
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
-check_PROGRAMS =  \
+check_PROGRAMS = \
 	evt_test_open_close \
 	evt_test_set_ascii_codepage
 

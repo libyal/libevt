@@ -39,17 +39,17 @@ SUBDIRS = \
 DPKG_FILES = \
 	dpkg/changelog \
 	dpkg/changelog.in \
-       	dpkg/compat \
-       	dpkg/control \
-       	dpkg/copyright \
-       	dpkg/copyright.in \
-       	dpkg/rules \
-       	dpkg/libevt.docs \
-       	dpkg/libevt-dev.docs \
-       	dpkg/libevt-python.docs \
-       	dpkg/libevt-python3.docs \
-       	dpkg/libevt-tools.docs \
-       	dpkg/source/format
+	dpkg/compat \
+	dpkg/control \
+	dpkg/copyright \
+	dpkg/copyright.in \
+	dpkg/rules \
+	dpkg/libevt.docs \
+	dpkg/libevt-dev.docs \
+	dpkg/libevt-python.docs \
+	dpkg/libevt-python3.docs \
+	dpkg/libevt-tools.docs \
+	dpkg/source/format
 
 GETTEXT_FILES = \
 	config.rpath \
