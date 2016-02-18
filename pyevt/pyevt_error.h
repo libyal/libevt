@@ -28,7 +28,7 @@
 #include "pyevt_libcerror.h"
 #include "pyevt_python.h"
 
-#define PYEVT_ERROR_STRING_SIZE		2048
+#define PYEVT_ERROR_STRING_SIZE	2048
 
 #if defined( __cplusplus )
 extern "C" {
@@ -56,5 +56,5 @@ void pyevt_error_raise(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_ERROR_H ) */
 

@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBUNATOOLS_LIBCERROR_H )
-#define _LIBUNATOOLS_LIBCERROR_H
+#if !defined( _EVTTOOLS_LIBCERROR_H )
+#define _EVTTOOLS_LIBCERROR_H
 
 #include <common.h>
 
@@ -44,7 +44,7 @@
 
 #include <libcerror.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCERROR ) */
 
-#endif
+#endif /* !defined( _EVTTOOLS_LIBCERROR_H ) */
 

@@ -80,11 +80,11 @@ enum LIBEVT_CODEPAGES
 	LIBEVT_CODEPAGE_WINDOWS_1258			= 1258
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBEVT ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_INTERNAL_CODEPAGE_H ) */
 

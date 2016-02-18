@@ -23,9 +23,8 @@
 #define _LIBEVT_NOTIFY_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
-
-#include <stdio.h>
 
 #include "libevt_extern.h"
 #include "libevt_libcerror.h"
@@ -54,11 +53,11 @@ LIBEVT_EXTERN \
 int libevt_notify_stream_close(
      libcerror_error_t **error );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBEVT ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_NOTIFY_H ) */
 

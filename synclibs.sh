@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script that synchronizes the local library dependencies
 #
-# Version: 20150507
+# Version: 20160212
 
 GIT_URL_PREFIX="https://github.com/libyal";
 LOCAL_LIBS="libbfio libcdata libcdirectory libcerror libcfile libclocale libcnotify libcpath libcsplit libcstring libcsystem libcthreads libexe libfcache libfdata libfdatetime libfguid libfvalue libfwevt libfwnt libregf libuna libwrc";

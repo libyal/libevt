@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _UNATOOLS_LIBCSTRING_H )
-#define _UNATOOLS_LIBCSTRING_H
+#if !defined( _EVTTOOLS_LIBCSTRING_H )
+#define _EVTTOOLS_LIBCSTRING_H
 
 #include <common.h>
 
@@ -45,7 +45,7 @@
 
 #include <libcstring.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBCSTRING ) */
 
-#endif
+#endif /* !defined( _EVTTOOLS_LIBCSTRING_H ) */
 

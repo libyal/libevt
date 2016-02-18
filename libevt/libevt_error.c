@@ -20,9 +20,8 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
-
-#include <stdio.h>
 
 #include "libevt_error.h"
 #include "libevt_libcerror.h"
@@ -92,5 +91,5 @@ int libevt_error_backtrace_sprint(
 	         size ) );
 }
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBEVT ) */
 

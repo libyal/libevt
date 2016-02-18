@@ -34,16 +34,16 @@
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libevt_file {}		libevt_file_t;
-typedef struct libevt_record {}		libevt_record_t;
+typedef struct libevt_file {}	libevt_file_t;
+typedef struct libevt_record {}	libevt_record_t;
 
 #else
 typedef intptr_t libevt_file_t;
 typedef intptr_t libevt_record_t;
 
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBEVT ) */
 
-#endif
+#endif /* !defined( _LIBEVT_INTERNAL_TYPES_H ) */
 
