@@ -28,11 +28,11 @@
 
 #include <libsystem.h>
 
-#include "export_handle.h"
-#include "log_handle.h"
 #include "evtinput.h"
 #include "evttools_libevt.h"
 #include "evttools_libfdatetime.h"
+#include "export_handle.h"
+#include "log_handle.h"
 
 #define EXPORT_HANDLE_NOTIFY_STREAM	stdout
 

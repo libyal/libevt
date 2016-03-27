@@ -20,6 +20,9 @@ Tools:
   - improved version that also can get strings
 * evtinfo
 
+20111110
+* code clean up
+
 20111101
 * updated libcstring, libsystem, libuna, libbfio, libfdatetime, libfvalue
 * added windows codepage 932 and 936 support

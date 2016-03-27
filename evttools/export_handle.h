@@ -29,8 +29,8 @@
 #include <libcstring.h>
 #include <liberror.h>
 
-#include "log_handle.h"
 #include "evttools_libevt.h"
+#include "log_handle.h"
 
 #if defined( __cplusplus )
 extern "C" {

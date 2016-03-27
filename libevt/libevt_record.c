@@ -126,7 +126,7 @@ int libevt_record_free(
 		 "%s: invalid record.",
 		 function );
 
-		return( 1 );
+		return( -1 );
 	}
 	if( record->source_name != NULL )
 	{
