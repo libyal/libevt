@@ -49,7 +49,7 @@
 
 #include <libfdata.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBFDATA ) */
 
-#endif
+#endif /* !defined( _LIBEVT_LIBFDATA_H ) */
 

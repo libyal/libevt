@@ -42,11 +42,13 @@
 #include "pyevt_unused.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
+
 LIBEVT_EXTERN \
 int libevt_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libevt_error_t **error );
-#endif
+
+#endif /* !defined( LIBEVT_HAVE_BFIO ) */
 
 /* The pyevt module methods
  */
@@ -131,12 +133,12 @@ PyObject *pyevt_check_file_signature(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *string_object      = NULL;
-	libcerror_error_t *error     = NULL;
-	static char *function        = "pyevt_check_file_signature";
-	static char *keyword_list[]  = { "filename", NULL };
-	const char *filename_narrow  = NULL;
-	int result                   = 0;
+	PyObject *string_object     = NULL;
+	libcerror_error_t *error    = NULL;
+	static char *function       = "pyevt_check_file_signature";
+	static char *keyword_list[] = { "filename", NULL };
+	const char *filename_narrow = NULL;
+	int result                  = 0;
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	const wchar_t *filename_wide = NULL;

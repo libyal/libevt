@@ -1,5 +1,5 @@
 /*
- * The internal libcerror header
+ * The unused definition
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVT_TEST_LIBCERROR_H )
-#define _EVT_TEST_LIBCERROR_H
+#if !defined( _EVT_TEST_UNUSED_H )
+#define _EVT_TEST_UNUSED_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBCERROR for local use of libcerror
- */
-#if defined( HAVE_LOCAL_LIBCERROR )
+#if !defined( EVT_TEST_ATTRIBUTE_UNUSED )
 
-#include <libcerror_definitions.h>
-#include <libcerror_error.h>
-#include <libcerror_system.h>
-#include <libcerror_types.h>
+#if defined( __GNUC__ ) && __GNUC__ >= 3
+#define EVT_TEST_ATTRIBUTE_UNUSED	__attribute__ ((__unused__))
 
 #else
+#define EVT_TEST_ATTRIBUTE_UNUSED
 
-/* If libtool DLL support is enabled set LIBCERROR_DLL_IMPORT
- * before including libcerror.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBCERROR_DLL_IMPORT
-#endif
+#endif /* defined( __GNUC__ ) && __GNUC__ >= 3 */
 
-#include <libcerror.h>
+#endif /* !defined( EVT_TEST_ATTRIBUTE_UNUSED ) */
 
-#endif /* defined( HAVE_LOCAL_LIBCERROR ) */
+#if defined( _MSC_VER )
+#define EVT_TEST_UNREFERENCED_PARAMETER( parameter ) \
+	UNREFERENCED_PARAMETER( parameter );
 
-#endif /* !defined( _EVT_TEST_LIBCERROR_H ) */
+#else
+#define EVT_TEST_UNREFERENCED_PARAMETER( parameter ) \
+	/* parameter */
+
+#endif /* defined( _MSC_VER ) */
+
+#endif /* !defined( _EVT_TEST_UNUSED_H ) */
 

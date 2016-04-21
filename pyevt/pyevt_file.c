@@ -41,13 +41,15 @@
 #include "pyevt_unused.h"
 
 #if !defined( LIBEVT_HAVE_BFIO )
+
 LIBEVT_EXTERN \
 int libevt_file_open_file_io_handle(
      libevt_file_t *file,
      libbfio_handle_t *file_io_handle,
      int access_flags,
      libevt_error_t **error );
-#endif
+
+#endif /* !defined( LIBEVT_HAVE_BFIO ) */
 
 PyMethodDef pyevt_file_object_methods[] = {
 
