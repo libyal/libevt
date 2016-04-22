@@ -2,7 +2,7 @@
 #
 # Python-bindings get version test program
 #
-# Copyright (C) 2009-2016, Joachim Metz <joachim.metz@gmail.com>
+# Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
 #
 # Refer to AUTHORS for acknowledgements.
 #
@@ -45,4 +45,3 @@ if __name__ == "__main__":
     sys.exit(1)
   else:
     sys.exit(0)
-
