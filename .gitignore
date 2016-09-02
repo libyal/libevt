@@ -122,6 +122,7 @@ stamp-h[1-9]
 /pyevt-python[23]/*.[ch]
 /evttools/evtexport
 /evttools/evtinfo
+/tests/evt_test_error
 /tests/evt_test_get_version
 /tests/evt_test_open_close
 /tests/evt_test_set_ascii_codepage

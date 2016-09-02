@@ -43,14 +43,27 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	evt_test_error \
 	evt_test_get_version \
 	evt_test_open_close \
 	evt_test_set_ascii_codepage
+
+evt_test_error_SOURCES = \
+	evt_test_error.c \
+	evt_test_libcstring.h \
+	evt_test_libevt.h \
+	evt_test_macros.h \
+	evt_test_unused.h
+
+evt_test_error_LDADD = \
+	../libevt/libevt.la \
+	@LIBCSTRING_LIBADD@
 
 evt_test_get_version_SOURCES = \
 	evt_test_get_version.c \
 	evt_test_libcstring.h \
 	evt_test_libevt.h \
+	evt_test_macros.h \
 	evt_test_unused.h
 
 evt_test_get_version_LDADD = \

@@ -1,5 +1,5 @@
 /*
- * Notification functions
+ * Memory allocation functions for testing
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,45 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_NOTIFY_H )
-#define _LIBEVT_NOTIFY_H
+#if !defined( _EVT_TEST_MEMORY_H )
+#define _EVT_TEST_MEMORY_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
-
-#include "libevt_extern.h"
-#include "libevt_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#if !defined( HAVE_LOCAL_LIBEVT )
+#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ )
 
-LIBEVT_EXTERN \
-void libevt_notify_set_verbose(
-      int verbose );
+#define HAVE_EVT_TEST_MEMORY		1
 
-LIBEVT_EXTERN \
-int libevt_notify_set_stream(
-     FILE *stream,
-     libcerror_error_t **error );
+extern int evt_test_malloc_attempts_before_fail;
 
-LIBEVT_EXTERN \
-int libevt_notify_stream_open(
-     const char *filename,
-     libcerror_error_t **error );
+extern int evt_test_memcpy_attempts_before_fail;
 
-LIBEVT_EXTERN \
-int libevt_notify_stream_close(
-     libcerror_error_t **error );
+extern int evt_test_memset_attempts_before_fail;
 
-#endif /* !defined( HAVE_LOCAL_LIBEVT ) */
+extern int evt_test_realloc_attempts_before_fail;
+
+#endif /* defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _LIBEVT_NOTIFY_H ) */
+#endif /* !defined( _EVT_TEST_MEMORY_H ) */
 
