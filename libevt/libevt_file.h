@@ -180,5 +180,5 @@ int libevt_file_get_recovered_record(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_INTERNAL_FILE_H ) */
 

@@ -123,8 +123,10 @@ stamp-h[1-9]
 /evttools/evtexport
 /evttools/evtinfo
 /tests/evt_test_error
+/tests/evt_test_file
 /tests/evt_test_get_version
 /tests/evt_test_open_close
+/tests/evt_test_record
 /tests/evt_test_set_ascii_codepage
 /tests/input
 /tests/tmp*

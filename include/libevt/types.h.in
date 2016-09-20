@@ -208,5 +208,5 @@ typedef intptr_t libevt_record_t;
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_TYPES_H ) */
 

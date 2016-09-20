@@ -238,5 +238,5 @@ int libevt_record_get_data(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_INTERNAL_RECORD_H ) */
 

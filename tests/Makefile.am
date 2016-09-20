@@ -23,6 +23,7 @@ endif
 
 TESTS = \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_set_ascii_codepage.sh \
 	test_evtinfo.sh \
 	test_evtexport.sh \
@@ -32,6 +33,7 @@ check_SCRIPTS = \
 	pyevt_test_open_close.py \
 	pyevt_test_set_ascii_codepage.py \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_evtexport.sh \
 	test_evtinfo.sh \
 	test_pyevt_set_ascii_codepage.sh \
@@ -44,8 +46,10 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	evt_test_error \
+	evt_test_file \
 	evt_test_get_version \
 	evt_test_open_close \
+	evt_test_record \
 	evt_test_set_ascii_codepage
 
 evt_test_error_SOURCES = \
@@ -57,6 +61,25 @@ evt_test_error_SOURCES = \
 
 evt_test_error_LDADD = \
 	../libevt/libevt.la \
+	@LIBCSTRING_LIBADD@
+
+evt_test_file_SOURCES = \
+	evt_test_file.c \
+	evt_test_libcerror.h \
+	evt_test_libcstring.h \
+	evt_test_libcsystem.h \
+	evt_test_libevt.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_unused.h
+
+evt_test_file_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
 evt_test_get_version_SOURCES = \
@@ -78,6 +101,25 @@ evt_test_open_close_SOURCES = \
 	evt_test_open_close.c
 
 evt_test_open_close_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@
+
+evt_test_record_SOURCES = \
+	evt_test_record.c \
+	evt_test_libcerror.h \
+	evt_test_libcstring.h \
+	evt_test_libcsystem.h \
+	evt_test_libevt.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_unused.h
+
+evt_test_record_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
