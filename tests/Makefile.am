@@ -66,9 +66,11 @@ evt_test_error_LDADD = \
 evt_test_file_SOURCES = \
 	evt_test_file.c \
 	evt_test_libcerror.h \
+	evt_test_libclocale.h \
 	evt_test_libcstring.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
+	evt_test_libuna.h \
 	evt_test_memory.c evt_test_memory.h \
 	evt_test_unused.h
 

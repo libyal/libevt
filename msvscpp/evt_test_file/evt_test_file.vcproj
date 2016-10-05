@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\tests\evt_test_libclocale.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\evt_test_libcstring.h"
 				>
 			</File>
@@ -203,6 +207,10 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\evt_test_libevt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\evt_test_libuna.h"
 				>
 			</File>
 			<File
