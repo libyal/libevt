@@ -1080,6 +1080,173 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libevt_file_set_ascii_codepage functions
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_set_ascii_codepage(
+     void )
+{
+	int supported_codepages[ 15 ] = {
+		LIBEVT_CODEPAGE_ASCII,
+		LIBEVT_CODEPAGE_WINDOWS_874,
+		LIBEVT_CODEPAGE_WINDOWS_932,
+		LIBEVT_CODEPAGE_WINDOWS_936,
+		LIBEVT_CODEPAGE_WINDOWS_949,
+		LIBEVT_CODEPAGE_WINDOWS_950,
+		LIBEVT_CODEPAGE_WINDOWS_1250,
+		LIBEVT_CODEPAGE_WINDOWS_1251,
+		LIBEVT_CODEPAGE_WINDOWS_1252,
+		LIBEVT_CODEPAGE_WINDOWS_1253,
+		LIBEVT_CODEPAGE_WINDOWS_1254,
+		LIBEVT_CODEPAGE_WINDOWS_1255,
+		LIBEVT_CODEPAGE_WINDOWS_1256,
+		LIBEVT_CODEPAGE_WINDOWS_1257,
+		LIBEVT_CODEPAGE_WINDOWS_1258 };
+
+	int unsupported_codepages[ 17 ] = {
+		LIBEVT_CODEPAGE_ISO_8859_1,
+		LIBEVT_CODEPAGE_ISO_8859_2,
+		LIBEVT_CODEPAGE_ISO_8859_3,
+		LIBEVT_CODEPAGE_ISO_8859_4,
+		LIBEVT_CODEPAGE_ISO_8859_5,
+		LIBEVT_CODEPAGE_ISO_8859_6,
+		LIBEVT_CODEPAGE_ISO_8859_7,
+		LIBEVT_CODEPAGE_ISO_8859_8,
+		LIBEVT_CODEPAGE_ISO_8859_9,
+		LIBEVT_CODEPAGE_ISO_8859_10,
+		LIBEVT_CODEPAGE_ISO_8859_11,
+		LIBEVT_CODEPAGE_ISO_8859_13,
+		LIBEVT_CODEPAGE_ISO_8859_14,
+		LIBEVT_CODEPAGE_ISO_8859_15,
+		LIBEVT_CODEPAGE_ISO_8859_16,
+		LIBEVT_CODEPAGE_KOI8_R,
+		LIBEVT_CODEPAGE_KOI8_U };
+
+	libcerror_error_t *error = NULL;
+	libevt_file_t *file      = NULL;
+	int codepage             = 0;
+	int index                = 0;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libevt_file_initialize(
+	          &file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test set ASCII codepage
+	 */
+	for( index = 0;
+	     index < 15;
+	     index++ )
+	{
+		codepage = supported_codepages[ index ];
+
+		result = libevt_file_set_ascii_codepage(
+		          file,
+		          codepage,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 1 );
+
+	        EVT_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
+	}
+	/* Test error cases
+	 */
+	result = libevt_file_set_ascii_codepage(
+	          NULL,
+	          LIBEVT_CODEPAGE_ASCII,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	for( index = 0;
+	     index < 17;
+	     index++ )
+	{
+		codepage = unsupported_codepages[ index ];
+
+		result = libevt_file_set_ascii_codepage(
+		          file,
+		          codepage,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+	        EVT_TEST_ASSERT_IS_NOT_NULL(
+	         "error",
+	         error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Clean up
+	 */
+	result = libevt_file_free(
+	          &file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		libevt_file_free(
+		 &file,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libevt_file_get_version functions
  * Returns 1 if successful or 0 if not
  */
@@ -1364,13 +1531,17 @@ int main(
 
 	EVT_TEST_RUN(
 	 "libevt_file_initialize",
-	 evt_test_file_initialize() )
+	 evt_test_file_initialize );
 
 	EVT_TEST_RUN(
 	 "libevt_file_free",
-	 evt_test_file_free() )
+	 evt_test_file_free );
 
 	/* TODO add test for libevt_file_signal_abort */
+
+	EVT_TEST_RUN(
+	 "libevt_file_set_ascii_codepage",
+	 evt_test_file_set_ascii_codepage );
 
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
@@ -1389,7 +1560,12 @@ int main(
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
+#if defined( LIBEVT_HAVE_BFIO )
+
 		/* TODO add test for libevt_file_open_file_io_handle */
+
+#endif /* defined( LIBEVT_HAVE_BFIO ) */
+
 		/* TODO add test for libevt_file_close */
 
 		/* Initialize test
@@ -1418,8 +1594,6 @@ int main(
 		 "libevt_file_get_ascii_codepage",
 		 evt_test_file_get_ascii_codepage,
 		 file );
-
-		/* TODO add test for libevt_file_set_ascii_codepage */
 
 		EVT_TEST_RUN_WITH_ARGS(
 		 "libevt_file_get_version",

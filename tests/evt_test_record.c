@@ -88,7 +88,7 @@ int main(
 
 	EVT_TEST_RUN(
 	 "libevt_record_free",
-	 evt_test_record_free() )
+	 evt_test_record_free );
 
 	return( EXIT_SUCCESS );
 

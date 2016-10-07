@@ -123,23 +123,23 @@ int main(
 
 	EVT_TEST_RUN(
 	 "libevt_error_free",
-	 evt_test_error_free() )
+	 evt_test_error_free );
 
 	EVT_TEST_RUN(
 	 "libevt_error_fprint",
-	 evt_test_error_fprint() )
+	 evt_test_error_fprint );
 
 	EVT_TEST_RUN(
 	 "libevt_error_sprint",
-	 evt_test_error_sprint() )
+	 evt_test_error_sprint );
 
 	EVT_TEST_RUN(
 	 "libevt_error_backtrace_fprint",
-	 evt_test_error_backtrace_fprint() )
+	 evt_test_error_backtrace_fprint );
 
 	EVT_TEST_RUN(
 	 "libevt_error_backtrace_sprint",
-	 evt_test_error_backtrace_sprint() )
+	 evt_test_error_backtrace_sprint );
 
 	return( EXIT_SUCCESS );
 

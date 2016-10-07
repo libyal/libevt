@@ -121,7 +121,7 @@
 	}
 
 #define EVT_TEST_RUN( name, function ) \
-	if( function != 1 ) \
+	if( function() != 1 ) \
 	{ \
 		fprintf( stdout, "Unable to run test: %s\n", name ); \
 		goto on_error; \

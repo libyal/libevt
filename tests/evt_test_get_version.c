@@ -74,7 +74,7 @@ int main(
 
 	EVT_TEST_RUN(
 	 "libevt_get_version",
-	 evt_test_get_version() )
+	 evt_test_get_version );
 
 	return( EXIT_SUCCESS );
 
