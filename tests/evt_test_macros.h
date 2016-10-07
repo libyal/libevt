@@ -138,5 +138,10 @@
 
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 
+#define EVT_TEST_FPRINT_ERROR( error ) \
+	libcerror_error_backtrace_fprint( \
+	 error, \
+	 stdout ); \
+
 #endif /* !defined( _EVT_TEST_MACROS_H ) */
 

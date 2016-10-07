@@ -313,14 +313,14 @@ int evt_test_file_get_wide_source(
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_size_from_utf32(
-		          (libuna_utf32_character_t *) source,
+		result = libuna_utf32_string_size_from_utf8(
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          &wide_source_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_size_from_utf16(
-		          (libuna_utf16_character_t *) source,
+		result = libuna_utf16_string_size_from_utf8(
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          &wide_source_size,
 		          error );
@@ -329,15 +329,15 @@ int evt_test_file_get_wide_source(
 	else
 	{
 #if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_size_from_utf32(
-		          (libuna_utf32_character_t *) source,
+		result = libuna_utf32_string_size_from_byte_stream(
+		          (uint8_t *) source,
 		          source_length + 1,
 		          libclocale_codepage,
 		          &wide_source_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_size_from_utf16(
-		          (libuna_utf16_character_t *) source,
+		result = libuna_utf16_string_size_from_byte_stream(
+		          (uint8_t *) source,
 		          source_length + 1,
 		          libclocale_codepage,
 		          &wide_source_size,
@@ -389,17 +389,17 @@ int evt_test_file_get_wide_source(
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_copy_from_utf32(
-		          (libuna_utf8_character_t *) wide_string,
+		result = libuna_utf32_string_copy_from_utf8(
+		          (libuna_utf32_character_t *) wide_string,
 		          wide_string_size,
-		          (libuna_utf32_character_t *) source,
+		          (uint8_t *) source,
 		          source_length + 1,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_copy_from_utf16(
-		          (libuna_utf8_character_t *) wide_string,
+		result = libuna_utf16_string_copy_from_utf8(
+		          (libuna_utf16_character_t *) wide_string,
 		          wide_string_size,
-		          (libuna_utf16_character_t *) source,
+		          (uint8_t *) source,
 		          source_length + 1,
 		          error );
 #endif
@@ -407,20 +407,20 @@ int evt_test_file_get_wide_source(
 	else
 	{
 #if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_copy_from_utf32(
-		          (uint8_t *) wide_string,
+		result = libuna_utf32_string_copy_from_byte_stream(
+		          (libuna_utf32_character_t *) wide_string,
 		          wide_string_size,
-		          libclocale_codepage,
-		          (libuna_utf32_character_t *) source,
+		          (uint8_t *) source,
 		          source_length + 1,
+		          libclocale_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_copy_from_utf16(
-		          (uint8_t *) wide_string,
+		result = libuna_utf16_string_copy_from_byte_stream(
+		          (libuna_utf16_character_t *) wide_string,
 		          wide_string_size,
-		          libclocale_codepage,
-		          (libuna_utf16_character_t *) source,
+		          (uint8_t *) source,
 		          source_length + 1,
+		          libclocale_codepage,
 		          error );
 #endif
 	}
@@ -787,7 +787,7 @@ on_error:
 int evt_test_file_open(
      const libcstring_system_character_t *source )
 {
-	char narrow_source[ 128 ];
+	char narrow_source[ 256 ];
 
 	libcerror_error_t *error = NULL;
 	libevt_file_t *file      = NULL;
@@ -798,7 +798,7 @@ int evt_test_file_open(
 	result = evt_test_file_get_narrow_source(
 	          source,
 	          narrow_source,
-	          128,
+	          256,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -901,7 +901,7 @@ on_error:
 int evt_test_file_open_wide(
      const libcstring_system_character_t *source )
 {
-	wchar_t wide_source[ 128 ];
+	wchar_t wide_source[ 256 ];
 
 	libcerror_error_t *error = NULL;
 	libevt_file_t *file      = NULL;
@@ -912,7 +912,7 @@ int evt_test_file_open_wide(
 	result = evt_test_file_get_wide_source(
 	          source,
 	          wide_source,
-	          128,
+	          256,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
