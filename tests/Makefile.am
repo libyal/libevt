@@ -24,7 +24,6 @@ endif
 TESTS = \
 	test_api_functions.sh \
 	test_api_types.sh \
-	test_set_ascii_codepage.sh \
 	test_evtinfo.sh \
 	test_evtexport.sh \
 	$(TESTS_PYEVT)
@@ -38,8 +37,7 @@ check_SCRIPTS = \
 	test_evtinfo.sh \
 	test_pyevt_set_ascii_codepage.sh \
 	test_python_functions.sh \
-	test_runner.sh \
-	test_set_ascii_codepage.sh
+	test_runner.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -47,10 +45,10 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	evt_test_error \
 	evt_test_file \
-	evt_test_get_version \
+	evt_test_notify \
 	evt_test_open_close \
 	evt_test_record \
-	evt_test_set_ascii_codepage
+	evt_test_support
 
 evt_test_error_SOURCES = \
 	evt_test_error.c \
@@ -84,15 +82,17 @@ evt_test_file_LDADD = \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
-evt_test_get_version_SOURCES = \
-	evt_test_get_version.c \
+evt_test_notify_SOURCES = \
+	evt_test_notify.c \
+	evt_test_libcerror.h \
 	evt_test_libcstring.h \
 	evt_test_libevt.h \
 	evt_test_macros.h \
 	evt_test_unused.h
 
-evt_test_get_version_LDADD = \
+evt_test_notify_LDADD = \
 	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
 evt_test_open_close_SOURCES = \
@@ -131,15 +131,21 @@ evt_test_record_LDADD = \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
-evt_test_set_ascii_codepage_SOURCES = \
+evt_test_support_SOURCES = \
 	evt_test_libcerror.h \
-	evt_test_libclocale.h \
 	evt_test_libcstring.h \
+	evt_test_libcsystem.h \
 	evt_test_libevt.h \
-	evt_test_set_ascii_codepage.c
+	evt_test_macros.h \
+	evt_test_support.c \
+	evt_test_unused.h
 
-evt_test_set_ascii_codepage_LDADD = \
+evt_test_support_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="evt_test_set_ascii_codepage"
-	ProjectGUID="{41E8937E-76C0-41D3-A0A4-4E009EE49D7A}"
-	RootNamespace="evt_test_set_ascii_codepage"
+	Name="evt_test_notify"
+	ProjectGUID="{2FEF7DB6-0145-41EB-A09F-E63BE3F1C41D}"
+	RootNamespace="evt_test_notify"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\evt_test_set_ascii_codepage.c"
+				RelativePath="..\..\tests\evt_test_notify.c"
 				>
 			</File>
 		</Filter>
@@ -190,15 +190,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\evt_test_libclocale.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\evt_test_libcstring.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\tests\evt_test_libevt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\evt_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\evt_test_unused.h"
 				>
 			</File>
 		</Filter>

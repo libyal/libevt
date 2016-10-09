@@ -1490,7 +1490,7 @@ int wmain(
      wchar_t * const argv[] )
 #else
 int main(
-     int argc ,
+     int argc,
      char * const argv[] )
 #endif
 {

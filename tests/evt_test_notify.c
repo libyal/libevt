@@ -1,5 +1,5 @@
 /*
- * Library get version test program
+ * Library notification functions test program
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -25,36 +25,67 @@
 #include <stdlib.h>
 #endif
 
-#include "evt_test_libcstring.h"
+#include "evt_test_libcerror.h"
 #include "evt_test_libevt.h"
 #include "evt_test_macros.h"
 #include "evt_test_unused.h"
 
-/* Tests retrieving the library version
+/* Tests the libevt_notify_set_verbose function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_get_version(
+int evt_test_notify_set_verbose(
      void )
 {
-	const char *version_string = NULL;
-	int result                 = 0;
-
-	version_string = libevt_get_version();
-
-	result = libcstring_narrow_string_compare(
-	          version_string,
-	          LIBEVT_VERSION_STRING,
-	          9 );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
+	/* Test invocation of function only
+	 */
+	libevt_notify_set_verbose(
 	 0 );
 
 	return( 1 );
+}
 
-on_error:
-	return( 0 );
+/* Tests the libevt_notify_set_stream function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_notify_set_stream(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libevt_notify_set_stream(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libevt_notify_stream_open function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_notify_stream_open(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libevt_notify_stream_open(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libevt_notify_stream_close function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_notify_stream_close(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libevt_notify_stream_close(
+	 NULL );
+
+	return( 1 );
 }
 
 /* The main program
@@ -73,8 +104,20 @@ int main(
 	EVT_TEST_UNREFERENCED_PARAMETER( argv )
 
 	EVT_TEST_RUN(
-	 "libevt_get_version",
-	 evt_test_get_version );
+	 "libevt_notify_set_verbose",
+	 evt_test_notify_set_verbose )
+
+	EVT_TEST_RUN(
+	 "libevt_notify_set_stream",
+	 evt_test_notify_set_stream )
+
+	EVT_TEST_RUN(
+	 "libevt_notify_stream_open",
+	 evt_test_notify_stream_open )
+
+	EVT_TEST_RUN(
+	 "libevt_notify_stream_close",
+	 evt_test_notify_stream_close )
 
 	return( EXIT_SUCCESS );
 
