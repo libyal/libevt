@@ -13,7 +13,7 @@ before_install:
 install:
   - if test `uname -s` = 'Darwin'; then export SED="/usr/local/bin/gsed"; fi
   - ./synclibs.sh && ./autogen.sh
-  - mkdir -p tests/input/1 && curl -L -o tests/input/1/SysEvent.Evt https://github.com/log2timeline/plaso/blob/master/test_data/SysEvent.Evt?raw=true
+  - if test -x 'synctestdata.sh'; then ./synctestdata.sh; fi
 script:
   - if test `uname -s` = 'Linux'; then export PATH=$(echo $PATH | tr ":" "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s/::/:/g"); fi
   - ./runtests.sh

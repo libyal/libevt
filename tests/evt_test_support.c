@@ -26,9 +26,11 @@
 #endif
 
 #include "evt_test_libcerror.h"
+#include "evt_test_libclocale.h"
 #include "evt_test_libcstring.h"
 #include "evt_test_libcsystem.h"
 #include "evt_test_libevt.h"
+#include "evt_test_libuna.h"
 #include "evt_test_macros.h"
 #include "evt_test_unused.h"
 
@@ -736,5 +738,4 @@ int main(
 on_error:
 	return( EXIT_FAILURE );
 }
-
 
