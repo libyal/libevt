@@ -658,6 +658,82 @@ on_error:
 	return( 0 );
 }
 
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+/* Tests the libevt_check_file_signature_wide function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_check_file_signature_wide(
+     const libcstring_system_character_t *source )
+{
+	wchar_t wide_source[ 256 ];
+
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = evt_test_support_get_wide_source(
+	          source,
+	          wide_source,
+	          256,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test check file signature
+	 */
+	result = libevt_check_file_signature_wide(
+	          wide_source,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libevt_check_file_signature_wide(
+	          NULL,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
 /* The main program
  */
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -721,7 +797,10 @@ int main(
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-		/* TODO add test for libevt_check_file_signature_wide */
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_check_file_signature_wide",
+		 evt_test_check_file_signature_wide,
+		 source );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
