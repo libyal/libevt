@@ -78,7 +78,7 @@ int libevt_record_initialize(
 		return( -1 );
 	}
 	internal_record = memory_allocate_structure(
-	                 libevt_internal_record_t );
+	                   libevt_internal_record_t );
 
 	if( internal_record == NULL )
 	{

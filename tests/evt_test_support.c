@@ -434,7 +434,6 @@ int evt_test_support_get_wide_source(
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
-
 /* Tests the libevt_get_version function
  * Returns 1 if successful or 0 if not
  */
