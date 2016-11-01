@@ -118,5 +118,5 @@ enum LIBEVT_CODEPAGES
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_CODEPAGE_H ) */
 

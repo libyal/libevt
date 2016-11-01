@@ -38,10 +38,9 @@
 #include <libevt/extern.h>
 
 #else
-
-#define LIBEVT_EXTERN  extern
-
-#endif
+#define LIBEVT_EXTERN	extern
 
 #endif
+
+#endif /* !defined( _LIBEVT_INTERNAL_EXTERN_H ) */
 

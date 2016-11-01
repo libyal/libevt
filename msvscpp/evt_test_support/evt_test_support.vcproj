@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\tests\evt_test_libcsystem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\evt_test_libevt.h"
 				>
 			</File>

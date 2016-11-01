@@ -71,5 +71,5 @@ enum LIBEVT_FILE_FLAGS
 	LIBEVT_FILE_FLAG_ARCHIVE			= 0x00000008UL
 };
 
-#endif
+#endif /* !defined( _LIBEVT_DEFINITIONS_H ) */
 

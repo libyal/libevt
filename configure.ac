@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20160920],
+ [20161101],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
