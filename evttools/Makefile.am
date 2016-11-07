@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -44,7 +43,6 @@ evtexport_SOURCES = \
 	evttools_libcnotify.h \
 	evttools_libcpath.h \
 	evttools_libcsplit.h \
-	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
@@ -59,7 +57,8 @@ evtexport_SOURCES = \
 	message_string.c message_string.h \
 	path_handle.c path_handle.h \
 	registry_file.c registry_file.h \
-	resource_file.c resource_file.h
+	resource_file.c resource_file.h \
+	system_split_string.h
 
 evtexport_LDADD = \
 	@LIBREGF_LIBADD@ \
@@ -85,7 +84,6 @@ evtexport_LDADD = \
 	../libevt/libevt.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@ \
 	@PTHREAD_LIBADD@
 
@@ -96,7 +94,6 @@ evtinfo_SOURCES = \
 	evttools_libcerror.h \
 	evttools_libclocale.h \
 	evttools_libcnotify.h \
-	evttools_libcstring.h \
 	evttools_libcsystem.h \
 	evttools_libfdatetime.h \
 	evttools_libfwnt.h \
@@ -113,7 +110,6 @@ evtinfo_LDADD = \
 	../libevt/libevt.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@ \
 	@PTHREAD_LIBADD@
 

@@ -27,7 +27,6 @@
 
 #include "pyevt_libbfio.h"
 #include "pyevt_libcerror.h"
-#include "pyevt_libcstring.h"
 #include "pyevt_python.h"
 
 #if defined( __cplusplus )

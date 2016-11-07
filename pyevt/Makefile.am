@@ -2,7 +2,6 @@ if HAVE_PYTHON
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -27,7 +26,6 @@ pyevt_la_SOURCES = \
 	pyevt_libbfio.h \
 	pyevt_libcerror.h \
 	pyevt_libclocale.h \
-	pyevt_libcstring.h \
 	pyevt_libevt.h \
 	pyevt_python.h \
 	pyevt_record.c pyevt_record.h \
@@ -36,7 +34,6 @@ pyevt_la_SOURCES = \
 	pyevt_unused.h
 
 pyevt_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libevt/libevt.la \
 	@LIBCDATA_LIBADD@ \

@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include "evttools_libcerror.h"
-#include "evttools_libcstring.h"
 #include "evttools_libevt.h"
 #include "evttools_libwrc.h"
 
@@ -45,7 +44,7 @@ struct message_string
 
 	/* The string
 	 */
-	libcstring_system_character_t *string;
+	system_character_t *string;
 
 	/* The string size
 	 */
@@ -77,5 +76,5 @@ int message_string_fprint(
 }
 #endif
 
-#endif
+#endif /* !defined( _MESSAGE_STRING_H ) */
 

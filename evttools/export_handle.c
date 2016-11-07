@@ -21,13 +21,13 @@
 
 #include <common.h>
 #include <memory.h>
+#include <system_string.h>
 #include <types.h>
 
 #include "evtinput.h"
 #include "evttools_libcerror.h"
 #include "evttools_libcnotify.h"
 #include "evttools_libclocale.h"
-#include "evttools_libcstring.h"
 #include "evttools_libevt.h"
 #include "evttools_libfdatetime.h"
 #include "export_handle.h"
@@ -332,7 +332,7 @@ int export_handle_signal_abort(
  */
 int export_handle_set_export_mode(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_export_mode";
@@ -361,14 +361,14 @@ int export_handle_set_export_mode(
 
 		return( -1 );
 	}
-	string_length = libcstring_system_string_length(
+	string_length = system_string_length(
 	                 string );
 
 	if( string_length == 3 )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "all" ),
+		     _SYSTEM_STRING( "all" ),
 		     3 ) == 0 )
 		{
 			export_handle->export_mode = EXPORT_MODE_ALL;
@@ -378,9 +378,9 @@ int export_handle_set_export_mode(
 	}
 	else if( string_length == 5 )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "items" ),
+		     _SYSTEM_STRING( "items" ),
 		     5 ) == 0 )
 		{
 			export_handle->export_mode = EXPORT_MODE_ITEMS;
@@ -390,9 +390,9 @@ int export_handle_set_export_mode(
 	}
 	else if( string_length == 9 )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "recovered" ),
+		     _SYSTEM_STRING( "recovered" ),
 		     9 ) == 0 )
 		{
 			export_handle->export_mode = EXPORT_MODE_RECOVERED;
@@ -408,7 +408,7 @@ int export_handle_set_export_mode(
  */
 int export_handle_set_ascii_codepage(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error )
 {
 	static char *function  = "export_handle_set_ascii_codepage";
@@ -430,10 +430,10 @@ int export_handle_set_ascii_codepage(
 	feature_flags = LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_KOI8
 	              | LIBCLOCALE_CODEPAGE_FEATURE_FLAG_HAVE_WINDOWS;
 
-	string_length = libcstring_system_string_length(
+	string_length = system_string_length(
 	                 string );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libclocale_codepage_copy_from_string_wide(
 	          &( export_handle->ascii_codepage ),
 	          string,
@@ -522,7 +522,7 @@ int export_handle_set_preferred_language_identifier(
  */
 int export_handle_set_event_log_type(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_event_log_type";
@@ -563,7 +563,7 @@ int export_handle_set_event_log_type(
  */
 int export_handle_set_event_log_type_from_filename(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_event_log_type_from_filename";
@@ -604,7 +604,7 @@ int export_handle_set_event_log_type_from_filename(
  */
 int export_handle_set_software_registry_filename(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_software_registry_filename";
@@ -642,7 +642,7 @@ int export_handle_set_software_registry_filename(
  */
 int export_handle_set_system_registry_filename(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_system_registry_filename";
@@ -680,7 +680,7 @@ int export_handle_set_system_registry_filename(
  */
 int export_handle_set_registry_directory_name(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *name,
+     const system_character_t *name,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_registry_directory_name";
@@ -718,7 +718,7 @@ int export_handle_set_registry_directory_name(
  */
 int export_handle_set_resource_files_path(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *path,
+     const system_character_t *path,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_set_resource_files_path";
@@ -756,7 +756,7 @@ int export_handle_set_resource_files_path(
  */
 int export_handle_open_input(
      export_handle_t *export_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "export_handle_open_input";
@@ -812,7 +812,7 @@ int export_handle_open_input(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libevt_file_open_wide(
 	     export_handle->input_file,
 	     filename,
@@ -900,18 +900,18 @@ int export_handle_close_input(
 int export_handle_export_record_event_category(
      export_handle_t *export_handle,
      libevt_record_t *record,
-     const libcstring_system_character_t *event_source,
+     const system_character_t *event_source,
      size_t event_source_length,
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *message_filename = NULL;
-	message_string_t *message_string                = NULL;
-	static char *function                           = "export_handle_export_record_event_category";
-	size_t message_filename_size                    = 0;
-	size_t message_string_index                     = 0;
-	uint16_t event_category                         = 0;
-	int result                                      = 0;
+	system_character_t *message_filename = NULL;
+	message_string_t *message_string     = NULL;
+	static char *function                = "export_handle_export_record_event_category";
+	size_t message_filename_size         = 0;
+	size_t message_string_index          = 0;
+	uint16_t event_category              = 0;
+	int result                           = 0;
 
 	if( export_handle == NULL )
 	{
@@ -944,7 +944,7 @@ int export_handle_export_record_event_category(
 		          export_handle->message_handle,
 		          event_source,
 		          event_source_length,
-		          _LIBCSTRING_SYSTEM_STRING( "CategoryMessageFile" ),
+		          _SYSTEM_STRING( "CategoryMessageFile" ),
 		          19,
 		          &message_filename,
 		          &message_filename_size,
@@ -965,7 +965,7 @@ int export_handle_export_record_event_category(
 		{
 			fprintf(
 			 export_handle->notify_stream,
-			 "Category message filename\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "Category message filename\t: %" PRIs_SYSTEM "\n",
 			 message_filename );
 
 			result = message_handle_get_message_string(
@@ -982,7 +982,7 @@ int export_handle_export_record_event_category(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_SYSTEM ".",
 				 function,
 				 (uint32_t) event_category,
 				 message_filename );
@@ -1001,15 +1001,15 @@ int export_handle_export_record_event_category(
 		     message_string_index < message_string->string_size;
 		     message_string_index++ )
 		{
-			if( ( ( message_string->string )[ message_string_index ] == (libcstring_system_character_t) '\n' )
-			 || ( ( message_string->string )[ message_string_index ] == (libcstring_system_character_t) '\r' ) )
+			if( ( ( message_string->string )[ message_string_index ] == (system_character_t) '\n' )
+			 || ( ( message_string->string )[ message_string_index ] == (system_character_t) '\r' ) )
 			{
 				( message_string->string )[ message_string_index ] = 0;
 			}
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "Event category\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " (%" PRIu16 ")\n",
+		 "Event category\t\t\t: %" PRIs_SYSTEM " (%" PRIu16 ")\n",
 		 message_string->string,
 		 event_category );
 	}
@@ -1037,21 +1037,21 @@ on_error:
 int export_handle_export_record_event_message(
      export_handle_t *export_handle,
      libevt_record_t *record,
-     const libcstring_system_character_t *event_source,
+     const system_character_t *event_source,
      size_t event_source_length,
      uint32_t event_identifier,
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *message_filename = NULL;
-	message_string_t *message_string                = NULL;
-	libcstring_system_character_t *value_string     = NULL;
-	static char *function                           = "export_handle_export_record_event_message";
-	size_t message_filename_size                    = 0;
-	size_t value_string_size                        = 0;
-	int number_of_strings                           = 0;
-	int result                                      = 0;
-	int value_string_index                          = 0;
+	system_character_t *message_filename = NULL;
+	message_string_t *message_string     = NULL;
+	system_character_t *value_string     = NULL;
+	static char *function                = "export_handle_export_record_event_message";
+	size_t message_filename_size         = 0;
+	size_t value_string_size             = 0;
+	int number_of_strings                = 0;
+	int result                           = 0;
+	int value_string_index               = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1070,7 +1070,7 @@ int export_handle_export_record_event_message(
 		          export_handle->message_handle,
 		          event_source,
 		          event_source_length,
-		          _LIBCSTRING_SYSTEM_STRING( "EventMessageFile" ),
+		          _SYSTEM_STRING( "EventMessageFile" ),
 		          16,
 		          &message_filename,
 		          &message_filename_size,
@@ -1091,7 +1091,7 @@ int export_handle_export_record_event_message(
 		{
 			fprintf(
 			 export_handle->notify_stream,
-			 "Message filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "Message filename\t\t: %" PRIs_SYSTEM "\n",
 			 message_filename );
 
 			result = message_handle_get_message_string(
@@ -1108,7 +1108,7 @@ int export_handle_export_record_event_message(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_LIBCSTRING_SYSTEM ".",
+				 "%s: unable to retrieve message string: 0x%08" PRIx32 " from: %" PRIs_SYSTEM ".",
 				 function,
 				 event_identifier,
 				 message_filename );
@@ -1149,7 +1149,7 @@ int export_handle_export_record_event_message(
 		 "String: %d\t\t\t: ",
 		 value_string_index + 1 );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_string_size(
 			  record,
 			  value_string_index,
@@ -1176,7 +1176,7 @@ int export_handle_export_record_event_message(
 		}
 		if( value_string_size > 0 )
 		{
-			value_string = libcstring_system_string_allocate(
+			value_string = system_string_allocate(
 					value_string_size );
 
 			if( value_string == NULL )
@@ -1190,7 +1190,7 @@ int export_handle_export_record_event_message(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libevt_record_get_utf16_string(
 				  record,
 				  value_string_index,
@@ -1219,7 +1219,7 @@ int export_handle_export_record_event_message(
 			}
 			fprintf(
 			 export_handle->notify_stream,
-			 "%" PRIs_LIBCSTRING_SYSTEM "",
+			 "%" PRIs_SYSTEM "",
 			 value_string );
 
 			memory_free(
@@ -1274,18 +1274,18 @@ int export_handle_export_record(
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t posix_time_string[ 32 ];
+	system_character_t posix_time_string[ 32 ];
 
-	libcstring_system_character_t *source_name  = NULL;
-	libcstring_system_character_t *value_string = NULL;
-	libfdatetime_posix_time_t *posix_time       = NULL;
-	static char *function                       = "export_handle_export_record";
-	size_t source_name_size                     = 0;
-	size_t value_string_size                    = 0;
-	uint32_t event_identifier                   = 0;
-	uint32_t value_32bit                        = 0;
-	uint16_t event_type                         = 0;
-	int result                                  = 0;
+	system_character_t *source_name       = NULL;
+	system_character_t *value_string      = NULL;
+	libfdatetime_posix_time_t *posix_time = NULL;
+	static char *function                 = "export_handle_export_record";
+	size_t source_name_size               = 0;
+	size_t value_string_size              = 0;
+	uint32_t event_identifier             = 0;
+	uint32_t value_32bit                  = 0;
+	uint16_t event_type                   = 0;
+	int result                            = 0;
 
 	if( export_handle == NULL )
 	{
@@ -1359,7 +1359,7 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libfdatetime_posix_time_copy_to_utf16_string(
 		  posix_time,
 		  (uint16_t *) posix_time_string,
@@ -1387,7 +1387,7 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "Creation time\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+	 "Creation time\t\t\t: %" PRIs_SYSTEM " UTC\n",
 	 posix_time_string );
 
 	if( libevt_record_get_written_time(
@@ -1419,7 +1419,7 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libfdatetime_posix_time_copy_to_utf16_string(
 		  posix_time,
 		  (uint16_t *) posix_time_string,
@@ -1447,7 +1447,7 @@ int export_handle_export_record(
 	}
 	fprintf(
 	 export_handle->notify_stream,
-	 "Written time\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+	 "Written time\t\t\t: %" PRIs_SYSTEM " UTC\n",
 	 posix_time_string );
 
 	if( libfdatetime_posix_time_free(
@@ -1484,7 +1484,7 @@ int export_handle_export_record(
 	  event_type ),
 	 event_type );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_user_security_identifier_size(
 	          record,
 	          &value_string_size,
@@ -1509,7 +1509,7 @@ int export_handle_export_record(
 	if( ( result != 0 )
 	 && ( value_string_size > 0 ) )
 	{
-		value_string = libcstring_system_string_allocate(
+		value_string = system_string_allocate(
 		                value_string_size );
 
 		if( value_string == NULL )
@@ -1523,7 +1523,7 @@ int export_handle_export_record(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_user_security_identifier(
 		          record,
 		          (uint16_t *) value_string,
@@ -1549,7 +1549,7 @@ int export_handle_export_record(
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "User security identifier\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 "User security identifier\t: %" PRIs_SYSTEM "\n",
 		 value_string );
 
 		memory_free(
@@ -1557,7 +1557,7 @@ int export_handle_export_record(
 
 		value_string = NULL;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_computer_name_size(
 	          record,
 	          &value_string_size,
@@ -1582,7 +1582,7 @@ int export_handle_export_record(
 	if( ( result != 0 )
 	 && ( value_string_size > 0 ) )
 	{
-		value_string = libcstring_system_string_allocate(
+		value_string = system_string_allocate(
 		                value_string_size );
 
 		if( value_string == NULL )
@@ -1596,7 +1596,7 @@ int export_handle_export_record(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_computer_name(
 		          record,
 		          (uint16_t *) value_string,
@@ -1622,7 +1622,7 @@ int export_handle_export_record(
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "Computer name\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 "Computer name\t\t\t: %" PRIs_SYSTEM "\n",
 		 value_string );
 
 		memory_free(
@@ -1630,7 +1630,7 @@ int export_handle_export_record(
 
 		value_string = NULL;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libevt_record_get_utf16_source_name_size(
 	          record,
 	          &source_name_size,
@@ -1655,7 +1655,7 @@ int export_handle_export_record(
 	if( ( result != 0 )
 	 && ( source_name_size > 0 ) )
 	{
-		source_name = libcstring_system_string_allocate(
+		source_name = system_string_allocate(
 		               source_name_size );
 
 		if( source_name == NULL )
@@ -1669,7 +1669,7 @@ int export_handle_export_record(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libevt_record_get_utf16_source_name(
 		          record,
 		          (uint16_t *) source_name,
@@ -1695,7 +1695,7 @@ int export_handle_export_record(
 		}
 		fprintf(
 		 export_handle->notify_stream,
-		 "Source name\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 "Source name\t\t\t: %" PRIs_SYSTEM "\n",
 		 source_name );
 	}
 	if( export_handle_export_record_event_category(

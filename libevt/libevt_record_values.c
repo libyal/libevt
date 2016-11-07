@@ -22,6 +22,7 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
+#include <system_string.h>
 #include <types.h>
 
 #include "libevt_debug.h"
@@ -29,7 +30,6 @@
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
-#include "libevt_libcstring.h"
 #include "libevt_libfdatetime.h"
 #include "libevt_libfvalue.h"
 #include "libevt_libfwnt.h"
@@ -616,7 +616,7 @@ int libevt_record_values_read_event(
 	uint32_t user_sid_size                = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	libcstring_system_character_t posix_time_string[ 32 ];
+	system_character_t posix_time_string[ 32 ];
 
 	libfdatetime_posix_time_t *posix_time = NULL;
 	uint32_t value_32bit                  = 0;
@@ -771,7 +771,7 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libfdatetime_posix_time_copy_to_utf16_string(
 			  posix_time,
 			  (uint16_t *) posix_time_string,
@@ -798,7 +798,7 @@ int libevt_record_values_read_event(
 			goto on_error;
 		}
 		libcnotify_printf(
-		 "%s: creation time\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+		 "%s: creation time\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
 		 function,
 		 posix_time_string );
 
@@ -819,7 +819,7 @@ int libevt_record_values_read_event(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libfdatetime_posix_time_copy_to_utf16_string(
 			  posix_time,
 			  (uint16_t *) posix_time_string,
@@ -846,7 +846,7 @@ int libevt_record_values_read_event(
 			goto on_error;
 		}
 		libcnotify_printf(
-		 "%s: written time\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+		 "%s: written time\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
 		 function,
 		 posix_time_string );
 

@@ -26,7 +26,6 @@
 #include <types.h>
 
 #include "evttools_libcerror.h"
-#include "evttools_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -43,12 +42,12 @@ enum EVTTOOLS_EVENT_LOG_TYPES
 };
 
 int evtinput_determine_event_log_type(
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      int *event_log_type,
      libcerror_error_t **error );
 
 int evtinput_determine_event_log_type_from_filename(
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      int *event_log_type,
      libcerror_error_t **error );
 
@@ -56,5 +55,5 @@ int evtinput_determine_event_log_type_from_filename(
 }
 #endif
 
-#endif
+#endif /* !defined( _EVTINPUT_H ) */
 

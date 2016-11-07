@@ -31,7 +31,6 @@
 #include "pyevt_file.h"
 #include "pyevt_integer.h"
 #include "pyevt_libcerror.h"
-#include "pyevt_libcstring.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 #include "pyevt_record.h"

@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -52,20 +51,17 @@ check_PROGRAMS = \
 
 evt_test_error_SOURCES = \
 	evt_test_error.c \
-	evt_test_libcstring.h \
 	evt_test_libevt.h \
 	evt_test_macros.h \
 	evt_test_unused.h
 
 evt_test_error_LDADD = \
-	../libevt/libevt.la \
-	@LIBCSTRING_LIBADD@
+	../libevt/libevt.la
 
 evt_test_file_SOURCES = \
 	evt_test_file.c \
 	evt_test_libcerror.h \
 	evt_test_libclocale.h \
-	evt_test_libcstring.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
@@ -79,25 +75,21 @@ evt_test_file_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 evt_test_notify_SOURCES = \
 	evt_test_notify.c \
 	evt_test_libcerror.h \
-	evt_test_libcstring.h \
 	evt_test_libevt.h \
 	evt_test_macros.h \
 	evt_test_unused.h
 
 evt_test_notify_LDADD = \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 evt_test_open_close_SOURCES = \
 	evt_test_libcerror.h \
-	evt_test_libcstring.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
 	evt_test_open_close.c
@@ -109,13 +101,11 @@ evt_test_open_close_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 evt_test_record_SOURCES = \
 	evt_test_record.c \
 	evt_test_libcerror.h \
-	evt_test_libcstring.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
 	evt_test_memory.c evt_test_memory.h \
@@ -128,13 +118,11 @@ evt_test_record_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 evt_test_support_SOURCES = \
 	evt_test_libcerror.h \
 	evt_test_libcclocal.h \
-	evt_test_libcstring.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
@@ -149,8 +137,7 @@ evt_test_support_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

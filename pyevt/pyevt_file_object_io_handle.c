@@ -28,7 +28,6 @@
 #include "pyevt_integer.h"
 #include "pyevt_libbfio.h"
 #include "pyevt_libcerror.h"
-#include "pyevt_libcstring.h"
 #include "pyevt_python.h"
 
 /* Creates a file object IO handle

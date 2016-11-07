@@ -2,7 +2,6 @@ AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -39,7 +38,6 @@ libevt_la_SOURCES = \
 	libevt_libcerror.h \
 	libevt_libclocale.h \
 	libevt_libcnotify.h \
-	libevt_libcstring.h \
 	libevt_libfcache.h \
 	libevt_libfdata.h \
 	libevt_libfdatetime.h \
@@ -54,7 +52,6 @@ libevt_la_SOURCES = \
 	libevt_unused.h
 
 libevt_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

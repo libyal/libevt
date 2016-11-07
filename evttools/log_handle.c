@@ -22,7 +22,9 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDARG_H ) || defined( WINAPI )
 #include <stdarg.h>
@@ -33,7 +35,6 @@
 #endif
 
 #include "evttools_libcerror.h"
-#include "evttools_libcstring.h"
 #include "log_handle.h"
 
 /* Creates a log handle
@@ -144,7 +145,7 @@ int log_handle_free(
  */
 int log_handle_open(
      log_handle_t *log_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "log_handle_open";
@@ -162,10 +163,10 @@ int log_handle_open(
 	}
 	if( filename != NULL )
 	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		log_handle->log_stream = file_stream_open_wide(
 		                          filename,
-		                          _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_APPEND ) );
+		                          _WIDE_STRING( FILE_STREAM_OPEN_APPEND ) );
 #else
 		log_handle->log_stream = file_stream_open(
 		                          filename,
