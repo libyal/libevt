@@ -186,11 +186,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\tests\evt_test_libcclocal.h"
+				RelativePath="..\..\tests\evt_test_libcerror.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\evt_test_libcerror.h"
+				RelativePath="..\..\tests\evt_test_libclocale.h"
 				>
 			</File>
 			<File

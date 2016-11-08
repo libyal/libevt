@@ -122,7 +122,7 @@ evt_test_record_LDADD = \
 
 evt_test_support_SOURCES = \
 	evt_test_libcerror.h \
-	evt_test_libcclocal.h \
+	evt_test_libclocale.h \
 	evt_test_libcsystem.h \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
