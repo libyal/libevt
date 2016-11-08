@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_wide_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\info_handle.c"
 				>
 			</File>
@@ -239,6 +243,10 @@
 			</File>
 			<File
 				RelativePath="..\..\evttools\info_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\wide_string.h"
 				>
 			</File>
 		</Filter>

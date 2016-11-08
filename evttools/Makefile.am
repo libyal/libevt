@@ -52,13 +52,14 @@ evtexport_SOURCES = \
 	evttools_libregf.h \
 	evttools_libuna.h \
 	evttools_libwrc.h \
+	evttools_system_split_string.h \
+	evttools_wide_string.c wide_string.h \
 	log_handle.c log_handle.h \
 	message_handle.c message_handle.h \
 	message_string.c message_string.h \
 	path_handle.c path_handle.h \
 	registry_file.c registry_file.h \
-	resource_file.c resource_file.h \
-	system_split_string.h
+	resource_file.c resource_file.h
 
 evtexport_LDADD = \
 	@LIBREGF_LIBADD@ \
@@ -99,6 +100,7 @@ evtinfo_SOURCES = \
 	evttools_libfwnt.h \
 	evttools_libevt.h \
 	evttools_libuna.h \
+	evttools_wide_string.c wide_string.h \
 	info_handle.c info_handle.h
 
 evtinfo_LDADD = \

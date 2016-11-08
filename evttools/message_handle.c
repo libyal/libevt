@@ -43,12 +43,13 @@
 #include "evttools_libfcache.h"
 #include "evttools_libregf.h"
 #include "evttools_libwrc.h"
+#include "evttools_system_split_string.h"
+#include "evttools_wide_string.h"
 #include "message_handle.h"
 #include "message_string.h"
 #include "path_handle.h"
 #include "registry_file.h"
 #include "resource_file.h"
-#include "system_split_string.h"
 
 /* Creates a message handle
  * Make sure the value message_handle is referencing, is set to NULL

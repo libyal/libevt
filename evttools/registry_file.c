@@ -28,6 +28,7 @@
 
 #include "evttools_libcerror.h"
 #include "evttools_libregf.h"
+#include "evttools_wide_string.h"
 #include "registry_file.h"
 
 /* Creates a registry file

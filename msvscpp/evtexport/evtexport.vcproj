@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_wide_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\export_handle.c"
 				>
 			</File>
@@ -294,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_system_split_string.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\export_handle.h"
 				>
 			</File>
@@ -319,6 +327,10 @@
 			</File>
 			<File
 				RelativePath="..\..\evttools\resource_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\evttools\wide_string.h"
 				>
 			</File>
 		</Filter>
