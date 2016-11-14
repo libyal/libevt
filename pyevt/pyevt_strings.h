@@ -1,5 +1,5 @@
 /*
- * Python object definition of the strings sequence and iterator
+ * Python object definition of the sequence and iterator object of strings
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -27,7 +27,6 @@
 
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
-#include "pyevt_record.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -41,14 +40,14 @@ struct pyevt_strings
 	 */
 	PyObject_HEAD
 
-	/* The record object
+	/* The parent object
 	 */
-	pyevt_record_t *record_object;
+	PyObject *parent_object;
 
 	/* The get string by index callback function
 	 */
 	PyObject* (*get_string_by_index)(
-	             pyevt_record_t *record_object,
+	             PyObject *parent_object,
 	             int string_index );
 
 	/* The (current) string index
@@ -63,9 +62,9 @@ struct pyevt_strings
 extern PyTypeObject pyevt_strings_type_object;
 
 PyObject *pyevt_strings_new(
-           pyevt_record_t *record_object,
+           PyObject *parent_object,
            PyObject* (*get_string_by_index)(
-                        pyevt_record_t *record_object,
+                        PyObject *parent_object,
                         int string_index ),
            int number_of_strings );
 

@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libevt file
+ * Python object wrapper of libevt_file_t
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -108,12 +108,16 @@ int pyevt_file_set_ascii_codepage_setter(
      PyObject *string_object,
      void *closure );
 
+PyObject *pyevt_file_get_flags(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
+
 PyObject *pyevt_file_get_number_of_records(
            pyevt_file_t *pyevt_file,
            PyObject *arguments );
 
 PyObject *pyevt_file_get_record_by_index(
-           pyevt_file_t *pyevt_file,
+           PyObject *pyevt_file,
            int record_index );
 
 PyObject *pyevt_file_get_record(
@@ -130,8 +134,8 @@ PyObject *pyevt_file_get_number_of_recovered_records(
            PyObject *arguments );
 
 PyObject *pyevt_file_get_recovered_record_by_index(
-           pyevt_file_t *pyevt_file,
-           int record_index );
+           PyObject *pyevt_file,
+           int recovered_record_index );
 
 PyObject *pyevt_file_get_recovered_record(
            pyevt_file_t *pyevt_file,
@@ -146,5 +150,5 @@ PyObject *pyevt_file_get_recovered_records(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_FILE_H ) */
 

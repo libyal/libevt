@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libevt record
+ * Python object wrapper of libevt_record_t
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -28,7 +28,6 @@
 
 #include "pyevt_datetime.h"
 #include "pyevt_error.h"
-#include "pyevt_file.h"
 #include "pyevt_integer.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libevt.h"
@@ -39,68 +38,66 @@
 
 PyMethodDef pyevt_record_object_methods[] = {
 
-	/* Functions to access the record values */
-
 	{ "get_offset",
 	  (PyCFunction) pyevt_record_get_offset,
 	  METH_NOARGS,
-	  "get_offset() -> Integer\n"
+	  "get_offset() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the offset." },
 
 	{ "get_identifier",
 	  (PyCFunction) pyevt_record_get_identifier,
 	  METH_NOARGS,
-	  "get_identifier() -> Integer\n"
+	  "get_identifier() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the identifier (number)." },
+	  "Retrieves the identifier." },
 
 	{ "get_creation_time",
 	  (PyCFunction) pyevt_record_get_creation_time,
 	  METH_NOARGS,
-	  "get_creation_time() -> Datetime\n"
+	  "get_creation_time() -> Datetime or None\n"
 	  "\n"
-	  "Returns the creation date and time." },
+	  "Retrieves the creation time." },
 
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyevt_record_get_creation_time_as_integer,
 	  METH_NOARGS,
-	  "get_creation_time_as_integer() -> Integer\n"
+	  "get_creation_time_as_integer() -> Integer or None\n"
 	  "\n"
-	  "Returns the creation date and time as a 32-bit integer containing a POSIX timestamp value." },
+	  "Retrieves the creation time as a 32-bit integer containing a POSIX timestamp value." },
 
 	{ "get_written_time",
 	  (PyCFunction) pyevt_record_get_written_time,
 	  METH_NOARGS,
-	  "get_written_time() -> Datetime\n"
+	  "get_written_time() -> Datetime or None\n"
 	  "\n"
-	  "Returns the written date and time." },
+	  "Retrieves the written time." },
 
 	{ "get_written_time_as_integer",
 	  (PyCFunction) pyevt_record_get_written_time_as_integer,
 	  METH_NOARGS,
-	  "get_written_time_as_integer() -> Integer\n"
+	  "get_written_time_as_integer() -> Integer or None\n"
 	  "\n"
-	  "Returns the written date and time as a 32-bit integer containing a POSIX timestamp value." },
+	  "Retrieves the written time as a 32-bit integer containing a POSIX timestamp value." },
 
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
 	  METH_NOARGS,
-	  "get_event_identifier() -> Integer\n"
+	  "get_event_identifier() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the event identifier." },
 
 	{ "get_event_type",
 	  (PyCFunction) pyevt_record_get_event_type,
 	  METH_NOARGS,
-	  "get_event_type() -> Integer\n"
+	  "get_event_type() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the event type." },
 
 	{ "get_event_category",
 	  (PyCFunction) pyevt_record_get_event_category,
 	  METH_NOARGS,
-	  "get_event_category() -> Integer\n"
+	  "get_event_category() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the event category." },
 
@@ -123,14 +120,12 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_NOARGS,
 	  "get_user_security_identifier() -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves the user security identifier (SID)." },
-
-	/* Functions to access the string */
+	  "Retrieves the user security identifier." },
 
 	{ "get_number_of_strings",
 	  (PyCFunction) pyevt_record_get_number_of_strings,
 	  METH_NOARGS,
-	  "get_number_of_strings() -> Integer\n"
+	  "get_number_of_strings() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the number of strings." },
 
@@ -139,14 +134,14 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_string(string_index) -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves a specific string." },
+	  "Retrieves the string." },
 
 	{ "get_data",
 	  (PyCFunction) pyevt_record_get_data,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "get_data(string_index) -> String or None\n"
+	  METH_NOARGS,
+	  "get_data() -> Binary string or None\n"
 	  "\n"
-	  "Retrieves the data as a binary string." },
+	  "Retrieves the data." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -163,19 +158,19 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	{ "identifier",
 	  (getter) pyevt_record_get_identifier,
 	  (setter) 0,
-	  "The identifier (number).",
+	  "The identifier.",
 	  NULL },
 
 	{ "creation_time",
 	  (getter) pyevt_record_get_creation_time,
 	  (setter) 0,
-	  "The creation date and time.",
+	  "The creation time.",
 	  NULL },
 
 	{ "written_time",
 	  (getter) pyevt_record_get_written_time,
 	  (setter) 0,
-	  "The written date and time.",
+	  "The written time.",
 	  NULL },
 
 	{ "event_identifier",
@@ -211,7 +206,7 @@ PyGetSetDef pyevt_record_object_get_set_definitions[] = {
 	{ "user_security_identifier",
 	  (getter) pyevt_record_get_user_security_identifier,
 	  (setter) 0,
-	  "The user security identifier (SID).",
+	  "The user security identifier.",
 	  NULL },
 
 	{ "number_of_strings",
@@ -335,8 +330,9 @@ PyTypeObject pyevt_record_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_new(
+           PyTypeObject *type_object,
            libevt_record_t *record,
-           pyevt_file_t *file_object )
+           PyObject *parent_object )
 {
 	pyevt_record_t *pyevt_record = NULL;
 	static char *function        = "pyevt_record_new";
@@ -352,7 +348,7 @@ PyObject *pyevt_record_new(
 	}
 	pyevt_record = PyObject_New(
 	                struct pyevt_record,
-	                &pyevt_record_type_object );
+	                type_object );
 
 	if( pyevt_record == NULL )
 	{
@@ -373,11 +369,11 @@ PyObject *pyevt_record_new(
 
 		goto on_error;
 	}
-	pyevt_record->record      = record;
-	pyevt_record->file_object = file_object;
+	pyevt_record->record        = record;
+	pyevt_record->parent_object = parent_object;
 
 	Py_IncRef(
-	 (PyObject *) pyevt_record->file_object );
+	 (PyObject *) pyevt_record->parent_object );
 
 	return( (PyObject *) pyevt_record );
 
@@ -419,8 +415,8 @@ int pyevt_record_init(
 void pyevt_record_free(
       pyevt_record_t *pyevt_record )
 {
-	libcerror_error_t *error    = NULL;
 	struct _typeobject *ob_type = NULL;
+	libcerror_error_t *error    = NULL;
 	static char *function       = "pyevt_record_free";
 	int result                  = 0;
 
@@ -482,10 +478,10 @@ void pyevt_record_free(
 		libcerror_error_free(
 		 &error );
 	}
-	if( pyevt_record->file_object != NULL )
+	if( pyevt_record->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_record->file_object );
+		 (PyObject *) pyevt_record->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_record );
@@ -498,8 +494,8 @@ PyObject *pyevt_record_get_offset(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_offset";
 	off64_t offset           = 0;
 	int result               = 0;
@@ -524,7 +520,7 @@ PyObject *pyevt_record_get_offset(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -537,12 +533,18 @@ PyObject *pyevt_record_get_offset(
 
 		return( NULL );
 	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
 	integer_object = pyevt_integer_signed_new_from_64bit(
 	                  (int64_t) offset );
 
 	return( integer_object );
 }
-
 /* Retrieves the identifier
  * Returns a Python object if successful or NULL on error
  */
@@ -550,10 +552,10 @@ PyObject *pyevt_record_get_identifier(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_identifier";
-	uint32_t identifier      = 0;
+	uint32_t value_32bit     = 0;
 	int result               = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
@@ -571,12 +573,12 @@ PyObject *pyevt_record_get_identifier(
 
 	result = libevt_record_get_identifier(
 	          pyevt_record->record,
-	          &identifier,
+	          &value_32bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -589,25 +591,32 @@ PyObject *pyevt_record_get_identifier(
 
 		return( NULL );
 	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(
-	                  (long) identifier );
+	                  (long) value_32bit );
 #else
 	integer_object = PyInt_FromLong(
-	                  (long) identifier );
+	                  (long) value_32bit );
 #endif
 	return( integer_object );
 }
 
-/* Retrieves the creation date and time
+/* Retrieves the creation time
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error   = NULL;
 	PyObject *date_time_object = NULL;
+	libcerror_error_t *error   = NULL;
 	static char *function      = "pyevt_record_get_creation_time";
 	uint32_t posix_time        = 0;
 	int result                 = 0;
@@ -632,7 +641,7 @@ PyObject *pyevt_record_get_creation_time(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -645,21 +654,28 @@ PyObject *pyevt_record_get_creation_time(
 
 		return( NULL );
 	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
 	date_time_object = pyevt_datetime_new_from_posix_time(
 	                    posix_time );
 
 	return( date_time_object );
 }
 
-/* Retrieves the creation date and time as an integer
+/* Retrieves the creation time as an integer
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_creation_time_as_integer(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_creation_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
@@ -684,7 +700,7 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -697,21 +713,28 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 		return( NULL );
 	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
 	integer_object = pyevt_integer_signed_new_from_64bit(
 	                  (int32_t) posix_time );
 
 	return( integer_object );
 }
 
-/* Retrieves the written date and time
+/* Retrieves the written time
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error   = NULL;
 	PyObject *date_time_object = NULL;
+	libcerror_error_t *error   = NULL;
 	static char *function      = "pyevt_record_get_written_time";
 	uint32_t posix_time        = 0;
 	int result                 = 0;
@@ -736,7 +759,7 @@ PyObject *pyevt_record_get_written_time(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -749,21 +772,28 @@ PyObject *pyevt_record_get_written_time(
 
 		return( NULL );
 	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
 	date_time_object = pyevt_datetime_new_from_posix_time(
 	                    posix_time );
 
 	return( date_time_object );
 }
 
-/* Retrieves the written date and time as an integer
+/* Retrieves the written time as an integer
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_written_time_as_integer(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_written_time_as_integer";
 	uint32_t posix_time      = 0;
 	int result               = 0;
@@ -788,7 +818,7 @@ PyObject *pyevt_record_get_written_time_as_integer(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -800,6 +830,13 @@ PyObject *pyevt_record_get_written_time_as_integer(
 		 &error );
 
 		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
 	}
 	integer_object = pyevt_integer_signed_new_from_64bit(
 	                  (int32_t) posix_time );
@@ -814,10 +851,11 @@ PyObject *pyevt_record_get_event_identifier(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error  = NULL;
-	static char *function     = "pyevt_record_get_event_identifier";
-	uint32_t event_identifier = 0;
-	int result                = 0;
+	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyevt_record_get_event_identifier";
+	uint32_t value_32bit     = 0;
+	int result               = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
@@ -834,12 +872,12 @@ PyObject *pyevt_record_get_event_identifier(
 
 	result = libevt_record_get_event_identifier(
 	          pyevt_record->record,
-	          &event_identifier,
+	          &value_32bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -852,8 +890,17 @@ PyObject *pyevt_record_get_event_identifier(
 
 		return( NULL );
 	}
-	return( PyLong_FromUnsignedLong(
-	         (unsigned long) event_identifier ) );
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) value_32bit );
+
+	return( integer_object );
 }
 
 /* Retrieves the event type
@@ -863,8 +910,8 @@ PyObject *pyevt_record_get_event_type(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_event_type";
 	uint16_t event_type      = 0;
 	int result               = 0;
@@ -889,7 +936,7 @@ PyObject *pyevt_record_get_event_type(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -901,6 +948,13 @@ PyObject *pyevt_record_get_event_type(
 		 &error );
 
 		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
 	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(
@@ -919,8 +973,8 @@ PyObject *pyevt_record_get_event_category(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_event_category";
 	uint16_t event_category  = 0;
 	int result               = 0;
@@ -945,7 +999,7 @@ PyObject *pyevt_record_get_event_category(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -957,6 +1011,13 @@ PyObject *pyevt_record_get_event_category(
 		 &error );
 
 		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
 	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(
@@ -975,12 +1036,12 @@ PyObject *pyevt_record_get_source_name(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
 	const char *errors       = NULL;
-	uint8_t *source_name     = NULL;
 	static char *function    = "pyevt_record_get_source_name";
-	size_t source_name_size  = 0;
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
 	int result               = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
@@ -988,7 +1049,7 @@ PyObject *pyevt_record_get_source_name(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -998,7 +1059,7 @@ PyObject *pyevt_record_get_source_name(
 
 	result = libevt_record_get_utf8_source_name_size(
 	          pyevt_record->record,
-	          &source_name_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1008,7 +1069,7 @@ PyObject *pyevt_record_get_source_name(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve source name size.",
+		 "%s: unable to determine size of source name as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1017,21 +1078,21 @@ PyObject *pyevt_record_get_source_name(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( source_name_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	source_name = (uint8_t *) PyMem_Malloc(
-	                           sizeof( uint8_t ) * source_name_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( source_name == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create source name.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -1039,10 +1100,10 @@ PyObject *pyevt_record_get_source_name(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_source_name(
-		  pyevt_record->record,
-		  source_name,
-		  source_name_size,
-		  &error );
+	          pyevt_record->record,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1051,7 +1112,7 @@ PyObject *pyevt_record_get_source_name(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve source name.",
+		 "%s: unable to retrieve source name as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1059,25 +1120,33 @@ PyObject *pyevt_record_get_source_name(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) source_name,
-			 (Py_ssize_t) source_name_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 source_name );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( source_name != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 source_name );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1089,20 +1158,20 @@ PyObject *pyevt_record_get_computer_name(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error  = NULL;
-	PyObject *string_object   = NULL;
-	const char *errors        = NULL;
-	uint8_t *computer_name    = NULL;
-	static char *function     = "pyevt_record_get_computer_name";
-	size_t computer_name_size = 0;
-	int result                = 0;
+	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
+	const char *errors       = NULL;
+	static char *function    = "pyevt_record_get_computer_name";
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
+	int result               = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1112,7 +1181,7 @@ PyObject *pyevt_record_get_computer_name(
 
 	result = libevt_record_get_utf8_computer_name_size(
 	          pyevt_record->record,
-	          &computer_name_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1122,7 +1191,7 @@ PyObject *pyevt_record_get_computer_name(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve computer name size.",
+		 "%s: unable to determine size of computer name as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1131,21 +1200,21 @@ PyObject *pyevt_record_get_computer_name(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( computer_name_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	computer_name = (uint8_t *) PyMem_Malloc(
-	                             sizeof( uint8_t ) * computer_name_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( computer_name == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create computer name.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -1153,10 +1222,10 @@ PyObject *pyevt_record_get_computer_name(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_computer_name(
-		  pyevt_record->record,
-		  computer_name,
-		  computer_name_size,
-		  &error );
+	          pyevt_record->record,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1165,7 +1234,7 @@ PyObject *pyevt_record_get_computer_name(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve computer name.",
+		 "%s: unable to retrieve computer name as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1173,25 +1242,33 @@ PyObject *pyevt_record_get_computer_name(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) computer_name,
-			 (Py_ssize_t) computer_name_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 computer_name );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( computer_name != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 computer_name );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1203,20 +1280,20 @@ PyObject *pyevt_record_get_user_security_identifier(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error             = NULL;
-	PyObject *string_object              = NULL;
-	const char *errors                   = NULL;
-	uint8_t *user_security_identifier    = NULL;
-	static char *function                = "pyevt_record_get_user_security_identifier";
-	size_t user_security_identifier_size = 0;
-	int result                           = 0;
+	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
+	const char *errors       = NULL;
+	static char *function    = "pyevt_record_get_user_security_identifier";
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
+	int result               = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1226,7 +1303,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 
 	result = libevt_record_get_utf8_user_security_identifier_size(
 	          pyevt_record->record,
-	          &user_security_identifier_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1236,7 +1313,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve user security identifier size.",
+		 "%s: unable to determine size of user security identifier as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1245,21 +1322,21 @@ PyObject *pyevt_record_get_user_security_identifier(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( user_security_identifier_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	user_security_identifier = (uint8_t *) PyMem_Malloc(
-	                                        sizeof( uint8_t ) * user_security_identifier_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( user_security_identifier == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create user security identifier.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -1267,10 +1344,10 @@ PyObject *pyevt_record_get_user_security_identifier(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_user_security_identifier(
-		  pyevt_record->record,
-		  user_security_identifier,
-		  user_security_identifier_size,
-		  &error );
+	          pyevt_record->record,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1279,7 +1356,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve user security identifier.",
+		 "%s: unable to retrieve user security identifier as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1287,25 +1364,33 @@ PyObject *pyevt_record_get_user_security_identifier(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) user_security_identifier,
-			 (Py_ssize_t) user_security_identifier_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 user_security_identifier );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( user_security_identifier != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 user_security_identifier );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1317,8 +1402,8 @@ PyObject *pyevt_record_get_number_of_strings(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyevt_record_get_number_of_strings";
 	int number_of_strings    = 0;
 	int result               = 0;
@@ -1370,15 +1455,15 @@ PyObject *pyevt_record_get_number_of_strings(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_string_by_index(
-           pyevt_record_t *pyevt_record,
+           PyObject *pyevt_record,
            int string_index )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
-	uint8_t *string          = NULL;
+	libcerror_error_t *error = NULL;
+	uint8_t *utf8_string     = NULL;
 	const char *errors       = NULL;
 	static char *function    = "pyevt_record_get_string_by_index";
-	size_t string_size       = 0;
+	size_t utf8_string_size  = 0;
 	int result               = 0;
 
 	if( pyevt_record == NULL )
@@ -1393,9 +1478,9 @@ PyObject *pyevt_record_get_string_by_index(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_string_size(
-	          pyevt_record->record,
+	          ( (pyevt_record_t *) pyevt_record )->record,
 	          string_index,
-	          &string_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1405,7 +1490,7 @@ PyObject *pyevt_record_get_string_by_index(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve string: %d size.",
+		 "%s: unable to determine size of string: %d as UTF-8 string.",
 		 function,
 		 string_index );
 
@@ -1415,34 +1500,33 @@ PyObject *pyevt_record_get_string_by_index(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( string_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	string = (uint8_t *) PyMem_Malloc(
-	                      sizeof( uint8_t ) * string_size );
+	utf8_string = (uint8_t *) PyMem_Malloc(
+	                           sizeof( uint8_t ) * utf8_string_size );
 
-	if( string == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
 		 PyExc_IOError,
-		 "%s: unable to create string: %d.",
-		 function,
-		 string_index );
+		 "%s: unable to create UTF-8 string.",
+		 function );
 
 		goto on_error;
 	}
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_utf8_string(
-		  pyevt_record->record,
-		  string_index,
-		  string,
-		  string_size,
-		  &error );
+	          ( (pyevt_record_t *) pyevt_record )->record,
+	          string_index,
+	          utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1451,7 +1535,7 @@ PyObject *pyevt_record_get_string_by_index(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve string: %d.",
+		 "%s: unable to retrieve string: %d as UTF-8 string.",
 		 function,
 		 string_index );
 
@@ -1460,25 +1544,33 @@ PyObject *pyevt_record_get_string_by_index(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) string,
-			 (Py_ssize_t) string_size - 1,
-			 errors );
+	                 (char *) utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 string );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( string != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 string );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1505,24 +1597,24 @@ PyObject *pyevt_record_get_string(
 		return( NULL );
 	}
 	string_object = pyevt_record_get_string_by_index(
-	                 pyevt_record,
+	                 (PyObject *) pyevt_record,
 	                 string_index );
 
 	return( string_object );
 }
 
-/* Retrieves a strings sequence and iterator object for the strings
+/* Retrieves a sequence and iterator object for the strings
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_strings(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
-	PyObject *strings_object = NULL;
-	static char *function    = "pyevt_record_get_strings";
-	int number_of_strings    = 0;
-	int result               = 0;
+	PyObject *sequence_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyevt_record_get_strings";
+	int number_of_strings     = 0;
+	int result                = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
@@ -1557,21 +1649,21 @@ PyObject *pyevt_record_get_strings(
 
 		return( NULL );
 	}
-	strings_object = pyevt_strings_new(
-	                  pyevt_record,
-	                  &pyevt_record_get_string_by_index,
-	                  number_of_strings );
+	sequence_object = pyevt_strings_new(
+	                   (PyObject *) pyevt_record,
+	                   &pyevt_record_get_string_by_index,
+	                   number_of_strings );
 
-	if( strings_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to create strings object.",
+		 "%s: unable to create sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	return( strings_object );
+	return( sequence_object );
 }
 
 /* Retrieves the data
@@ -1581,9 +1673,9 @@ PyObject *pyevt_record_get_data(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
+	PyObject *bytes_object   = NULL;
 	libcerror_error_t *error = NULL;
-	PyObject *string_object  = NULL;
-	uint8_t *data            = NULL;
+	char *data               = NULL;
 	static char *function    = "pyevt_record_get_data";
 	size_t data_size         = 0;
 	int result               = 0;
@@ -1593,7 +1685,7 @@ PyObject *pyevt_record_get_data(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1629,13 +1721,13 @@ PyObject *pyevt_record_get_data(
 
 		return( Py_None );
 	}
-	data = (uint8_t *) PyMem_Malloc(
-	                    sizeof( uint8_t ) * data_size );
+	data = (char *) PyMem_Malloc(
+	                 sizeof( char ) * data_size );
 
 	if( data == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
+		 PyExc_MemoryError,
 		 "%s: unable to create data.",
 		 function );
 
@@ -1644,10 +1736,10 @@ PyObject *pyevt_record_get_data(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libevt_record_get_data(
-		  pyevt_record->record,
-		  data,
-		  data_size,
-		  &error );
+	          pyevt_record->record,
+	          (uint8_t *) data,
+	          data_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1664,19 +1756,30 @@ PyObject *pyevt_record_get_data(
 
 		goto on_error;
 	}
+	/* This is a binary string so include the full size
+	 */
 #if PY_MAJOR_VERSION >= 3
-	string_object = PyBytes_FromStringAndSize(
-			 (char *) data,
-			 (Py_ssize_t) data_size );
+	bytes_object = PyBytes_FromStringAndSize(
+	                data,
+	                (Py_ssize_t) data_size );
 #else
-	string_object = PyString_FromStringAndSize(
-			 (char *) data,
-			 (Py_ssize_t) data_size );
+	bytes_object = PyString_FromStringAndSize(
+	                data,
+	                (Py_ssize_t) data_size );
 #endif
+	if( bytes_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert data into Bytes object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
 	 data );
 
-	return( string_object );
+	return( bytes_object );
 
 on_error:
 	if( data != NULL )

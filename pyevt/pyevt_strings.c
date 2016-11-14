@@ -1,5 +1,5 @@
 /*
- * Python object definition of the strings sequence and iterator
+ * Python object definition of the sequence and iterator object of strings
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -20,7 +20,6 @@
  */
 
 #include <common.h>
-#include <memory.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
@@ -30,7 +29,6 @@
 #include "pyevt_libcerror.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
-#include "pyevt_record.h"
 #include "pyevt_strings.h"
 
 PySequenceMethods pyevt_strings_sequence_methods = {
@@ -98,7 +96,7 @@ PyTypeObject pyevt_strings_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pyevt strings sequence and iterator object",
+	"pyevt internal sequence and iterator object of strings",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,20 +153,20 @@ PyTypeObject pyevt_strings_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_strings_new(
-           pyevt_record_t *record_object,
+           PyObject *parent_object,
            PyObject* (*get_string_by_index)(
-                        pyevt_record_t *record_object,
+                        PyObject *parent_object,
                         int string_index ),
            int number_of_strings )
 {
 	pyevt_strings_t *pyevt_strings = NULL;
 	static char *function          = "pyevt_strings_new";
 
-	if( record_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid record object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
@@ -185,8 +183,8 @@ PyObject *pyevt_strings_new(
 	/* Make sure the strings values are initialized
 	 */
 	pyevt_strings = PyObject_New(
-	                  struct pyevt_strings,
-	                  &pyevt_strings_type_object );
+	                 struct pyevt_strings,
+	                 &pyevt_strings_type_object );
 
 	if( pyevt_strings == NULL )
 	{
@@ -207,12 +205,12 @@ PyObject *pyevt_strings_new(
 
 		goto on_error;
 	}
-	pyevt_strings->record_object       = record_object;
+	pyevt_strings->parent_object       = parent_object;
 	pyevt_strings->get_string_by_index = get_string_by_index;
 	pyevt_strings->number_of_strings   = number_of_strings;
 
 	Py_IncRef(
-	 (PyObject *) pyevt_strings->record_object );
+	 (PyObject *) pyevt_strings->parent_object );
 
 	return( (PyObject *) pyevt_strings );
 
@@ -244,7 +242,7 @@ int pyevt_strings_init(
 	}
 	/* Make sure the strings values are initialized
 	 */
-	pyevt_strings->record_object       = NULL;
+	pyevt_strings->parent_object       = NULL;
 	pyevt_strings->get_string_by_index = NULL;
 	pyevt_strings->string_index        = 0;
 	pyevt_strings->number_of_strings   = 0;
@@ -290,10 +288,10 @@ void pyevt_strings_free(
 
 		return;
 	}
-	if( pyevt_strings->record_object != NULL )
+	if( pyevt_strings->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_strings->record_object );
+		 (PyObject *) pyevt_strings->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_strings );
@@ -365,7 +363,7 @@ PyObject *pyevt_strings_getitem(
 		return( NULL );
 	}
 	string_object = pyevt_strings->get_string_by_index(
-	                 pyevt_strings->record_object,
+	                 pyevt_strings->parent_object,
 	                 (int) item_index );
 
 	return( string_object );
@@ -445,7 +443,7 @@ PyObject *pyevt_strings_iternext(
 		return( NULL );
 	}
 	string_object = pyevt_strings->get_string_by_index(
-	                 pyevt_strings->record_object,
+	                 pyevt_strings->parent_object,
 	                 pyevt_strings->string_index );
 
 	if( string_object != NULL )

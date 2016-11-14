@@ -69,7 +69,7 @@ File functions
 .Ft int
 .Fn libevt_file_set_ascii_codepage "libevt_file_t *file, int ascii_codepage, libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_version "libevt_file_t *file, uint32_t *major_version, uint32_t *minor_version, libevt_error_t **error"
+.Fn libevt_file_get_format_version "libevt_file_t *file, uint32_t *major_version, uint32_t *minor_version, libevt_error_t **error"
 .Ft int
 .Fn libevt_file_get_flags "libevt_file_t *file, uint32_t *flags, libevt_error_t **error"
 .Ft int
@@ -99,7 +99,7 @@ Record functions
 .Ft int
 .Fn libevt_record_get_creation_time "libevt_record_t *record, uint32_t *posix_time, libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_written_time "libevt_record_t *record, uint32_t *written_time, libevt_error_t **error"
+.Fn libevt_record_get_written_time "libevt_record_t *record, uint32_t *posix_time, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_event_identifier "libevt_record_t *record, uint32_t *event_identifier, libevt_error_t **error"
 .Ft int

@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_INTERNAL_RECORD_H )
-#define _LIBEVT_INTERNAL_RECORD_H
+#if !defined( _LIBEVT_RECORD_H )
+#define _LIBEVT_RECORD_H
 
 #include <common.h>
 #include <types.h>
@@ -86,7 +86,7 @@ int libevt_record_get_creation_time(
 LIBEVT_EXTERN \
 int libevt_record_get_written_time(
      libevt_record_t *record,
-     uint32_t *written_time,
+     uint32_t *posix_time,
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
@@ -238,5 +238,5 @@ int libevt_record_get_data(
 }
 #endif
 
-#endif /* !defined( _LIBEVT_INTERNAL_RECORD_H ) */
+#endif /* !defined( _LIBEVT_RECORD_H ) */
 

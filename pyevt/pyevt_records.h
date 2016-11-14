@@ -1,5 +1,5 @@
 /*
- * Python object definition of the records sequence and iterator
+ * Python object definition of the sequence and iterator object of records
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyevt_file.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 
@@ -41,14 +40,14 @@ struct pyevt_records
 	 */
 	PyObject_HEAD
 
-	/* The file object
+	/* The parent object
 	 */
-	pyevt_file_t *file_object;
+	PyObject *parent_object;
 
 	/* The get record by index callback function
 	 */
 	PyObject* (*get_record_by_index)(
-	             pyevt_file_t *file_object,
+	             PyObject *parent_object,
 	             int record_index );
 
 	/* The (current) record index
@@ -63,9 +62,9 @@ struct pyevt_records
 extern PyTypeObject pyevt_records_type_object;
 
 PyObject *pyevt_records_new(
-           pyevt_file_t *file_object,
+           PyObject *parent_object,
            PyObject* (*get_record_by_index)(
-                        pyevt_file_t *file_object,
+                        PyObject *parent_object,
                         int record_index ),
            int number_of_records );
 

@@ -1596,6 +1596,8 @@ int main(
 
 		/* TODO: add tests for libevt_file_is_corrupted */
 
+		/* TODO: add tests for libevt_file_get_format_version */
+
 		/* TODO: add tests for libevt_file_get_version */
 
 		/* TODO: add tests for libevt_file_get_flags */

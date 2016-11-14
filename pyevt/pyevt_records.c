@@ -1,5 +1,5 @@
 /*
- * Python object definition of the records sequence and iterator
+ * Python object definition of the sequence and iterator object of records
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #endif
 
-#include "pyevt_file.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
@@ -98,7 +97,7 @@ PyTypeObject pyevt_records_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pyevt records sequence and iterator object",
+	"pyevt internal sequence and iterator object of records",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,20 +154,20 @@ PyTypeObject pyevt_records_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_records_new(
-           pyevt_file_t *file_object,
+           PyObject *parent_object,
            PyObject* (*get_record_by_index)(
-                        pyevt_file_t *file_object,
+                        PyObject *parent_object,
                         int record_index ),
            int number_of_records )
 {
 	pyevt_records_t *pyevt_records = NULL;
 	static char *function          = "pyevt_records_new";
 
-	if( file_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
@@ -207,12 +206,12 @@ PyObject *pyevt_records_new(
 
 		goto on_error;
 	}
-	pyevt_records->file_object         = file_object;
+	pyevt_records->parent_object       = parent_object;
 	pyevt_records->get_record_by_index = get_record_by_index;
 	pyevt_records->number_of_records   = number_of_records;
 
 	Py_IncRef(
-	 (PyObject *) pyevt_records->file_object );
+	 (PyObject *) pyevt_records->parent_object );
 
 	return( (PyObject *) pyevt_records );
 
@@ -244,7 +243,7 @@ int pyevt_records_init(
 	}
 	/* Make sure the records values are initialized
 	 */
-	pyevt_records->file_object         = NULL;
+	pyevt_records->parent_object       = NULL;
 	pyevt_records->get_record_by_index = NULL;
 	pyevt_records->record_index        = 0;
 	pyevt_records->number_of_records   = 0;
@@ -290,10 +289,10 @@ void pyevt_records_free(
 
 		return;
 	}
-	if( pyevt_records->file_object != NULL )
+	if( pyevt_records->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_records->file_object );
+		 (PyObject *) pyevt_records->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_records );
@@ -365,7 +364,7 @@ PyObject *pyevt_records_getitem(
 		return( NULL );
 	}
 	record_object = pyevt_records->get_record_by_index(
-	                 pyevt_records->file_object,
+	                 pyevt_records->parent_object,
 	                 (int) item_index );
 
 	return( record_object );
@@ -445,7 +444,7 @@ PyObject *pyevt_records_iternext(
 		return( NULL );
 	}
 	record_object = pyevt_records->get_record_by_index(
-	                 pyevt_records->file_object,
+	                 pyevt_records->parent_object,
 	                 pyevt_records->record_index );
 
 	if( record_object != NULL )

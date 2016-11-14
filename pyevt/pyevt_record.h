@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libevt record
+ * Python object wrapper of libevt_record_t
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyevt_file.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
 
@@ -45,17 +44,18 @@ struct pyevt_record
 	 */
 	libevt_record_t *record;
 
-	/* The file object
+	/* The parent object
 	 */
-	pyevt_file_t *file_object;
+	PyObject *parent_object;
 };
 
 extern PyMethodDef pyevt_record_object_methods[];
 extern PyTypeObject pyevt_record_type_object;
 
 PyObject *pyevt_record_new(
+           PyTypeObject *type_object,
            libevt_record_t *record,
-           pyevt_file_t *file_object );
+           PyObject *parent_object );
 
 int pyevt_record_init(
      pyevt_record_t *pyevt_record );
@@ -91,11 +91,11 @@ PyObject *pyevt_record_get_event_identifier(
            pyevt_record_t *pyevt_record,
            PyObject *arguments );
 
-PyObject *pyevt_record_get_event_category(
+PyObject *pyevt_record_get_event_type(
            pyevt_record_t *pyevt_record,
            PyObject *arguments );
 
-PyObject *pyevt_record_get_event_type(
+PyObject *pyevt_record_get_event_category(
            pyevt_record_t *pyevt_record,
            PyObject *arguments );
 
@@ -116,7 +116,7 @@ PyObject *pyevt_record_get_number_of_strings(
            PyObject *arguments );
 
 PyObject *pyevt_record_get_string_by_index(
-           pyevt_record_t *pyevt_record,
+           PyObject *pyevt_record,
            int string_index );
 
 PyObject *pyevt_record_get_string(
@@ -136,5 +136,5 @@ PyObject *pyevt_record_get_data(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_RECORD_H ) */
 

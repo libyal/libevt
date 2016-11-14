@@ -319,7 +319,7 @@ int libevt_record_get_creation_time(
  */
 int libevt_record_get_written_time(
      libevt_record_t *record,
-     uint32_t *written_time,
+     uint32_t *posix_time,
      libcerror_error_t **error )
 {
 	libevt_internal_record_t *internal_record = NULL;
@@ -349,18 +349,18 @@ int libevt_record_get_written_time(
 
 		return( -1 );
 	}
-	if( written_time == NULL )
+	if( posix_time == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid written time.",
+		 "%s: invalid posix time.",
 		 function );
 
 		return( -1 );
 	}
-	*written_time = internal_record->record_values->written_time;
+	*posix_time = internal_record->record_values->written_time;
 
 	return( 1 );
 }

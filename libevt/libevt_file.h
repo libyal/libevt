@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBEVT_INTERNAL_FILE_H )
-#define _LIBEVT_INTERNAL_FILE_H
+#if !defined( _LIBEVT_FILE_H )
+#define _LIBEVT_FILE_H
 
 #include <common.h>
 #include <types.h>
@@ -138,6 +138,13 @@ int libevt_file_set_ascii_codepage(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_file_get_format_version(
+     libevt_file_t *file,
+     uint32_t *major_version,
+     uint32_t *minor_version,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_file_get_version(
      libevt_file_t *file,
      uint32_t *major_version,
@@ -180,5 +187,5 @@ int libevt_file_get_recovered_record(
 }
 #endif
 
-#endif /* !defined( _LIBEVT_INTERNAL_FILE_H ) */
+#endif /* !defined( _LIBEVT_FILE_H ) */
 
