@@ -59,5 +59,5 @@ void pyevt_event_types_free(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_EVENT_TYPES_H ) */
 

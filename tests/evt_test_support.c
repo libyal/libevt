@@ -808,7 +808,7 @@ int main(
 
 #if defined( LIBEVT_HAVE_BFIO )
 
-		/* TODO add test for libevt_file_open_file_io_handle */
+		/* TODO add test for libevt_check_file_file_io_handle */
 
 #endif /* defined( LIBEVT_HAVE_BFIO ) */
 	}

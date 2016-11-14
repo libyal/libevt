@@ -38,5 +38,5 @@ const char *pyevt_codepage_to_string(
 }
 #endif
 
-#endif /* !defined( _PYEVT_CODEPAGE_H */
+#endif /* !defined( _PYEVT_CODEPAGE_H ) */
 

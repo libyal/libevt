@@ -38,7 +38,7 @@
 #include "evt_test_macros.h"
 #include "evt_test_memory.h"
 
-#if SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
 #error Unsupported size of wchar_t
 #endif
 
@@ -256,8 +256,8 @@ int evt_test_file_get_wide_source(
      libcerror_error_t **error )
 {
 	static char *function   = "evt_test_file_get_wide_source";
-	size_t wide_source_size = 0;
 	size_t source_length    = 0;
+	size_t wide_source_size = 0;
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result              = 0;
@@ -395,14 +395,14 @@ int evt_test_file_get_wide_source(
 		result = libuna_utf32_string_copy_from_utf8(
 		          (libuna_utf32_character_t *) wide_string,
 		          wide_string_size,
-		          (uint8_t *) source,
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_utf8(
 		          (libuna_utf16_character_t *) wide_string,
 		          wide_string_size,
-		          (uint8_t *) source,
+		          (libuna_utf8_character_t *) source,
 		          source_length + 1,
 		          error );
 #endif
@@ -521,9 +521,6 @@ int evt_test_file_open_source(
 on_error:
 	if( *file != NULL )
 	{
-		libevt_file_close(
-		 *file,
-		 NULL );
 		libevt_file_free(
 		 file,
 		 NULL );
@@ -587,11 +584,17 @@ int evt_test_file_close_source(
 int evt_test_file_initialize(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libevt_file_t *file      = NULL;
-	int result               = 0;
+	libcerror_error_t *error        = NULL;
+	libevt_file_t *file             = NULL;
+	int result                      = 0;
 
-	/* Test libevt_file_initialize
+#if defined( HAVE_EVT_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
+
+	/* Test regular cases
 	 */
 	result = libevt_file_initialize(
 	          &file,
@@ -667,65 +670,89 @@ int evt_test_file_initialize(
 
 #if defined( HAVE_EVT_TEST_MEMORY )
 
-	/* Test libevt_file_initialize with malloc failing
-	 */
-	evt_test_malloc_attempts_before_fail = 0;
-
-	result = libevt_file_initialize(
-	          &file,
-	          &error );
-
-	if( evt_test_malloc_attempts_before_fail != -1 )
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
 	{
-		evt_test_malloc_attempts_before_fail = -1;
+		/* Test libevt_file_initialize with malloc failing
+		 */
+		evt_test_malloc_attempts_before_fail = test_number;
+
+		result = libevt_file_initialize(
+		          &file,
+		          &error );
+
+		if( evt_test_malloc_attempts_before_fail != -1 )
+		{
+			evt_test_malloc_attempts_before_fail = -1;
+
+			if( file != NULL )
+			{
+				libevt_file_free(
+				 &file,
+				 NULL );
+			}
+		}
+		else
+		{
+			EVT_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			EVT_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
+
+			EVT_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
-	else
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
 	{
-		EVT_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		/* Test libevt_file_initialize with memset failing
+		 */
+		evt_test_memset_attempts_before_fail = test_number;
 
-		EVT_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
+		result = libevt_file_initialize(
+		          &file,
+		          &error );
 
-		EVT_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+		if( evt_test_memset_attempts_before_fail != -1 )
+		{
+			evt_test_memset_attempts_before_fail = -1;
 
-		libcerror_error_free(
-		 &error );
-	}
-	/* Test libevt_file_initialize with memset failing
-	 */
-	evt_test_memset_attempts_before_fail = 0;
+			if( file != NULL )
+			{
+				libevt_file_free(
+				 &file,
+				 NULL );
+			}
+		}
+		else
+		{
+			EVT_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
 
-	result = libevt_file_initialize(
-	          &file,
-	          &error );
+			EVT_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
 
-	if( evt_test_memset_attempts_before_fail != -1 )
-	{
-		evt_test_memset_attempts_before_fail = -1;
-	}
-	else
-	{
-		EVT_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+			EVT_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
 
-		EVT_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
-
-		EVT_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
+			libcerror_error_free(
+			 &error );
+		}
 	}
 #endif /* defined( HAVE_EVT_TEST_MEMORY ) */
 
@@ -784,7 +811,7 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_file_open functions
+/* Tests the libevt_file_open function
  * Returns 1 if successful or 0 if not
  */
 int evt_test_file_open(
@@ -847,21 +874,28 @@ int evt_test_file_open(
          "error",
          error );
 
-	/* Clean up
+	/* Test error cases
 	 */
-	result = libevt_file_close(
+	result = libevt_file_open(
 	          file,
+	          narrow_source,
+	          LIBEVT_OPEN_READ,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 -1 );
 
-        EVT_TEST_ASSERT_IS_NULL(
+        EVT_TEST_ASSERT_IS_NOT_NULL(
          "error",
          error );
 
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
 	result = libevt_file_free(
 	          &file,
 	          &error );
@@ -898,7 +932,7 @@ on_error:
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-/* Tests the libevt_file_open_wide functions
+/* Tests the libevt_file_open_wide function
  * Returns 1 if successful or 0 if not
  */
 int evt_test_file_open_wide(
@@ -961,21 +995,28 @@ int evt_test_file_open_wide(
          "error",
          error );
 
-	/* Clean up
+	/* Test error cases
 	 */
-	result = libevt_file_close(
+	result = libevt_file_open_wide(
 	          file,
+	          wide_source,
+	          LIBEVT_OPEN_READ,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 -1 );
 
-        EVT_TEST_ASSERT_IS_NULL(
+        EVT_TEST_ASSERT_IS_NOT_NULL(
          "error",
          error );
 
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
 	result = libevt_file_free(
 	          &file,
 	          &error );
@@ -1011,6 +1052,185 @@ on_error:
 }
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+/* Tests the libevt_file_close function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_close(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test error cases
+	 */
+	result = libevt_file_close(
+	          NULL,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libevt_file_open and libevt_file_close functions
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_open_close(
+     const system_character_t *source )
+{
+	libcerror_error_t *error = NULL;
+	libevt_file_t *file      = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libevt_file_initialize(
+	          &file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libevt_file_open_wide(
+	          file,
+	          source,
+	          LIBEVT_OPEN_READ,
+	          &error );
+#else
+	result = libevt_file_open(
+	          file,
+	          source,
+	          LIBEVT_OPEN_READ,
+	          &error );
+#endif
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libevt_file_close(
+	          file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close a second time to validate clean up on close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libevt_file_open_wide(
+	          file,
+	          source,
+	          LIBEVT_OPEN_READ,
+	          &error );
+#else
+	result = libevt_file_open(
+	          file,
+	          source,
+	          LIBEVT_OPEN_READ,
+	          &error );
+#endif
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libevt_file_close(
+	          file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Clean up
+	 */
+	result = libevt_file_free(
+	          &file,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		libevt_file_free(
+		 &file,
+		 NULL );
+	}
+	return( 0 );
+}
 
 /* Tests the libevt_file_get_ascii_codepage functions
  * Returns 1 if successful or 0 if not
@@ -1250,241 +1470,6 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_file_get_version functions
- * Returns 1 if successful or 0 if not
- */
-int evt_test_file_get_version(
-     libevt_file_t *file )
-{
-	libcerror_error_t *error = NULL;
-	uint32_t major_version   = 0;
-	uint32_t minor_version   = 0;
-	int result               = 0;
-
-	result = libevt_file_get_version(
-	          file,
-	          &major_version,
-	          &minor_version,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        EVT_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test error cases
-	 */
-	result = libevt_file_get_version(
-	          NULL,
-	          &major_version,
-	          &minor_version,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_file_get_version(
-	          file,
-	          NULL,
-	          &minor_version,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_file_get_version(
-	          file,
-	          &major_version,
-	          NULL,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libevt_file_get_number_of_records functions
- * Returns 1 if successful or 0 if not
- */
-int evt_test_file_get_number_of_records(
-     libevt_file_t *file )
-{
-	libcerror_error_t *error = NULL;
-	int number_of_records    = 0;
-	int result               = 0;
-
-	result = libevt_file_get_number_of_records(
-	          file,
-	          &number_of_records,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        EVT_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test error cases
-	 */
-	result = libevt_file_get_number_of_records(
-	          NULL,
-	          &number_of_records,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_file_get_number_of_records(
-	          file,
-	          NULL,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libevt_file_get_number_of_recovered_records functions
- * Returns 1 if successful or 0 if not
- */
-int evt_test_file_get_number_of_recovered_records(
-     libevt_file_t *file )
-{
-	libcerror_error_t *error = NULL;
-	int number_of_records    = 0;
-	int result               = 0;
-
-	result = libevt_file_get_number_of_recovered_records(
-	          file,
-	          &number_of_records,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        EVT_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
-
-	/* Test error cases
-	 */
-	result = libevt_file_get_number_of_recovered_records(
-	          NULL,
-	          &number_of_records,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_file_get_number_of_recovered_records(
-	          file,
-	          NULL,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1498,8 +1483,8 @@ int main(
 #endif
 {
 	libcerror_error_t *error   = NULL;
-	system_character_t *source = NULL;
 	libevt_file_t *file        = NULL;
+	system_character_t *source = NULL;
 	system_integer_t option    = 0;
 	int result                 = 0;
 
@@ -1540,8 +1525,6 @@ int main(
 	 "libevt_file_free",
 	 evt_test_file_free );
 
-	/* TODO add test for libevt_file_signal_abort */
-
 	EVT_TEST_RUN(
 	 "libevt_file_set_ascii_codepage",
 	 evt_test_file_set_ascii_codepage );
@@ -1569,7 +1552,14 @@ int main(
 
 #endif /* defined( LIBEVT_HAVE_BFIO ) */
 
-		/* TODO add test for libevt_file_close */
+		EVT_TEST_RUN(
+		 "libevt_file_close",
+		 evt_test_file_close );
+
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_open_close",
+		 evt_test_file_open_close,
+		 source );
 
 		/* Initialize test
 		 */
@@ -1591,33 +1581,32 @@ int main(
 	         "error",
 	         error );
 
-		/* TODO add test for libevt_file_is_corrupted */
-
 		EVT_TEST_RUN_WITH_ARGS(
 		 "libevt_file_get_ascii_codepage",
 		 evt_test_file_get_ascii_codepage,
 		 file );
 
-		EVT_TEST_RUN_WITH_ARGS(
-		 "libevt_file_get_version",
-		 evt_test_file_get_version,
-		 file );
+		/* TODO: add tests for libevt_file_signal_abort */
 
-		/* TODO add test for libevt_file_get_flags */
+#if defined( __GNUC__ )
 
-		EVT_TEST_RUN_WITH_ARGS(
-		 "libevt_file_get_number_of_records",
-		 evt_test_file_get_number_of_records,
-		 file );
+		/* TODO: add tests for libevt_file_open_read */
 
-		/* TODO add test for libevt_file_get_record */
+#endif /* defined( __GNUC__ ) */
 
-		EVT_TEST_RUN_WITH_ARGS(
-		 "libevt_file_get_number_of_recovered_records",
-		 evt_test_file_get_number_of_recovered_records,
-		 file );
+		/* TODO: add tests for libevt_file_is_corrupted */
 
-		/* TODO add test for libevt_file_get_recovered_record */
+		/* TODO: add tests for libevt_file_get_version */
+
+		/* TODO: add tests for libevt_file_get_flags */
+
+		/* TODO: add tests for libevt_file_get_number_of_records */
+
+		/* TODO: add tests for libevt_file_get_record */
+
+		/* TODO: add tests for libevt_file_get_number_of_recovered_records */
+
+		/* TODO: add tests for libevt_file_get_recovered_record */
 
 		/* Clean up
 		 */

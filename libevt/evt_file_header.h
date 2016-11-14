@@ -99,5 +99,5 @@ struct evt_file_header
 }
 #endif
 
-#endif
+#endif /* !defined( _EVT_FILE_HEADER_H ) */
 

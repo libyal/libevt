@@ -267,7 +267,7 @@ int libevt_record_get_identifier(
  */
 int libevt_record_get_creation_time(
      libevt_record_t *record,
-     uint32_t *creation_time,
+     uint32_t *posix_time,
      libcerror_error_t **error )
 {
 	libevt_internal_record_t *internal_record = NULL;
@@ -297,18 +297,18 @@ int libevt_record_get_creation_time(
 
 		return( -1 );
 	}
-	if( creation_time == NULL )
+	if( posix_time == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid creation time.",
+		 "%s: invalid posix time.",
 		 function );
 
 		return( -1 );
 	}
-	*creation_time = internal_record->record_values->creation_time;
+	*posix_time = internal_record->record_values->creation_time;
 
 	return( 1 );
 }

@@ -59,5 +59,5 @@ void pyevt_file_flags_free(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_FILE_FLAGS_H ) */
 

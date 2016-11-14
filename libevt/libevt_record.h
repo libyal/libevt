@@ -80,7 +80,7 @@ int libevt_record_get_identifier(
 LIBEVT_EXTERN \
 int libevt_record_get_creation_time(
      libevt_record_t *record,
-     uint32_t *creation_time,
+     uint32_t *posix_time,
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \

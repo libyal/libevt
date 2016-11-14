@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SYSTEM_SPLIT_STRING_H )
-#define _SYSTEM_SPLIT_STRING_H
+#if !defined( _EVTTOOLS_SYSTEM_SPLIT_STRING_H )
+#define _EVTTOOLS_SYSTEM_SPLIT_STRING_H
 
 #include <common.h>
 #include <types.h>
@@ -69,5 +69,5 @@ extern "C" {
 }
 #endif
 
-#endif /* !defined( _SYSTEM_SPLIT_STRING_H ) */
+#endif /* !defined( _EVTTOOLS_SYSTEM_SPLIT_STRING_H ) */
 

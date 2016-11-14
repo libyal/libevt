@@ -180,5 +180,5 @@ struct evt_record_end_of_file
 }
 #endif
 
-#endif
+#endif /* !defined( _EVT_RECORD_H ) */
 

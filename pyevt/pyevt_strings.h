@@ -92,5 +92,5 @@ PyObject *pyevt_strings_iternext(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_STRINGS_H ) */
 

@@ -1,4 +1,4 @@
-.Dd April 21, 2016
+.Dd November 14, 2016
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -97,7 +97,7 @@ Record functions
 .Ft int
 .Fn libevt_record_get_identifier "libevt_record_t *record, uint32_t *identifier, libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_creation_time "libevt_record_t *record, uint32_t *creation_time, libevt_error_t **error"
+.Fn libevt_record_get_creation_time "libevt_record_t *record, uint32_t *posix_time, libevt_error_t **error"
 .Ft int
 .Fn libevt_record_get_written_time "libevt_record_t *record, uint32_t *written_time, libevt_error_t **error"
 .Ft int

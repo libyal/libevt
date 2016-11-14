@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="evt_test_error"
-	ProjectGUID="{3D7BB8D8-66D7-4A8E-A8F5-C269BA658D25}"
-	RootNamespace="evt_test_error"
+	Name="evt_test_record_values"
+	ProjectGUID="{25C3CB79-BED6-4AF3-8092-3CB6F2B58903}"
+	RootNamespace="evt_test_record_values"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\evt_test_error.c"
+				RelativePath="..\..\tests\evt_test_memory.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\evt_test_record_values.c"
 				>
 			</File>
 		</Filter>
@@ -186,11 +190,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\tests\evt_test_libcerror.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\evt_test_libevt.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\tests\evt_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\evt_test_memory.h"
 				>
 			</File>
 			<File

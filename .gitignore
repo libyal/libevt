@@ -125,9 +125,10 @@ stamp-h[1-9]
 /evttools/evtinfo
 /tests/evt_test_error
 /tests/evt_test_file
+/tests/evt_test_io_handle
 /tests/evt_test_notify
-/tests/evt_test_open_close
 /tests/evt_test_record
+/tests/evt_test_record_values
 /tests/evt_test_support
 /tests/input
 /tests/tmp*

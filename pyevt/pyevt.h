@@ -57,5 +57,5 @@ PyMODINIT_FUNC initpyevt(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_H ) */
 

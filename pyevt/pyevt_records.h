@@ -92,5 +92,5 @@ PyObject *pyevt_records_iternext(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYEVT_RECORDS_H ) */
 

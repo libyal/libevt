@@ -130,5 +130,5 @@ int libevt_io_handle_recover_records(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_IO_HANDLE_H ) */
 

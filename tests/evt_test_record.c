@@ -33,6 +33,8 @@
 #include "evt_test_memory.h"
 #include "evt_test_unused.h"
 
+#include "../libevt/libevt_record.h"
+
 /* Tests the libevt_record_free function
  * Returns 1 if successful or 0 if not
  */
@@ -86,9 +88,67 @@ int main(
 	EVT_TEST_UNREFERENCED_PARAMETER( argc )
 	EVT_TEST_UNREFERENCED_PARAMETER( argv )
 
+#if defined( __GNUC__ )
+
+	/* TODO: add tests for libevt_record_initialize */
+
+#endif /* defined( __GNUC__ ) */
+
 	EVT_TEST_RUN(
 	 "libevt_record_free",
 	 evt_test_record_free );
+
+	/* TODO: add tests for libevt_record_get_offset */
+
+	/* TODO: add tests for libevt_record_get_identifier */
+
+	/* TODO: add tests for libevt_record_get_creation_time */
+
+	/* TODO: add tests for libevt_record_get_written_time */
+
+	/* TODO: add tests for libevt_record_get_event_identifier */
+
+	/* TODO: add tests for libevt_record_get_event_type */
+
+	/* TODO: add tests for libevt_record_get_event_category */
+
+	/* TODO: add tests for libevt_record_get_utf8_source_name_size */
+
+	/* TODO: add tests for libevt_record_get_utf8_source_name */
+
+	/* TODO: add tests for libevt_record_get_utf16_source_name_size */
+
+	/* TODO: add tests for libevt_record_get_utf16_source_name */
+
+	/* TODO: add tests for libevt_record_get_utf8_computer_name_size */
+
+	/* TODO: add tests for libevt_record_get_utf8_computer_name */
+
+	/* TODO: add tests for libevt_record_get_utf16_computer_name_size */
+
+	/* TODO: add tests for libevt_record_get_utf16_computer_name */
+
+	/* TODO: add tests for libevt_record_get_utf8_user_security_identifier_size */
+
+	/* TODO: add tests for libevt_record_get_utf8_user_security_identifier */
+
+	/* TODO: add tests for libevt_record_get_utf16_user_security_identifier_size */
+
+	/* TODO: add tests for libevt_record_get_utf16_user_security_identifier */
+
+	/* TODO: add tests for libevt_record_get_number_of_strings */
+
+	/* TODO: add tests for libevt_record_get_utf8_string_size */
+
+	/* TODO: add tests for libevt_record_get_utf8_string */
+
+	/* TODO: add tests for libevt_record_get_utf16_string_size */
+
+	/* TODO: add tests for libevt_record_get_utf16_string */
+
+	/* TODO: add tests for libevt_record_get_data_size */
+
+	/* TODO: add tests for libevt_record_get_data */
 
 	return( EXIT_SUCCESS );
 

@@ -159,5 +159,5 @@ int libevt_record_values_read_element_data(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBEVT_RECORD_VALUES_H ) */
 
