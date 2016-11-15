@@ -1232,19 +1232,19 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_file_get_ascii_codepage functions
+/* Tests the libevt_file_signal_abort function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_file_get_ascii_codepage(
+int evt_test_file_signal_abort(
      libevt_file_t *file )
 {
 	libcerror_error_t *error = NULL;
-	int codepage             = 0;
 	int result               = 0;
 
-	result = libevt_file_get_ascii_codepage(
+	/* Test regular cases
+	 */
+	result = libevt_file_signal_abort(
 	          file,
-	          &codepage,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -1258,25 +1258,7 @@ int evt_test_file_get_ascii_codepage(
 
 	/* Test error cases
 	 */
-	result = libevt_file_get_ascii_codepage(
-	          NULL,
-	          &codepage,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_file_get_ascii_codepage(
-	          file,
+	result = libevt_file_signal_abort(
 	          NULL,
 	          &error );
 
@@ -1303,11 +1285,89 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_file_set_ascii_codepage functions
+/* Tests the libevt_file_get_ascii_codepage function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_get_ascii_codepage(
+     libevt_file_t *file )
+{
+	libcerror_error_t *error  = NULL;
+	int ascii_codepage        = 0;
+	int ascii_codepage_is_set = 0;
+	int result                = 0;
+
+	/* Test regular cases
+	 */
+	result = libevt_file_get_ascii_codepage(
+	          file,
+	          &ascii_codepage,
+	          &error );
+
+	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	ascii_codepage_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libevt_file_get_ascii_codepage(
+	          NULL,
+	          &ascii_codepage,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( ascii_codepage_is_set != 0 )
+	{
+		result = libevt_file_get_ascii_codepage(
+		          file,
+		          NULL,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libevt_file_set_ascii_codepage function
  * Returns 1 if successful or 0 if not
  */
 int evt_test_file_set_ascii_codepage(
-     void )
+     libevt_file_t *file )
 {
 	int supported_codepages[ 15 ] = {
 		LIBEVT_CODEPAGE_ASCII,
@@ -1346,29 +1406,9 @@ int evt_test_file_set_ascii_codepage(
 		LIBEVT_CODEPAGE_KOI8_U };
 
 	libcerror_error_t *error = NULL;
-	libevt_file_t *file      = NULL;
 	int codepage             = 0;
 	int index                = 0;
 	int result               = 0;
-
-	/* Initialize test
-	 */
-	result = libevt_file_initialize(
-	          &file,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "file",
-         file );
-
-        EVT_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
 
 	/* Test set ASCII codepage
 	 */
@@ -1436,18 +1476,15 @@ int evt_test_file_set_ascii_codepage(
 	}
 	/* Clean up
 	 */
-	result = libevt_file_free(
-	          &file,
+	result = libevt_file_set_ascii_codepage(
+	          file,
+	          LIBEVT_CODEPAGE_WINDOWS_1252,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
 	 1 );
-
-        EVT_TEST_ASSERT_IS_NULL(
-         "file",
-         file );
 
         EVT_TEST_ASSERT_IS_NULL(
          "error",
@@ -1461,11 +1498,239 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( file != NULL )
+	return( 0 );
+}
+
+/* Tests the libevt_file_get_flags function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_get_flags(
+     libevt_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	uint32_t flags           = 0;
+	int flags_is_set         = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libevt_file_get_flags(
+	          file,
+	          &flags,
+	          &error );
+
+	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	flags_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libevt_file_get_flags(
+	          NULL,
+	          &flags,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( flags_is_set != 0 )
 	{
-		libevt_file_free(
-		 &file,
-		 NULL );
+		result = libevt_file_get_flags(
+		          file,
+		          NULL,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libevt_file_get_number_of_records function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_get_number_of_records(
+     libevt_file_t *file )
+{
+	libcerror_error_t *error     = NULL;
+	int number_of_records        = 0;
+	int number_of_records_is_set = 0;
+	int result                   = 0;
+
+	/* Test regular cases
+	 */
+	result = libevt_file_get_number_of_records(
+	          file,
+	          &number_of_records,
+	          &error );
+
+	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	number_of_records_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libevt_file_get_number_of_records(
+	          NULL,
+	          &number_of_records,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( number_of_records_is_set != 0 )
+	{
+		result = libevt_file_get_number_of_records(
+		          file,
+		          NULL,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libevt_file_get_number_of_recovered_records function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_file_get_number_of_recovered_records(
+     libevt_file_t *file )
+{
+	libcerror_error_t *error               = NULL;
+	int number_of_recovered_records        = 0;
+	int number_of_recovered_records_is_set = 0;
+	int result                             = 0;
+
+	/* Test regular cases
+	 */
+	result = libevt_file_get_number_of_recovered_records(
+	          file,
+	          &number_of_recovered_records,
+	          &error );
+
+	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	number_of_recovered_records_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libevt_file_get_number_of_recovered_records(
+	          NULL,
+	          &number_of_recovered_records,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( number_of_recovered_records_is_set != 0 )
+	{
+		result = libevt_file_get_number_of_recovered_records(
+		          file,
+		          NULL,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
 	}
 	return( 0 );
 }
@@ -1525,10 +1790,6 @@ int main(
 	 "libevt_file_free",
 	 evt_test_file_free );
 
-	EVT_TEST_RUN(
-	 "libevt_file_set_ascii_codepage",
-	 evt_test_file_set_ascii_codepage );
-
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
 	{
@@ -1582,11 +1843,9 @@ int main(
 	         error );
 
 		EVT_TEST_RUN_WITH_ARGS(
-		 "libevt_file_get_ascii_codepage",
-		 evt_test_file_get_ascii_codepage,
+		 "libevt_file_signal_abort",
+		 evt_test_file_signal_abort,
 		 file );
-
-		/* TODO: add tests for libevt_file_signal_abort */
 
 #if defined( __GNUC__ )
 
@@ -1596,17 +1855,36 @@ int main(
 
 		/* TODO: add tests for libevt_file_is_corrupted */
 
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_get_ascii_codepage",
+		 evt_test_file_get_ascii_codepage,
+		 file );
+
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_set_ascii_codepage",
+		 evt_test_file_set_ascii_codepage,
+		 file );
+
 		/* TODO: add tests for libevt_file_get_format_version */
 
 		/* TODO: add tests for libevt_file_get_version */
 
-		/* TODO: add tests for libevt_file_get_flags */
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_get_flags",
+		 evt_test_file_get_flags,
+		 file );
 
-		/* TODO: add tests for libevt_file_get_number_of_records */
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_get_number_of_records",
+		 evt_test_file_get_number_of_records,
+		 file );
 
 		/* TODO: add tests for libevt_file_get_record */
 
-		/* TODO: add tests for libevt_file_get_number_of_recovered_records */
+		EVT_TEST_RUN_WITH_ARGS(
+		 "libevt_file_get_number_of_recovered_records",
+		 evt_test_file_get_number_of_recovered_records,
+		 file );
 
 		/* TODO: add tests for libevt_file_get_recovered_record */
 

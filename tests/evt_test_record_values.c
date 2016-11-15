@@ -416,6 +416,129 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libevt_record_values_get_type function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_record_values_get_type(
+     void )
+{
+	libcerror_error_t *error              = NULL;
+	libevt_record_values_t *record_values = NULL;
+	uint8_t type                          = 0;
+	int result                            = 0;
+	int type_is_set                       = 0;
+
+	/* Initialize test
+	 */
+	result = libevt_record_values_initialize(
+	          &record_values,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "record_values",
+	 record_values );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libevt_record_values_get_type(
+	          record_values,
+	          &type,
+	          &error );
+
+	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	type_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libevt_record_values_get_type(
+	          NULL,
+	          &type,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( type_is_set != 0 )
+	{
+		result = libevt_record_values_get_type(
+		          record_values,
+		          NULL,
+		          &error );
+
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	/* Clean up
+	 */
+	result = libevt_record_values_free(
+	          &record_values,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "record_values",
+	 record_values );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( record_values != NULL )
+	{
+		libevt_record_values_free(
+		 &record_values,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) */
 
 /* The main program
@@ -453,7 +576,9 @@ int main(
 
 	/* TODO: add tests for libevt_record_values_read_end_of_file */
 
-	/* TODO: add tests for libevt_record_values_get_type */
+	EVT_TEST_RUN(
+	 "libevt_record_values_get_type",
+	 evt_test_record_values_get_type );
 
 	/* TODO: add tests for libevt_record_values_read_element_data */
 
