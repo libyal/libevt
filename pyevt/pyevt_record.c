@@ -545,6 +545,7 @@ PyObject *pyevt_record_get_offset(
 
 	return( integer_object );
 }
+
 /* Retrieves the identifier
  * Returns a Python object if successful or NULL on error
  */
