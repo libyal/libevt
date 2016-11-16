@@ -134,7 +134,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_string(string_index) -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves the string." },
+	  "Retrieves the string specified by the index." },
 
 	{ "get_data",
 	  (PyCFunction) pyevt_record_get_data,
@@ -721,8 +721,8 @@ PyObject *pyevt_record_get_creation_time_as_integer(
 
 		return( Py_None );
 	}
-	integer_object = pyevt_integer_signed_new_from_64bit(
-	                  (int32_t) posix_time );
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) posix_time );
 
 	return( integer_object );
 }
@@ -839,8 +839,8 @@ PyObject *pyevt_record_get_written_time_as_integer(
 
 		return( Py_None );
 	}
-	integer_object = pyevt_integer_signed_new_from_64bit(
-	                  (int32_t) posix_time );
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) posix_time );
 
 	return( integer_object );
 }

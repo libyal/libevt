@@ -233,39 +233,39 @@ on_error:
 PyObject *pyevt_event_types_new(
            void )
 {
-	pyevt_event_types_t *pyevt_event_types = NULL;
-	static char *function                  = "pyevt_event_types_new";
+	pyevt_event_types_t *definitions_object = NULL;
+	static char *function                   = "pyevt_event_types_new";
 
-	pyevt_event_types = PyObject_New(
-	                     struct pyevt_event_types,
-	                     &pyevt_event_types_type_object );
+	definitions_object = PyObject_New(
+	                      struct pyevt_event_types,
+	                      &pyevt_event_types_type_object );
 
-	if( pyevt_event_types == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize event types.",
+		 "%s: unable to create new definitions object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyevt_event_types_init(
-	     pyevt_event_types ) != 0 )
+	     definitions_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize event types.",
+		 "%s: unable to initialize definitions object.",
 		 function );
 
 		goto on_error;
 	}
-	return( (PyObject *) pyevt_event_types );
+	return( (PyObject *) definitions_object );
 
 on_error:
-	if( pyevt_event_types != NULL )
+	if( definitions_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_event_types );
+		 (PyObject *) definitions_object );
 	}
 	return( NULL );
 }
@@ -274,15 +274,15 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyevt_event_types_init(
-     pyevt_event_types_t *pyevt_event_types )
+     pyevt_event_types_t *definitions_object )
 {
 	static char *function = "pyevt_event_types_init";
 
-	if( pyevt_event_types == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid event types.",
+		 "%s: invalid definitions object.",
 		 function );
 
 		return( -1 );
@@ -293,22 +293,22 @@ int pyevt_event_types_init(
 /* Frees an event types object
  */
 void pyevt_event_types_free(
-      pyevt_event_types_t *pyevt_event_types )
+      pyevt_event_types_t *definitions_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyevt_event_types_free";
 
-	if( pyevt_event_types == NULL )
+	if( definitions_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid event types.",
+		 "%s: invalid definitions object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyevt_event_types );
+	           definitions_object );
 
 	if( ob_type == NULL )
 	{
@@ -329,6 +329,6 @@ void pyevt_event_types_free(
 		return;
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyevt_event_types );
+	 (PyObject*) definitions_object );
 }
 

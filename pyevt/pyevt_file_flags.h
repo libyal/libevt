@@ -50,10 +50,10 @@ PyObject *pyevt_file_flags_new(
            void );
 
 int pyevt_file_flags_init(
-     pyevt_file_flags_t *pyevt_file_flags );
+     pyevt_file_flags_t *definitions_object );
 
 void pyevt_file_flags_free(
-      pyevt_file_flags_t *pyevt_file_flags );
+      pyevt_file_flags_t *definitions_object );
 
 #if defined( __cplusplus )
 }

@@ -50,10 +50,10 @@ PyObject *pyevt_event_types_new(
            void );
 
 int pyevt_event_types_init(
-     pyevt_event_types_t *pyevt_event_types );
+     pyevt_event_types_t *definitions_object );
 
 void pyevt_event_types_free(
-      pyevt_event_types_t *pyevt_event_types );
+      pyevt_event_types_t *definitions_object );
 
 #if defined( __cplusplus )
 }
