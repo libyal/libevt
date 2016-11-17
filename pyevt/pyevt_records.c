@@ -155,13 +155,13 @@ PyTypeObject pyevt_records_type_object = {
  */
 PyObject *pyevt_records_new(
            PyObject *parent_object,
-           PyObject* (*get_record_by_index)(
+           PyObject* (*get_item_by_index)(
                         PyObject *parent_object,
-                        int record_index ),
-           int number_of_records )
+                        int index ),
+           int number_of_items )
 {
-	pyevt_records_t *pyevt_records = NULL;
-	static char *function          = "pyevt_records_new";
+	pyevt_records_t *records_object = NULL;
+	static char *function           = "pyevt_records_new";
 
 	if( parent_object == NULL )
 	{
@@ -172,54 +172,54 @@ PyObject *pyevt_records_new(
 
 		return( NULL );
 	}
-	if( get_record_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get record by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the records values are initialized
 	 */
-	pyevt_records = PyObject_New(
-	                 struct pyevt_records,
-	                 &pyevt_records_type_object );
+	records_object = PyObject_New(
+	                  struct pyevt_records,
+	                  &pyevt_records_type_object );
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize records.",
+		 "%s: unable to create records object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyevt_records_init(
-	     pyevt_records ) != 0 )
+	     records_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize records.",
+		 "%s: unable to initialize records object.",
 		 function );
 
 		goto on_error;
 	}
-	pyevt_records->parent_object       = parent_object;
-	pyevt_records->get_record_by_index = get_record_by_index;
-	pyevt_records->number_of_records   = number_of_records;
+	records_object->parent_object     = parent_object;
+	records_object->get_item_by_index = get_item_by_index;
+	records_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pyevt_records->parent_object );
+	 (PyObject *) records_object->parent_object );
 
-	return( (PyObject *) pyevt_records );
+	return( (PyObject *) records_object );
 
 on_error:
-	if( pyevt_records != NULL )
+	if( records_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_records );
+		 (PyObject *) records_object );
 	}
 	return( NULL );
 }
@@ -228,25 +228,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyevt_records_init(
-     pyevt_records_t *pyevt_records )
+     pyevt_records_t *records_object )
 {
 	static char *function = "pyevt_records_init";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the records values are initialized
 	 */
-	pyevt_records->parent_object       = NULL;
-	pyevt_records->get_record_by_index = NULL;
-	pyevt_records->record_index        = 0;
-	pyevt_records->number_of_records   = 0;
+	records_object->parent_object     = NULL;
+	records_object->get_item_by_index = NULL;
+	records_object->current_index     = 0;
+	records_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -254,22 +254,22 @@ int pyevt_records_init(
 /* Frees a records object
  */
 void pyevt_records_free(
-      pyevt_records_t *pyevt_records )
+      pyevt_records_t *records_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyevt_records_free";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyevt_records );
+	           records_object );
 
 	if( ob_type == NULL )
 	{
@@ -289,72 +289,72 @@ void pyevt_records_free(
 
 		return;
 	}
-	if( pyevt_records->parent_object != NULL )
+	if( records_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_records->parent_object );
+		 (PyObject *) records_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyevt_records );
+	 (PyObject*) records_object );
 }
 
 /* The records len() function
  */
 Py_ssize_t pyevt_records_len(
-            pyevt_records_t *pyevt_records )
+            pyevt_records_t *records_object )
 {
 	static char *function = "pyevt_records_len";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pyevt_records->number_of_records );
+	return( (Py_ssize_t) records_object->number_of_items );
 }
 
 /* The records getitem() function
  */
 PyObject *pyevt_records_getitem(
-           pyevt_records_t *pyevt_records,
+           pyevt_records_t *records_object,
            Py_ssize_t item_index )
 {
 	PyObject *record_object = NULL;
 	static char *function   = "pyevt_records_getitem";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->get_record_by_index == NULL )
+	if( records_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records - missing get record by index function.",
+		 "%s: invalid records object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->number_of_records < 0 )
+	if( records_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records - invalid number of records.",
+		 "%s: invalid records object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pyevt_records->number_of_records ) )
+	 || ( item_index >= (Py_ssize_t) records_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -363,8 +363,8 @@ PyObject *pyevt_records_getitem(
 
 		return( NULL );
 	}
-	record_object = pyevt_records->get_record_by_index(
-	                 pyevt_records->parent_object,
+	record_object = records_object->get_item_by_index(
+	                 records_object->parent_object,
 	                 (int) item_index );
 
 	return( record_object );
@@ -373,83 +373,83 @@ PyObject *pyevt_records_getitem(
 /* The records iter() function
  */
 PyObject *pyevt_records_iter(
-           pyevt_records_t *pyevt_records )
+           pyevt_records_t *records_object )
 {
 	static char *function = "pyevt_records_iter";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pyevt_records );
+	 (PyObject *) records_object );
 
-	return( (PyObject *) pyevt_records );
+	return( (PyObject *) records_object );
 }
 
 /* The records iternext() function
  */
 PyObject *pyevt_records_iternext(
-           pyevt_records_t *pyevt_records )
+           pyevt_records_t *records_object )
 {
 	PyObject *record_object = NULL;
 	static char *function   = "pyevt_records_iternext";
 
-	if( pyevt_records == NULL )
+	if( records_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records.",
+		 "%s: invalid records object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->get_record_by_index == NULL )
+	if( records_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records - missing get record by index function.",
+		 "%s: invalid records object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->record_index < 0 )
+	if( records_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records - invalid record index.",
+		 "%s: invalid records object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->number_of_records < 0 )
+	if( records_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid records - invalid number of records.",
+		 "%s: invalid records object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_records->record_index >= pyevt_records->number_of_records )
+	if( records_object->current_index >= records_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	record_object = pyevt_records->get_record_by_index(
-	                 pyevt_records->parent_object,
-	                 pyevt_records->record_index );
+	record_object = records_object->get_item_by_index(
+	                 records_object->parent_object,
+	                 records_object->current_index );
 
 	if( record_object != NULL )
 	{
-		pyevt_records->record_index++;
+		records_object->current_index++;
 	}
 	return( record_object );
 }

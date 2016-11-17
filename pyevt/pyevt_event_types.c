@@ -244,7 +244,7 @@ PyObject *pyevt_event_types_new(
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to create new definitions object.",
+		 "%s: unable to create definitions object.",
 		 function );
 
 		goto on_error;

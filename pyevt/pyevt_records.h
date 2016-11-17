@@ -44,48 +44,48 @@ struct pyevt_records
 	 */
 	PyObject *parent_object;
 
-	/* The get record by index callback function
+	/* The get item by index callback function
 	 */
-	PyObject* (*get_record_by_index)(
+	PyObject* (*get_item_by_index)(
 	             PyObject *parent_object,
-	             int record_index );
+	             int index );
 
-	/* The (current) record index
+	/* The current index
 	 */
-	int record_index;
+	int current_index;
 
-	/* The number of records
+	/* The number of items
 	 */
-	int number_of_records;
+	int number_of_items;
 };
 
 extern PyTypeObject pyevt_records_type_object;
 
 PyObject *pyevt_records_new(
            PyObject *parent_object,
-           PyObject* (*get_record_by_index)(
+           PyObject* (*get_item_by_index)(
                         PyObject *parent_object,
-                        int record_index ),
-           int number_of_records );
+                        int index ),
+           int number_of_items );
 
 int pyevt_records_init(
-     pyevt_records_t *pyevt_records );
+     pyevt_records_t *records_object );
 
 void pyevt_records_free(
-      pyevt_records_t *pyevt_records );
+      pyevt_records_t *records_object );
 
 Py_ssize_t pyevt_records_len(
-            pyevt_records_t *pyevt_records );
+            pyevt_records_t *records_object );
 
 PyObject *pyevt_records_getitem(
-           pyevt_records_t *pyevt_records,
+           pyevt_records_t *records_object,
            Py_ssize_t item_index );
 
 PyObject *pyevt_records_iter(
-           pyevt_records_t *pyevt_records );
+           pyevt_records_t *records_object );
 
 PyObject *pyevt_records_iternext(
-           pyevt_records_t *pyevt_records );
+           pyevt_records_t *records_object );
 
 #if defined( __cplusplus )
 }

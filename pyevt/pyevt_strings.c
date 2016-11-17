@@ -154,13 +154,13 @@ PyTypeObject pyevt_strings_type_object = {
  */
 PyObject *pyevt_strings_new(
            PyObject *parent_object,
-           PyObject* (*get_string_by_index)(
+           PyObject* (*get_item_by_index)(
                         PyObject *parent_object,
-                        int string_index ),
-           int number_of_strings )
+                        int index ),
+           int number_of_items )
 {
-	pyevt_strings_t *pyevt_strings = NULL;
-	static char *function          = "pyevt_strings_new";
+	pyevt_strings_t *strings_object = NULL;
+	static char *function           = "pyevt_strings_new";
 
 	if( parent_object == NULL )
 	{
@@ -171,54 +171,54 @@ PyObject *pyevt_strings_new(
 
 		return( NULL );
 	}
-	if( get_string_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get string by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the strings values are initialized
 	 */
-	pyevt_strings = PyObject_New(
-	                 struct pyevt_strings,
-	                 &pyevt_strings_type_object );
+	strings_object = PyObject_New(
+	                  struct pyevt_strings,
+	                  &pyevt_strings_type_object );
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize strings.",
+		 "%s: unable to create strings object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyevt_strings_init(
-	     pyevt_strings ) != 0 )
+	     strings_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize strings.",
+		 "%s: unable to initialize strings object.",
 		 function );
 
 		goto on_error;
 	}
-	pyevt_strings->parent_object       = parent_object;
-	pyevt_strings->get_string_by_index = get_string_by_index;
-	pyevt_strings->number_of_strings   = number_of_strings;
+	strings_object->parent_object     = parent_object;
+	strings_object->get_item_by_index = get_item_by_index;
+	strings_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pyevt_strings->parent_object );
+	 (PyObject *) strings_object->parent_object );
 
-	return( (PyObject *) pyevt_strings );
+	return( (PyObject *) strings_object );
 
 on_error:
-	if( pyevt_strings != NULL )
+	if( strings_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_strings );
+		 (PyObject *) strings_object );
 	}
 	return( NULL );
 }
@@ -227,25 +227,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyevt_strings_init(
-     pyevt_strings_t *pyevt_strings )
+     pyevt_strings_t *strings_object )
 {
 	static char *function = "pyevt_strings_init";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the strings values are initialized
 	 */
-	pyevt_strings->parent_object       = NULL;
-	pyevt_strings->get_string_by_index = NULL;
-	pyevt_strings->string_index        = 0;
-	pyevt_strings->number_of_strings   = 0;
+	strings_object->parent_object     = NULL;
+	strings_object->get_item_by_index = NULL;
+	strings_object->current_index     = 0;
+	strings_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -253,22 +253,22 @@ int pyevt_strings_init(
 /* Frees a strings object
  */
 void pyevt_strings_free(
-      pyevt_strings_t *pyevt_strings )
+      pyevt_strings_t *strings_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyevt_strings_free";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyevt_strings );
+	           strings_object );
 
 	if( ob_type == NULL )
 	{
@@ -288,72 +288,72 @@ void pyevt_strings_free(
 
 		return;
 	}
-	if( pyevt_strings->parent_object != NULL )
+	if( strings_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_strings->parent_object );
+		 (PyObject *) strings_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyevt_strings );
+	 (PyObject*) strings_object );
 }
 
 /* The strings len() function
  */
 Py_ssize_t pyevt_strings_len(
-            pyevt_strings_t *pyevt_strings )
+            pyevt_strings_t *strings_object )
 {
 	static char *function = "pyevt_strings_len";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pyevt_strings->number_of_strings );
+	return( (Py_ssize_t) strings_object->number_of_items );
 }
 
 /* The strings getitem() function
  */
 PyObject *pyevt_strings_getitem(
-           pyevt_strings_t *pyevt_strings,
+           pyevt_strings_t *strings_object,
            Py_ssize_t item_index )
 {
 	PyObject *string_object = NULL;
 	static char *function   = "pyevt_strings_getitem";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->get_string_by_index == NULL )
+	if( strings_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings - missing get string by index function.",
+		 "%s: invalid strings object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->number_of_strings < 0 )
+	if( strings_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings - invalid number of strings.",
+		 "%s: invalid strings object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pyevt_strings->number_of_strings ) )
+	 || ( item_index >= (Py_ssize_t) strings_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -362,8 +362,8 @@ PyObject *pyevt_strings_getitem(
 
 		return( NULL );
 	}
-	string_object = pyevt_strings->get_string_by_index(
-	                 pyevt_strings->parent_object,
+	string_object = strings_object->get_item_by_index(
+	                 strings_object->parent_object,
 	                 (int) item_index );
 
 	return( string_object );
@@ -372,83 +372,83 @@ PyObject *pyevt_strings_getitem(
 /* The strings iter() function
  */
 PyObject *pyevt_strings_iter(
-           pyevt_strings_t *pyevt_strings )
+           pyevt_strings_t *strings_object )
 {
 	static char *function = "pyevt_strings_iter";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pyevt_strings );
+	 (PyObject *) strings_object );
 
-	return( (PyObject *) pyevt_strings );
+	return( (PyObject *) strings_object );
 }
 
 /* The strings iternext() function
  */
 PyObject *pyevt_strings_iternext(
-           pyevt_strings_t *pyevt_strings )
+           pyevt_strings_t *strings_object )
 {
 	PyObject *string_object = NULL;
 	static char *function   = "pyevt_strings_iternext";
 
-	if( pyevt_strings == NULL )
+	if( strings_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings.",
+		 "%s: invalid strings object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->get_string_by_index == NULL )
+	if( strings_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings - missing get string by index function.",
+		 "%s: invalid strings object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->string_index < 0 )
+	if( strings_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings - invalid string index.",
+		 "%s: invalid strings object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->number_of_strings < 0 )
+	if( strings_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid strings - invalid number of strings.",
+		 "%s: invalid strings object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyevt_strings->string_index >= pyevt_strings->number_of_strings )
+	if( strings_object->current_index >= strings_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	string_object = pyevt_strings->get_string_by_index(
-	                 pyevt_strings->parent_object,
-	                 pyevt_strings->string_index );
+	string_object = strings_object->get_item_by_index(
+	                 strings_object->parent_object,
+	                 strings_object->current_index );
 
 	if( string_object != NULL )
 	{
-		pyevt_strings->string_index++;
+		strings_object->current_index++;
 	}
 	return( string_object );
 }
