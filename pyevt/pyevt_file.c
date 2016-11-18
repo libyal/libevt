@@ -1231,7 +1231,7 @@ PyObject *pyevt_file_get_format_version(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1321,7 +1321,7 @@ PyObject *pyevt_file_get_number_of_records(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1387,7 +1387,7 @@ PyObject *pyevt_file_get_record_by_index(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1501,7 +1501,7 @@ PyObject *pyevt_file_get_records(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1565,7 +1565,7 @@ PyObject *pyevt_file_get_number_of_recovered_records(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1620,7 +1620,7 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1734,7 +1734,7 @@ PyObject *pyevt_file_get_recovered_records(
 	if( pyevt_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 

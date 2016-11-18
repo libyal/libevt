@@ -340,7 +340,7 @@ PyObject *pyevt_record_new(
 	if( record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -397,7 +397,7 @@ int pyevt_record_init(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -423,7 +423,7 @@ void pyevt_record_free(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -432,7 +432,7 @@ void pyevt_record_free(
 	if( pyevt_record->record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record - missing libevt record.",
 		 function );
 
@@ -505,7 +505,7 @@ PyObject *pyevt_record_get_offset(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -564,7 +564,7 @@ PyObject *pyevt_record_get_identifier(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -863,7 +863,7 @@ PyObject *pyevt_record_get_event_identifier(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -922,7 +922,7 @@ PyObject *pyevt_record_get_event_type(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -985,7 +985,7 @@ PyObject *pyevt_record_get_event_category(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1414,7 +1414,7 @@ PyObject *pyevt_record_get_number_of_strings(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1470,7 +1470,7 @@ PyObject *pyevt_record_get_string_by_index(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 
@@ -1514,7 +1514,7 @@ PyObject *pyevt_record_get_string_by_index(
 	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
+		 PyExc_MemoryError,
 		 "%s: unable to create UTF-8 string.",
 		 function );
 
@@ -1622,7 +1622,7 @@ PyObject *pyevt_record_get_strings(
 	if( pyevt_record == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid record.",
 		 function );
 

@@ -134,6 +134,7 @@ evt_test_record_values_LDADD = \
 	@LIBCERROR_LIBADD@
 
 evt_test_support_SOURCES = \
+	evt_test_libbfio.h \
 	evt_test_libcerror.h \
 	evt_test_libclocale.h \
 	evt_test_libcsystem.h \
@@ -144,6 +145,9 @@ evt_test_support_SOURCES = \
 
 evt_test_support_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \

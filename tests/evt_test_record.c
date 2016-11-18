@@ -88,6 +88,12 @@ int main(
 	EVT_TEST_UNREFERENCED_PARAMETER( argc )
 	EVT_TEST_UNREFERENCED_PARAMETER( argv )
 
+#if defined( __GNUC__ )
+
+	/* TODO: add tests for libevt_record_initialize */
+
+#endif /* defined( __GNUC__ ) */
+
 	EVT_TEST_RUN(
 	 "libevt_record_free",
 	 evt_test_record_free );
