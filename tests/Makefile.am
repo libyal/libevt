@@ -17,7 +17,6 @@ AM_CPPFLAGS = \
 	@LIBFGUID_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
@@ -69,16 +68,16 @@ evt_test_error_LDADD = \
 
 evt_test_file_SOURCES = \
 	evt_test_file.c \
+	evt_test_getopt.c evt_test_getopt.h \
 	evt_test_libcerror.h \
 	evt_test_libclocale.h \
-	evt_test_libcsystem.h \
+	evt_test_libcnotify.h \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
 	evt_test_macros.h \
 	evt_test_memory.c evt_test_memory.h
 
 evt_test_file_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
@@ -134,17 +133,17 @@ evt_test_record_values_LDADD = \
 	@LIBCERROR_LIBADD@
 
 evt_test_support_SOURCES = \
+	evt_test_getopt.c evt_test_getopt.h \
 	evt_test_libbfio.h \
 	evt_test_libcerror.h \
 	evt_test_libclocale.h \
-	evt_test_libcsystem.h \
+	evt_test_libcnotify.h \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
 	evt_test_macros.h \
 	evt_test_support.c
 
 evt_test_support_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCFILE_LIBADD@ \

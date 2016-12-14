@@ -30,10 +30,10 @@
 #include <stdlib.h>
 #endif
 
+#include "evt_test_getopt.h"
 #include "evt_test_libbfio.h"
 #include "evt_test_libcerror.h"
 #include "evt_test_libclocale.h"
-#include "evt_test_libcsystem.h"
 #include "evt_test_libevt.h"
 #include "evt_test_libuna.h"
 #include "evt_test_macros.h"
@@ -1018,7 +1018,7 @@ int main(
 	system_character_t *source = NULL;
 	system_integer_t option    = 0;
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = evt_test_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "" ) ) ) != (system_integer_t) -1 )

@@ -616,11 +616,11 @@ PyObject *pyevt_record_get_creation_time(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	PyObject *date_time_object = NULL;
-	libcerror_error_t *error   = NULL;
-	static char *function      = "pyevt_record_get_creation_time";
-	uint32_t posix_time        = 0;
-	int result                 = 0;
+	PyObject *datetime_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyevt_record_get_creation_time";
+	uint32_t posix_time       = 0;
+	int result                = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
@@ -662,10 +662,10 @@ PyObject *pyevt_record_get_creation_time(
 
 		return( Py_None );
 	}
-	date_time_object = pyevt_datetime_new_from_posix_time(
-	                    posix_time );
+	datetime_object = pyevt_datetime_new_from_posix_time(
+	                   posix_time );
 
-	return( date_time_object );
+	return( datetime_object );
 }
 
 /* Retrieves the creation time as an integer
@@ -734,11 +734,11 @@ PyObject *pyevt_record_get_written_time(
            pyevt_record_t *pyevt_record,
            PyObject *arguments PYEVT_ATTRIBUTE_UNUSED )
 {
-	PyObject *date_time_object = NULL;
-	libcerror_error_t *error   = NULL;
-	static char *function      = "pyevt_record_get_written_time";
-	uint32_t posix_time        = 0;
-	int result                 = 0;
+	PyObject *datetime_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyevt_record_get_written_time";
+	uint32_t posix_time       = 0;
+	int result                = 0;
 
 	PYEVT_UNREFERENCED_PARAMETER( arguments )
 
@@ -780,10 +780,10 @@ PyObject *pyevt_record_get_written_time(
 
 		return( Py_None );
 	}
-	date_time_object = pyevt_datetime_new_from_posix_time(
-	                    posix_time );
+	datetime_object = pyevt_datetime_new_from_posix_time(
+	                   posix_time );
 
-	return( date_time_object );
+	return( datetime_object );
 }
 
 /* Retrieves the written time as an integer
