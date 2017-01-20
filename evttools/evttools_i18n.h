@@ -1,7 +1,7 @@
 /*
- * Common output functions for the evttools
+ * Internationalization (i18n) functions
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,31 +19,30 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVTOUTPUT_H )
-#define _EVTOUTPUT_H
+#if !defined( _EVTTOOLS_I18N_H )
+#define _EVTTOOLS_I18N_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
+
+#if defined( HAVE_LIBINTL_H )
+#include <libintl.h>
+#endif
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-void evtoutput_copyright_fprint(
-      FILE *stream );
+/* TODO for now do nothing i18n-like
+#define	_( string ) \
+	gettext( string )
+*/
 
-void evtoutput_version_fprint(
-      FILE *stream,
-      const char *program );
-
-void evtoutput_version_detailed_fprint(
-      FILE *stream,
-      const char *program );
+#define	_( string ) \
+	string
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _EVTOUTPUT_H ) */
+#endif /* !defined( _EVTTOOLS_I18N_H ) */
 

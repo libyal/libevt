@@ -21,7 +21,6 @@ AM_CPPFLAGS = \
 	@LIBREGF_CPPFLAGS@ \
 	@LIBWRC_CPPFLAGS@ \
 	@LIBCDIRECTORY_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
@@ -35,7 +34,8 @@ evtexport_SOURCES = \
 	export_handle.c export_handle.h \
 	evtexport.c \
 	evtinput.c evtinput.h \
-	evtoutput.c evtoutput.h \
+	evttools_getopt.c evttools_getopt.h \
+	evttools_i18n.h \
 	evttools_libbfio.h \
 	evttools_libcdirectory.h \
 	evttools_libcerror.h \
@@ -43,7 +43,6 @@ evtexport_SOURCES = \
 	evttools_libcnotify.h \
 	evttools_libcpath.h \
 	evttools_libcsplit.h \
-	evttools_libcsystem.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
 	evttools_libfwnt.h \
@@ -52,8 +51,11 @@ evtexport_SOURCES = \
 	evttools_libregf.h \
 	evttools_libuna.h \
 	evttools_libwrc.h \
+	evttools_output.c evttools_output.h \
+	evttools_signal.c evttools_signal.h \
 	evttools_system_split_string.h \
-	evttools_wide_string.c wide_string.h \
+	evttools_unused.h \
+	evttools_wide_string.c evttools_wide_string.h \
 	log_handle.c log_handle.h \
 	message_handle.c message_handle.h \
 	message_string.c message_string.h \
@@ -72,7 +74,6 @@ evtexport_LDADD = \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
 	@LIBFCACHE_LIBADD@ \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCFILE_LIBADD@ \
@@ -91,20 +92,22 @@ evtexport_LDADD = \
 evtinfo_SOURCES = \
 	evtinfo.c \
 	evtinput.c evtinput.h \
-	evtoutput.c evtoutput.h \
+	evttools_getopt.c evttools_getopt.h \
+	evttools_i18n.h \
 	evttools_libcerror.h \
 	evttools_libclocale.h \
 	evttools_libcnotify.h \
-	evttools_libcsystem.h \
 	evttools_libfdatetime.h \
 	evttools_libfwnt.h \
 	evttools_libevt.h \
 	evttools_libuna.h \
-	evttools_wide_string.c wide_string.h \
+	evttools_output.c evttools_output.h \
+	evttools_signal.c evttools_signal.h \
+	evttools_unused.h \
+	evttools_wide_string.c evttools_wide_string.h \
 	info_handle.c info_handle.h
 
 evtinfo_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \

@@ -24,8 +24,8 @@ Header files and libraries for developing applications for libevt.
 %package tools
 Summary: Several tools for reading Windows Event Log (EVT) files
 Group: Applications/System
-Requires: libevt = %{version}-%{release} @ax_libcdirectory_spec_requires@ @ax_libcsystem_spec_requires@ @ax_libexe_spec_requires@ @ax_libfwevt_spec_requires@ @ax_libregf_spec_requires@ @ax_libwrc_spec_requires@
-@libevt_tools_spec_build_requires@ @ax_libcdirectory_spec_build_requires@ @ax_libcsystem_spec_build_requires@ @ax_libexe_spec_build_requires@ @ax_libfwevt_spec_build_requires@ @ax_libregf_spec_build_requires@ @ax_libwrc_spec_build_requires@
+Requires: libevt = %{version}-%{release} @ax_libcdirectory_spec_requires@ @ax_libexe_spec_requires@ @ax_libfwevt_spec_requires@ @ax_libregf_spec_requires@ @ax_libwrc_spec_requires@
+@libevt_tools_spec_build_requires@ @ax_libcdirectory_spec_build_requires@ @ax_libexe_spec_build_requires@ @ax_libfwevt_spec_build_requires@ @ax_libregf_spec_build_requires@ @ax_libwrc_spec_build_requires@
 
 %description tools
 Several tools for reading Windows Event Log (EVT) files

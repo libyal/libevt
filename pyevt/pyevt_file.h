@@ -1,7 +1,7 @@
 /*
  * Python object wrapper of libevt_file_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -87,6 +87,10 @@ PyObject *pyevt_file_open_file_object(
            PyObject *keywords );
 
 PyObject *pyevt_file_close(
+           pyevt_file_t *pyevt_file,
+           PyObject *arguments );
+
+PyObject *pyevt_file_is_corrupted(
            pyevt_file_t *pyevt_file,
            PyObject *arguments );
 

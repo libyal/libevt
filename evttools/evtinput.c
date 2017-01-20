@@ -1,7 +1,7 @@
 /*
  * Common input functions for the evttools
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -28,7 +28,6 @@
 #include "evtinput.h"
 #include "evttools_libcerror.h"
 #include "evttools_libcpath.h"
-#include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
 #include "evttools_wide_string.h"
 

@@ -22,27 +22,22 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYEVT = \
-	test_python_functions.sh \
-	test_pyevt_set_ascii_codepage.sh
+	test_python_module.sh
 endif
 
 TESTS = \
-	test_api_functions.sh \
-	test_api_types.sh \
+	test_library.sh \
 	test_evtinfo.sh \
 	test_evtexport.sh \
 	$(TESTS_PYEVT)
 
 check_SCRIPTS = \
-	pyevt_test_get_version.py \
-	pyevt_test_open_close.py \
-	pyevt_test_set_ascii_codepage.py \
-	test_api_functions.sh \
-	test_api_types.sh \
+	pyevt_test_file.py \
+	pyevt_test_support.py \
 	test_evtexport.sh \
 	test_evtinfo.sh \
-	test_pyevt_set_ascii_codepage.sh \
-	test_python_functions.sh \
+	test_library.sh \
+	test_python_module.sh \
 	test_runner.sh
 
 EXTRA_DIST = \

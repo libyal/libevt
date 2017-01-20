@@ -1,7 +1,7 @@
 /*
  * Extracts items from a Windows Event Log (EVT) file
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -33,12 +33,14 @@
 #endif
 
 #include "evtinput.h"
-#include "evtoutput.h"
+#include "evttools_getopt.h"
 #include "evttools_libcerror.h"
 #include "evttools_libclocale.h"
 #include "evttools_libcnotify.h"
-#include "evttools_libcsystem.h"
 #include "evttools_libevt.h"
+#include "evttools_signal.h"
+#include "evttools_output.h"
+#include "evttools_unused.h"
 #include "export_handle.h"
 #include "log_handle.h"
 
@@ -93,12 +95,12 @@ void usage_fprint(
 /* Signal handler for evtexport
  */
 void evtexport_signal_handler(
-      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      evttools_signal_t signal EVTTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function    = "evtexport_signal_handler";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
+	EVTTOOLS_UNREFERENCED_PARAMETER( signal )
 
 	evtexport_abort = 1;
 
@@ -120,8 +122,13 @@ void evtexport_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libcsystem_file_io_close(
+#if defined( WINAPI ) && !defined( __CYGWIN__ )
+	if( _close(
 	     0 ) != 0 )
+#else
+	if( close(
+	     0 ) != 0 )
+#endif
 	{
 		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
@@ -170,13 +177,13 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( libcsystem_initialize(
+	if( evttools_output_initialize(
 	     _IONBF,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize system values.\n" );
+		 "Unable to initialize output settings.\n" );
 
 		goto on_error;
 	}
@@ -184,7 +191,7 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = evttools_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "c:hl:m:p:r:s:S:t:vV" ) ) ) != (system_integer_t) -1 )

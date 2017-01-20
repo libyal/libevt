@@ -1,7 +1,7 @@
 /*
  * Python object wrapper of libevt_record_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -599,13 +599,9 @@ PyObject *pyevt_record_get_identifier(
 
 		return( Py_None );
 	}
-#if PY_MAJOR_VERSION >= 3
-	integer_object = PyLong_FromLong(
-	                  (long) value_32bit );
-#else
-	integer_object = PyInt_FromLong(
-	                  (long) value_32bit );
-#endif
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) value_32bit );
+
 	return( integer_object );
 }
 

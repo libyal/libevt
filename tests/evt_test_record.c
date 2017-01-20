@@ -1,7 +1,7 @@
 /*
- * Library record type testing program
+ * Library record type test program
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -73,6 +73,10 @@ on_error:
 	return( 0 );
 }
 
+#if defined( __GNUC__ )
+
+#endif /* defined( __GNUC__ ) */
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -97,6 +101,8 @@ int main(
 	EVT_TEST_RUN(
 	 "libevt_record_free",
 	 evt_test_record_free );
+
+#if defined( __GNUC__ )
 
 	/* TODO: add tests for libevt_record_get_offset */
 
@@ -149,6 +155,8 @@ int main(
 	/* TODO: add tests for libevt_record_get_data_size */
 
 	/* TODO: add tests for libevt_record_get_data */
+
+#endif /* defined( __GNUC__ ) */
 
 	return( EXIT_SUCCESS );
 
