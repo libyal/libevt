@@ -1793,6 +1793,27 @@ int main(
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
 	{
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libevt_check_file_signature_wide(
+		          source,
+		          &error );
+#else
+		result = libevt_check_file_signature(
+		          source,
+		          &error );
+#endif
+
+		EVT_TEST_ASSERT_NOT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+	        EVT_TEST_ASSERT_IS_NULL(
+	         "error",
+	         error );
+	}
+	if( result != 0 )
+	{
 		EVT_TEST_RUN_WITH_ARGS(
 		 "libevt_file_open",
 		 evt_test_file_open,

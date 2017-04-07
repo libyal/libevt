@@ -270,6 +270,104 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libevt_io_handle_clear function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_io_handle_clear(
+     void )
+{
+	libcerror_error_t *error      = NULL;
+	libevt_io_handle_t *io_handle = NULL;
+	int result                    = 0;
+
+	/* Initialize test
+	 */
+	result = libevt_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "io_handle",
+         io_handle );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test regular cases
+	 */
+	result = libevt_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libevt_io_handle_clear(
+	          NULL,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libevt_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "io_handle",
+         io_handle );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( io_handle != NULL )
+	{
+		libevt_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) */
 
 /* The main program
@@ -297,7 +395,9 @@ int main(
 	 "libevt_io_handle_free",
 	 evt_test_io_handle_free );
 
-	/* TODO: add tests for libevt_io_handle_clear */
+	EVT_TEST_RUN(
+	 "libevt_io_handle_clear",
+	 evt_test_io_handle_clear );
 
 	/* TODO: add tests for libevt_io_handle_read_file_header */
 

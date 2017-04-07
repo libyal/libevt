@@ -416,6 +416,115 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libevt_record_values_read function
+ * Returns 1 if successful or 0 if not
+ */
+int evt_test_record_values_read(
+     void )
+{
+	libcerror_error_t *error              = NULL;
+	libevt_record_values_t *record_values = NULL;
+	int result                            = 0;
+
+	/* Initialize test
+	 */
+	result = libevt_record_values_initialize(
+	          &record_values,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "record_values",
+         record_values );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libevt_record_values_read(
+	          NULL,
+	          NULL,
+	          NULL,
+	          NULL,
+	          0,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libevt_record_values_read(
+	          record_values,
+	          NULL,
+	          NULL,
+	          NULL,
+	          0,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        EVT_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+	/* Clean up
+	 */
+	result = libevt_record_values_free(
+	          &record_values,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "record_values",
+         record_values );
+
+        EVT_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( record_values != NULL )
+	{
+		libevt_record_values_free(
+		 &record_values,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libevt_record_values_get_type function
  * Returns 1 if successful or 0 if not
  */
@@ -570,7 +679,9 @@ int main(
 	 "libevt_record_values_clone",
 	 evt_test_record_values_clone );
 
-	/* TODO: add tests for libevt_record_values_read */
+	EVT_TEST_RUN(
+	 "libevt_record_values_read",
+	 evt_test_record_values_read );
 
 	/* TODO: add tests for libevt_record_values_read_event */
 
