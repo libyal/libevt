@@ -40,13 +40,12 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libevt.docs \
-	dpkg/libevt-dev.docs \
-	dpkg/libevt-python.docs \
-	dpkg/libevt-python3.docs \
-	dpkg/libevt-tools.docs \
+	dpkg/libevt.install \
+	dpkg/libevt-dev.install \
+	dpkg/libevt-python.install \
+	dpkg/libevt-python3.install \
+	dpkg/libevt-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
