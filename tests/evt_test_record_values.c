@@ -487,8 +487,6 @@ int evt_test_record_values_read(
 	libcerror_error_free(
 	 &error );
 
-	return( 1 );
-
 	/* Clean up
 	 */
 	result = libevt_record_values_free(
