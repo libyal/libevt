@@ -1868,11 +1868,11 @@ int main(
 		 evt_test_file_signal_abort,
 		 file );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
 		/* TODO: add tests for libevt_file_open_read */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT ) */
 
 		/* TODO: add tests for libevt_file_is_corrupted */
 

@@ -73,9 +73,9 @@ on_error:
 	return( 0 );
 }
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -92,17 +92,17 @@ int main(
 	EVT_TEST_UNREFERENCED_PARAMETER( argc )
 	EVT_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
 	/* TODO: add tests for libevt_record_initialize */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT ) */
 
 	EVT_TEST_RUN(
 	 "libevt_record_free",
 	 evt_test_record_free );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
 	/* TODO: add tests for libevt_record_get_offset */
 
@@ -156,7 +156,7 @@ int main(
 
 	/* TODO: add tests for libevt_record_get_data */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
