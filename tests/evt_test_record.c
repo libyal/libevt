@@ -55,9 +55,9 @@ int evt_test_record_free(
 	 result,
 	 -1 );
 
-        EVT_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
