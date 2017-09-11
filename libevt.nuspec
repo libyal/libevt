@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>libevt</id>
-    <version>20170910</version>
+    <version>20170911</version>
     <authors>Joachim Metz</authors>
     <owners>joachimmetz</owners>
     <licenseUrl>https://raw.githubusercontent.com/libyal/libevt/master/COPYING</licenseUrl>
@@ -10,16 +10,18 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <title>libevt</title>
     <description>Library to access the Windows Event Log (EVT) format</description>
-    <releaseNotes>Release of libevt 20170910</releaseNotes>
+    <releaseNotes>Release of libevt 20170911</releaseNotes>
     <copyright>Copyright (C) 2011-2017</copyright>
     <tags>native</tags>
   </metadata>
   <files>
     <file src="include\*.h" target="lib\native\include\" />
     <file src="include\libevt\*.h" target="lib\native\include\libevt\" />
-    <file src="msvscpp\Release\libevt.dll" target="build\x86\" />
-    <file src="msvscpp\Release\libevt.lib" target="lib\native\lib\libevt32.lib" />
-    <file src="msvscpp\x64\Release\libevt.dll" target="build\x64\" />
-    <file src="msvscpp\x64\Release\libevt.lib" target="lib\native\lib\libevt64.lib" />
+    <file src="msvscpp\Release\Win32\libevt.dll" target="lib\native\lib\Win32\" />
+    <file src="msvscpp\Release\Win32\libevt.lib" target="lib\native\lib\Win32\" />
+    <file src="msvscpp\Release\Win32\libevt.pdb" target="lib\native\lib\Win32\" />
+    <file src="msvscpp\Release\x64\libevt.dll" target="lib\native\lib\x64\" />
+    <file src="msvscpp\Release\x64\libevt.lib" target="lib\native\lib\x64\" />
+    <file src="msvscpp\Release\x64\libevt.pdb" target="lib\native\lib\x64\" />
   </files>
 </package>
