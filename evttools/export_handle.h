@@ -152,6 +152,12 @@ int export_handle_close_input(
      export_handle_t *export_handle,
      libcerror_error_t **error );
 
+int export_handle_posix_time_value_fprint(
+     export_handle_t *export_handle,
+     const char *value_name,
+     uint32_t value_32bit,
+     libcerror_error_t **error );
+
 /* Record specific export functions
  */
 int export_handle_export_record_event_category(

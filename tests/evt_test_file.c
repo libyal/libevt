@@ -578,6 +578,8 @@ int evt_test_file_close_source(
 	return( result );
 }
 
+#include "../libevt/libevt_file.h"
+
 /* Tests the libevt_file_initialize function
  * Returns 1 if successful or 0 if not
  */
@@ -1428,9 +1430,9 @@ int evt_test_file_set_ascii_codepage(
 		 result,
 		 1 );
 
-	        EVT_TEST_ASSERT_IS_NULL(
-	         "error",
-	         error );
+		EVT_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
 	}
 	/* Test error cases
 	 */
@@ -1467,9 +1469,9 @@ int evt_test_file_set_ascii_codepage(
 		 result,
 		 -1 );
 
-	        EVT_TEST_ASSERT_IS_NOT_NULL(
-	         "error",
-	         error );
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
 		libcerror_error_free(
 		 &error );
@@ -1808,9 +1810,9 @@ int main(
 		 result,
 		 -1 );
 
-	        EVT_TEST_ASSERT_IS_NULL(
-	         "error",
-	         error );
+		EVT_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
 	}
 	if( result != 0 )
 	{
@@ -1855,13 +1857,13 @@ int main(
 		 result,
 		 1 );
 
-	        EVT_TEST_ASSERT_IS_NOT_NULL(
-	         "file",
-	         file );
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "file",
+		 file );
 
-	        EVT_TEST_ASSERT_IS_NULL(
-	         "error",
-	         error );
+		EVT_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
 
 		EVT_TEST_RUN_WITH_ARGS(
 		 "libevt_file_signal_abort",
@@ -1921,12 +1923,12 @@ int main(
 		 0 );
 
 		EVT_TEST_ASSERT_IS_NULL(
-	         "file",
-	         file );
+		 "file",
+		 file );
 
-	        EVT_TEST_ASSERT_IS_NULL(
-	         "error",
-	         error );
+		EVT_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
 	}
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
 

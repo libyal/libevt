@@ -601,27 +601,23 @@ int libevt_record_values_read_event(
      uint8_t strict_mode,
      libcerror_error_t **error )
 {
-	static char *function                 = "libevt_record_values_read_event";
-	size_t record_data_offset             = 0;
-	size_t strings_data_offset            = 0;
-	ssize_t value_data_size               = 0;
-	uint32_t data_offset                  = 0;
-	uint32_t data_size                    = 0;
-	uint32_t members_data_size            = 0;
-	uint32_t size                         = 0;
-	uint32_t size_copy                    = 0;
-	uint32_t strings_offset               = 0;
-	uint32_t strings_size                 = 0;
-	uint32_t user_sid_offset              = 0;
-	uint32_t user_sid_size                = 0;
+	static char *function      = "libevt_record_values_read_event";
+	size_t record_data_offset  = 0;
+	size_t strings_data_offset = 0;
+	ssize_t value_data_size    = 0;
+	uint32_t data_offset       = 0;
+	uint32_t data_size         = 0;
+	uint32_t members_data_size = 0;
+	uint32_t size              = 0;
+	uint32_t size_copy         = 0;
+	uint32_t strings_offset    = 0;
+	uint32_t strings_size      = 0;
+	uint32_t user_sid_offset   = 0;
+	uint32_t user_sid_size     = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	system_character_t posix_time_string[ 32 ];
-
-	libfdatetime_posix_time_t *posix_time = NULL;
-	uint32_t value_32bit                  = 0;
-	uint16_t value_16bit                  = 0;
-	int result                            = 0;
+	uint32_t value_32bit       = 0;
+	uint16_t value_16bit       = 0;
 #endif
 
 	if( record_values == NULL )
@@ -741,124 +737,40 @@ int libevt_record_values_read_event(
 		 function,
 		 record_values->number );
 
-		if( libfdatetime_posix_time_initialize(
-		     &posix_time,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create POSIX time.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfdatetime_posix_time_copy_from_byte_stream(
-		     posix_time,
+		if( libevt_debug_print_posix_time_value(
+		     function,
+		     "creation time\t\t\t\t",
 		     ( (evt_record_event_header_t *) record_data )->creation_time,
 		     4,
 		     LIBFDATETIME_ENDIAN_LITTLE,
 		     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
+		     LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time from byte stream.",
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print posix time value.",
 			 function );
 
 			goto on_error;
 		}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libfdatetime_posix_time_copy_to_utf16_string(
-			  posix_time,
-			  (uint16_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  error );
-#else
-		result = libfdatetime_posix_time_copy_to_utf8_string(
-			  posix_time,
-			  (uint8_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  error );
-#endif
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time to string.",
-			 function );
-
-			goto on_error;
-		}
-		libcnotify_printf(
-		 "%s: creation time\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
-		 function,
-		 posix_time_string );
-
-		if( libfdatetime_posix_time_copy_from_byte_stream(
-		     posix_time,
+		if( libevt_debug_print_posix_time_value(
+		     function,
+		     "written time\t\t\t\t",
 		     ( (evt_record_event_header_t *) record_data )->written_time,
 		     4,
 		     LIBFDATETIME_ENDIAN_LITTLE,
 		     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
+		     LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time from byte stream.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libfdatetime_posix_time_copy_to_utf16_string(
-			  posix_time,
-			  (uint16_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  error );
-#else
-		result = libfdatetime_posix_time_copy_to_utf8_string(
-			  posix_time,
-			  (uint8_t *) posix_time_string,
-			  32,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-			  error );
-#endif
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to copy POSIX time to string.",
-			 function );
-
-			goto on_error;
-		}
-		libcnotify_printf(
-		 "%s: written time\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
-		 function,
-		 posix_time_string );
-
-		if( libfdatetime_posix_time_free(
-		     &posix_time,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free POSIX time.",
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print posix time value.",
 			 function );
 
 			goto on_error;
@@ -1472,14 +1384,6 @@ int libevt_record_values_read_event(
 	return( 1 );
 
 on_error:
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( posix_time != NULL )
-	{
-		libfdatetime_posix_time_free(
-		 &posix_time,
-		 NULL );
-	}
-#endif
 	if( record_values->data != NULL )
 	{
 		libfvalue_value_free(

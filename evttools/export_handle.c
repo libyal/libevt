@@ -894,6 +894,127 @@ int export_handle_close_input(
 	return( result );
 }
 
+/* Prints a POSIX value
+ * Returns 1 if successful or -1 on error
+ */
+int export_handle_posix_time_value_fprint(
+     export_handle_t *export_handle,
+     const char *value_name,
+     uint32_t value_32bit,
+     libcerror_error_t **error )
+{
+	system_character_t date_time_string[ 32 ];
+
+	libfdatetime_posix_time_t *posix_time = NULL;
+	static char *function                 = "export_handle_posix_time_fprint";
+	int result                            = 0;
+
+	if( export_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid export handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( value_32bit == 0 )
+	{
+		fprintf(
+		 export_handle->notify_stream,
+		 "%s: Not set (0)\n",
+		 value_name );
+	}
+	else
+	{
+		if( libfdatetime_posix_time_initialize(
+		     &posix_time,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create POSIX time.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfdatetime_posix_time_copy_from_32bit(
+		     posix_time,
+		     value_32bit,
+		     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to copy POSIX time from 32-bit.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libfdatetime_posix_time_copy_to_utf16_string(
+			  posix_time,
+			  (uint16_t *) date_time_string,
+			  32,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
+			  error );
+#else
+		result = libfdatetime_posix_time_copy_to_utf8_string(
+			  posix_time,
+			  (uint8_t *) date_time_string,
+			  32,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to copy POSIX time to string.",
+			 function );
+
+			goto on_error;
+		}
+		fprintf(
+		 export_handle->notify_stream,
+		 "%s: %" PRIs_SYSTEM " UTC\n",
+		 value_name,
+		 date_time_string );
+
+		if( libfdatetime_posix_time_free(
+		     &posix_time,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free POSIX time.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	return( 1 );
+
+on_error:
+	if( posix_time != NULL )
+	{
+		libfdatetime_posix_time_free(
+		 &posix_time,
+		 NULL );
+	}
+	return( -1 );
+}
+
 /* Exports the record event category
  * Returns 1 if successful or -1 on error
  */
@@ -1274,11 +1395,9 @@ int export_handle_export_record(
      log_handle_t *log_handle,
      libcerror_error_t **error )
 {
-	system_character_t posix_time_string[ 32 ];
 
 	system_character_t *source_name       = NULL;
 	system_character_t *value_string      = NULL;
-	libfdatetime_posix_time_t *posix_time = NULL;
 	static char *function                 = "export_handle_export_record";
 	size_t source_name_size               = 0;
 	size_t value_string_size              = 0;
@@ -1297,19 +1416,6 @@ int export_handle_export_record(
 		 function );
 
 		return( -1 );
-	}
-	if( libfdatetime_posix_time_initialize(
-	     &posix_time,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create POSIX time.",
-		 function );
-
-		goto on_error;
 	}
 	if( libevt_record_get_identifier(
 	     record,
@@ -1344,52 +1450,21 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( libfdatetime_posix_time_copy_from_32bit(
-	     posix_time,
+	if( export_handle_posix_time_value_fprint(
+	     export_handle,
+	     "Creation time\t\t\t",
 	     value_32bit,
-	     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to copy POSIX time from 32-bit.",
+		 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+		 "%s: unable to print POSIX time value.",
 		 function );
 
 		goto on_error;
 	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libfdatetime_posix_time_copy_to_utf16_string(
-		  posix_time,
-		  (uint16_t *) posix_time_string,
-		  32,
-		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  error );
-#else
-	result = libfdatetime_posix_time_copy_to_utf8_string(
-		  posix_time,
-		  (uint8_t *) posix_time_string,
-		  32,
-		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  error );
-#endif
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to copy POSIX time to string.",
-		 function );
-
-		goto on_error;
-	}
-	fprintf(
-	 export_handle->notify_stream,
-	 "Creation time\t\t\t: %" PRIs_SYSTEM " UTC\n",
-	 posix_time_string );
-
 	if( libevt_record_get_written_time(
 	     record,
 	     &value_32bit,
@@ -1404,61 +1479,17 @@ int export_handle_export_record(
 
 		goto on_error;
 	}
-	if( libfdatetime_posix_time_copy_from_32bit(
-	     posix_time,
+	if( export_handle_posix_time_value_fprint(
+	     export_handle,
+	     "Written time\t\t\t",
 	     value_32bit,
-	     LIBFDATETIME_POSIX_TIME_VALUE_TYPE_SECONDS_32BIT_SIGNED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to copy POSIX time from 32-bit.",
-		 function );
-
-		goto on_error;
-	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libfdatetime_posix_time_copy_to_utf16_string(
-		  posix_time,
-		  (uint16_t *) posix_time_string,
-		  32,
-		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  error );
-#else
-	result = libfdatetime_posix_time_copy_to_utf8_string(
-		  posix_time,
-		  (uint8_t *) posix_time_string,
-		  32,
-		  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME,
-		  error );
-#endif
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to copy POSIX time to string.",
-		 function );
-
-		goto on_error;
-	}
-	fprintf(
-	 export_handle->notify_stream,
-	 "Written time\t\t\t: %" PRIs_SYSTEM " UTC\n",
-	 posix_time_string );
-
-	if( libfdatetime_posix_time_free(
-	     &posix_time,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free POSIX time.",
+		 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+		 "%s: unable to print POSIX time value.",
 		 function );
 
 		goto on_error;
@@ -1776,12 +1807,6 @@ on_error:
 	{
 		memory_free(
 		 value_string );
-	}
-	if( posix_time != NULL )
-	{
-		libfdatetime_posix_time_free(
-		 &posix_time,
-		 NULL );
 	}
 	return( -1 );
 }
