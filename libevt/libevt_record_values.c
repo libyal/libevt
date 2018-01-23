@@ -1,7 +1,7 @@
 /*
  * Record values functions
  *
- * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -751,7 +751,7 @@ int libevt_record_values_read_event(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
-			 "%s: unable to print posix time value.",
+			 "%s: unable to print POSIX time value.",
 			 function );
 
 			goto on_error;
@@ -770,7 +770,7 @@ int libevt_record_values_read_event(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
-			 "%s: unable to print posix time value.",
+			 "%s: unable to print POSIX time value.",
 			 function );
 
 			goto on_error;

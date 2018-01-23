@@ -1,7 +1,7 @@
 /*
  * Debug functions
  *
- * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -153,7 +153,7 @@ int libevt_debug_print_posix_time_value(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create posix time.",
+		 "%s: unable to create POSIX time.",
 		 function );
 
 		goto on_error;
@@ -170,7 +170,7 @@ int libevt_debug_print_posix_time_value(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy byte stream to posix time.",
+		 "%s: unable to copy byte stream to POSIX time.",
 		 function );
 
 		goto on_error;
@@ -186,7 +186,7 @@ int libevt_debug_print_posix_time_value(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy posix_time to string.",
+		 "%s: unable to copy POSIX time to string.",
 		 function );
 
 		goto on_error;
@@ -205,7 +205,7 @@ int libevt_debug_print_posix_time_value(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free posix time.",
+		 "%s: unable to free POSIX time.",
 		 function );
 
 		goto on_error;
