@@ -1157,6 +1157,17 @@ int libevt_record_values_read_event(
 	}
 	if( user_sid_size != 0 )
 	{
+		if( user_sid_size > ( ( record_data_size - 4 ) - user_sid_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: user SID data size value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 		if( libfvalue_value_type_initialize(
 		     &( record_values->user_security_identifier ),
 		     LIBFVALUE_VALUE_TYPE_NT_SECURITY_IDENTIFIER,
@@ -1218,6 +1229,17 @@ int libevt_record_values_read_event(
 	}
 	if( strings_size != 0 )
 	{
+		if( strings_size > ( ( record_data_size - 4 ) - strings_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: strings size value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -1285,6 +1307,17 @@ int libevt_record_values_read_event(
 	}
 	if( data_size != 0 )
 	{
+		if( data_size > ( ( record_data_size - 4 ) - record_data_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: data size value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -1292,7 +1325,7 @@ int libevt_record_values_read_event(
 			 "%s: data:\n",
 			 function );
 			libcnotify_print_data(
-			 &( record_data[ data_offset ] ),
+			 &( record_data[ record_data_offset ] ),
 			 (size_t) data_size,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
