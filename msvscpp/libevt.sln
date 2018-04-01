@@ -84,6 +84,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "evt_test_notify", "evt_test_notify\evt_test_notify.vcproj", "{2FEF7DB6-0145-41EB-A09F-E63BE3F1C41D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{66425C2B-EF0C-481D-8170-AAF9663519CA} = {66425C2B-EF0C-481D-8170-AAF9663519CA}
+		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "evt_test_record", "evt_test_record\evt_test_record.vcproj", "{1C13A596-E3BA-4588-A136-B78F37815923}"

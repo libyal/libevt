@@ -102,13 +102,15 @@ evt_test_io_handle_LDADD = \
 	@LIBCERROR_LIBADD@
 
 evt_test_notify_SOURCES = \
+	evt_test_libcerror.h \
 	evt_test_libevt.h \
 	evt_test_macros.h \
 	evt_test_notify.c \
 	evt_test_unused.h
 
 evt_test_notify_LDADD = \
-	../libevt/libevt.la
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
 
 evt_test_record_SOURCES = \
 	evt_test_libcerror.h \
@@ -144,6 +146,7 @@ evt_test_support_SOURCES = \
 	evt_test_libevt.h \
 	evt_test_libuna.h \
 	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
 	evt_test_support.c \
 	evt_test_unused.h
 
