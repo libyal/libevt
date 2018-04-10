@@ -1,5 +1,5 @@
 /*
- * Python bindings for libevt (pyevt)
+ * Python bindings module for libevt (pyevt)
  *
  * Copyright (C) 2011-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -41,6 +41,16 @@ PyObject *pyevt_check_file_signature(
            PyObject *keywords );
 
 PyObject *pyevt_check_file_signature_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyevt_open_new_file(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyevt_open_new_file_with_file_object(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );

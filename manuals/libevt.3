@@ -1,4 +1,4 @@
-.Dd January 20, 2017
+.Dd April 20, 2018
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -75,11 +75,11 @@ File functions
 .Ft int
 .Fn libevt_file_get_number_of_records "libevt_file_t *file, int *number_of_records, libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_record "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
+.Fn libevt_file_get_record_by_index "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
 .Ft int
 .Fn libevt_file_get_number_of_recovered_records "libevt_file_t *file, int *number_of_records, libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_recovered_record "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
+.Fn libevt_file_get_recovered_record_by_index "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int

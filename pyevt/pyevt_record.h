@@ -53,7 +53,6 @@ extern PyMethodDef pyevt_record_object_methods[];
 extern PyTypeObject pyevt_record_type_object;
 
 PyObject *pyevt_record_new(
-           PyTypeObject *type_object,
            libevt_record_t *record,
            PyObject *parent_object );
 

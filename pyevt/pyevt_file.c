@@ -106,35 +106,35 @@ PyMethodDef pyevt_file_object_methods[] = {
 	{ "get_format_version",
 	  (PyCFunction) pyevt_file_get_format_version,
 	  METH_NOARGS,
-	  "get_format_version() -> Unicode string or None\n"
+	  "get_format_version() -> Unicode string\n"
 	  "\n"
 	  "Retrieves the format version." },
 
 	{ "get_number_of_records",
 	  (PyCFunction) pyevt_file_get_number_of_records,
 	  METH_NOARGS,
-	  "get_number_of_records() -> Integer or None\n"
+	  "get_number_of_records() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of records." },
 
 	{ "get_record",
 	  (PyCFunction) pyevt_file_get_record,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_record(record_index) -> Object or None\n"
+	  "get_record(record_index) -> Object\n"
 	  "\n"
 	  "Retrieves the record specified by the index." },
 
 	{ "get_number_of_recovered_records",
 	  (PyCFunction) pyevt_file_get_number_of_recovered_records,
 	  METH_NOARGS,
-	  "get_number_of_recovered_records() -> Integer or None\n"
+	  "get_number_of_recovered_records() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of recovered records." },
 
 	{ "get_recovered_record",
 	  (PyCFunction) pyevt_file_get_recovered_record,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_recovered_record(record_index) -> Object or None\n"
+	  "get_recovered_record(record_index) -> Object\n"
 	  "\n"
 	  "Retrieves the recovered record specified by the index." },
 
@@ -279,93 +279,6 @@ PyTypeObject pyevt_file_type_object = {
 	0
 };
 
-/* Creates a new file object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyevt_file_new(
-           void )
-{
-	pyevt_file_t *pyevt_file = NULL;
-	static char *function    = "pyevt_file_new";
-
-	pyevt_file = PyObject_New(
-	              struct pyevt_file,
-	              &pyevt_file_type_object );
-
-	if( pyevt_file == NULL )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
-		 function );
-
-		goto on_error;
-	}
-	if( pyevt_file_init(
-	     pyevt_file ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
-		 function );
-
-		goto on_error;
-	}
-	return( (PyObject *) pyevt_file );
-
-on_error:
-	if( pyevt_file != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pyevt_file );
-	}
-	return( NULL );
-}
-
-/* Creates a new file object and opens it
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyevt_file_new_open(
-           PyObject *self PYEVT_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyevt_file = NULL;
-
-	PYEVT_UNREFERENCED_PARAMETER( self )
-
-	pyevt_file = pyevt_file_new();
-
-	pyevt_file_open(
-	 (pyevt_file_t *) pyevt_file,
-	 arguments,
-	 keywords );
-
-	return( pyevt_file );
-}
-
-/* Creates a new file object and opens it using a file-like object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyevt_file_new_open_file_object(
-           PyObject *self PYEVT_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyevt_file = NULL;
-
-	PYEVT_UNREFERENCED_PARAMETER( self )
-
-	pyevt_file = pyevt_file_new();
-
-	pyevt_file_open_file_object(
-	 (pyevt_file_t *) pyevt_file,
-	 arguments,
-	 keywords );
-
-	return( pyevt_file );
-}
-
 /* Intializes a file object
  * Returns 0 if successful or -1 on error
  */
@@ -384,6 +297,8 @@ int pyevt_file_init(
 
 		return( -1 );
 	}
+	/* Make sure libevt file is set to NULL
+	 */
 	pyevt_file->file           = NULL;
 	pyevt_file->file_io_handle = NULL;
 
@@ -424,15 +339,6 @@ void pyevt_file_free(
 
 		return;
 	}
-	if( pyevt_file->file == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid file - missing libevt file.",
-		 function );
-
-		return;
-	}
 	ob_type = Py_TYPE(
 	           pyevt_file );
 
@@ -454,24 +360,27 @@ void pyevt_file_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libevt_file_free(
-	          &( pyevt_file->file ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pyevt_file->file != NULL )
 	{
-		pyevt_error_raise(
-		 error,
-		 PyExc_MemoryError,
-		 "%s: unable to free libevt file.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libevt_file_free(
+		          &( pyevt_file->file ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyevt_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free libevt file.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_file );
@@ -898,7 +807,7 @@ PyObject *pyevt_file_close(
 		{
 			pyevt_error_raise(
 			 error,
-			 PyExc_IOError,
+			 PyExc_MemoryError,
 			 "%s: unable to free libbfio file IO handle.",
 			 function );
 
@@ -1357,7 +1266,7 @@ PyObject *pyevt_file_get_format_version(
 	utf8_string[ 3 ] = 0;
 
 	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
-	 * the end of string character is part of the string
+	 * the end of string character is part of the string.
 	 */
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
@@ -1432,17 +1341,6 @@ PyObject *pyevt_file_get_number_of_records(
 	return( integer_object );
 }
 
-/* Retrieves the record type object
- * Returns a Python type object if successful or NULL on error
- */
-PyTypeObject *pyevt_file_get_record_type_object(
-               libevt_record_t *record PYEVT_ATTRIBUTE_UNUSED )
-{
-	PYEVT_UNREFERENCED_PARAMETER( record )
-
-	return( &pyevt_record_type_object );
-}
-
 /* Retrieves a specific record by index
  * Returns a Python object if successful or NULL on error
  */
@@ -1450,12 +1348,11 @@ PyObject *pyevt_file_get_record_by_index(
            PyObject *pyevt_file,
            int record_index )
 {
-	PyObject *record_object   = NULL;
-	PyTypeObject *type_object = NULL;
-	libcerror_error_t *error  = NULL;
-	libevt_record_t *record   = NULL;
-	static char *function     = "pyevt_file_get_record_by_index";
-	int result                = 0;
+	PyObject *record_object  = NULL;
+	libcerror_error_t *error = NULL;
+	libevt_record_t *record  = NULL;
+	static char *function    = "pyevt_file_get_record_by_index";
+	int result               = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -1468,7 +1365,7 @@ PyObject *pyevt_file_get_record_by_index(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libevt_file_get_record(
+	result = libevt_file_get_record_by_index(
 	          ( (pyevt_file_t *) pyevt_file )->file,
 	          record_index,
 	          &record,
@@ -1490,22 +1387,9 @@ PyObject *pyevt_file_get_record_by_index(
 
 		goto on_error;
 	}
-	type_object = pyevt_file_get_record_type_object(
-	               record );
-
-	if( type_object == NULL )
-	{
-		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to retrieve record type object.",
-		 function );
-
-		goto on_error;
-	}
 	record_object = pyevt_record_new(
-	                 type_object,
 	                 record,
-	                 (PyObject *) pyevt_file );
+	                 pyevt_file );
 
 	if( record_object == NULL )
 	{
@@ -1676,19 +1560,18 @@ PyObject *pyevt_file_get_number_of_recovered_records(
 	return( integer_object );
 }
 
-/* Retrieves a specific recovered record by index
+/* Retrieves a specific recovered recovered record by index
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_recovered_record_by_index(
            PyObject *pyevt_file,
            int record_index )
 {
-	PyObject *record_object   = NULL;
-	PyTypeObject *type_object = NULL;
-	libcerror_error_t *error  = NULL;
-	libevt_record_t *record   = NULL;
-	static char *function     = "pyevt_file_get_recovered_record_by_index";
-	int result                = 0;
+	PyObject *record_object  = NULL;
+	libcerror_error_t *error = NULL;
+	libevt_record_t *record  = NULL;
+	static char *function    = "pyevt_file_get_recovered_record_by_index";
+	int result               = 0;
 
 	if( pyevt_file == NULL )
 	{
@@ -1714,7 +1597,7 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 		pyevt_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve recovered record: %d.",
+		 "%s: unable to retrieve recovered recovered record: %d.",
 		 function,
 		 record_index );
 
@@ -1723,20 +1606,7 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 
 		goto on_error;
 	}
-	type_object = pyevt_file_get_record_type_object(
-	               record );
-
-	if( type_object == NULL )
-	{
-		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to retrieve record type object.",
-		 function );
-
-		goto on_error;
-	}
 	record_object = pyevt_record_new(
-	                 type_object,
 	                 record,
 	                 (PyObject *) pyevt_file );
 
@@ -1744,7 +1614,7 @@ PyObject *pyevt_file_get_recovered_record_by_index(
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to create record object.",
+		 "%s: unable to create recovered record object.",
 		 function );
 
 		goto on_error;
@@ -1761,7 +1631,7 @@ on_error:
 	return( NULL );
 }
 
-/* Retrieves a specific recovered record
+/* Retrieves a specific recovered recovered record
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_file_get_recovered_record(

@@ -1517,6 +1517,81 @@ int libevt_file_get_record(
 	return( 1 );
 }
 
+/* Retrieves a specific record
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_file_get_record_by_index(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_file_get_record_by_index";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_list_get_element_value_by_index(
+	     internal_file->records_list,
+	     (intptr_t *) internal_file->file_io_handle,
+	     internal_file->records_cache,
+	     record_index,
+	     (intptr_t **) &record_values,
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve record values: %d.",
+		 function,
+		 record_index );
+
+		return( -1 );
+	}
+	if( libevt_record_initialize(
+	     record,
+	     internal_file->io_handle,
+	     internal_file->file_io_handle,
+	     record_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create record.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
 /* Retrieves the number of recovered records
  * Returns 1 if successful or -1 on error
  */
@@ -1570,6 +1645,81 @@ int libevt_file_get_recovered_record(
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_file_get_recovered_record";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libevt_internal_file_t *) file;
+
+	if( record == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid record.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_list_get_element_value_by_index(
+	     internal_file->recovered_records_list,
+	     (intptr_t *) internal_file->file_io_handle,
+	     internal_file->records_cache,
+	     record_index,
+	     (intptr_t **) &record_values,
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve recovered record values: %d.",
+		 function,
+		 record_index );
+
+		return( -1 );
+	}
+	if( libevt_record_initialize(
+	     record,
+	     internal_file->io_handle,
+	     internal_file->file_io_handle,
+	     record_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create record.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific recovered record
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_file_get_recovered_record_by_index(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error )
+{
+	libevt_internal_file_t *internal_file = NULL;
+	libevt_record_values_t *record_values = NULL;
+	static char *function                 = "libevt_file_get_recovered_record_by_index";
 
 	if( file == NULL )
 	{

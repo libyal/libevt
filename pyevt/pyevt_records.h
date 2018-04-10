@@ -69,23 +69,23 @@ PyObject *pyevt_records_new(
            int number_of_items );
 
 int pyevt_records_init(
-     pyevt_records_t *records_object );
+     pyevt_records_t *sequence_object );
 
 void pyevt_records_free(
-      pyevt_records_t *records_object );
+      pyevt_records_t *sequence_object );
 
 Py_ssize_t pyevt_records_len(
-            pyevt_records_t *records_object );
+            pyevt_records_t *sequence_object );
 
 PyObject *pyevt_records_getitem(
-           pyevt_records_t *records_object,
+           pyevt_records_t *sequence_object,
            Py_ssize_t item_index );
 
 PyObject *pyevt_records_iter(
-           pyevt_records_t *records_object );
+           pyevt_records_t *sequence_object );
 
 PyObject *pyevt_records_iternext(
-           pyevt_records_t *records_object );
+           pyevt_records_t *sequence_object );
 
 #if defined( __cplusplus )
 }

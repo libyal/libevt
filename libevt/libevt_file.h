@@ -171,6 +171,13 @@ int libevt_file_get_record(
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
+int libevt_file_get_record_by_index(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
 int libevt_file_get_number_of_recovered_records(
      libevt_file_t *file,
      int *number_of_records,
@@ -178,6 +185,13 @@ int libevt_file_get_number_of_recovered_records(
 
 LIBEVT_EXTERN \
 int libevt_file_get_recovered_record(
+     libevt_file_t *file,
+     int record_index,
+     libevt_record_t **record,
+     libcerror_error_t **error );
+
+LIBEVT_EXTERN \
+int libevt_file_get_recovered_record_by_index(
      libevt_file_t *file,
      int record_index,
      libevt_record_t **record,

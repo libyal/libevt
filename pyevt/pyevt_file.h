@@ -53,19 +53,6 @@ struct pyevt_file
 extern PyMethodDef pyevt_file_object_methods[];
 extern PyTypeObject pyevt_file_type_object;
 
-PyObject *pyevt_file_new(
-           void );
-
-PyObject *pyevt_file_new_open(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
-PyObject *pyevt_file_new_open_file_object(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
 int pyevt_file_init(
      pyevt_file_t *pyevt_file );
 

@@ -330,7 +330,6 @@ PyTypeObject pyevt_record_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_new(
-           PyTypeObject *type_object,
            libevt_record_t *record,
            PyObject *parent_object )
 {
@@ -348,7 +347,7 @@ PyObject *pyevt_record_new(
 	}
 	pyevt_record = PyObject_New(
 	                struct pyevt_record,
-	                type_object );
+	                &pyevt_record_type_object );
 
 	if( pyevt_record == NULL )
 	{

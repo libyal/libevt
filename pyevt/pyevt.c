@@ -65,24 +65,24 @@ PyMethodDef pyevt_module_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature(filename) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) file signature." },
+	  "Checks if a file has a Windows Event Log (EVT) signature." },
 
 	{ "check_file_signature_file_object",
 	  (PyCFunction) pyevt_check_file_signature_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature_file_object(file_object) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) file signature using a file-like object." },
+	  "Checks if a file has a Windows Event Log (EVT) signature using a file-like object." },
 
 	{ "open",
-	  (PyCFunction) pyevt_file_new_open,
+	  (PyCFunction) pyevt_open_new_file,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> Object\n"
 	  "\n"
 	  "Opens a file." },
 
 	{ "open_file_object",
-	  (PyCFunction) pyevt_file_new_open_file_object,
+	  (PyCFunction) pyevt_open_new_file_with_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open_file_object(file_object, mode='r') -> Object\n"
 	  "\n"
@@ -125,7 +125,7 @@ PyObject *pyevt_get_version(
 	         errors ) );
 }
 
-/* Checks if the file has a Windows Event Log (EVT) file signature
+/* Checks if a file has a Windows Event Log (EVT) signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature(
@@ -133,12 +133,12 @@ PyObject *pyevt_check_file_signature(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *string_object     = NULL;
-	libcerror_error_t *error    = NULL;
-	static char *function       = "pyevt_check_file_signature";
-	static char *keyword_list[] = { "filename", NULL };
-	const char *filename_narrow = NULL;
-	int result                  = 0;
+	PyObject *string_object      = NULL;
+	libcerror_error_t *error     = NULL;
+	static char *function        = "pyevt_check_file_signature";
+	static char *keyword_list[]  = { "filename", NULL };
+	const char *filename_narrow  = NULL;
+	int result                   = 0;
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	const wchar_t *filename_wide = NULL;
@@ -221,7 +221,9 @@ PyObject *pyevt_check_file_signature(
 
 		Py_DecRef(
 		 utf8_string_object );
-#endif
+
+#endif /* #if defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
 		if( result == -1 )
 		{
 			pyevt_error_raise(
@@ -319,7 +321,7 @@ PyObject *pyevt_check_file_signature(
 	return( NULL );
 }
 
-/* Checks if the file has a Windows Event Log (EVT) file signature using a file-like object
+/* Checks if a file has a Windows Event Log (EVT) signature using a file-like object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature_file_object(
@@ -419,6 +421,52 @@ on_error:
 	return( NULL );
 }
 
+/* Creates a new file object and opens it
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_open_new_file(
+           PyObject *self PYEVT_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *pyevt_file = NULL;
+
+	PYEVT_UNREFERENCED_PARAMETER( self )
+
+	pyevt_file_init(
+	 (pyevt_file_t *) pyevt_file );
+
+	pyevt_file_open(
+	 (pyevt_file_t *) pyevt_file,
+	 arguments,
+	 keywords );
+
+	return( pyevt_file );
+}
+
+/* Creates a new file object and opens it using a file-like object
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyevt_open_new_file_with_file_object(
+           PyObject *self PYEVT_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *pyevt_file = NULL;
+
+	PYEVT_UNREFERENCED_PARAMETER( self )
+
+	pyevt_file_init(
+	 (pyevt_file_t *) pyevt_file );
+
+	pyevt_file_open_file_object(
+	 (pyevt_file_t *) pyevt_file,
+	 arguments,
+	 keywords );
+
+	return( pyevt_file );
+}
+
 #if PY_MAJOR_VERSION >= 3
 
 /* The pyevt module definition
@@ -456,14 +504,8 @@ PyMODINIT_FUNC initpyevt(
                 void )
 #endif
 {
-	PyObject *module                      = NULL;
-	PyTypeObject *event_types_type_object = NULL;
-	PyTypeObject *file_type_object        = NULL;
-	PyTypeObject *file_flags_type_object  = NULL;
-	PyTypeObject *record_type_object      = NULL;
-	PyTypeObject *records_type_object     = NULL;
-	PyTypeObject *strings_type_object     = NULL;
-	PyGILState_STATE gil_state            = 0;
+	PyObject *module           = NULL;
+	PyGILState_STATE gil_state = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libevt_notify_set_stream(
@@ -498,6 +540,23 @@ PyMODINIT_FUNC initpyevt(
 
 	gil_state = PyGILState_Ensure();
 
+	/* Setup the event_types type object
+	 */
+	pyevt_event_types_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyevt_event_types_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject * ) &pyevt_event_types_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "event_types",
+	 (PyObject *) &pyevt_event_types_type_object );
+
 	/* Setup the file type object
 	 */
 	pyevt_file_type_object.tp_new = PyType_GenericNew;
@@ -508,33 +567,29 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyevt_file_type_object );
-
-	file_type_object = &pyevt_file_type_object;
+	 (PyObject * ) &pyevt_file_type_object );
 
 	PyModule_AddObject(
 	 module,
 	 "file",
-	 (PyObject *) file_type_object );
+	 (PyObject *) &pyevt_file_type_object );
 
-	/* Setup the records type object
+	/* Setup the file_flags type object
 	 */
-	pyevt_records_type_object.tp_new = PyType_GenericNew;
+	pyevt_file_flags_type_object.tp_new = PyType_GenericNew;
 
 	if( PyType_Ready(
-	     &pyevt_records_type_object ) < 0 )
+	     &pyevt_file_flags_type_object ) < 0 )
 	{
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyevt_records_type_object );
-
-	records_type_object = &pyevt_records_type_object;
+	 (PyObject * ) &pyevt_file_flags_type_object );
 
 	PyModule_AddObject(
 	 module,
-	 "_records",
-	 (PyObject *) records_type_object );
+	 "file_flags",
+	 (PyObject *) &pyevt_file_flags_type_object );
 
 	/* Setup the record type object
 	 */
@@ -546,14 +601,29 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyevt_record_type_object );
-
-	record_type_object = &pyevt_record_type_object;
+	 (PyObject * ) &pyevt_record_type_object );
 
 	PyModule_AddObject(
 	 module,
 	 "record",
-	 (PyObject *) record_type_object );
+	 (PyObject *) &pyevt_record_type_object );
+
+	/* Setup the records type object
+	 */
+	pyevt_records_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyevt_records_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject * ) &pyevt_records_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "records",
+	 (PyObject *) &pyevt_records_type_object );
 
 	/* Setup the strings type object
 	 */
@@ -565,62 +635,12 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
+	 (PyObject * ) &pyevt_strings_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "strings",
 	 (PyObject *) &pyevt_strings_type_object );
-
-	strings_type_object = &pyevt_strings_type_object;
-
-	PyModule_AddObject(
-	 module,
-	 "_strings",
-	 (PyObject *) strings_type_object );
-
-	/* Setup the event types type object
-	 */
-	pyevt_event_types_type_object.tp_new = PyType_GenericNew;
-
-	if( pyevt_event_types_init_type(
-	     &pyevt_event_types_type_object ) != 1 )
-	{
-		goto on_error;
-	}
-	if( PyType_Ready(
-	     &pyevt_event_types_type_object ) < 0 )
-	{
-		goto on_error;
-	}
-	Py_IncRef(
-	 (PyObject *) &pyevt_event_types_type_object );
-
-	event_types_type_object = &pyevt_event_types_type_object;
-
-	PyModule_AddObject(
-	 module,
-	 "event_types",
-	 (PyObject *) event_types_type_object );
-
-	/* Setup the file flags type object
-	 */
-	pyevt_file_flags_type_object.tp_new = PyType_GenericNew;
-
-	if( pyevt_file_flags_init_type(
-	     &pyevt_file_flags_type_object ) != 1 )
-	{
-		goto on_error;
-	}
-	if( PyType_Ready(
-	     &pyevt_file_flags_type_object ) < 0 )
-	{
-		goto on_error;
-	}
-	Py_IncRef(
-	 (PyObject *) &pyevt_file_flags_type_object );
-
-	file_flags_type_object = &pyevt_file_flags_type_object;
-
-	PyModule_AddObject(
-	 module,
-	 "file_flags",
-	 (PyObject *) file_flags_type_object );
 
 	PyGILState_Release(
 	 gil_state );
