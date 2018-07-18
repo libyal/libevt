@@ -37,8 +37,11 @@
 
 #include <libevt/extern.h>
 
+#define LIBEVT_EXTERN_VARIABLE	LIBEVT_EXTERN
+
 #else
-#define LIBEVT_EXTERN	/* extern */
+#define LIBEVT_EXTERN		/* extern */
+#define LIBEVT_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBEVT ) */
 

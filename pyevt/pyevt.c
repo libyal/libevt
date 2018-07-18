@@ -550,7 +550,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_event_types_type_object );
+	 (PyObject *) &pyevt_event_types_type_object );
 
 	PyModule_AddObject(
 	 module,
@@ -567,7 +567,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_file_type_object );
+	 (PyObject *) &pyevt_file_type_object );
 
 	PyModule_AddObject(
 	 module,
@@ -584,7 +584,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_file_flags_type_object );
+	 (PyObject *) &pyevt_file_flags_type_object );
 
 	PyModule_AddObject(
 	 module,
@@ -601,7 +601,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_record_type_object );
+	 (PyObject *) &pyevt_record_type_object );
 
 	PyModule_AddObject(
 	 module,
@@ -618,7 +618,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_records_type_object );
+	 (PyObject *) &pyevt_records_type_object );
 
 	PyModule_AddObject(
 	 module,
@@ -635,7 +635,7 @@ PyMODINIT_FUNC initpyevt(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pyevt_strings_type_object );
+	 (PyObject *) &pyevt_strings_type_object );
 
 	PyModule_AddObject(
 	 module,
