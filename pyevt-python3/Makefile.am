@@ -15,7 +15,8 @@ AM_CFLAGS = \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
-	@LIBBFIO_CPPFLAGS@
+	@LIBBFIO_CPPFLAGS@ \
+	@LIBEVT_DLL_IMPORT@
 
 am_pyevt_la_rpath = -rpath $(pyexecdir3)
 

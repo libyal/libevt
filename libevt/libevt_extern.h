@@ -28,13 +28,6 @@
  */
 #if !defined( HAVE_LOCAL_LIBEVT )
 
-/* If libtool DLL support is enabled set LIBEVT_DLL_EXPORT
- * before including libevt/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBEVT_DLL_EXPORT
-#endif
-
 #include <libevt/extern.h>
 
 #define LIBEVT_EXTERN_VARIABLE	LIBEVT_EXTERN

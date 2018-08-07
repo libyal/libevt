@@ -113,6 +113,8 @@ int evt_test_io_handle_initialize(
 	          &io_handle,
 	          &error );
 
+	io_handle = NULL;
+
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -124,8 +126,6 @@ int evt_test_io_handle_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	io_handle = NULL;
 
 #if defined( HAVE_EVT_TEST_MEMORY )
 
@@ -331,6 +331,36 @@ int evt_test_io_handle_clear(
 
 	libcerror_error_free(
 	 &error );
+
+#if defined( HAVE_EVT_TEST_MEMORY )
+
+	/* Test libevt_io_handle_clear with memset failing
+	 */
+	evt_test_memset_attempts_before_fail = 0;
+
+	result = libevt_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	if( evt_test_memset_attempts_before_fail != -1 )
+	{
+		evt_test_memset_attempts_before_fail = -1;
+	}
+	else
+	{
+		EVT_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		EVT_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_EVT_TEST_MEMORY ) */
 
 	/* Clean up
 	 */

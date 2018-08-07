@@ -24,13 +24,6 @@
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBEVT_DLL_IMPORT
- * before including libevt.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBEVT_DLL_IMPORT
-#endif
-
 #include <libevt.h>
 
 #endif /* !defined( _EVTTOOLS_LIBEVT_H ) */

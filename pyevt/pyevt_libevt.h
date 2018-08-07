@@ -24,14 +24,7 @@
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBEVT_DLL_IMPORT
- * before including libevt.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBEVT_DLL_IMPORT
-#endif
-
 #include <libevt.h>
 
-#endif
+#endif /* !defined( _PYEVT_LIBEVT_H ) */
 
