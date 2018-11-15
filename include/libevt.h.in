@@ -419,7 +419,7 @@ int libevt_record_get_identifier(
      libevt_error_t **error );
 
 /* Retrieves the creation time
- * The timestamp is a 32-bit POSIX date and time value
+ * The timestamp is a signed 32-bit POSIX date and time value in number of seconds
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
@@ -429,7 +429,7 @@ int libevt_record_get_creation_time(
      libevt_error_t **error );
 
 /* Retrieves the written time
- * The timestamp is a 32-bit POSIX date and time value
+ * The timestamp is a signed 32-bit POSIX date and time value in number of seconds
  * Returns 1 if successful or -1 on error
  */
 LIBEVT_EXTERN \
