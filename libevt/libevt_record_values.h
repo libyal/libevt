@@ -147,7 +147,7 @@ int libevt_record_values_read_element_data(
      libevt_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libfdata_list_element_t *element,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_file_index,
      off64_t element_offset,
      size64_t element_size,

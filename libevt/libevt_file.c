@@ -120,7 +120,7 @@ int libevt_file_initialize(
 	     (intptr_t *) internal_file->io_handle,
 	     NULL,
 	     NULL,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfdata_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
 	     NULL,
 	     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
 	     error ) != 1 )
@@ -139,7 +139,7 @@ int libevt_file_initialize(
 	     (intptr_t *) internal_file->io_handle,
 	     NULL,
 	     NULL,
-	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
+	     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfdata_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libevt_record_values_read_element_data,
 	     NULL,
 	     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
 	     error ) != 1 )
@@ -1482,7 +1482,7 @@ int libevt_file_get_record(
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->records_list,
 	     (intptr_t *) internal_file->file_io_handle,
-	     internal_file->records_cache,
+	     (libfdata_cache_t *) internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
 	     0,
@@ -1557,7 +1557,7 @@ int libevt_file_get_record_by_index(
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->records_list,
 	     (intptr_t *) internal_file->file_io_handle,
-	     internal_file->records_cache,
+	     (libfdata_cache_t *) internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
 	     0,
@@ -1673,7 +1673,7 @@ int libevt_file_get_recovered_record(
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->recovered_records_list,
 	     (intptr_t *) internal_file->file_io_handle,
-	     internal_file->records_cache,
+	     (libfdata_cache_t *) internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
 	     0,
@@ -1748,7 +1748,7 @@ int libevt_file_get_recovered_record_by_index(
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->recovered_records_list,
 	     (intptr_t *) internal_file->file_io_handle,
-	     internal_file->records_cache,
+	     (libfdata_cache_t *) internal_file->records_cache,
 	     record_index,
 	     (intptr_t **) &record_values,
 	     0,
