@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libevt
 Package: libevt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libevt1
+Replaces: libevt1
 Suggests: libevt-dbg
 Description: Library to access the Windows Event Log (EVT) format
  libevt is a library to access the Windows Event Log (EVT) format.
@@ -31,6 +33,8 @@ Package: libevt-tools
 Section: utils
 Architecture: any
 Depends: libevt (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libevt-utils
+Replaces: libevt-utils
 Description: Several tools for reading Windows Event Log (EVT) files
  Several tools for reading Windows Event Log (EVT) files.
 
@@ -45,6 +49,8 @@ Package: libevt-python
 Section: python
 Architecture: any
 Depends: libevt (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-libevt
+Replaces: python-libevt
 Suggests: libevt-python-dbg
 Description: Python 2 bindings for libevt
  Python 2 bindings for libevt.
@@ -60,6 +66,8 @@ Package: libevt-python3
 Section: python
 Architecture: any
 Depends: libevt (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python3-libevt
+Replaces: python3-libevt
 Suggests: libevt-python3-dbg
 Description: Python 3 bindings for libevt
  Python 3 bindings for libevt.
