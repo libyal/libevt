@@ -1,11 +1,9 @@
-.Dd April 20, 2018
+.Dd April 13, 2019
 .Dt libevt 3
 .Os libevt
 .Sh NAME
 .Nm libevt.h
 .Nd Library to access the Windows Event Log (EVT) format
-.Sh LIBRARY
-.Lb libevt
 .Sh SYNOPSIS
 .In libevt.h
 .Pp
@@ -15,27 +13,27 @@ Support functions
 .Ft int
 .Fn libevt_get_access_flags_read "void"
 .Ft int
-.Fn libevt_get_codepage "int *codepage, libevt_error_t **error"
+.Fn libevt_get_codepage "int *codepage" "libevt_error_t **error"
 .Ft int
-.Fn libevt_set_codepage "int codepage, libevt_error_t **error"
+.Fn libevt_set_codepage "int codepage" "libevt_error_t **error"
 .Ft int
-.Fn libevt_check_file_signature "const char *filename, libevt_error_t **error"
+.Fn libevt_check_file_signature "const char *filename" "libevt_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libevt_check_file_signature_wide "const wchar_t *filename, libevt_error_t **error"
+.Fn libevt_check_file_signature_wide "const wchar_t *filename" "libevt_error_t **error"
 .Pp
 Available when compiled with libbfio support:
 .Ft int
-.Fn libevt_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle, libevt_error_t **error"
+.Fn libevt_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle" "libevt_error_t **error"
 .Pp
 Notify functions
 .Ft void
 .Fn libevt_notify_set_verbose "int verbose"
 .Ft int
-.Fn libevt_notify_set_stream "FILE *stream, libevt_error_t **error"
+.Fn libevt_notify_set_stream "FILE *stream" "libevt_error_t **error"
 .Ft int
-.Fn libevt_notify_stream_open "const char *filename, libevt_error_t **error"
+.Fn libevt_notify_stream_open "const char *filename" "libevt_error_t **error"
 .Ft int
 .Fn libevt_notify_stream_close "libevt_error_t **error"
 .Pp
@@ -43,107 +41,111 @@ Error functions
 .Ft void
 .Fn libevt_error_free "libevt_error_t **error"
 .Ft int
-.Fn libevt_error_fprint "libevt_error_t *error, FILE *stream"
+.Fn libevt_error_fprint "libevt_error_t *error" "FILE *stream"
 .Ft int
-.Fn libevt_error_sprint "libevt_error_t *error, char *string, size_t size"
+.Fn libevt_error_sprint "libevt_error_t *error" "char *string" "size_t size"
 .Ft int
-.Fn libevt_error_backtrace_fprint "libevt_error_t *error, FILE *stream"
+.Fn libevt_error_backtrace_fprint "libevt_error_t *error" "FILE *stream"
 .Ft int
-.Fn libevt_error_backtrace_sprint "libevt_error_t *error, char *string, size_t size"
+.Fn libevt_error_backtrace_sprint "libevt_error_t *error" "char *string" "size_t size"
 .Pp
 File functions
 .Ft int
-.Fn libevt_file_initialize "libevt_file_t **file, libevt_error_t **error"
+.Fn libevt_file_initialize "libevt_file_t **file" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_free "libevt_file_t **file, libevt_error_t **error"
+.Fn libevt_file_free "libevt_file_t **file" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_signal_abort "libevt_file_t *file, libevt_error_t **error"
+.Fn libevt_file_signal_abort "libevt_file_t *file" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_open "libevt_file_t *file, const char *filename, int access_flags, libevt_error_t **error"
+.Fn libevt_file_open "libevt_file_t *file" "const char *filename" "int access_flags" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_close "libevt_file_t *file, libevt_error_t **error"
+.Fn libevt_file_close "libevt_file_t *file" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_is_corrupted "libevt_file_t *file, libevt_error_t **error"
+.Fn libevt_file_is_corrupted "libevt_file_t *file" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_ascii_codepage "libevt_file_t *file, int *ascii_codepage, libevt_error_t **error"
+.Fn libevt_file_get_ascii_codepage "libevt_file_t *file" "int *ascii_codepage" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_set_ascii_codepage "libevt_file_t *file, int ascii_codepage, libevt_error_t **error"
+.Fn libevt_file_set_ascii_codepage "libevt_file_t *file" "int ascii_codepage" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_format_version "libevt_file_t *file, uint32_t *major_version, uint32_t *minor_version, libevt_error_t **error"
+.Fn libevt_file_get_format_version "libevt_file_t *file" "uint32_t *major_version" "uint32_t *minor_version" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_flags "libevt_file_t *file, uint32_t *flags, libevt_error_t **error"
+.Fn libevt_file_get_flags "libevt_file_t *file" "uint32_t *flags" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_number_of_records "libevt_file_t *file, int *number_of_records, libevt_error_t **error"
+.Fn libevt_file_get_number_of_records "libevt_file_t *file" "int *number_of_records" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_record_by_index "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
+.Fn libevt_file_get_record_by_index "libevt_file_t *file" "int record_index" "libevt_record_t **record" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_number_of_recovered_records "libevt_file_t *file, int *number_of_records, libevt_error_t **error"
+.Fn libevt_file_get_number_of_recovered_records "libevt_file_t *file" "int *number_of_records" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_recovered_record_by_index "libevt_file_t *file, int record_index, libevt_record_t **record, libevt_error_t **error"
+.Fn libevt_file_get_recovered_record_by_index "libevt_file_t *file" "int record_index" "libevt_record_t **record" "libevt_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libevt_file_open_wide "libevt_file_t *file, const wchar_t *filename, int access_flags, libevt_error_t **error"
+.Fn libevt_file_open_wide "libevt_file_t *file" "const wchar_t *filename" "int access_flags" "libevt_error_t **error"
 .Pp
 Available when compiled with libbfio support:
 .Ft int
-.Fn libevt_file_open_file_io_handle "libevt_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libevt_error_t **error"
+.Fn libevt_file_open_file_io_handle "libevt_file_t *file" "libbfio_handle_t *file_io_handle" "int access_flags" "libevt_error_t **error"
+.Pp
+File functions - deprecated
+.Ft int
+.Fn libevt_file_get_recovered_record "libevt_file_t *file" "int record_index" "libevt_record_t **record" "libevt_error_t **error"
 .Pp
 Record functions
 .Ft int
-.Fn libevt_record_free "libevt_record_t **record, libevt_error_t **error"
+.Fn libevt_record_free "libevt_record_t **record" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_offset "libevt_record_t *record, off64_t *offset, libevt_error_t **error"
+.Fn libevt_record_get_offset "libevt_record_t *record" "off64_t *offset" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_identifier "libevt_record_t *record, uint32_t *identifier, libevt_error_t **error"
+.Fn libevt_record_get_identifier "libevt_record_t *record" "uint32_t *identifier" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_creation_time "libevt_record_t *record, uint32_t *posix_time, libevt_error_t **error"
+.Fn libevt_record_get_creation_time "libevt_record_t *record" "uint32_t *posix_time" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_written_time "libevt_record_t *record, uint32_t *posix_time, libevt_error_t **error"
+.Fn libevt_record_get_written_time "libevt_record_t *record" "uint32_t *posix_time" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_event_identifier "libevt_record_t *record, uint32_t *event_identifier, libevt_error_t **error"
+.Fn libevt_record_get_event_identifier "libevt_record_t *record" "uint32_t *event_identifier" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_event_type "libevt_record_t *record, uint16_t *event_type, libevt_error_t **error"
+.Fn libevt_record_get_event_type "libevt_record_t *record" "uint16_t *event_type" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_event_category "libevt_record_t *record, uint16_t *event_category, libevt_error_t **error"
+.Fn libevt_record_get_event_category "libevt_record_t *record" "uint16_t *event_category" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_source_name_size "libevt_record_t *record, size_t *utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_source_name_size "libevt_record_t *record" "size_t *utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_source_name "libevt_record_t *record, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_source_name "libevt_record_t *record" "uint8_t *utf8_string" "size_t utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_source_name_size "libevt_record_t *record, size_t *utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_source_name_size "libevt_record_t *record" "size_t *utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_source_name "libevt_record_t *record, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_source_name "libevt_record_t *record" "uint16_t *utf16_string" "size_t utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_computer_name_size "libevt_record_t *record, size_t *utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_computer_name_size "libevt_record_t *record" "size_t *utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_computer_name "libevt_record_t *record, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_computer_name "libevt_record_t *record" "uint8_t *utf8_string" "size_t utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_computer_name_size "libevt_record_t *record, size_t *utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_computer_name_size "libevt_record_t *record" "size_t *utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_computer_name "libevt_record_t *record, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_computer_name "libevt_record_t *record" "uint16_t *utf16_string" "size_t utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_user_security_identifier_size "libevt_record_t *record, size_t *utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_user_security_identifier_size "libevt_record_t *record" "size_t *utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_user_security_identifier "libevt_record_t *record, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_user_security_identifier "libevt_record_t *record" "uint8_t *utf8_string" "size_t utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_user_security_identifier_size "libevt_record_t *record, size_t *utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_user_security_identifier_size "libevt_record_t *record" "size_t *utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_user_security_identifier "libevt_record_t *record, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_user_security_identifier "libevt_record_t *record" "uint16_t *utf16_string" "size_t utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_number_of_strings "libevt_record_t *record, int *number_of_strings, libevt_error_t **error"
+.Fn libevt_record_get_number_of_strings "libevt_record_t *record" "int *number_of_strings" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_string_size "libevt_record_t *record, int string_index, size_t *utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_string_size "libevt_record_t *record" "int string_index" "size_t *utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf8_string "libevt_record_t *record, int string_index, uint8_t *utf8_string, size_t utf8_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf8_string "libevt_record_t *record" "int string_index" "uint8_t *utf8_string" "size_t utf8_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_string_size "libevt_record_t *record, int string_index, size_t *utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_string_size "libevt_record_t *record" "int string_index" "size_t *utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_utf16_string "libevt_record_t *record, int string_index, uint16_t *utf16_string, size_t utf16_string_size, libevt_error_t **error"
+.Fn libevt_record_get_utf16_string "libevt_record_t *record" "int string_index" "uint16_t *utf16_string" "size_t utf16_string_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_data_size "libevt_record_t *record, size_t *data_size, libevt_error_t **error"
+.Fn libevt_record_get_data_size "libevt_record_t *record" "size_t *data_size" "libevt_error_t **error"
 .Ft int
-.Fn libevt_record_get_data "libevt_record_t *record, uint8_t *data, size_t data_size, libevt_error_t **error"
+.Fn libevt_record_get_data "libevt_record_t *record" "uint8_t *data" "size_t data_size" "libevt_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libevt_get_version
@@ -156,8 +158,8 @@ None
 .Sh FILES
 None
 .Sh NOTES
-libevt allows to be compiled with wide character support (wchar_t).
-
+libevt can be compiled with wide character support (wchar_t).
+.sp
 To compile libevt with wide character support use:
 .Ar ./configure --enable-wide-character-type=yes
  or define:
@@ -165,7 +167,7 @@ To compile libevt with wide character support use:
  or
 .Ar UNICODE
  during compilation.
-
+.sp
 .Ar LIBEVT_WIDE_CHARACTER_TYPE
  in libevt/features.h can be used to determine if libevt was compiled with wide character support.
 .Sh BUGS
@@ -174,7 +176,7 @@ Please report bugs of any kind on the project issue tracker: https://github.com/
 These man pages are generated from "libevt.h".
 .Sh COPYRIGHT
 Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>.
-
+.sp
 This is free software; see the source for copying conditions.
 There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO

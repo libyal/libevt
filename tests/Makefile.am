@@ -37,6 +37,7 @@ check_SCRIPTS = \
 	test_evtexport.sh \
 	test_evtinfo.sh \
 	test_library.sh \
+	test_manpage.sh \
 	test_python_module.sh \
 	test_runner.sh
 
