@@ -7,9 +7,10 @@ Analysis of EVT file format
 :numbered!:
 [abstract]
 == Summary
+
 The Windows Event Log (EVT) format is used by Microsoft Windows to store system
-log information. This specification is based on public available information
-and was complimented by reverse engineering of the file format.
+log information. This specification is based on public available information and
+was enhanced by analyzing test data.
 
 This document is intended as a working document for the Windows Event Log (EVT)
 specification. Which should allow existing Open Source forensic tooling to be
@@ -17,6 +18,7 @@ able to process this file type.
 
 [preface]
 == Document information
+
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
@@ -27,8 +29,9 @@ able to process this file type.
 
 [preface]
 == License
+
 ....
-Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -38,13 +41,12 @@ in the section entitled "GNU Free Documentation License".
 
 [preface]
 == Revision history
+
 [cols="1,1,1,5",options="header"]
 |===
 | Version | Author | Date | Comments
-| 0.0.1 | J.B. Metz | October 2011 +
-November 2011 | Initial version.
-| 0.0.2 | J.B. Metz | March 2012 +
-April 2012 | Additional information.
+| 0.0.1 | J.B. Metz | October 2011 | Initial version.
+| 0.0.2 | J.B. Metz | March 2012 | Additional information.
 | 0.0.3 | J.B. Metz | May 2012 | Additional information.
 | 0.0.4 | J.B. Metz | August 2012 | Additional information regarding event categories.
 | 0.0.5 | J.B. Metz | September 2012 | Additional information regarding behavior of offset in record.
@@ -55,10 +57,12 @@ April 2012 | Additional information.
 | 0.0.10 | J.B. Metz | July 2014 | Additional information about parameter expansion.
 | 0.0.11 | J.B. Metz | October 2014 | Switched to asccidoc format.
 | 0.0.12 | J.B. Metz | March 2015 | Additional information regarding message files.
+| 0.0.13 | J.B. Metz | April 2019 | Textual and formatting changes.
 |===
 
 :numbered:
 == Overview
+
 The Windows Event Log (EVT) format is used by Microsoft Windows to store system
 log information. The EVT format was deprecated in Windows Vista in favor of
 EVTX.
@@ -79,6 +83,7 @@ An EVT file consists of:
 |===
 
 === Test version
+
 The following version of programs were used to test the information within this document:
 
 * Windows NT 4
@@ -87,6 +92,7 @@ The following version of programs were used to test the information within this 
 * Windows 2003
 
 === Event Log files
+
 On Windows NT 4 the event logs files can be found in:
 ....
 C:\WINNT\System32\config\
@@ -117,6 +123,7 @@ C:\Windows\System32\config\
 |===
 
 == File header
+
 The file header (ELF_LOGFILE_HEADER or EVENTLOGHEADER) is 48 bytes of size and
 consists of:
 
@@ -126,21 +133,21 @@ consists of:
 | 0 | 4 | 48 | Size +
 Including the size value
 | 4 | 4 | "LfLe" | Signature (ELF_LOG_SIGNATURE)
-| 8 | 4 | 1 | Major version
-| 12 | 4 | 1 | Minor version
+| 8 | 4 | 1 | Major format version
+| 12 | 4 | 1 | Minor format version
 | 16 | 4 | | First (oldest) record offset
 | 20 | 4 | | End of file record offset
 | 24 | 4 | | Last (newest) record number
 | 28 | 4 | | First (oldest) record number
 | 32 | 4 | | Maximum file size
 | 36 | 4 | | File flags +
-See section: 2.1 File flags
+See section: <<file_flags,File flags>>
 | 40 | 4 | | [yellow-background]*Retention*
 | 44 | 4 | 48 | Copy of size +
 This value is used to indicate the end of the file header
 |===
 
-=== File flags
+=== [[file_flags]]File flags
 
 [cols="1,1,5",options="header"]
 |===
@@ -153,6 +160,7 @@ Same purpose as equivalent in the file attributes flags
 |===
 
 == Event record
+
 The event record (EVENTLOGRECORD) is variable of size and consist of:
 
 [cols="1,1,1,5",options="header"]
@@ -162,42 +170,42 @@ The event record (EVENTLOGRECORD) is variable of size and consist of:
 Including the size value
 | 4 | 4 | "LfLe" | Signature (ELF_LOG_SIGNATURE)
 | 8 | 4 | | Record number
-| 12 | 4 | | Creation date +
+| 12 | 4 | | Creation date and time +
 Contains 32-bit Unix epoch of the date and time in UTC the record was generated
-| 16 | 4 | | Last written date +
+| 16 | 4 | | Last written date and time +
 Contains 32-bit Unix epoch of the date and time in UTC the record was written to file
 | 20 | 4 | | Event identifier
 | 24 | 2 | | Event type
 | 26 | 2 | | Number of strings
 | 28 | 2 | | Event category
-| 30 | 2 | | Event flags +
-[yellow-background]*Actual usage unknown indicated as reserved*
-| 32 | 4 | | Closing record number +
-[yellow-background]*Actual usage unknown indicated as reserved*
+| 30 | 2 | | [yellow-background]*Unknown (Event flags)* +
+Actual usage unknown indicated as reserved
+| 32 | 4 | | [yellow-background]*Unknown (Closing record number)* +
+Actual usage unknown indicated as reserved
 | 36 | 4 | | Strings offset +
 The offset is relative to the start of the record
-| 40 | 4 | | User SID size +
-0 if no User SID is available
-| 44 | 4 | | User SID offset +
+| 40 | 4 | | User identifier (SID) size +
+0 if no user identifier is available
+| 44 | 4 | | User identifier (SID) offset +
 The offset is relative to the start of the record +
-Can contain 0 but the User SID size should also be 0
+Can contain 0 but the user identifier size should also be 0
 | 48 | 4 | | Data size +
 0 if no data is available
 | 52 | 4 | | Data offset +
 The offset is relative to the start of the record
-| 56 | ...  | | Source name +
+| 56 | ... | | Source name +
 Contains an UTF-16 little-endian string with end-of-string character
-| ...  | ...  | | Computer name +
+| ... | ... | | Computer name +
 Contains an UTF-16 little-endian string with end-of-string character
-| ...  | ...  | | User SID +
+| ... | ... | | User SID +
 Contains a Windows NT security identifier +
 For more information see `[NTSID]`.
-| ...  | ...  | | Strings +
+| ... | ... | | Strings +
 Array of UTF-16 little-endian strings with end-of-string character
-| ...  | ...  | | Data
-| ...  | ...  | | [yellow-background]*Padding (empty values)* +
+| ... | ... | | Data
+| ... | ... | | [yellow-background]*Padding (empty values)* +
 4-byte alignment
-| ...  | 4 | | Copy of size +
+| ... | 4 | | Copy of size +
 This value is used to indicate the end of the event record
 |===
 
@@ -222,6 +230,7 @@ the record and should be ignored.
 |===
 
 === Event identifier
+
 The event identifier is 4 bytes of size and consist of:
 
 [cols="1,1,1,5",options="header"]
@@ -241,6 +250,7 @@ The event identifier is 4 bytes of size and consist of:
 |===
 
 === Externally stored values
+
 Some of the data that Event Viewer shows is stored outside the event log files.
 
 The first step to determine the location of these values is find the
@@ -271,6 +281,7 @@ The source name is case insensitive; so "Workstation" and "workstation" are
 considered equivalent.
 
 ==== [[event_message_strings]]Event message strings
+
 The event message strings are stored in event message files.
 
 The event source sub key has a value named "EventMessageFile" which contains a
@@ -287,7 +298,7 @@ Here "%SystemRoot%" is case insensitive and needs to be expanded to the Windows
 directory. The actual value of %SystemRoot% can be found in the Registry value:
 ....
 Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\
-Value:  SystemRoot
+Value: SystemRoot
 ....
 
 This value is depended on the Windows version, e.g.
@@ -337,11 +348,13 @@ The event message strings are language specific. An event message file can
 therefore contain event message strings for multiple languages.
 
 ===== Notes
+
 [yellow-background]*If "EventMessageFile" points to a directory e.g.
 does Event Log Viewer resolves it as $directory\$event_provider_name e.g.
 C:\Program Files\Common Files\McAfee\SystemCore\mfeapfk.sys?*
 
 ===== Parameter expansion
+
 Parameter expansion is e.g. seen in event identifier 0xc0001b58 of the Service
 Control Manager.
 ....
@@ -362,6 +375,7 @@ The service did not respond to the start or control request in a timely fashion.
 ....
 
 ==== Event category
+
 The event category is primarily used in the Security event log. The category
 name strings are stored in event message files (also see:
 <<event_message_strings,Event message strings>>).
@@ -383,6 +397,7 @@ The value "CategoryCount" in the event source sub key contain the number of
 categories defined for the specific event source.
 
 == End of file record
+
 The end of file record (ELF_EOF_RECORD or EVENTLOGEOF) is 40 bytes of size and
 consists of:
 
@@ -404,7 +419,9 @@ This value is used to indicate the end of the file header
 |===
 
 == Corruption scenarios
+
 === Dirty file with invalid offset values
+
 In the dirty file with invalid offset values scenarios the file header
 indicates it is dirty and the first record offset and end of file record offset
 point to invalid locations in the file.
@@ -415,6 +432,7 @@ The approach is to find the event records is to start looking for the
 end-of-file record after the the end-of-file record offset.
 
 ==== Trailing non-event data
+
 In the dirty file with invalid offset values scenarios it sometimes can happen
 that the file is wrapped and that there is trailing data after the last event
 before the wrap.
@@ -423,17 +441,20 @@ The approach is to continue finding the event records is to ignore this
 trailing data.
 
 === Truncated event record
+
 The data of the event record is not complete, part of the event record data is
 filled with 0-byte values.
 The copy of the record size is 0.
 
 ==== Truncated strings data
+
 If the the truncation occurs in the strings data part of the record can still
 be read.
 
 The approach is to ignore the truncated part of the strings data.
 
 === Event record with data offset is beyond record size
+
 Although the data offset does not seem to be 0, the value can be beyond the
 record size. As long as the data size is 0 the data offset can be safely
 ignored.
@@ -444,6 +465,7 @@ actual data and how to detect it?*
 :numbered!:
 [appendix]
 == References
+
 `[MSDN]`
 
 [cols="1,5",options="header"]
@@ -462,6 +484,7 @@ actual data and how to detect it?*
 
 [appendix]
 == GNU Free Documentation License
+
 Version 1.3, 3 November 2008
 Copyright © 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
 <http://fsf.org/>
@@ -470,6 +493,7 @@ Everyone is permitted to copy and distribute verbatim copies of this license
 document, but changing it is not allowed.
 
 === 0. PREAMBLE
+
 The purpose of this License is to make a manual, textbook, or other functional
 and useful document "free" in the sense of freedom: to assure everyone the
 effective freedom to copy and redistribute it, with or without modifying it,
@@ -490,6 +514,7 @@ recommend this License principally for works whose purpose is instruction or
 reference.
 
 === 1. APPLICABILITY AND DEFINITIONS
+
 This License applies to any manual or other work, in any medium, that contains
 a notice placed by the copyright holder saying it can be distributed under the
 terms of this License. Such a notice grants a world-wide, royalty-free license,
@@ -568,6 +593,7 @@ disclaiming warranties: any other implication that these Warranty Disclaimers
 may have is void and has no effect on the meaning of this License.
 
 === 2. VERBATIM COPYING
+
 You may copy and distribute the Document in any medium, either commercially or
 noncommercially, provided that this License, the copyright notices, and the
 license notice saying this License applies to the Document are reproduced in
@@ -581,6 +607,7 @@ You may also lend copies, under the same conditions stated above, and you may
 publicly display copies.
 
 === 3. COPYING IN QUANTITY
+
 If you publish printed copies (or copies in media that commonly have printed
 covers) of the Document, numbering more than 100, and the Document's license
 notice requires Cover Texts, you must enclose the copies in covers that carry,
@@ -614,6 +641,7 @@ well before redistributing any large number of copies, to give them a chance to
 provide you with an updated version of the Document.
 
 === 4. MODIFICATIONS
+
 You may copy and distribute a Modified Version of the Document under the
 conditions of sections 2 and 3 above, provided that you release the Modified
 Version under precisely this License, with the Modified Version filling the
@@ -706,6 +734,7 @@ permission to use their names for publicity for or to assert or imply
 endorsement of any Modified Version.
 
 === 5. COMBINING DOCUMENTS
+
 You may combine the Document with other documents released under this License,
 under the terms defined in section 4 above for modified versions, provided that
 you include in the combination all of the Invariant Sections of all of the
@@ -727,6 +756,7 @@ combine any sections Entitled "Acknowledgements", and any sections Entitled
 "Dedications". You must delete all sections Entitled "Endorsements".
 
 === 6. COLLECTIONS OF DOCUMENTS
+
 You may make a collection consisting of the Document and other documents
 released under this License, and replace the individual copies of this License
 in the various documents with a single copy that is included in the collection,
@@ -739,6 +769,7 @@ into the extracted document, and follow this License in all other respects
 regarding verbatim copying of that document.
 
 === 7. AGGREGATION WITH INDEPENDENT WORKS
+
 A compilation of the Document or its derivatives with other separate and
 independent documents or works, in or on a volume of a storage or distribution
 medium, is called an "aggregate" if the copyright resulting from the
@@ -755,6 +786,7 @@ in electronic form. Otherwise they must appear on printed covers that bracket
 the whole aggregate.
 
 === 8. TRANSLATION
+
 Translation is considered a kind of modification, so you may distribute
 translations of the Document under the terms of section 4. Replacing Invariant
 Sections with translations requires special permission from their copyright
@@ -772,6 +804,7 @@ If a section in the Document is Entitled "Acknowledgements", "Dedications", or
 typically require changing the actual title.
 
 === 9. TERMINATION
+
 You may not copy, modify, sublicense, or distribute the Document except as
 expressly provided under this License. Any attempt otherwise to copy, modify,
 sublicense, or distribute it is void, and will automatically terminate your
@@ -795,6 +828,7 @@ your rights have been terminated and not permanently reinstated, receipt of a
 copy of some or all of the same material does not give you any rights to use it.
 
 === 10. FUTURE REVISIONS OF THIS LICENSE
+
 The Free Software Foundation may publish new, revised versions of the GNU Free
 Documentation License from time to time. Such new versions will be similar in
 spirit to the present version, but may differ in detail to address new problems
@@ -812,6 +846,7 @@ License can be used, that proxy's public statement of acceptance of a version
 permanently authorizes you to choose that version for the Document.
 
 === 11. RELICENSING
+
 "Massive Multiauthor Collaboration Site" (or "MMC Site") means any World Wide
 Web server that publishes copyrightable works and also provides prominent
 facilities for anybody to edit those works. A public wiki that anybody can edit
