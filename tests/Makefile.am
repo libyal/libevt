@@ -47,6 +47,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	evt_test_error \
 	evt_test_file \
+	evt_test_file_header \
 	evt_test_io_handle \
 	evt_test_notify \
 	evt_test_record \
@@ -89,6 +90,28 @@ evt_test_file_LDADD = \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@PTHREAD_LIBADD@
+
+evt_test_file_header_SOURCES = \
+	evt_test_file_header.c \
+	evt_test_functions.c evt_test_functions.h \
+	evt_test_libbfio.h \
+	evt_test_libcerror.h \
+	evt_test_libevt.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_unused.h
+
+evt_test_file_header_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
 
 evt_test_io_handle_SOURCES = \
 	evt_test_io_handle.c \

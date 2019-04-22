@@ -43,6 +43,7 @@ description: File header
 members:
 - name: size
   data_type: uint32
+  description: "(header) size"
 - name: signature
   type: stream
   element_data_type: byte
@@ -54,18 +55,24 @@ members:
   data_type: uint32
 - name: first_record_offset
   data_type: uint32
+  description: "first (oldest) record offset"
 - name: end_of_file_record_offset
   data_type: uint32
 - name: last_record_number
   data_type: uint32
+  description: "last (newest) record number"
 - name: first_record_number
   data_type: uint32
+  description: "first (oldest) record number"
 - name: maximum_file_size
   data_type: uint32
 - name: file_flags
   data_type: uint32
+- name: retention
+  data_type: uint32
 - name: copy_of_size
   data_type: uint32
+  description: "copy of (header) size"
 ---
 name: event_record
 type: structure

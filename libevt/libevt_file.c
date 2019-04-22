@@ -30,6 +30,7 @@
 #include "libevt_definitions.h"
 #include "libevt_io_handle.h"
 #include "libevt_file.h"
+#include "libevt_file_header.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
@@ -37,6 +38,8 @@
 #include "libevt_libfdata.h"
 #include "libevt_record.h"
 #include "libevt_record_values.h"
+
+#include "evt_file_header.h"
 
 /* Creates a file
  * Make sure the value file is referencing, is set to NULL
@@ -863,6 +866,19 @@ int libevt_file_close(
 
 		result = -1;
 	}
+	if( libevt_file_header_free(
+	     &( internal_file->file_header ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free file header.",
+		 function );
+
+		result = -1;
+	}
 	if( libfdata_list_empty(
 	     internal_file->records_list,
 	     error ) != 1 )
@@ -913,12 +929,11 @@ int libevt_file_open_read(
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function              = "libevt_file_open_read";
-	off64_t last_record_offset         = 0;
-	uint32_t end_of_file_record_offset = 0;
-	uint32_t first_record_offset       = 0;
-	int result_record_read             = 0;
-	int result_record_recovery         = 0;
+	static char *function      = "libevt_file_open_read";
+	off64_t last_record_offset = 0;
+	uint32_t header_size       = 0;
+	int result_record_read     = 0;
+	int result_record_recovery = 0;
 
 	if( internal_file == NULL )
 	{
@@ -942,9 +957,32 @@ int libevt_file_open_read(
 
 		return( -1 );
 	}
-	if( internal_file->io_handle->abort != 0 )
+	if( internal_file->file_header != NULL )
 	{
-		internal_file->io_handle->abort = 0;
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid file - file header already set.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file->io_handle->abort = 0;
+
+	if( libbfio_handle_get_size(
+	     file_io_handle,
+	     &( internal_file->io_handle->file_size ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve file size.",
+		 function );
+
+		goto on_error;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -953,11 +991,23 @@ int libevt_file_open_read(
 		 "Reading file header:\n" );
 	}
 #endif
-	if( libevt_io_handle_read_file_header(
-	     internal_file->io_handle,
+	if( libevt_file_header_initialize(
+	     &( internal_file->file_header ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file header.",
+		 function );
+
+		goto on_error;
+	}
+	if( libevt_file_header_read_file_io_handle(
+	     internal_file->file_header,
 	     file_io_handle,
-	     &first_record_offset,
-	     &end_of_file_record_offset,
+	     0,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -967,7 +1017,43 @@ int libevt_file_open_read(
 		 "%s: unable to read file header.",
 		 function );
 
-		return( -1 );
+		goto on_error;
+	}
+	header_size = internal_file->file_header->size;
+
+	if( header_size != internal_file->file_header->copy_of_size )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: value mismatch for size and copy of size ( %" PRIu32 " != %" PRIu32 " ).\n",
+			 function,
+			 header_size,
+			 internal_file->file_header->copy_of_size );
+		}
+#endif
+		/* If the size does not match the header size assume size copy contains
+		 * the correct value for the next validation check
+		 */
+		if( header_size != sizeof( evt_file_header_t ) )
+		{
+			header_size = internal_file->file_header->copy_of_size;
+		}
+		internal_file->io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
+	}
+	if( (size_t) header_size != sizeof( evt_file_header_t ) )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: header size: %" PRIu32 " does not match known value.\n",
+			 function,
+			 header_size );
+		}
+#endif
+		internal_file->io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -979,8 +1065,8 @@ int libevt_file_open_read(
 	result_record_read = libevt_io_handle_read_records(
 	                      internal_file->io_handle,
 	                      file_io_handle,
-	                      first_record_offset,
-	                      end_of_file_record_offset,
+	                      internal_file->file_header->first_record_offset,
+	                      internal_file->file_header->end_of_file_record_offset,
 	                      internal_file->records_list,
 	                      &last_record_offset,
 	                      error );
@@ -1011,8 +1097,8 @@ int libevt_file_open_read(
 		result_record_recovery = libevt_io_handle_recover_records(
 		                          internal_file->io_handle,
 		                          file_io_handle,
-		                          first_record_offset,
-		                          end_of_file_record_offset,
+		                          internal_file->file_header->first_record_offset,
+		                          internal_file->file_header->end_of_file_record_offset,
 		                          last_record_offset,
 		                          internal_file->records_list,
 		                          internal_file->recovered_records_list,
@@ -1050,7 +1136,7 @@ int libevt_file_open_read(
 	if( ( result_record_read != 1 )
 	 && ( result_record_recovery != 1 ) )
 	{
-		return( -1 );
+		goto on_error;
 	}
 	if( ( error != NULL )
 	 && ( *error != NULL ) )
@@ -1058,11 +1144,18 @@ int libevt_file_open_read(
 		libcerror_error_free(
 		 error );
 	}
-	if( internal_file->io_handle->abort != 0 )
-	{
-		internal_file->io_handle->abort = 0;
-	}
+	internal_file->io_handle->abort = 0;
+
 	return( 1 );
+
+on_error:
+	if( internal_file->file_header != NULL )
+	{
+		libevt_file_header_initialize(
+		 &( internal_file->file_header ),
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Determine if the file corrupted
@@ -1227,8 +1320,8 @@ int libevt_file_set_ascii_codepage(
  */
 int libevt_file_get_format_version(
      libevt_file_t *file,
-     uint32_t *major_version,
-     uint32_t *minor_version,
+     uint32_t *major_format_version,
+     uint32_t *minor_format_version,
      libcerror_error_t **error )
 {
 	libevt_internal_file_t *internal_file = NULL;
@@ -1247,41 +1340,41 @@ int libevt_file_get_format_version(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
+	if( internal_file->file_header == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
+		 "%s: invalid file - missing file header.",
 		 function );
 
 		return( -1 );
 	}
-	if( major_version == NULL )
+	if( major_format_version == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid major version.",
+		 "%s: invalid major format version.",
 		 function );
 
 		return( -1 );
 	}
-	if( minor_version == NULL )
+	if( minor_format_version == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid minor version.",
+		 "%s: invalid minor format version.",
 		 function );
 
 		return( -1 );
 	}
-	*major_version = internal_file->io_handle->major_version;
-	*minor_version = internal_file->io_handle->minor_version;
+	*major_format_version = internal_file->file_header->major_format_version;
+	*minor_format_version = internal_file->file_header->minor_format_version;
 
 	return( 1 );
 }
@@ -1311,13 +1404,13 @@ int libevt_file_get_version(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
+	if( internal_file->file_header == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
+		 "%s: invalid file - missing file header.",
 		 function );
 
 		return( -1 );
@@ -1344,8 +1437,8 @@ int libevt_file_get_version(
 
 		return( -1 );
 	}
-	*major_version = internal_file->io_handle->major_version;
-	*minor_version = internal_file->io_handle->minor_version;
+	*major_version = internal_file->file_header->major_format_version;
+	*minor_version = internal_file->file_header->minor_format_version;
 
 	return( 1 );
 }
@@ -1374,13 +1467,13 @@ int libevt_file_get_flags(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
+	if( internal_file->file_header == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing IO handle.",
+		 "%s: invalid file - missing file header.",
 		 function );
 
 		return( -1 );
@@ -1396,7 +1489,7 @@ int libevt_file_get_flags(
 
 		return( -1 );
 	}
-	*flags = internal_file->io_handle->file_flags;
+	*flags = internal_file->file_header->file_flags;
 
 	return( 1 );
 }

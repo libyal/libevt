@@ -1,5 +1,5 @@
 /*
- * File header of the Windows Event Log (EVT) format
+ * File header functions
  *
  * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,72 +19,75 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVT_FILE_HEADER_H )
-#define _EVT_FILE_HEADER_H
+#if !defined( _LIBEVT_FILE_HEADER_H )
+#define _LIBEVT_FILE_HEADER_H
 
 #include <common.h>
 #include <types.h>
+
+#include "libevt_libbfio.h"
+#include "libevt_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-typedef struct evt_file_header evt_file_header_t;
+typedef struct libevt_file_header libevt_file_header_t;
 
-struct evt_file_header
+struct libevt_file_header
 {
-	/* (Header) size
+	/* (header) size
 	 */
-	uint8_t size[ 4 ];
-
-	/* Signature
-	 */
-	uint8_t signature[ 4 ];
+	uint32_t size;
 
 	/* Major format version
 	 */
-	uint8_t major_format_version[ 4 ];
+	uint32_t major_format_version;
 
 	/* Minor format version
 	 */
-	uint8_t minor_format_version[ 4 ];
+	uint32_t minor_format_version;
 
 	/* First (oldest) record offset
 	 */
-	uint8_t first_record_offset[ 4 ];
+	uint32_t first_record_offset;
 
 	/* End of file record offset
 	 */
-	uint8_t end_of_file_record_offset[ 4 ];
-
-	/* Last (newest) record number
-	 */
-	uint8_t last_record_number[ 4 ];
-
-	/* First (oldest) record number
-	 */
-	uint8_t first_record_number[ 4 ];
-
-	/* Maximum file size
-	 */
-	uint8_t maximum_file_size[ 4 ];
+	uint32_t end_of_file_record_offset;
 
 	/* File flags
 	 */
-	uint8_t file_flags[ 4 ];
-
-	/* Retention
-	 */
-	uint8_t retention[ 4 ];
+	uint32_t file_flags;
 
 	/* Copy of (header) size
 	 */
-	uint8_t copy_of_size[ 4 ];
+	uint32_t copy_of_size;
 };
+
+int libevt_file_header_initialize(
+     libevt_file_header_t **file_header,
+     libcerror_error_t **error );
+
+int libevt_file_header_free(
+     libevt_file_header_t **file_header,
+     libcerror_error_t **error );
+
+int libevt_file_header_read_data(
+     libevt_file_header_t *file_header,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
+int libevt_file_header_read_file_io_handle(
+     libevt_file_header_t *file_header,
+     libbfio_handle_t *file_io_handle,
+     off64_t file_offset,
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _EVT_FILE_HEADER_H ) */
+#endif /* !defined( _LIBEVT_FILE_HEADER_H ) */
 

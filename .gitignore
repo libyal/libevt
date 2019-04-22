@@ -127,6 +127,7 @@ stamp-h[1-9]
 /tests/*.exe
 /tests/evt_test_error
 /tests/evt_test_file
+/tests/evt_test_file_header
 /tests/evt_test_io_handle
 /tests/evt_test_notify
 /tests/evt_test_record

@@ -292,8 +292,8 @@ int libevt_file_set_ascii_codepage(
 LIBEVT_EXTERN \
 int libevt_file_get_format_version(
      libevt_file_t *file,
-     uint32_t *major_version,
-     uint32_t *minor_version,
+     uint32_t *major_format_version,
+     uint32_t *minor_format_version,
      libevt_error_t **error );
 
 /* Retrieves the flags

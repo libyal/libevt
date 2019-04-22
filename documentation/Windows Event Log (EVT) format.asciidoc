@@ -142,7 +142,7 @@ Including the size value
 | 32 | 4 | | Maximum file size
 | 36 | 4 | | File flags +
 See section: <<file_flags,File flags>>
-| 40 | 4 | | [yellow-background]*Retention*
+| 40 | 4 | | [yellow-background]*Unknown (Retention)*
 | 44 | 4 | 48 | Copy of size +
 This value is used to indicate the end of the file header
 |===

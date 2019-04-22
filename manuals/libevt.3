@@ -1,4 +1,4 @@
-.Dd April 13, 2019
+.Dd April 22, 2019
 .Dt libevt 3
 .Os libevt
 .Sh NAME
@@ -67,7 +67,7 @@ File functions
 .Ft int
 .Fn libevt_file_set_ascii_codepage "libevt_file_t *file" "int ascii_codepage" "libevt_error_t **error"
 .Ft int
-.Fn libevt_file_get_format_version "libevt_file_t *file" "uint32_t *major_version" "uint32_t *minor_version" "libevt_error_t **error"
+.Fn libevt_file_get_format_version "libevt_file_t *file" "uint32_t *major_format_version" "uint32_t *minor_format_version" "libevt_error_t **error"
 .Ft int
 .Fn libevt_file_get_flags "libevt_file_t *file" "uint32_t *flags" "libevt_error_t **error"
 .Ft int

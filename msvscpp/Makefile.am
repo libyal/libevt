@@ -1,6 +1,7 @@
 MSVSCPP_FILES = \
 	evt_test_error/evt_test_error.vcproj \
 	evt_test_file/evt_test_file.vcproj \
+	evt_test_file_header/evt_test_file_header.vcproj \
 	evt_test_io_handle/evt_test_io_handle.vcproj \
 	evt_test_notify/evt_test_notify.vcproj \
 	evt_test_record/evt_test_record.vcproj \

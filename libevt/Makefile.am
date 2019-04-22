@@ -33,6 +33,7 @@ libevt_la_SOURCES = \
 	libevt_error.c libevt_error.h \
 	libevt_extern.h \
 	libevt_file.c libevt_file.h \
+	libevt_file_header.c libevt_file_header.h \
 	libevt_io_handle.c libevt_io_handle.h \
 	libevt_libbfio.h \
 	libevt_libcdata.h \

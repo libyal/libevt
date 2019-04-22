@@ -26,6 +26,7 @@
 #include <types.h>
 
 #include "libevt_extern.h"
+#include "libevt_file_header.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
@@ -56,6 +57,10 @@ struct libevt_internal_file
 	/* Value to indicate if the file IO handle was opened inside the library
 	 */
 	uint8_t file_io_handle_opened_in_library;
+
+	/* The file header
+	 */
+	libevt_file_header_t *file_header;
 
 	/* The records list
 	 */
@@ -140,8 +145,8 @@ int libevt_file_set_ascii_codepage(
 LIBEVT_EXTERN \
 int libevt_file_get_format_version(
      libevt_file_t *file,
-     uint32_t *major_version,
-     uint32_t *minor_version,
+     uint32_t *major_format_version,
+     uint32_t *minor_format_version,
      libcerror_error_t **error );
 
 LIBEVT_EXTERN \
