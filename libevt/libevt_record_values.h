@@ -132,12 +132,6 @@ int libevt_record_values_read_event(
      uint8_t strict_mode,
      libcerror_error_t **error );
 
-int libevt_record_values_read_end_of_file(
-     libevt_record_values_t *record_values,
-     uint8_t *record_values_data,
-     size_t record_values_data_size,
-     libcerror_error_t **error );
-
 int libevt_record_values_get_type(
      libevt_record_values_t *record_values,
      uint8_t *type,

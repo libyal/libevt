@@ -125,6 +125,7 @@ stamp-h[1-9]
 /evttools/evtexport
 /evttools/evtinfo
 /tests/*.exe
+/tests/evt_test_end_of_file_record
 /tests/evt_test_error
 /tests/evt_test_file
 /tests/evt_test_file_header

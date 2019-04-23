@@ -137,11 +137,11 @@ members:
 ---
 name: end_of_file_record
 type: structure
-description: End-of-file header
+description: End-of-file record
 members:
 - name: size
   data_type: uint32
-  value: 0x28
+  description: "(record) size"
 - name: signature1
   data_type: uint32
   value: 0x11111111
@@ -156,12 +156,15 @@ members:
   value: 0x44444444
 - name: first_record_offset
   data_type: uint32
+  description: "first (oldest) record offset"
 - name: end_of_file_record_offset
   data_type: uint32
 - name: last_record_number
   data_type: uint32
+  description: "last (newest) record number"
 - name: first_record_number
   data_type: uint32
+  description: "first (oldest) record number"
 - name: copy_of_size
   data_type: uint32
-  value: 0x28
+  description: "copy of (record) size"

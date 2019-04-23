@@ -30,6 +30,7 @@ libevt_la_SOURCES = \
 	libevt_codepage.h \
 	libevt_debug.c libevt_debug.h \
 	libevt_definitions.h \
+	libevt_end_of_file_record.c libevt_end_of_file_record.h \
 	libevt_error.c libevt_error.h \
 	libevt_extern.h \
 	libevt_file.c libevt_file.h \

@@ -1,4 +1,5 @@
 MSVSCPP_FILES = \
+	evt_test_end_of_file_record/evt_test_end_of_file_record.vcproj \
 	evt_test_error/evt_test_error.vcproj \
 	evt_test_file/evt_test_file.vcproj \
 	evt_test_file_header/evt_test_file_header.vcproj \

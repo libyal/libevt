@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "error file_header io_handle notify record record_values"
+$LibraryTests = "end_of_file_record error file_header io_handle notify record record_values"
 $LibraryTestsWithInput = "file support"
 
 $InputGlob = "*"

@@ -24,9 +24,10 @@
 #include <memory.h>
 #include <types.h>
 
+#include "libevt_file_header.h"
+#include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
-#include "libevt_file_header.h"
 
 #include "evt_file_header.h"
 
@@ -273,12 +274,12 @@ int libevt_file_header_read_data(
 		 file_header->minor_format_version );
 
 		libcnotify_printf(
-		 "%s: first (oldest) record offset\t\t: %" PRIu32 "\n",
+		 "%s: first (oldest) record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_header->first_record_offset );
 
 		libcnotify_printf(
-		 "%s: end of file record offset\t\t: %" PRIu32 "\n",
+		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_header->end_of_file_record_offset );
 
