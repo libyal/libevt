@@ -58,7 +58,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.11 | J.B. Metz | October 2014 | Switched to asccidoc format.
 | 0.0.12 | J.B. Metz | March 2015 | Additional information regarding message files.
 | 0.0.13 | J.B. Metz | April 2019 | Textual and formatting changes.
-| 0.0.13 | Kyle Sabo | May 2019 | Additional information about unused fields.
+| 0.0.14 | Kyle Sabo | May 2019 | Additional information about unused fields.
 |===
 
 :numbered:
