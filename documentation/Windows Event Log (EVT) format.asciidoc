@@ -58,6 +58,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.11 | J.B. Metz | October 2014 | Switched to asccidoc format.
 | 0.0.12 | J.B. Metz | March 2015 | Additional information regarding message files.
 | 0.0.13 | J.B. Metz | April 2019 | Textual and formatting changes.
+| 0.0.14 | Kyle Sabo | May 2019 | Additional information about unused fields.
 |===
 
 :numbered:
@@ -132,7 +133,7 @@ consists of:
 | Offset | Size | Value | Description
 | 0 | 4 | 48 | Size +
 Including the size value
-| 4 | 4 | "LfLe" | Signature (ELF_LOG_SIGNATURE)
+| 4 | 4 | "LfLe" (0x654c664c) | Signature (ELF_LOG_SIGNATURE)
 | 8 | 4 | 1 | Major format version
 | 12 | 4 | 1 | Minor format version
 | 16 | 4 | | First (oldest) record offset
@@ -168,7 +169,7 @@ The event record (EVENTLOGRECORD) is variable of size and consist of:
 | Offset | Size | Value | Description
 | 0 | 4 | | Size +
 Including the size value
-| 4 | 4 | "LfLe" | Signature (ELF_LOG_SIGNATURE)
+| 4 | 4 | "LfLe" (0x654c664c) | Signature (ELF_LOG_SIGNATURE)
 | 8 | 4 | | Record number
 | 12 | 4 | | Creation date and time +
 Contains 32-bit Unix epoch of the date and time in UTC the record was generated
@@ -178,12 +179,13 @@ Contains 32-bit Unix epoch of the date and time in UTC the record was written to
 | 24 | 2 | | Event type
 | 26 | 2 | | Number of strings
 | 28 | 2 | | Event category
-| 30 | 2 | | [yellow-background]*Unknown (Event flags)* +
-Actual usage unknown indicated as reserved
-| 32 | 4 | | [yellow-background]*Unknown (Closing record number)* +
-Actual usage unknown indicated as reserved
+| 30 | 2 | | *Unknown (Event flags)* +
+Usually 0, also see note below
+| 32 | 4 | | *Unknown (Closing record number)* +
+Should be 0 if the file has not been externally modified
 | 36 | 4 | | Strings offset +
-The offset is relative to the start of the record
+The offset is relative to the start of the record and must be a multitude of 2 +
+Can contain 0 but the number of strings should also be 0
 | 40 | 4 | | User identifier (SID) size +
 0 if no user identifier is available
 | 44 | 4 | | User identifier (SID) offset +
@@ -192,7 +194,8 @@ Can contain 0 but the user identifier size should also be 0
 | 48 | 4 | | Data size +
 0 if no data is available
 | 52 | 4 | | Data offset +
-The offset is relative to the start of the record
+The offset is relative to the start of the record +
+Can contain 0 but the data size should also be 0
 | 56 | ... | | Source name +
 Contains an UTF-16 little-endian string with end-of-string character
 | ... | ... | | Computer name +
@@ -210,12 +213,20 @@ This value is used to indicate the end of the event record
 |===
 
 [NOTE]
-The "strings offset" points to the offset of "copy of size" (or "data offset"
-if "data size" is not 0) the strings are empty. [yellow-background]*Can the
-"strings offset" contain 0 ?*
+The event flags field is a copy of the 4 bytes of data passed in the Flags field
+of the ElfrReportEvent RPC call, see `[MS-EVEN]`. These flags are written directly
+to the file, and it is left up to the event reader to interpret them. `MS-EVEN`
+suggests a shared meaning for bit 0x8000 as "the last string is valid XML", but
+the Event Log service does not validate this when writing the strings. Most, if
+not all, events are written using the ReportEvent Win32 API wrapper around the
+RPC function, and will always set this field to be 0.
 
-The offsets with corresponding sizes can contain values that point outside of
-the record and should be ignored.
+[NOTE]
+If the user SID size is 0 then the string offset may equal the user SID offset.
+If the number of strings is 0 then the data offset may equal the string offset.
+In both of these cases the offset should be ignored if the size or number of
+strings is 0. Offsets that start or end (offset + size) past the end of the
+record should be ignored.
 
 === Event type
 
@@ -291,8 +302,16 @@ path specification of the event message file.
 ....
 
 [NOTE]
-This value can contain multiple filenames separated by a semi colon (;)
-character and that the name of the event message files is case insensitive.
+If set, this value must container one or more filenames separated by a semicolon (;)
+character. The names of the files are case insensitive. Values that are a directory
+or an invalid file (see below) are ignored. Filenames may contain case-insensitive
+environment variables that must be expanded.
+
+[NOTE]
+Each program that displays event message strings is responsible for reading the
+Windows Registry value, handling any environment variables within the value, and
+loading the message strings from each file. Variations in these steps may result in
+programs producing different messages than shown in Event Viewer.
 
 Here "%SystemRoot%" is case insensitive and needs to be expanded to the Windows
 directory. The actual value of %SystemRoot% can be found in the Registry value:
@@ -301,7 +320,7 @@ Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\
 Value: SystemRoot
 ....
 
-This value is depended on the Windows version, e.g.
+This value depends on the Windows version, e.g.
 
 [cols="1,5",options="header"]
 |===
@@ -312,7 +331,7 @@ This value is depended on the Windows version, e.g.
 | C:\WTSRV | Windows NT 4.0 Terminal Server
 |===
 
-Other placeholders that found to be used are:
+Other environment variables that are frequently used are:
 ....
 %WinDir%
 ....
@@ -346,12 +365,6 @@ event.
 [NOTE]
 The event message strings are language specific. An event message file can
 therefore contain event message strings for multiple languages.
-
-===== Notes
-
-[yellow-background]*If "EventMessageFile" points to a directory e.g.
-does Event Log Viewer resolves it as $directory\$event_provider_name e.g.
-C:\Program Files\Common Files\McAfee\SystemCore\mfeapfk.sys?*
 
 ===== Parameter expansion
 
@@ -480,6 +493,14 @@ actual data and how to detect it?*
 |===
 | Title: | NT security descriptor
 | URL: | https://github.com/libyal/libfwnt/wiki/Security-Descriptor
+|===
+
+`[MS-EVEN]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | EventLog Remoting Protocol
+| URL: | https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-even
 |===
 
 [appendix]
