@@ -27,6 +27,7 @@
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
+#include "libevt_libcthreads.h"
 #include "libevt_record.h"
 #include "libevt_record_values.h"
 
@@ -108,6 +109,21 @@ int libevt_record_initialize(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_initialize(
+	     &( internal_record->read_write_lock ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize read/write lock.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	internal_record->file_io_handle = file_io_handle;
 	internal_record->io_handle      = io_handle;
 	internal_record->record_values  = record_values;
@@ -134,6 +150,7 @@ int libevt_record_free(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_free";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -151,12 +168,27 @@ int libevt_record_free(
 		internal_record = (libevt_internal_record_t *) *record;
 		*record         = NULL;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+		if( libcthreads_read_write_lock_free(
+		     &( internal_record->read_write_lock ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free read/write lock.",
+			 function );
+
+			result = -1;
+		}
+#endif
 		/* The file_io_handle, io_handle and record_values references are freed elsewhere
 		 */
 		memory_free(
 		 internal_record );
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Retrieves the offset
@@ -169,6 +201,7 @@ int libevt_record_get_offset(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_offset";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -183,31 +216,51 @@ int libevt_record_get_offset(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( offset == NULL )
+#endif
+	if( libevt_record_values_get_offset(
+	     internal_record->record_values,
+	     offset,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid offset.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve offset.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*offset = internal_record->record_values->offset;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the identifier (record number)
@@ -220,6 +273,7 @@ int libevt_record_get_identifier(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_identifier";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -234,31 +288,51 @@ int libevt_record_get_identifier(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( identifier == NULL )
+#endif
+	if( libevt_record_values_get_number(
+	     internal_record->record_values,
+	     identifier,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid identifier.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*identifier = internal_record->record_values->number;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the creation time
@@ -272,6 +346,7 @@ int libevt_record_get_creation_time(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_creation_time";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -286,31 +361,51 @@ int libevt_record_get_creation_time(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( posix_time == NULL )
+#endif
+	if( libevt_record_values_get_creation_time(
+	     internal_record->record_values,
+	     posix_time,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid posix time.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to creation time.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*posix_time = internal_record->record_values->creation_time;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the written time
@@ -324,6 +419,7 @@ int libevt_record_get_written_time(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_written_time";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -338,31 +434,51 @@ int libevt_record_get_written_time(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( posix_time == NULL )
+#endif
+	if( libevt_record_values_get_written_time(
+	     internal_record->record_values,
+	     posix_time,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid posix time.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to written time.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*posix_time = internal_record->record_values->written_time;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the event identifier
@@ -375,6 +491,7 @@ int libevt_record_get_event_identifier(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_event_identifier";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -389,31 +506,51 @@ int libevt_record_get_event_identifier(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( event_identifier == NULL )
+#endif
+	if( libevt_record_values_get_event_identifier(
+	     internal_record->record_values,
+	     event_identifier,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid event identifier.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve event identifier.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*event_identifier = internal_record->record_values->event_identifier;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the event type
@@ -426,6 +563,7 @@ int libevt_record_get_event_type(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_event_type";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -440,31 +578,51 @@ int libevt_record_get_event_type(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( event_type == NULL )
+#endif
+	if( libevt_record_values_get_event_type(
+	     internal_record->record_values,
+	     event_type,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid event type.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve event type.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*event_type = internal_record->record_values->event_type;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the event category
@@ -477,6 +635,7 @@ int libevt_record_get_event_category(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_event_category";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -491,31 +650,51 @@ int libevt_record_get_event_category(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( event_category == NULL )
+#endif
+	if( libevt_record_values_get_event_category(
+	     internal_record->record_values,
+	     event_category,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid event category.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve event category.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	*event_category = internal_record->record_values->event_category;
-
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-8 encoded source name
@@ -529,6 +708,7 @@ int libevt_record_get_utf8_source_name_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_source_name_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -543,33 +723,53 @@ int libevt_record_get_utf8_source_name_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf8_string_size(
-	     internal_record->record_values->source_name,
-	     0,
-	     utf8_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-8 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf8_source_name_size(
+	          internal_record->record_values,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 source name size.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-8 encoded source name
@@ -584,6 +784,7 @@ int libevt_record_get_utf8_source_name(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_source_name";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -598,34 +799,54 @@ int libevt_record_get_utf8_source_name(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf8_string(
-	     internal_record->record_values->source_name,
-	     0,
-	     utf8_string,
-	     utf8_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy source name to UTF-8 string.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf8_source_name(
+	          internal_record->record_values,
+	          utf8_string,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 source name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-16 encoded source name
@@ -639,6 +860,7 @@ int libevt_record_get_utf16_source_name_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_source_name_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -653,33 +875,53 @@ int libevt_record_get_utf16_source_name_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf16_string_size(
-	     internal_record->record_values->source_name,
-	     0,
-	     utf16_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf16_source_name_size(
+	          internal_record->record_values,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 source name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-16 encoded source name
@@ -694,6 +936,7 @@ int libevt_record_get_utf16_source_name(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_source_name";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -708,34 +951,54 @@ int libevt_record_get_utf16_source_name(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf16_string(
-	     internal_record->record_values->source_name,
-	     0,
-	     utf16_string,
-	     utf16_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy source name to UTF-16 string.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf16_source_name(
+	          internal_record->record_values,
+	          utf16_string,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 source name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-8 encoded computer name
@@ -749,6 +1012,7 @@ int libevt_record_get_utf8_computer_name_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_computer_name_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -763,33 +1027,53 @@ int libevt_record_get_utf8_computer_name_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf8_string_size(
-	     internal_record->record_values->computer_name,
-	     0,
-	     utf8_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-8 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf8_computer_name_size(
+	          internal_record->record_values,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 computer name size.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-8 encoded computer name
@@ -804,6 +1088,7 @@ int libevt_record_get_utf8_computer_name(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_computer_name";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -818,34 +1103,54 @@ int libevt_record_get_utf8_computer_name(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf8_string(
-	     internal_record->record_values->computer_name,
-	     0,
-	     utf8_string,
-	     utf8_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy computer name to UTF-8 string.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf8_computer_name(
+	          internal_record->record_values,
+	          utf8_string,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 computer name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-16 encoded computer name
@@ -859,6 +1164,7 @@ int libevt_record_get_utf16_computer_name_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_computer_name_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -873,33 +1179,53 @@ int libevt_record_get_utf16_computer_name_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf16_string_size(
-	     internal_record->record_values->computer_name,
-	     0,
-	     utf16_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf16_computer_name_size(
+	          internal_record->record_values,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 computer name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-16 encoded computer name
@@ -914,6 +1240,7 @@ int libevt_record_get_utf16_computer_name(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_computer_name";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -928,34 +1255,54 @@ int libevt_record_get_utf16_computer_name(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf16_string(
-	     internal_record->record_values->computer_name,
-	     0,
-	     utf16_string,
-	     utf16_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy computer name to UTF-16 string.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf16_computer_name(
+	          internal_record->record_values,
+	          utf16_string,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 computer name.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-8 encoded user security identifier
@@ -969,6 +1316,7 @@ int libevt_record_get_utf8_user_security_identifier_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_user_security_identifier_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -983,37 +1331,53 @@ int libevt_record_get_utf8_user_security_identifier_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_record->record_values->user_security_identifier == NULL )
-	{
-		return( 0 );
-	}
-	if( libfvalue_value_get_utf8_string_size(
-	     internal_record->record_values->user_security_identifier,
-	     0,
-	     utf8_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-8 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf8_user_security_identifier_size(
+	          internal_record->record_values,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve the of the user security identifier as UTF-8 string.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-8 encoded user security identifier
@@ -1028,6 +1392,7 @@ int libevt_record_get_utf8_user_security_identifier(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_user_security_identifier";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -1042,27 +1407,28 @@ int libevt_record_get_utf8_user_security_identifier(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->user_security_identifier == NULL )
-	{
-		return( 0 );
-	}
-	if( libfvalue_value_copy_to_utf8_string(
-	     internal_record->record_values->user_security_identifier,
-	     0,
-	     utf8_string,
-	     utf8_string_size,
-	     error ) != 1 )
+#endif
+	result = libevt_record_values_get_utf8_user_security_identifier(
+	          internal_record->record_values,
+	          utf8_string,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1071,9 +1437,24 @@ int libevt_record_get_utf8_user_security_identifier(
 		 "%s: unable to copy user security identifier to UTF-8 string.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the UTF-16 encoded user security identifier
@@ -1087,6 +1468,7 @@ int libevt_record_get_utf16_user_security_identifier_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_user_security_identifier_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -1101,33 +1483,53 @@ int libevt_record_get_utf16_user_security_identifier_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf16_string_size(
-	     internal_record->record_values->user_security_identifier,
-	     0,
-	     utf16_string_size,
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 string size.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	result = libevt_record_values_get_utf16_user_security_identifier_size(
+	          internal_record->record_values,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve the of the user security identifier as UTF-16 string.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the UTF-16 encoded user security identifier
@@ -1142,6 +1544,7 @@ int libevt_record_get_utf16_user_security_identifier(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_user_security_identifier";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -1156,23 +1559,28 @@ int libevt_record_get_utf16_user_security_identifier(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( libfvalue_value_copy_to_utf16_string(
-	     internal_record->record_values->user_security_identifier,
-	     0,
-	     utf16_string,
-	     utf16_string_size,
-	     error ) != 1 )
+#endif
+	result = libevt_record_values_get_utf16_user_security_identifier(
+	          internal_record->record_values,
+	          utf16_string,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1181,9 +1589,24 @@ int libevt_record_get_utf16_user_security_identifier(
 		 "%s: unable to copy user security identifier to UTF-16 string.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the number of strings
@@ -1196,6 +1619,7 @@ int libevt_record_get_number_of_strings(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_number_of_strings";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -1210,50 +1634,51 @@ int libevt_record_get_number_of_strings(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->strings == NULL )
+#endif
+	if( libevt_record_values_get_number_of_strings(
+	     internal_record->record_values,
+	     number_of_strings,
+	     error ) != 1 )
 	{
-		if( number_of_strings == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-			 "%s: invalid number of strings.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of strings.",
+		 function );
 
-			return( -1 );
-		}
-		*number_of_strings = 0;
+		result = -1;
 	}
-	else
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
-		if( libfvalue_value_get_number_of_value_entries(
-		     internal_record->record_values->strings,
-		     number_of_strings,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve number of strings value entries.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
 
-			return( -1 );
-		}
+		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the size of a specific UTF-8 encoded string
@@ -1268,6 +1693,7 @@ int libevt_record_get_utf8_string_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_string_size";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -1282,30 +1708,23 @@ int libevt_record_get_utf8_string_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->strings == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid string index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf8_string_size(
-	     internal_record->record_values->strings,
+#endif
+	if( libevt_record_values_get_utf8_string_size(
+	     internal_record->record_values,
 	     string_index,
 	     utf8_string_size,
 	     error ) != 1 )
@@ -1318,9 +1737,24 @@ int libevt_record_get_utf8_string_size(
 		 function,
 		 string_index );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific UTF-8 encoded string
@@ -1336,6 +1770,7 @@ int libevt_record_get_utf8_string(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf8_string";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -1350,30 +1785,23 @@ int libevt_record_get_utf8_string(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->strings == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid string index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf8_string(
-	     internal_record->record_values->strings,
+#endif
+	if( libevt_record_values_get_utf8_string(
+	     internal_record->record_values,
 	     string_index,
 	     utf8_string,
 	     utf8_string_size,
@@ -1387,9 +1815,24 @@ int libevt_record_get_utf8_string(
 		 function,
 		 string_index );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the size of a specific UTF-16 encoded string
@@ -1404,6 +1847,7 @@ int libevt_record_get_utf16_string_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_string_size";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -1418,30 +1862,23 @@ int libevt_record_get_utf16_string_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->strings == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid string index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_utf16_string_size(
-	     internal_record->record_values->strings,
+#endif
+	if( libevt_record_values_get_utf16_string_size(
+	     internal_record->record_values,
 	     string_index,
 	     utf16_string_size,
 	     error ) != 1 )
@@ -1454,9 +1891,24 @@ int libevt_record_get_utf16_string_size(
 		 function,
 		 string_index );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific UTF-16 encoded string
@@ -1472,6 +1924,7 @@ int libevt_record_get_utf16_string(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_utf16_string";
+	int result                                = 1;
 
 	if( record == NULL )
 	{
@@ -1486,30 +1939,23 @@ int libevt_record_get_utf16_string(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->strings == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid string index value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( libfvalue_value_copy_to_utf16_string(
-	     internal_record->record_values->strings,
+#endif
+	if( libevt_record_values_get_utf16_string(
+	     internal_record->record_values,
 	     string_index,
 	     utf16_string,
 	     utf16_string_size,
@@ -1523,9 +1969,24 @@ int libevt_record_get_utf16_string(
 		 function,
 		 string_index );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the size of the data
@@ -1538,6 +1999,7 @@ int libevt_record_get_data_size(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_data_size";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -1552,25 +2014,27 @@ int libevt_record_get_data_size(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->data == NULL )
-	{
-		return( 0 );
-	}
-	if( libfvalue_value_get_data_size(
-	     internal_record->record_values->data,
-	     data_size,
-	     error ) != 1 )
+#endif
+	result = libevt_record_values_get_data_size(
+	          internal_record->record_values,
+	          data_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1579,9 +2043,24 @@ int libevt_record_get_data_size(
 		 "%s: unable to retrieve data size.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the data
@@ -1595,6 +2074,7 @@ int libevt_record_get_data(
 {
 	libevt_internal_record_t *internal_record = NULL;
 	static char *function                     = "libevt_record_get_data";
+	int result                                = 0;
 
 	if( record == NULL )
 	{
@@ -1609,26 +2089,28 @@ int libevt_record_get_data(
 	}
 	internal_record = (libevt_internal_record_t *) record;
 
-	if( internal_record->record_values == NULL )
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid record - missing record values.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
 		 function );
 
 		return( -1 );
 	}
-	if( internal_record->record_values->data == NULL )
-	{
-		return( 0 );
-	}
-	if( libfvalue_value_copy_data(
-	     internal_record->record_values->data,
-	     data,
-	     data_size,
-	     error ) != 1 )
+#endif
+	result = libevt_record_values_get_data(
+	          internal_record->record_values,
+	          data,
+	          data_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1637,8 +2119,23 @@ int libevt_record_get_data(
 		 "%s: unable to copy data.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_record->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 

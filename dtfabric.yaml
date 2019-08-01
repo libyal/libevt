@@ -103,15 +103,15 @@ members:
   data_type: uint16
 - name: unknown2
   data_type: uint32
-- name: strings_offset
+- name: event_strings_offset
   data_type: uint32
-- name: user_identifier_size
+- name: user_security_identifier_size
   data_type: uint32
-- name: user_identifier_offset
+- name: user_security_identifier_offset
   data_type: uint32
-- name: data_size
+- name: event_data_size
   data_type: uint32
-- name: data_offset
+- name: event_data_offset
   data_type: uint32
 - name: source_name
   type: string
@@ -123,15 +123,20 @@ members:
   encoding: utf-16-le
   element_data_type: wchar16
   elements_terminator: "\x00\x00"
-- name: user_identifier
+- name: user_security_identifier
   type: stream
   element_data_type: byte
-  elements_data_size: event_record.user_identifier_size
-- name: data
+  elements_data_size: event_record.user_security_identifier_size
+  condition: event_record.user_security_identifier_offset != 0
+- name: event_strings
+# TODO: add strings array?
+- name: event_data
   type: stream
   element_data_type: byte
-  elements_data_size: event_record.data_size
-# TODO alignment padding
+  elements_data_size: event_record.event_data_size
+- name: alignment_padding
+  type: padding
+  alignment_size: 4
 - name: copy_of_size
   data_type: uint32
 ---

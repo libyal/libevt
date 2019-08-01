@@ -20,7 +20,11 @@
  */
 
 #include <common.h>
+#include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libevt_debug.h"
 #include "libevt_definitions.h"
@@ -28,6 +32,8 @@
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
 #include "libevt_libfdatetime.h"
+#include "libevt_libfwnt.h"
+#include "libevt_libuna.h"
 
 #if defined( HAVE_DEBUG_OUTPUT )
 
@@ -218,6 +224,285 @@ on_error:
 		libfdatetime_posix_time_free(
 		 &posix_time,
 		 NULL );
+	}
+	return( -1 );
+}
+
+/* Prints a Windows NT security identifier value
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_debug_print_security_identifier_value(
+     const char *function_name,
+     const char *value_name,
+     const uint8_t *byte_stream,
+     size_t byte_stream_size,
+     libcerror_error_t **error )
+{
+	libfwnt_security_identifier_t *security_identifier = NULL;
+	system_character_t *string                         = NULL;
+	static char *function                              = "libevt_debug_print_security_identifier_value";
+	size_t string_size                                 = 0;
+	int result                                         = 0;
+
+	if( ( byte_stream == NULL )
+	 || ( byte_stream_size == 0 ) )
+	{
+		libcnotify_printf(
+		 "%s: %s: \n",
+		 function_name,
+		 value_name );
+
+		return( 1 );
+	}
+	if( libfwnt_security_identifier_initialize(
+	     &security_identifier,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create security identifier.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfwnt_security_identifier_copy_from_byte_stream(
+	     security_identifier,
+	     byte_stream,
+	     byte_stream_size,
+	     LIBFWNT_ENDIAN_LITTLE,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy byte stream to security identifier.",
+		 function );
+
+		goto on_error;
+	}
+	result = libfwnt_security_identifier_get_string_size(
+	          security_identifier,
+	          &string_size,
+	          0,
+	          error );
+
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve security identifier string size.",
+		 function );
+
+		goto on_error;
+	}
+	string = system_string_allocate(
+	          string_size );
+
+	if( string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create string.",
+		 function );
+
+		goto on_error;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libfwnt_security_identifier_copy_to_utf16_string(
+	          security_identifier,
+		  (uint16_t *) string,
+		  string_size,
+		  0,
+		  error );
+#else
+	result = libfwnt_security_identifier_copy_to_utf8_string(
+	          security_identifier,
+		  (uint8_t *) string,
+		  string_size,
+		  0,
+		  error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set security identifier string.",
+		 function );
+
+		goto on_error;
+	}
+	libcnotify_printf(
+	 "%s: %s: %s\n",
+	 function_name,
+	 value_name,
+	 string );
+
+	memory_free(
+	 string );
+
+	string = NULL;
+
+	if( libfwnt_security_identifier_free(
+	     &security_identifier,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free security identifier.",
+		 function );
+
+		goto on_error;
+	}
+	return( 1 );
+
+on_error:
+	if( string != NULL )
+	{
+		memory_free(
+		 string );
+	}
+	if( security_identifier != NULL )
+	{
+		libfwnt_security_identifier_free(
+		 &security_identifier,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Prints an UTF-16 string value
+ * Returns 1 if successful or -1 on error
+ */
+int libevt_debug_print_utf16_string_value(
+     const char *function_name,
+     const char *value_name,
+     const uint8_t *byte_stream,
+     size_t byte_stream_size,
+     int byte_order,
+     libcerror_error_t **error )
+{
+	system_character_t *string = NULL;
+	static char *function      = "libevt_debug_print_utf16_string_value";
+	size_t string_size         = 0;
+	int result                 = 0;
+
+	if( ( byte_stream == NULL )
+	 || ( byte_stream_size == 0 ) )
+	{
+		libcnotify_printf(
+		 "%s: %s: \n",
+		 function_name,
+		 value_name );
+
+		return( 1 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libuna_utf16_string_size_from_utf16_stream(
+		  byte_stream,
+		  byte_stream_size,
+		  byte_order,
+		  &string_size,
+		  error );
+#else
+	result = libuna_utf8_string_size_from_utf16_stream(
+		  byte_stream,
+		  byte_stream_size,
+		  byte_order,
+		  &string_size,
+		  error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine size of string.",
+		 function );
+
+		goto on_error;
+	}
+	if( ( string_size > (size_t) SSIZE_MAX )
+	 || ( ( sizeof( system_character_t ) * string_size ) > (size_t) SSIZE_MAX ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid string size value exceeds maximum.",
+		 function );
+
+		goto on_error;
+	}
+	string = system_string_allocate(
+	          string_size );
+
+	if( string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create string.",
+		 function );
+
+		goto on_error;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libuna_utf16_string_copy_from_utf16_stream(
+		  (libuna_utf16_character_t *) string,
+		  string_size,
+		  byte_stream,
+		  byte_stream_size,
+		  byte_order,
+		  error );
+#else
+	result = libuna_utf8_string_copy_from_utf16_stream(
+		  (libuna_utf8_character_t *) string,
+		  string_size,
+		  byte_stream,
+		  byte_stream_size,
+		  byte_order,
+		  error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set string.",
+		 function );
+
+		goto on_error;
+	}
+	libcnotify_printf(
+	 "%s: %s: %s\n",
+	 function_name,
+	 value_name,
+	 string );
+
+	memory_free(
+	 string );
+
+	return( 1 );
+
+on_error:
+	if( string != NULL )
+	{
+		memory_free(
+		 string );
 	}
 	return( -1 );
 }

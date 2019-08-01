@@ -34,7 +34,8 @@
 extern "C" {
 #endif
 
-extern const char *evt_file_signature;
+extern const uint8_t evt_end_of_file_record_signature1[ 4 ];
+extern const uint8_t evt_file_signature[ 4 ];
 
 typedef struct libevt_io_handle libevt_io_handle_t;
 

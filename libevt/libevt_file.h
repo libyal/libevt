@@ -30,6 +30,7 @@
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
+#include "libevt_libcthreads.h"
 #include "libevt_libfcache.h"
 #include "libevt_libfdata.h"
 #include "libevt_types.h"
@@ -73,6 +74,12 @@ struct libevt_internal_file
 	/* The records cache
 	 */
 	libfcache_cache_t *records_cache;
+
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	/* The read/write lock
+	 */
+	libcthreads_read_write_lock_t *read_write_lock;
+#endif
 };
 
 LIBEVT_EXTERN \

@@ -1,4 +1,9 @@
 TODO:
+* move direct access to event record struct members in record values to functions
+  - replace calls to libfvalue by libuna and libfwnt
+  - handle strings, use split string?
+* API have source and computer name functions return 0
+
 * libevt
   - remove file_get_version
 * evtexport, add date time format selection

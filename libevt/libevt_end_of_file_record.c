@@ -282,7 +282,7 @@ int libevt_end_of_file_record_read_data(
 		 ( (evt_end_of_file_record_t *) data )->signature1,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature1\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature1\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -290,7 +290,7 @@ int libevt_end_of_file_record_read_data(
 		 ( (evt_end_of_file_record_t *) data )->signature2,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature2\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature2\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -298,7 +298,7 @@ int libevt_end_of_file_record_read_data(
 		 ( (evt_end_of_file_record_t *) data )->signature3,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature3\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature3\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -306,7 +306,7 @@ int libevt_end_of_file_record_read_data(
 		 ( (evt_end_of_file_record_t *) data )->signature4,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: signature4\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: signature4\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -322,7 +322,7 @@ int libevt_end_of_file_record_read_data(
 		 ( (evt_end_of_file_record_t *) data )->end_of_file_record_offset,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: end of file record offset\t: 0x%08" PRIx32 "\n",
+		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 

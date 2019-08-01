@@ -7,8 +7,8 @@ License: LGPL
 Source: %{name}-%{version}.tar.gz
 URL: https://github.com/libyal/libevt
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-@libevt_spec_requires@ @ax_libbfio_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcfile_spec_requires@ @ax_libclocale_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcpath_spec_requires@ @ax_libcsplit_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@ @ax_libfdata_spec_requires@ @ax_libfdatetime_spec_requires@ @ax_libfguid_spec_requires@ @ax_libfvalue_spec_requires@ @ax_libfwnt_spec_requires@ @ax_libuna_spec_requires@
-BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfdatetime_spec_build_requires@ @ax_libfguid_spec_build_requires@ @ax_libfvalue_spec_build_requires@ @ax_libfwnt_spec_build_requires@ @ax_libuna_spec_build_requires@
+@libevt_spec_requires@ @ax_libbfio_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcfile_spec_requires@ @ax_libclocale_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcpath_spec_requires@ @ax_libcsplit_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@ @ax_libfdata_spec_requires@ @ax_libfdatetime_spec_requires@ @ax_libfguid_spec_requires@ @ax_libfwnt_spec_requires@ @ax_libuna_spec_requires@
+BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfdatetime_spec_build_requires@ @ax_libfguid_spec_build_requires@ @ax_libfwnt_spec_build_requires@ @ax_libuna_spec_build_requires@
 
 %description -n libevt
 Library to access the Windows Event Log (EVT) format
@@ -52,8 +52,8 @@ Python 3 bindings for libevt
 %package -n libevt-tools
 Summary: Several tools for reading Windows Event Log (EVT) files
 Group: Applications/System
-Requires: libevt = %{version}-%{release} @ax_libcdirectory_spec_requires@ @ax_libexe_spec_requires@ @ax_libfwevt_spec_requires@ @ax_libregf_spec_requires@ @ax_libwrc_spec_requires@
-@libevt_spec_tools_build_requires@ @ax_libcdirectory_spec_build_requires@ @ax_libexe_spec_build_requires@ @ax_libfwevt_spec_build_requires@ @ax_libregf_spec_build_requires@ @ax_libwrc_spec_build_requires@
+Requires: libevt = %{version}-%{release} @ax_libcdirectory_spec_requires@ @ax_libexe_spec_requires@ @ax_libfvalue_spec_requires@ @ax_libfwevt_spec_requires@ @ax_libregf_spec_requires@ @ax_libwrc_spec_requires@
+@libevt_spec_tools_build_requires@ @ax_libcdirectory_spec_build_requires@ @ax_libexe_spec_build_requires@ @ax_libfvalue_spec_build_requires@ @ax_libfwevt_spec_build_requires@ @ax_libregf_spec_build_requires@ @ax_libwrc_spec_build_requires@
 
 %description -n libevt-tools
 Several tools for reading Windows Event Log (EVT) files

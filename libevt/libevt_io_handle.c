@@ -37,7 +37,11 @@
 
 #include "evt_file_header.h"
 
-const char *evt_file_signature = "LfLe";
+const uint8_t evt_end_of_file_record_signature1[ 4 ] = { 0x11, 0x11, 0x11, 0x11 };
+const uint8_t evt_end_of_file_record_signature2[ 4 ] = { 0x22, 0x22, 0x22, 0x22 };
+const uint8_t evt_end_of_file_record_signature3[ 4 ] = { 0x33, 0x33, 0x33, 0x33 };
+const uint8_t evt_end_of_file_record_signature4[ 4 ] = { 0x44, 0x44, 0x44, 0x44 };
+const uint8_t evt_file_signature[ 4 ]                = { 'L', 'f', 'L', 'e' };
 
 /* Creates an IO handle
  * Make sure the value io_handle is referencing, is set to NULL

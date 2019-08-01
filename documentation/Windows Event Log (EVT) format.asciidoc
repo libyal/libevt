@@ -95,13 +95,15 @@ The following version of programs were used to test the information within this 
 === Event Log files
 
 On Windows NT 4 the event logs files can be found in:
+
 ....
-C:\WINNT\System32\config\
+C:\WINNT\System32\config
 ....
 
 As of Windows 2000 the default location changed to:
+
 ....
-C:\Windows\System32\config\
+C:\Windows\System32\config
 ....
 
 [cols="1,2",options="header"]
@@ -179,11 +181,12 @@ Contains 32-bit Unix epoch of the date and time in UTC the record was written to
 | 24 | 2 | | Event type
 | 26 | 2 | | Number of strings
 | 28 | 2 | | Event category
-| 30 | 2 | | *Unknown (Event flags)* +
-Usually 0, also see note below
-| 32 | 4 | | *Unknown (Closing record number)* +
+| 30 | 2 | | [yellow-background]*Unknown (Event flags)* +
+Actual usage unknown indicated as reserved +
+See note below about its usage, usually contains 0
+| 32 | 4 | | [yellow-background]*Unknown (Closing record number)* +
 Should be 0 if the file has not been externally modified
-| 36 | 4 | | Strings offset +
+| 36 | 4 | | Event strings offset +
 The offset is relative to the start of the record and must be a multitude of 2 +
 Can contain 0 but the number of strings should also be 0
 | 40 | 4 | | User identifier (SID) size +
@@ -191,11 +194,12 @@ Can contain 0 but the number of strings should also be 0
 | 44 | 4 | | User identifier (SID) offset +
 The offset is relative to the start of the record +
 Can contain 0 but the user identifier size should also be 0
-| 48 | 4 | | Data size +
+| 48 | 4 | | Event data size +
 0 if no data is available
-| 52 | 4 | | Data offset +
+| 52 | 4 | | Event data offset +
 The offset is relative to the start of the record +
 Can contain 0 but the data size should also be 0
+4+| _Event record members_
 | 56 | ... | | Source name +
 Contains an UTF-16 little-endian string with end-of-string character
 | ... | ... | | Computer name +
@@ -203,14 +207,22 @@ Contains an UTF-16 little-endian string with end-of-string character
 | ... | ... | | User SID +
 Contains a Windows NT security identifier +
 For more information see `[NTSID]`.
-| ... | ... | | Strings +
+| ... | ... | | Event strings +
 Array of UTF-16 little-endian strings with end-of-string character
-| ... | ... | | Data
+| ... | ... | | Event data
 | ... | ... | | [yellow-background]*Padding (empty values)* +
 4-byte alignment
 | ... | 4 | | Copy of size +
 This value is used to indicate the end of the event record
 |===
+
+The user SID offset can be ignored if the user SID size is 0. In this situation
+the strings offset can be the same as the strings offset.
+
+The strings offset can be ignored if the number of strings is 0. In this
+situation the data offset can be the same as the strings offset.
+
+Offsets beyond the record data should be ignored.
 
 [NOTE]
 The event flags field is a copy of the 4 bytes of data passed in the Flags field
@@ -220,13 +232,6 @@ suggests a shared meaning for bit 0x8000 as "the last string is valid XML", but
 the Event Log service does not validate this when writing the strings. Most, if
 not all, events are written using the ReportEvent Win32 API wrapper around the
 RPC function, and will always set this field to be 0.
-
-[NOTE]
-If the user SID size is 0 then the string offset may equal the user SID offset.
-If the number of strings is 0 then the data offset may equal the string offset.
-In both of these cases the offset should be ignored if the size or number of
-strings is 0. Offsets that start or end (offset + size) past the end of the
-record should be ignored.
 
 === Event type
 
@@ -266,11 +271,13 @@ Some of the data that Event Viewer shows is stored outside the event log files.
 
 The first step to determine the location of these values is find the
 corresponding "event log type sub key" in the Windows registry under:
+
 ....
-HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\EventLog\
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\EventLog
 ....
 
 Every event log type has its own sub key, e.g.:
+
 ....
 HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\EventLog\System
 ....
@@ -283,6 +290,7 @@ Common event log types are:
 
 The event log type sub key has a "event source sub key" for every source name,
 e.g for the source name "Workstation":
+
 ....
 HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\EventLog\System\Workstation
 ....
@@ -297,6 +305,7 @@ The event message strings are stored in event message files.
 
 The event source sub key has a value named "EventMessageFile" which contains a
 path specification of the event message file.
+
 ....
 %SystemRoot%\System32\netmsg.dll
 ....
@@ -315,8 +324,9 @@ programs producing different messages than shown in Event Viewer.
 
 Here "%SystemRoot%" is case insensitive and needs to be expanded to the Windows
 directory. The actual value of %SystemRoot% can be found in the Registry value:
+
 ....
-Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\
+Key: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion
 Value: SystemRoot
 ....
 
@@ -332,13 +342,15 @@ This value depends on the Windows version, e.g.
 |===
 
 Other environment variables that are frequently used are:
+
 ....
 %WinDir%
 ....
 
 The actual value of e.g. %WinDir% can be found in the Registry value:
+
 ....
-Key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment\
+Key: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment
 Value: windir
 ....
 
@@ -348,6 +360,7 @@ section. Event message files can have various extensions, e.g. ".exe", ".dll",
 
 The resource section contains a message-table resource which contains the event
 message strings. E.g.
+
 ....
 C:\Windows\System32\netmsg.dll
 ....
@@ -355,6 +368,7 @@ C:\Windows\System32\netmsg.dll
 The event message strings have identifiers similar to the event identifiers.
 E.g. if the event identifier is 3260 (0x00000cbc) the corresponding event
 message string would be:
+
 ....
 This computer has been successfully joined to %1 '%2'.
 ....
@@ -370,6 +384,7 @@ therefore contain event message strings for multiple languages.
 
 Parameter expansion is e.g. seen in event identifier 0xc0001b58 of the Service
 Control Manager.
+
 ....
 String: 1                       : Application Layer Gateway-service
 String: 2                       : %%1053
@@ -377,12 +392,14 @@ String: 2                       : %%1053
 
 The event source sub key has a value named "ParameterMessageFile" which for the
 Service Control Manager refers to:
+
 ....
 %SystemRoot%\System32\kernel32.dll
 ....
 
 Here %%1053 corresponds to the message string with identifier 1053 stored in
 kernel32.dll, which is expanded to:
+
 ....
 The service did not respond to the start or control request in a timely fashion.
 ....
@@ -395,6 +412,7 @@ name strings are stored in event message files (also see:
 
 The event source sub key has a value named "CategoryMessageFile" which contains
 a path specification of the event message file.
+
 ....
 %SystemRoot%\System32\MsAuditE.dll
 ....

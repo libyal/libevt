@@ -53,6 +53,7 @@ check_PROGRAMS = \
 	evt_test_notify \
 	evt_test_record \
 	evt_test_record_values \
+	evt_test_strings_array \
 	evt_test_support
 
 evt_test_end_of_file_record_SOURCES = \
@@ -170,6 +171,18 @@ evt_test_record_values_SOURCES = \
 	evt_test_unused.h
 
 evt_test_record_values_LDADD = \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_strings_array_SOURCES = \
+	evt_test_libcerror.h \
+	evt_test_libevt.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_strings_array.c \
+	evt_test_unused.h
+
+evt_test_strings_array_LDADD = \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@
 

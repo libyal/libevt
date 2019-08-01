@@ -25,12 +25,12 @@
 #include <common.h>
 #include <types.h>
 
+#include "libevt_event_record.h"
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libfcache.h"
 #include "libevt_libfdata.h"
-#include "libevt_libfvalue.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -41,11 +41,6 @@ enum LIBEVT_RECORD_TYPES
 	LIBEVT_RECORD_TYPE_EVENT,
 	LIBEVT_RECORD_TYPE_END_OF_FILE
 };
-
-extern const uint8_t evt_end_of_file_record_signature1[ 4 ];
-extern const uint8_t evt_end_of_file_record_signature2[ 4 ];
-extern const uint8_t evt_end_of_file_record_signature3[ 4 ];
-extern const uint8_t evt_end_of_file_record_signature4[ 4 ];
 
 typedef struct libevt_record_values libevt_record_values_t;
 
@@ -63,45 +58,9 @@ struct libevt_record_values
 	 */
 	uint32_t number;
 
-	/* The creation time
+	/* The event record
 	 */
-	uint32_t creation_time;
-
-	/* The written time
-	 */
-	uint32_t written_time;
-
-	/* The event identifier
-	 */
-	uint32_t event_identifier;
-
-	/* The event type
-	 */
-	uint16_t event_type;
-
-	/* The event category
-	 */
-	uint16_t event_category;
-
-	/* The source name
-	 */
-	libfvalue_value_t *source_name;
-
-	/* The computer name
-	 */
-	libfvalue_value_t *computer_name;
-
-	/* The user security identifier (SID)
-	 */
-	libfvalue_value_t *user_security_identifier;
-
-	/* The strings
-	 */
-	libfvalue_value_t *strings;
-
-	/* The data
-	 */
-	libfvalue_value_t *data;
+	libevt_event_record_t *event_record;
 };
 
 int libevt_record_values_initialize(
@@ -110,11 +69,6 @@ int libevt_record_values_initialize(
 
 int libevt_record_values_free(
      libevt_record_values_t **record_values,
-     libcerror_error_t **error );
-
-int libevt_record_values_clone(
-     libevt_record_values_t **destination_record_values,
-     libevt_record_values_t *source_record_values,
      libcerror_error_t **error );
 
 ssize_t libevt_record_values_read(
@@ -132,9 +86,152 @@ int libevt_record_values_read_event(
      uint8_t strict_mode,
      libcerror_error_t **error );
 
+int libevt_record_values_get_offset(
+     libevt_record_values_t *record_values,
+     off64_t *offset,
+     libcerror_error_t **error );
+
 int libevt_record_values_get_type(
      libevt_record_values_t *record_values,
      uint8_t *type,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_number(
+     libevt_record_values_t *record_values,
+     uint32_t *number,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_creation_time(
+     libevt_record_values_t *record_values,
+     uint32_t *posix_time,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_written_time(
+     libevt_record_values_t *record_values,
+     uint32_t *posix_time,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_event_identifier(
+     libevt_record_values_t *record_values,
+     uint32_t *event_identifier,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_event_type(
+     libevt_record_values_t *record_values,
+     uint16_t *event_type,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_event_category(
+     libevt_record_values_t *record_values,
+     uint16_t *event_category,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_source_name_size(
+     libevt_record_values_t *record_values,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_source_name(
+     libevt_record_values_t *record_values,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_source_name_size(
+     libevt_record_values_t *record_values,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_source_name(
+     libevt_record_values_t *record_values,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_computer_name_size(
+     libevt_record_values_t *record_values,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_computer_name(
+     libevt_record_values_t *record_values,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_computer_name_size(
+     libevt_record_values_t *record_values,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_computer_name(
+     libevt_record_values_t *record_values,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_user_security_identifier_size(
+     libevt_record_values_t *record_values,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_user_security_identifier(
+     libevt_record_values_t *record_values,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_user_security_identifier_size(
+     libevt_record_values_t *record_values,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_user_security_identifier(
+     libevt_record_values_t *record_values,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_number_of_strings(
+     libevt_record_values_t *record_values,
+     int *number_of_strings,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_string_size(
+     libevt_record_values_t *record_values,
+     int string_index,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf8_string(
+     libevt_record_values_t *record_values,
+     int string_index,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_string_size(
+     libevt_record_values_t *record_values,
+     int string_index,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_utf16_string(
+     libevt_record_values_t *record_values,
+     int string_index,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_data_size(
+     libevt_record_values_t *record_values,
+     size_t *data_size,
+     libcerror_error_t **error );
+
+int libevt_record_values_get_data(
+     libevt_record_values_t *record_values,
+     uint8_t *data,
+     size_t data_size,
      libcerror_error_t **error );
 
 int libevt_record_values_read_element_data(

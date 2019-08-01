@@ -256,7 +256,7 @@ int libevt_file_header_read_data(
 		 file_header->size );
 
 		libcnotify_printf(
-		 "%s: signature\t\t\t\t: %c%c%c%c\n",
+		 "%s: signature\t\t\t\t\t: %c%c%c%c\n",
 		 function,
 		 ( (evt_file_header_t *) data )->signature[ 0 ],
 		 ( (evt_file_header_t *) data )->signature[ 1 ],
@@ -279,7 +279,7 @@ int libevt_file_header_read_data(
 		 file_header->first_record_offset );
 
 		libcnotify_printf(
-		 "%s: end of file record offset\t\t: 0x%08" PRIx32 "\n",
+		 "%s: end of file record offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_header->end_of_file_record_offset );
 
@@ -303,7 +303,7 @@ int libevt_file_header_read_data(
 		 ( (evt_file_header_t *) data )->maximum_file_size,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: maximum file size\t\t\t: %" PRIu32 "\n",
+		 "%s: maximum file size\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
@@ -316,7 +316,7 @@ int libevt_file_header_read_data(
 		 ( (evt_file_header_t *) data )->retention,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: retention\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: retention\t\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 

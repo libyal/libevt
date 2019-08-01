@@ -7,6 +7,7 @@ MSVSCPP_FILES = \
 	evt_test_notify/evt_test_notify.vcproj \
 	evt_test_record/evt_test_record.vcproj \
 	evt_test_record_values/evt_test_record_values.vcproj \
+	evt_test_strings_array/evt_test_strings_array.vcproj \
 	evt_test_support/evt_test_support.vcproj \
 	evtexport/evtexport.vcproj \
 	evtinfo/evtinfo.vcproj \

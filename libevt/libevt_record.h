@@ -29,6 +29,7 @@
 #include "libevt_io_handle.h"
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
+#include "libevt_libcthreads.h"
 #include "libevt_record_values.h"
 #include "libevt_types.h"
 
@@ -51,6 +52,12 @@ struct libevt_internal_record
 	/* The (event) record values
 	 */
 	libevt_record_values_t *record_values;
+
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	/* The read/write lock
+	 */
+	libcthreads_read_write_lock_t *read_write_lock;
+#endif
 };
 
 int libevt_record_initialize(

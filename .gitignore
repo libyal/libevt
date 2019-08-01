@@ -133,6 +133,7 @@ stamp-h[1-9]
 /tests/evt_test_notify
 /tests/evt_test_record
 /tests/evt_test_record_values
+/tests/evt_test_strings_array
 /tests/evt_test_support
 /tests/input
 /tests/tmp*

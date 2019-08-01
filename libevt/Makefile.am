@@ -16,7 +16,6 @@ AM_CPPFLAGS = \
 	@LIBFDATA_CPPFLAGS@ \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFGUID_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBEVT_DLL_EXPORT@
@@ -31,6 +30,7 @@ libevt_la_SOURCES = \
 	libevt_debug.c libevt_debug.h \
 	libevt_definitions.h \
 	libevt_end_of_file_record.c libevt_end_of_file_record.h \
+	libevt_event_record.c libevt_event_record.h \
 	libevt_error.c libevt_error.h \
 	libevt_extern.h \
 	libevt_file.c libevt_file.h \
@@ -41,15 +41,16 @@ libevt_la_SOURCES = \
 	libevt_libcerror.h \
 	libevt_libclocale.h \
 	libevt_libcnotify.h \
+	libevt_libcthreads.h \
 	libevt_libfcache.h \
 	libevt_libfdata.h \
 	libevt_libfdatetime.h \
-	libevt_libfvalue.h \
 	libevt_libfwnt.h \
 	libevt_libuna.h \
 	libevt_notify.c libevt_notify.h \
 	libevt_record.c libevt_record.h \
 	libevt_record_values.c libevt_record_values.h \
+	libevt_strings_array.c libevt_strings_array.h \
 	libevt_support.c libevt_support.h \
 	libevt_types.h \
 	libevt_unused.h
@@ -69,7 +70,6 @@ libevt_la_LIBADD = \
 	@LIBFDATA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBFGUID_LIBADD@ \
-	@LIBFVALUE_LIBADD@ \
 	@LIBFWNT_LIBADD@ \
 	@PTHREAD_LIBADD@
 

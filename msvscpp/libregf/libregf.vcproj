@@ -171,11 +171,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libregf\libregf_file_header.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libregf\libregf_hive_bin.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_hive_bin_cell.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_hive_bin_header.c"
 				>
 			</File>
 			<File
@@ -196,6 +204,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_key_tree.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_multi_string.c"
 				>
 			</File>
 			<File
@@ -261,11 +273,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libregf\libregf_file_header.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libregf\libregf_hive_bin.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_hive_bin_cell.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_hive_bin_header.h"
 				>
 			</File>
 			<File
@@ -309,6 +329,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libregf\libregf_libcthreads.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libregf\libregf_libfcache.h"
 				>
 			</File>
@@ -326,6 +350,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_libuna.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_multi_string.h"
 				>
 			</File>
 			<File

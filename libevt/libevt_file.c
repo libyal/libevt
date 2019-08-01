@@ -34,6 +34,7 @@
 #include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
+#include "libevt_libcthreads.h"
 #include "libevt_libfcache.h"
 #include "libevt_libfdata.h"
 #include "libevt_record.h"
@@ -170,6 +171,21 @@ int libevt_file_initialize(
 
 		goto on_error;
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_initialize(
+	     &( internal_file->read_write_lock ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize read/write lock.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	*file = (libevt_file_t *) internal_file;
 
 	return( 1 );
@@ -245,6 +261,21 @@ int libevt_file_free(
 		}
 		*file = NULL;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+		if( libcthreads_read_write_lock_free(
+		     &( internal_file->read_write_lock ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free read/write lock.",
+			 function );
+
+			result = -1;
+		}
+#endif
 		if( libfcache_cache_free(
 		     &( internal_file->records_cache ),
 		     error ) != 1 )
@@ -466,8 +497,40 @@ int libevt_file_open(
 
 		goto on_error;
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	internal_file->file_io_handle_created_in_library = 1;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		internal_file->file_io_handle_created_in_library = 0;
+
+		goto on_error;
+	}
+#endif
 	return( 1 );
 
 on_error:
@@ -606,8 +669,40 @@ int libevt_file_open_wide(
 
 		goto on_error;
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	internal_file->file_io_handle_created_in_library = 1;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		internal_file->file_io_handle_created_in_library = 0;
+
+		goto on_error;
+	}
+#endif
 	return( 1 );
 
 on_error:
@@ -746,9 +841,42 @@ int libevt_file_open_file_io_handle(
 
 		goto on_error;
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	internal_file->file_io_handle                   = file_io_handle;
 	internal_file->file_io_handle_opened_in_library = file_io_handle_opened_in_library;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		internal_file->file_io_handle                   = NULL;
+		internal_file->file_io_handle_opened_in_library = 0;
+
+		goto on_error;
+	}
+#endif
 	return( 1 );
 
 on_error:
@@ -796,6 +924,21 @@ int libevt_file_close(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -918,6 +1061,21 @@ int libevt_file_close(
 
 		result = -1;
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( result );
 }
 
@@ -1167,6 +1325,7 @@ int libevt_file_is_corrupted(
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_is_corrupted";
+	int result                            = 0;
 
 	if( file == NULL )
 	{
@@ -1192,11 +1351,41 @@ int libevt_file_is_corrupted(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( ( internal_file->io_handle->flags & LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED ) != 0 )
 	{
-		return( 1 );
+		result = 1;
 	}
-	return( 0 );
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
 }
 
 /* Retrieves the file ASCII codepage
@@ -1245,8 +1434,38 @@ int libevt_file_get_ascii_codepage(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	*ascii_codepage = internal_file->io_handle->ascii_codepage;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( 1 );
 }
 
@@ -1310,8 +1529,38 @@ int libevt_file_set_ascii_codepage(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	internal_file->io_handle->ascii_codepage = ascii_codepage;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( 1 );
 }
 
@@ -1373,9 +1622,39 @@ int libevt_file_get_format_version(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	*major_format_version = internal_file->file_header->major_format_version;
 	*minor_format_version = internal_file->file_header->minor_format_version;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( 1 );
 }
 
@@ -1437,9 +1716,39 @@ int libevt_file_get_version(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	*major_version = internal_file->file_header->major_format_version;
 	*minor_version = internal_file->file_header->minor_format_version;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( 1 );
 }
 
@@ -1489,8 +1798,38 @@ int libevt_file_get_flags(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	*flags = internal_file->file_header->file_flags;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	return( 1 );
 }
 
@@ -1504,6 +1843,7 @@ int libevt_file_get_number_of_records(
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_get_number_of_records";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1518,6 +1858,21 @@ int libevt_file_get_number_of_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_number_of_elements(
 	     internal_file->records_list,
 	     number_of_records,
@@ -1530,9 +1885,24 @@ int libevt_file_get_number_of_records(
 		 "%s: unable to retrieve number of elements from records list.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific record
@@ -1547,6 +1917,7 @@ int libevt_file_get_record(
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_file_get_record";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1572,6 +1943,32 @@ int libevt_file_get_record(
 
 		return( -1 );
 	}
+	if( *record != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid record value already set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->records_list,
 	     (intptr_t *) internal_file->file_io_handle,
@@ -1589,14 +1986,14 @@ int libevt_file_get_record(
 		 function,
 		 record_index );
 
-		return( -1 );
+		result = -1;
 	}
-	if( libevt_record_initialize(
-	     record,
-	     internal_file->io_handle,
-	     internal_file->file_io_handle,
-	     record_values,
-	     error ) != 1 )
+	else if( libevt_record_initialize(
+	          record,
+	          internal_file->io_handle,
+	          internal_file->file_io_handle,
+	          record_values,
+	          error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1605,9 +2002,24 @@ int libevt_file_get_record(
 		 "%s: unable to create record.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific record
@@ -1622,6 +2034,7 @@ int libevt_file_get_record_by_index(
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_file_get_record_by_index";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1647,6 +2060,32 @@ int libevt_file_get_record_by_index(
 
 		return( -1 );
 	}
+	if( *record != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid record value already set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->records_list,
 	     (intptr_t *) internal_file->file_io_handle,
@@ -1664,14 +2103,14 @@ int libevt_file_get_record_by_index(
 		 function,
 		 record_index );
 
-		return( -1 );
+		result = -1;
 	}
-	if( libevt_record_initialize(
-	     record,
-	     internal_file->io_handle,
-	     internal_file->file_io_handle,
-	     record_values,
-	     error ) != 1 )
+	else if( libevt_record_initialize(
+	          record,
+	          internal_file->io_handle,
+	          internal_file->file_io_handle,
+	          record_values,
+	          error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1680,9 +2119,24 @@ int libevt_file_get_record_by_index(
 		 "%s: unable to create record.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves the number of recovered records
@@ -1695,6 +2149,7 @@ int libevt_file_get_number_of_recovered_records(
 {
 	libevt_internal_file_t *internal_file = NULL;
 	static char *function                 = "libevt_file_get_number_of_recovered_records";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1709,6 +2164,21 @@ int libevt_file_get_number_of_recovered_records(
 	}
 	internal_file = (libevt_internal_file_t *) file;
 
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_number_of_elements(
 	     internal_file->recovered_records_list,
 	     number_of_records,
@@ -1721,9 +2191,24 @@ int libevt_file_get_number_of_recovered_records(
 		 "%s: unable to retrieve number of elements from recovered records list.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific recovered record
@@ -1738,6 +2223,7 @@ int libevt_file_get_recovered_record(
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_file_get_recovered_record";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1763,6 +2249,32 @@ int libevt_file_get_recovered_record(
 
 		return( -1 );
 	}
+	if( *record != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid record value already set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->recovered_records_list,
 	     (intptr_t *) internal_file->file_io_handle,
@@ -1780,14 +2292,14 @@ int libevt_file_get_recovered_record(
 		 function,
 		 record_index );
 
-		return( -1 );
+		result = -1;
 	}
-	if( libevt_record_initialize(
-	     record,
-	     internal_file->io_handle,
-	     internal_file->file_io_handle,
-	     record_values,
-	     error ) != 1 )
+	else if( libevt_record_initialize(
+	          record,
+	          internal_file->io_handle,
+	          internal_file->file_io_handle,
+	          record_values,
+	          error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1796,9 +2308,24 @@ int libevt_file_get_recovered_record(
 		 "%s: unable to create record.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 
 /* Retrieves a specific recovered record
@@ -1813,6 +2340,7 @@ int libevt_file_get_recovered_record_by_index(
 	libevt_internal_file_t *internal_file = NULL;
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_file_get_recovered_record_by_index";
+	int result                            = 1;
 
 	if( file == NULL )
 	{
@@ -1838,6 +2366,21 @@ int libevt_file_get_recovered_record_by_index(
 
 		return( -1 );
 	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_list_get_element_value_by_index(
 	     internal_file->recovered_records_list,
 	     (intptr_t *) internal_file->file_io_handle,
@@ -1855,14 +2398,14 @@ int libevt_file_get_recovered_record_by_index(
 		 function,
 		 record_index );
 
-		return( -1 );
+		result = -1;
 	}
-	if( libevt_record_initialize(
-	     record,
-	     internal_file->io_handle,
-	     internal_file->file_io_handle,
-	     record_values,
-	     error ) != 1 )
+	else if( libevt_record_initialize(
+	          record,
+	          internal_file->io_handle,
+	          internal_file->file_io_handle,
+	          record_values,
+	          error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1871,8 +2414,23 @@ int libevt_file_get_recovered_record_by_index(
 		 "%s: unable to create record.",
 		 function );
 
+		result = -1;
+	}
+#if defined( HAVE_LIBEVT_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_file->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
 		return( -1 );
 	}
-	return( 1 );
+#endif
+	return( result );
 }
 

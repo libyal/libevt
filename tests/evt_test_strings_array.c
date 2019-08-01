@@ -1,5 +1,5 @@
 /*
- * Library record_values type test program
+ * Library strings_array type test program
  *
  * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,18 +33,22 @@
 #include "evt_test_memory.h"
 #include "evt_test_unused.h"
 
-#include "../libevt/libevt_record_values.h"
+#include "../libevt/libevt_strings_array.h"
+
+uint8_t evt_test_strings_array_data1[ 28 ] = {
+	0x52, 0x00, 0x53, 0x00, 0x56, 0x00, 0x50, 0x00, 0x00, 0x00, 0x51, 0x00, 0x6f, 0x00, 0x53, 0x00,
+	0x20, 0x00, 0x52, 0x00, 0x53, 0x00, 0x56, 0x00, 0x50, 0x00, 0x00, 0x00 };
 
 #if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
-/* Tests the libevt_record_values_initialize function
+/* Tests the libevt_strings_array_initialize function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_record_values_initialize(
+int evt_test_strings_array_initialize(
      void )
 {
 	libcerror_error_t *error              = NULL;
-	libevt_record_values_t *record_values = NULL;
+	libevt_strings_array_t *strings_array = NULL;
 	int result                            = 0;
 
 #if defined( HAVE_EVT_TEST_MEMORY )
@@ -55,8 +59,8 @@ int evt_test_record_values_initialize(
 
 	/* Test regular cases
 	 */
-	result = libevt_record_values_initialize(
-	          &record_values,
+	result = libevt_strings_array_initialize(
+	          &strings_array,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +69,15 @@ int evt_test_record_values_initialize(
 	 1 );
 
 	EVT_TEST_ASSERT_IS_NOT_NULL(
-	 "record_values",
-	 record_values );
+	 "strings_array",
+	 strings_array );
 
 	EVT_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libevt_record_values_free(
-	          &record_values,
+	result = libevt_strings_array_free(
+	          &strings_array,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +86,8 @@ int evt_test_record_values_initialize(
 	 1 );
 
 	EVT_TEST_ASSERT_IS_NULL(
-	 "record_values",
-	 record_values );
+	 "strings_array",
+	 strings_array );
 
 	EVT_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,7 +95,7 @@ int evt_test_record_values_initialize(
 
 	/* Test error cases
 	 */
-	result = libevt_record_values_initialize(
+	result = libevt_strings_array_initialize(
 	          NULL,
 	          &error );
 
@@ -107,11 +111,13 @@ int evt_test_record_values_initialize(
 	libcerror_error_free(
 	 &error );
 
-	record_values = (libevt_record_values_t *) 0x12345678UL;
+	strings_array = (libevt_strings_array_t *) 0x12345678UL;
 
-	result = libevt_record_values_initialize(
-	          &record_values,
+	result = libevt_strings_array_initialize(
+	          &strings_array,
 	          &error );
+
+	strings_array = NULL;
 
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -125,30 +131,28 @@ int evt_test_record_values_initialize(
 	libcerror_error_free(
 	 &error );
 
-	record_values = NULL;
-
 #if defined( HAVE_EVT_TEST_MEMORY )
 
 	for( test_number = 0;
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libevt_record_values_initialize with malloc failing
+		/* Test libevt_strings_array_initialize with malloc failing
 		 */
 		evt_test_malloc_attempts_before_fail = test_number;
 
-		result = libevt_record_values_initialize(
-		          &record_values,
+		result = libevt_strings_array_initialize(
+		          &strings_array,
 		          &error );
 
 		if( evt_test_malloc_attempts_before_fail != -1 )
 		{
 			evt_test_malloc_attempts_before_fail = -1;
 
-			if( record_values != NULL )
+			if( strings_array != NULL )
 			{
-				libevt_record_values_free(
-				 &record_values,
+				libevt_strings_array_free(
+				 &strings_array,
 				 NULL );
 			}
 		}
@@ -160,8 +164,8 @@ int evt_test_record_values_initialize(
 			 -1 );
 
 			EVT_TEST_ASSERT_IS_NULL(
-			 "record_values",
-			 record_values );
+			 "strings_array",
+			 strings_array );
 
 			EVT_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +179,22 @@ int evt_test_record_values_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libevt_record_values_initialize with memset failing
+		/* Test libevt_strings_array_initialize with memset failing
 		 */
 		evt_test_memset_attempts_before_fail = test_number;
 
-		result = libevt_record_values_initialize(
-		          &record_values,
+		result = libevt_strings_array_initialize(
+		          &strings_array,
 		          &error );
 
 		if( evt_test_memset_attempts_before_fail != -1 )
 		{
 			evt_test_memset_attempts_before_fail = -1;
 
-			if( record_values != NULL )
+			if( strings_array != NULL )
 			{
-				libevt_record_values_free(
-				 &record_values,
+				libevt_strings_array_free(
+				 &strings_array,
 				 NULL );
 			}
 		}
@@ -202,8 +206,8 @@ int evt_test_record_values_initialize(
 			 -1 );
 
 			EVT_TEST_ASSERT_IS_NULL(
-			 "record_values",
-			 record_values );
+			 "strings_array",
+			 strings_array );
 
 			EVT_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +227,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( record_values != NULL )
+	if( strings_array != NULL )
 	{
-		libevt_record_values_free(
-		 &record_values,
+		libevt_strings_array_free(
+		 &strings_array,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libevt_record_values_free function
+/* Tests the libevt_strings_array_free function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_record_values_free(
+int evt_test_strings_array_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +247,7 @@ int evt_test_record_values_free(
 
 	/* Test error cases
 	 */
-	result = libevt_record_values_free(
+	result = libevt_strings_array_free(
 	          NULL,
 	          &error );
 
@@ -270,20 +274,20 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_record_values_read function
+/* Tests the libevt_strings_array_read_data function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_record_values_read(
+int evt_test_strings_array_read_data(
      void )
 {
 	libcerror_error_t *error              = NULL;
-	libevt_record_values_t *record_values = NULL;
+	libevt_strings_array_t *strings_array = NULL;
 	int result                            = 0;
 
 	/* Initialize test
 	 */
-	result = libevt_record_values_initialize(
-	          &record_values,
+	result = libevt_strings_array_initialize(
+	          &strings_array,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -292,117 +296,8 @@ int evt_test_record_values_read(
 	 1 );
 
 	EVT_TEST_ASSERT_IS_NOT_NULL(
-	 "record_values",
-	 record_values );
-
-	EVT_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libevt_record_values_read(
-	          NULL,
-	          NULL,
-	          NULL,
-	          NULL,
-	          0,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	EVT_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libevt_record_values_read(
-	          record_values,
-	          NULL,
-	          NULL,
-	          NULL,
-	          0,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	EVT_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	/* Clean up
-	 */
-	result = libevt_record_values_free(
-	          &record_values,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	EVT_TEST_ASSERT_IS_NULL(
-	 "record_values",
-	 record_values );
-
-	EVT_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	if( record_values != NULL )
-	{
-		libevt_record_values_free(
-		 &record_values,
-		 NULL );
-	}
-	return( 0 );
-}
-
-/* Tests the libevt_record_values_get_type function
- * Returns 1 if successful or 0 if not
- */
-int evt_test_record_values_get_type(
-     void )
-{
-	libcerror_error_t *error              = NULL;
-	libevt_record_values_t *record_values = NULL;
-	uint8_t type                          = 0;
-	int result                            = 0;
-	int type_is_set                       = 0;
-
-	/* Initialize test
-	 */
-	result = libevt_record_values_initialize(
-	          &record_values,
-	          &error );
-
-	EVT_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	EVT_TEST_ASSERT_IS_NOT_NULL(
-	 "record_values",
-	 record_values );
+	 "strings_array",
+	 strings_array );
 
 	EVT_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -410,27 +305,27 @@ int evt_test_record_values_get_type(
 
 	/* Test regular cases
 	 */
-	result = libevt_record_values_get_type(
-	          record_values,
-	          &type,
+	result = libevt_strings_array_read_data(
+	          strings_array,
+	          evt_test_strings_array_data1,
+	          28,
 	          &error );
 
-	EVT_TEST_ASSERT_NOT_EQUAL_INT(
+	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	EVT_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	type_is_set = result;
-
 	/* Test error cases
 	 */
-	result = libevt_record_values_get_type(
+	result = libevt_strings_array_read_data(
 	          NULL,
-	          &type,
+	          evt_test_strings_array_data1,
+	          28,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -445,29 +340,64 @@ int evt_test_record_values_get_type(
 	libcerror_error_free(
 	 &error );
 
-	if( type_is_set != 0 )
-	{
-		result = libevt_record_values_get_type(
-		          record_values,
-		          NULL,
-		          &error );
+	result = libevt_strings_array_read_data(
+	          strings_array,
+	          NULL,
+	          28,
+	          &error );
 
-		EVT_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		EVT_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
+	result = libevt_strings_array_read_data(
+	          strings_array,
+	          evt_test_strings_array_data1,
+	          (size_t) SSIZE_MAX + 1,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libevt_strings_array_read_data(
+	          strings_array,
+	          evt_test_strings_array_data1,
+	          0,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
-	result = libevt_record_values_free(
-	          &record_values,
+	result = libevt_strings_array_free(
+	          &strings_array,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
@@ -476,8 +406,8 @@ int evt_test_record_values_get_type(
 	 1 );
 
 	EVT_TEST_ASSERT_IS_NULL(
-	 "record_values",
-	 record_values );
+	 "strings_array",
+	 strings_array );
 
 	EVT_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -491,10 +421,10 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( record_values != NULL )
+	if( strings_array != NULL )
 	{
-		libevt_record_values_free(
-		 &record_values,
+		libevt_strings_array_free(
+		 &strings_array,
 		 NULL );
 	}
 	return( 0 );
@@ -520,26 +450,26 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT )
 
 	EVT_TEST_RUN(
-	 "libevt_record_values_initialize",
-	 evt_test_record_values_initialize );
+	 "libevt_strings_array_initialize",
+	 evt_test_strings_array_initialize );
 
 	EVT_TEST_RUN(
-	 "libevt_record_values_free",
-	 evt_test_record_values_free );
+	 "libevt_strings_array_free",
+	 evt_test_strings_array_free );
 
 	EVT_TEST_RUN(
-	 "libevt_record_values_read",
-	 evt_test_record_values_read );
+	 "libevt_strings_array_read_data",
+	 evt_test_strings_array_read_data );
 
-	/* TODO: add tests for libevt_record_values_read_event */
+	/* TODO add tests for libevt_strings_array_get_number_of_strings */
 
-	/* TODO: add tests for libevt_record_values_read_end_of_file */
+	/* TODO add tests for libevt_strings_array_get_utf8_string_size */
 
-	EVT_TEST_RUN(
-	 "libevt_record_values_get_type",
-	 evt_test_record_values_get_type );
+	/* TODO add tests for libevt_strings_array_get_utf8_string */
 
-	/* TODO: add tests for libevt_record_values_read_element_data */
+	/* TODO add tests for libevt_strings_array_get_utf16_string_size */
+
+	/* TODO add tests for libevt_strings_array_get_utf16_string */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBEVT_DLL_IMPORT ) */
 
