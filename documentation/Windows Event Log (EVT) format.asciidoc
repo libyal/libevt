@@ -180,13 +180,11 @@ Contains 32-bit Unix epoch of the date and time in UTC the record was written to
 | 26 | 2 | | Number of strings
 | 28 | 2 | | Event category
 | 30 | 2 | | *Unknown (Event flags)* +
-Usually 0 +
-See note below
+Usually 0, also see note below
 | 32 | 4 | | *Unknown (Closing record number)* +
-Always 0 if the file has not been externally modified
+Should be 0 if the file has not been externally modified
 | 36 | 4 | | Strings offset +
-The offset is relative to the start of the record and must be a
-multiple of 2 +
+The offset is relative to the start of the record and must be a multitude of 2 +
 Can contain 0 but the number of strings should also be 0
 | 40 | 4 | | User identifier (SID) size +
 0 if no user identifier is available
@@ -215,20 +213,20 @@ This value is used to indicate the end of the event record
 |===
 
 [NOTE]
-The event flags field is a copy of the 4 bytes of data passed in the Flags field of the
-ElfrReportEvent RPC call (`[MS-EVEN]` section 3.1.4.13). These flags are written directly
-to the file, and it is left up to the event reader to interpret them. MS-EVEN suggests
-a shared meaning for bit 0x8000 as "the last string is valid XML", but the Event Log
-service does not validate this when writing the strings. Most, if not all, events
-are written using the ReportEvent Win32 API wrapper around the RPC function, and will
-always set this field to be 0.
+The event flags field is a copy of the 4 bytes of data passed in the Flags field
+of the ElfrReportEvent RPC call, see `[MS-EVEN]`. These flags are written directly
+to the file, and it is left up to the event reader to interpret them. `MS-EVEN`
+suggests a shared meaning for bit 0x8000 as "the last string is valid XML", but
+the Event Log service does not validate this when writing the strings. Most, if
+not all, events are written using the ReportEvent Win32 API wrapper around the
+RPC function, and will always set this field to be 0.
 
 [NOTE]
 If the user SID size is 0 then the string offset may equal the user SID offset.
 If the number of strings is 0 then the data offset may equal the string offset.
-*In both of these cases the offset should be ignored if the size or count is 0.*
-
-Offsets that start or end (offset + size) past the end of the record should be ignored.
+In both of these cases the offset should be ignored if the size or number of
+strings is 0. Offsets that start or end (offset + size) past the end of the
+record should be ignored.
 
 === Event type
 
