@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libfwnt.h"
 #include "libevt_strings_array.h"
@@ -115,12 +114,6 @@ int libevt_event_record_read_data(
      libevt_event_record_t *event_record,
      const uint8_t *data,
      size_t data_size,
-     libcerror_error_t **error );
-
-int libevt_event_record_read_file_io_handle(
-     libevt_event_record_t *event_record,
-     libbfio_handle_t *file_io_handle,
-     off64_t file_offset,
      libcerror_error_t **error );
 
 int libevt_event_record_get_record_number(

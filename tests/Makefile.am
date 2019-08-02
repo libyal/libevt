@@ -47,6 +47,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	evt_test_end_of_file_record \
 	evt_test_error \
+	evt_test_event_record \
 	evt_test_file \
 	evt_test_file_header \
 	evt_test_io_handle \
@@ -76,6 +77,19 @@ evt_test_error_SOURCES = \
 
 evt_test_error_LDADD = \
 	../libevt/libevt.la
+
+evt_test_event_record_SOURCES = \
+	evt_test_event_record.c \
+	evt_test_libcerror.h \
+	evt_test_libevt.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_unused.h
+
+evt_test_event_record_LDADD = \
+	@LIBFWNT_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
 
 evt_test_file_SOURCES = \
 	evt_test_file.c \

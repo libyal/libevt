@@ -398,6 +398,34 @@ int evt_test_file_header_read_data(
 	libcerror_error_free(
 	 &error );
 
+	/* Test error case where signature is invalid
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_file_header_data1[ 4 ] ),
+	 0xffffffffUL );
+
+	result = libevt_file_header_read_data(
+	          file_header,
+	          evt_test_file_header_data1,
+	          0,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_file_header_data1[ 4 ] ),
+	 0x654c664cUL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
 	/* Clean up
 	 */
 	result = libevt_file_header_free(

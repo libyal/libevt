@@ -323,6 +323,64 @@ int evt_test_strings_array_read_data(
 	/* Test error cases
 	 */
 	result = libevt_strings_array_read_data(
+	          strings_array,
+	          evt_test_strings_array_data1,
+	          28,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libevt_strings_array_free(
+	          &strings_array,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "strings_array",
+	 strings_array );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Initialize test
+	 */
+	result = libevt_strings_array_initialize(
+	          &strings_array,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "strings_array",
+	 strings_array );
+
+	EVT_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libevt_strings_array_read_data(
 	          NULL,
 	          evt_test_strings_array_data1,
 	          28,
@@ -380,6 +438,24 @@ int evt_test_strings_array_read_data(
 	          strings_array,
 	          evt_test_strings_array_data1,
 	          0,
+	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libevt_strings_array_read_data(
+	          strings_array,
+	          evt_test_strings_array_data1,
+	          27,
 	          &error );
 
 	EVT_TEST_ASSERT_EQUAL_INT(

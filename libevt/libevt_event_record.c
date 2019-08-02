@@ -26,7 +26,6 @@
 
 #include "libevt_debug.h"
 #include "libevt_event_record.h"
-#include "libevt_libbfio.h"
 #include "libevt_libcerror.h"
 #include "libevt_libcnotify.h"
 #include "libevt_libfdatetime.h"
@@ -688,7 +687,7 @@ int libevt_event_record_read_data(
 		{
 			if( libevt_debug_print_security_identifier_value(
 			     function,
-			     "user security identifier\t\t",
+			     "user security identifier\t\t\t",
 			     user_security_identifier,
 			     user_security_identifier_size,
 			     error ) != 1 )
@@ -939,86 +938,6 @@ on_error:
 	event_record->source_name_size = 0;
 
 	return( -1 );
-}
-
-/* Reads the event record from a Basic File IO (bfio) handle
- * Returns 1 if successful or -1 on error
- */
-int libevt_event_record_read_file_io_handle(
-     libevt_event_record_t *event_record,
-     libbfio_handle_t *file_io_handle,
-     off64_t file_offset,
-     libcerror_error_t **error )
-{
-	uint8_t data[ sizeof( evt_event_record_t ) ];
-
-	static char *function = "libevt_event_record_read_file_io_handle";
-	ssize_t read_count    = 0;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading event record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-		 function,
-		 file_offset,
-		 file_offset );
-	}
-#endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek event record offset: %" PRIi64 " (0x%08" PRIx64 ").",
-		 function,
-		 file_offset,
-		 file_offset );
-
-		return( -1 );
-	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
-	              data,
-	              sizeof( evt_event_record_t ),
-	              error );
-
-	if( read_count != (ssize_t) sizeof( evt_event_record_t ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read event record at offset: %" PRIi64 " (0x%08" PRIx64 ").",
-		 function,
-		 file_offset,
-		 file_offset );
-
-		return( -1 );
-	}
-	if( libevt_event_record_read_data(
-	     event_record,
-	     data,
-	     sizeof( evt_event_record_t ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read event record at offset: %" PRIi64 " (0x%08" PRIx64 ").",
-		 function,
-		 file_offset,
-		 file_offset );
-
-		return( -1 );
-	}
-	return( 1 );
 }
 
 /* Retrieves the record number

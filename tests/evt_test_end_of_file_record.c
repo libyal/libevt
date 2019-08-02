@@ -20,6 +20,7 @@
  */
 
 #include <common.h>
+#include <byte_stream.h>
 #include <file_stream.h>
 #include <types.h>
 
@@ -382,6 +383,182 @@ int evt_test_end_of_file_record_read_data(
 	          evt_test_end_of_file_record_data1,
 	          0,
 	          &error );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where signature1 is invalid
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 4 ] ),
+	 0xffffffffUL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 4 ] ),
+	 0x11111111UL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where signature2 is invalid
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 8 ] ),
+	 0xffffffffUL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 8 ] ),
+	 0x22222222UL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where signature3 is invalid
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 12 ] ),
+	 0xffffffffUL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 12 ] ),
+	 0x33333333UL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where signature4 is invalid
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 16 ] ),
+	 0xffffffffUL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 16 ] ),
+	 0x44444444UL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where size and copy of size mismatch
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 36 ] ),
+	 0xffffffffUL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 36 ] ),
+	 0x00000028UL );
+
+	EVT_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	EVT_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Test error case where size and copy of size contain an unsupport value
+	 */
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 0 ] ),
+	 0x00000030UL );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 36 ] ),
+	 0x00000030UL );
+
+	result = libevt_end_of_file_record_read_data(
+	          end_of_file_record,
+	          evt_test_end_of_file_record_data1,
+	          40,
+	          &error );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 0 ] ),
+	 0x00000028UL );
+
+	byte_stream_copy_from_uint32_little_endian(
+	 &( evt_test_end_of_file_record_data1[ 36 ] ),
+	 0x00000028UL );
 
 	EVT_TEST_ASSERT_EQUAL_INT(
 	 "result",
