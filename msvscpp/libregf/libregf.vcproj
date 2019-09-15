@@ -219,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libregf\libregf_security_key.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libregf\libregf_support.c"
 				>
 			</File>
@@ -228,6 +232,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_value_item.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_value_key.c"
 				>
 			</File>
 			<File
@@ -365,6 +373,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libregf\libregf_security_key.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libregf\libregf_support.h"
 				>
 			</File>
@@ -382,6 +394,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libregf\libregf_value_item.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libregf\libregf_value_key.h"
 				>
 			</File>
 			<File
