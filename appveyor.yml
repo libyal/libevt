@@ -1,4 +1,6 @@
 environment:
+  pypi_token:
+    secure: VHuZiUWgTqTciKE2nsv/Lt6n/KFtRzbhOzJTaIf15+EpkzL/9WhbuFbzldCKcZ/emgKSQYYgDHYvb25BjTCb4HvPzbdeBq/w5MyLLpX+QKqJQxAyTAcnDk2SPJ9/itzY8j2Y4/fnfwXKGLFid/ZPXWN2lbMuyIUMR+dyRC9GeDEvjs1JFk1M/SX6W6sz/HpFEEL/Jfy8usqnnQiIAJpaT5AeW7i6ZtiEnHOTqqKmA0cwc1LapTxHhso8FPpn0+vEuMTsdC6b64Xk5ssCUNcS6w==
   matrix:
   - TARGET: vs2008
     BUILD_ENVIRONMENT: msbuild
@@ -146,14 +148,12 @@ environment:
     CFLAGS: "--coverage"
     LDFLAGS: "--coverage"
 
-matrix:
-  allow_failures:
-  - TARGET: python27-x64
-
 install:
 - cmd: git clone https://github.com/codecov/codecov-bash.git ..\codecov-bash
 - cmd: if [%BUILD_ENVIRONMENT%]==[msbuild] (
     git clone https://github.com/libyal/vstools.git ..\vstools )
+- cmd: if [%BUILD_ENVIRONMENT%]==[python] (
+    "%PYTHON%\\python.exe" -m pip install -U pip setuptools twine wheel )
 - cmd: if [%BUILD_ENVIRONMENT%]==[cygwin] (
     C:\cygwin\setup-x86.exe -qgnNdO -l C:\cygwin\var\cache\setup -R c:\cygwin -s http://cygwin.mirror.constant.com -P python2-devel -P python3-devel )
 - cmd: if [%BUILD_ENVIRONMENT%]==[cygwin64] (
@@ -190,7 +190,7 @@ build_script:
     move vs2017 msvscpp &&
     nuget pack libevt.nuspec )
 - cmd: if [%BUILD_ENVIRONMENT%]==[python] (
-    "%PYTHON%\\python.exe" setup.py bdist_msi )
+    "%PYTHON%\\python.exe" setup.py bdist_msi bdist_wheel )
 - cmd: if [%BUILD_ENVIRONMENT%]==[cygwin] (
     xcopy /i /q /s C:\projects\libevt C:\cygwin\home\appveyor\libevt &&
     C:\cygwin\bin\bash -e -l -c "cd libevt && ./synclibs.sh --use-head && ./autogen.sh" )
@@ -235,4 +235,9 @@ deploy:
     branch: master
     appveyor_repo_tag: true
     target: vs2017
+
+
+deploy_script:
+- ps: If ($env:APPVEYOR_REPO_TAG -eq "true") {
+    Invoke-Expression "${env:PYTHON}\\python.exe -m twine upload dist/*.whl --username __token__ --password ${env:PYPI_TOKEN} --skip-existing" }
 
