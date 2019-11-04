@@ -23,6 +23,8 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libevt.la
 
 libevt_la_SOURCES = \
+	evt_end_of_file_record.h \
+	evt_event_record.h \
 	evt_file_header.h \
 	evt_record.h \
 	libevt.c \

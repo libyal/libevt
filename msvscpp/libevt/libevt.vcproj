@@ -228,6 +228,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\libevt\evt_end_of_file_record.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libevt\evt_event_record.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libevt\evt_file_header.h"
 				>
 			</File>
