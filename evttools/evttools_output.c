@@ -1,7 +1,7 @@
 /*
  * Common output functions for the evttools
  *
- * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -104,7 +104,7 @@ void evtoutput_copyright_fprint(
 	 */
 	fprintf(
 	 stream,
-	 _( "Copyright (C) 2011-2019, %s.\n" ),
+	 _( "Copyright (C) 2011-2020, %s.\n" ),
 	 _( "Joachim Metz" ) );
 
 	fprintf(
