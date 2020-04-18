@@ -41,21 +41,21 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_offset",
 	  (PyCFunction) pyevt_record_get_offset,
 	  METH_NOARGS,
-	  "get_offset() -> Integer or None\n"
+	  "get_offset() -> Integer\n"
 	  "\n"
 	  "Retrieves the offset." },
 
 	{ "get_identifier",
 	  (PyCFunction) pyevt_record_get_identifier,
 	  METH_NOARGS,
-	  "get_identifier() -> Integer or None\n"
+	  "get_identifier() -> Integer\n"
 	  "\n"
 	  "Retrieves the identifier." },
 
 	{ "get_creation_time",
 	  (PyCFunction) pyevt_record_get_creation_time,
 	  METH_NOARGS,
-	  "get_creation_time() -> Datetime or None\n"
+	  "get_creation_time() -> Datetime\n"
 	  "\n"
 	  "Retrieves the creation time." },
 
@@ -69,7 +69,7 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_written_time",
 	  (PyCFunction) pyevt_record_get_written_time,
 	  METH_NOARGS,
-	  "get_written_time() -> Datetime or None\n"
+	  "get_written_time() -> Datetime\n"
 	  "\n"
 	  "Retrieves the written time." },
 
@@ -83,21 +83,21 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_event_identifier",
 	  (PyCFunction) pyevt_record_get_event_identifier,
 	  METH_NOARGS,
-	  "get_event_identifier() -> Integer or None\n"
+	  "get_event_identifier() -> Integer\n"
 	  "\n"
 	  "Retrieves the event identifier." },
 
 	{ "get_event_type",
 	  (PyCFunction) pyevt_record_get_event_type,
 	  METH_NOARGS,
-	  "get_event_type() -> Integer or None\n"
+	  "get_event_type() -> Integer\n"
 	  "\n"
 	  "Retrieves the event type." },
 
 	{ "get_event_category",
 	  (PyCFunction) pyevt_record_get_event_category,
 	  METH_NOARGS,
-	  "get_event_category() -> Integer or None\n"
+	  "get_event_category() -> Integer\n"
 	  "\n"
 	  "Retrieves the event category." },
 
@@ -125,14 +125,14 @@ PyMethodDef pyevt_record_object_methods[] = {
 	{ "get_number_of_strings",
 	  (PyCFunction) pyevt_record_get_number_of_strings,
 	  METH_NOARGS,
-	  "get_number_of_strings() -> Integer or None\n"
+	  "get_number_of_strings() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of strings." },
 
 	{ "get_string",
 	  (PyCFunction) pyevt_record_get_string,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_string(string_index) -> Unicode string or None\n"
+	  "get_string(string_index) -> Unicode string\n"
 	  "\n"
 	  "Retrieves the string specified by the index." },
 
@@ -345,6 +345,8 @@ PyObject *pyevt_record_new(
 
 		return( NULL );
 	}
+	/* PyObject_New does not invoke tp_init
+	 */
 	pyevt_record = PyObject_New(
 	                struct pyevt_record,
 	                &pyevt_record_type_object );
@@ -358,22 +360,14 @@ PyObject *pyevt_record_new(
 
 		goto on_error;
 	}
-	if( pyevt_record_init(
-	     pyevt_record ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize record.",
-		 function );
-
-		goto on_error;
-	}
 	pyevt_record->record        = record;
 	pyevt_record->parent_object = parent_object;
 
-	Py_IncRef(
-	 (PyObject *) pyevt_record->parent_object );
-
+	if( pyevt_record->parent_object != NULL )
+	{
+		Py_IncRef(
+		 pyevt_record->parent_object );
+	}
 	return( (PyObject *) pyevt_record );
 
 on_error:
@@ -406,7 +400,12 @@ int pyevt_record_init(
 	 */
 	pyevt_record->record = NULL;
 
-	return( 0 );
+	PyErr_Format(
+	 PyExc_NotImplementedError,
+	 "%s: initialize of record not supported.",
+	 function );
+
+	return( -1 );
 }
 
 /* Frees a record object
@@ -424,15 +423,6 @@ void pyevt_record_free(
 		PyErr_Format(
 		 PyExc_ValueError,
 		 "%s: invalid record.",
-		 function );
-
-		return;
-	}
-	if( pyevt_record->record == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid record - missing libevt record.",
 		 function );
 
 		return;
@@ -458,29 +448,32 @@ void pyevt_record_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libevt_record_free(
-	          &( pyevt_record->record ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pyevt_record->record != NULL )
 	{
-		pyevt_error_raise(
-		 error,
-		 PyExc_IOError,
-		 "%s: unable to free libevt record.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libevt_record_free(
+		          &( pyevt_record->record ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyevt_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free libevt record.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	if( pyevt_record->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyevt_record->parent_object );
+		 pyevt_record->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyevt_record );
@@ -545,7 +538,7 @@ PyObject *pyevt_record_get_offset(
 	return( integer_object );
 }
 
-/* Retrieves the identifier
+/* Retrieves the identifier (record number)
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_record_get_identifier(
@@ -578,7 +571,7 @@ PyObject *pyevt_record_get_identifier(
 
 	Py_END_ALLOW_THREADS
 
-	if( result == -1 )
+	if( result != 1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -590,13 +583,6 @@ PyObject *pyevt_record_get_identifier(
 		 &error );
 
 		return( NULL );
-	}
-	else if( result == 0 )
-	{
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
 	}
 	integer_object = PyLong_FromUnsignedLong(
 	                  (unsigned long) value_32bit );
@@ -873,7 +859,7 @@ PyObject *pyevt_record_get_event_identifier(
 
 	Py_END_ALLOW_THREADS
 
-	if( result == -1 )
+	if( result != 1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -885,13 +871,6 @@ PyObject *pyevt_record_get_event_identifier(
 		 &error );
 
 		return( NULL );
-	}
-	else if( result == 0 )
-	{
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
 	}
 	integer_object = PyLong_FromUnsignedLong(
 	                  (unsigned long) value_32bit );
@@ -932,7 +911,7 @@ PyObject *pyevt_record_get_event_type(
 
 	Py_END_ALLOW_THREADS
 
-	if( result == -1 )
+	if( result != 1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -944,13 +923,6 @@ PyObject *pyevt_record_get_event_type(
 		 &error );
 
 		return( NULL );
-	}
-	else if( result == 0 )
-	{
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
 	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(
@@ -995,7 +967,7 @@ PyObject *pyevt_record_get_event_category(
 
 	Py_END_ALLOW_THREADS
 
-	if( result == -1 )
+	if( result != 1 )
 	{
 		pyevt_error_raise(
 		 error,
@@ -1007,13 +979,6 @@ PyObject *pyevt_record_get_event_category(
 		 &error );
 
 		return( NULL );
-	}
-	else if( result == 0 )
-	{
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
 	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(

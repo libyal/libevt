@@ -756,8 +756,24 @@ int libevt_event_record_read_data(
 
 			goto on_error;
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			if( event_strings_offset > data_offset )
+			{
+				libcnotify_printf(
+				 "%s: unknown3 data\n",
+				 function );
+				libcnotify_print_data(
+				 &( data[ data_offset ] ),
+				 event_strings_offset - data_offset,
+				 0 );
+			}
+		}
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		event_strings      = &( data[ event_strings_offset ] );
-		event_strings_size = maximum_strings_data_size - data_offset;
+		event_strings_size = maximum_strings_data_size - event_strings_offset;
 
 		if( libevt_strings_array_initialize(
 		     &( event_record->strings ),

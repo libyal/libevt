@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libevt],
- [20200417],
+ [20200418],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -105,6 +105,9 @@ AX_LIBFDATETIME_CHECK_ENABLE
 dnl Check if libfguid or required headers and functions are available
 AX_LIBFGUID_CHECK_ENABLE
 
+dnl Check if libfvalue or required headers and functions are available
+AX_LIBFVALUE_CHECK_ENABLE
+
 dnl Check if libfwnt or required headers and functions are available
 AX_LIBFWNT_CHECK_ENABLE
 
@@ -126,9 +129,6 @@ AS_IF(
       [1])
     ])
   ])
-
-dnl Check if libfvalue or required headers and functions are available
-AX_LIBFVALUE_CHECK_ENABLE
 
 dnl Check if libfwevt or required headers and functions are available
 AX_LIBFWEVT_CHECK_ENABLE
@@ -180,14 +180,14 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
- [test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libcthreads" = xyes || test "x$ac_cv_libcdata" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfguid" = xyes || test "x$ac_cv_libfwnt" = xyes],
+ [test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libcthreads" = xyes || test "x$ac_cv_libcdata" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfguid" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwnt" = xyes],
  [AC_SUBST(
   [libevt_spec_requires],
   [Requires:])
  ])
 
 AS_IF(
- [test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwevt" = xyes || test "x$ac_cv_libexe" = xyes || test "x$ac_cv_libregf" = xyes || test "x$ac_cv_libwrc" = xyes || test "x$ac_cv_libcdirectory" = xyes],
+ [test "x$ac_cv_libfwevt" = xyes || test "x$ac_cv_libexe" = xyes || test "x$ac_cv_libregf" = xyes || test "x$ac_cv_libwrc" = xyes || test "x$ac_cv_libcdirectory" = xyes],
  [AC_SUBST(
   [libevt_spec_tools_build_requires],
   [BuildRequires:])
@@ -221,12 +221,12 @@ AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfdatetime/Makefile])
 AC_CONFIG_FILES([libfguid/Makefile])
+AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([pyevt/Makefile])
 AC_CONFIG_FILES([pyevt-python2/Makefile])
 AC_CONFIG_FILES([pyevt-python3/Makefile])
-AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwevt/Makefile])
 AC_CONFIG_FILES([libexe/Makefile])
 AC_CONFIG_FILES([libregf/Makefile])

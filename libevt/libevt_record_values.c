@@ -241,7 +241,11 @@ ssize_t libevt_record_values_read(
 	 record_size_data,
 	 record_data_size );
 
-	if( record_data_size < 4 )
+	/* Note that 128 MiB is an arbitrary selected upper limit here
+	 * At least 8 bytes is needed to check the record signature
+	 */
+	if( ( record_data_size < 8 )
+	 || ( record_data_size > (uint32_t) ( 128 * 1024 * 1024 ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -252,19 +256,6 @@ ssize_t libevt_record_values_read(
 
 		goto on_error;
 	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) record_data_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid record data size value exceeds maximum.",
-		 function );
-
-		goto on_error;
-	}
-#endif
 	/* Allocating record data as 4 bytes and then using realloc here
 	 * corrupts the memory
 	 */

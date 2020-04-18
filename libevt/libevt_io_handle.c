@@ -747,7 +747,7 @@ int libevt_io_handle_event_record_scan(
 
 		goto on_error;
 	}
-	while( size > 0 )
+	while( size >= 4 )
 	{
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
@@ -793,7 +793,7 @@ int libevt_io_handle_event_record_scan(
 		}
 		scan_block_offset = 0;
 
-		while( scan_block_offset < read_size )
+		while( scan_block_offset <= ( read_size - 4 ) )
 		{
 			if( memory_compare(
 			     &( scan_block[ scan_block_offset ] ),
@@ -919,11 +919,6 @@ int libevt_io_handle_event_record_scan(
 				goto on_error;
 			}
 			scan_block_offset += read_count - 4;
-
-			if( ( scan_block_offset + read_count - 4 ) > read_size )
-			{
-				break;
-			}
 		}
 		file_offset += scan_block_offset;
 		size        -= scan_block_offset;

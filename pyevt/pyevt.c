@@ -33,6 +33,7 @@
 #include "pyevt_file.h"
 #include "pyevt_file_flags.h"
 #include "pyevt_file_object_io_handle.h"
+#include "pyevt_libbfio.h"
 #include "pyevt_libcerror.h"
 #include "pyevt_libevt.h"
 #include "pyevt_python.h"
@@ -65,14 +66,14 @@ PyMethodDef pyevt_module_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature(filename) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) signature." },
+	  "Checks if a file has a Windows Event Log (EVT) file signature." },
 
 	{ "check_file_signature_file_object",
 	  (PyCFunction) pyevt_check_file_signature_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature_file_object(file_object) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Event Log (EVT) signature using a file-like object." },
+	  "Checks if a file has a Windows Event Log (EVT) file signature using a file-like object." },
 
 	{ "open",
 	  (PyCFunction) pyevt_open_new_file,
@@ -125,7 +126,7 @@ PyObject *pyevt_get_version(
 	         errors ) );
 }
 
-/* Checks if a file has a Windows Event Log (EVT) signature
+/* Checks if a file has a Windows Event Log (EVT) file signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature(
@@ -156,7 +157,7 @@ PyObject *pyevt_check_file_signature(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "|O",
+	     "O|",
 	     keyword_list,
 	     &string_object ) == 0 )
 	{
@@ -172,7 +173,7 @@ PyObject *pyevt_check_file_signature(
 	{
 		pyevt_error_fetch_and_raise(
 	         PyExc_RuntimeError,
-		 "%s: unable to determine if string object is of type unicode.",
+		 "%s: unable to determine if string object is of type Unicode.",
 		 function );
 
 		return( NULL );
@@ -199,7 +200,7 @@ PyObject *pyevt_check_file_signature(
 		{
 			pyevt_error_fetch_and_raise(
 			 PyExc_RuntimeError,
-			 "%s: unable to convert unicode string to UTF-8.",
+			 "%s: unable to convert Unicode string to UTF-8.",
 			 function );
 
 			return( NULL );
@@ -222,7 +223,7 @@ PyObject *pyevt_check_file_signature(
 		Py_DecRef(
 		 utf8_string_object );
 
-#endif /* #if defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
 
 		if( result == -1 )
 		{
@@ -321,7 +322,7 @@ PyObject *pyevt_check_file_signature(
 	return( NULL );
 }
 
-/* Checks if a file has a Windows Event Log (EVT) signature using a file-like object
+/* Checks if a file has a Windows Event Log (EVT) file signature using a file-like object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyevt_check_file_signature_file_object(
@@ -544,6 +545,11 @@ PyMODINIT_FUNC initpyevt(
 	 */
 	pyevt_event_types_type_object.tp_new = PyType_GenericNew;
 
+	if( pyevt_event_types_init_type(
+	     &pyevt_event_types_type_object ) != 1 )
+	{
+		goto on_error;
+	}
 	if( PyType_Ready(
 	     &pyevt_event_types_type_object ) < 0 )
 	{
@@ -578,6 +584,11 @@ PyMODINIT_FUNC initpyevt(
 	 */
 	pyevt_file_flags_type_object.tp_new = PyType_GenericNew;
 
+	if( pyevt_file_flags_init_type(
+	     &pyevt_file_flags_type_object ) != 1 )
+	{
+		goto on_error;
+	}
 	if( PyType_Ready(
 	     &pyevt_file_flags_type_object ) < 0 )
 	{

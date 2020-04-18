@@ -1309,7 +1309,7 @@ int libevt_file_open_read(
 on_error:
 	if( internal_file->file_header != NULL )
 	{
-		libevt_file_header_initialize(
+		libevt_file_header_free(
 		 &( internal_file->file_header ),
 		 NULL );
 	}
