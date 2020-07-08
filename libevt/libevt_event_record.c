@@ -552,6 +552,17 @@ int libevt_event_record_read_data(
 		}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
+		if( source_name_size > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+			 "%s: invalid source name size value exceeds maximum allocation size.",
+			 function );
+
+			goto on_error;
+		}
 		event_record->source_name = (uint8_t *) memory_allocate(
 		                                         sizeof( uint8_t ) * source_name_size );
 
@@ -622,6 +633,18 @@ int libevt_event_record_read_data(
 			}
 		}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
+		if( computer_name_size > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+			 "%s: invalid computer name size value exceeds maximum allocation size.",
+			 function );
+
+			goto on_error;
+		}
 		event_record->computer_name = (uint8_t *) memory_allocate(
 		                                           sizeof( uint8_t ) * computer_name_size );
 
@@ -669,7 +692,7 @@ int libevt_event_record_read_data(
 			goto on_error;
 		}
 		if( ( (size_t) user_security_identifier_size > maximum_data_size )
-		 && ( (size_t) user_security_identifier_offset > ( maximum_data_size - user_security_identifier_size ) ) )
+		 || ( (size_t) user_security_identifier_offset >= ( maximum_data_size - user_security_identifier_size ) ) )
 		{
 			libcerror_error_set(
 			 error,
@@ -846,6 +869,17 @@ int libevt_event_record_read_data(
 		}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
+		if( event_data_size > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+			 "%s: invalid event data size value exceeds maximum allocation size.",
+			 function );
+
+			goto on_error;
+		}
 		event_record->data = (uint8_t *) memory_allocate(
 		                                  sizeof( uint8_t ) * event_data_size );
 

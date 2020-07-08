@@ -241,11 +241,8 @@ ssize_t libevt_record_values_read(
 	 record_size_data,
 	 record_data_size );
 
-	/* Note that 128 MiB is an arbitrary selected upper limit here
-	 * At least 8 bytes is needed to check the record signature
-	 */
 	if( ( record_data_size < 8 )
-	 || ( record_data_size > (uint32_t) ( 128 * 1024 * 1024 ) ) )
+	 || ( record_data_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,

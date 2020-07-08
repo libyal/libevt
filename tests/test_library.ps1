@@ -1,6 +1,6 @@
 # Tests library functions and types.
 #
-# Version: 20200413
+# Version: 20200427
 
 $ExitSuccess = 0
 $ExitFailure = 1
@@ -8,7 +8,7 @@ $ExitIgnore = 77
 
 $LibraryTests = "end_of_file_record error event_record file_header io_handle notify record record_values strings_array"
 $LibraryTestsWithInput = "file support"
-$OptionSets = "";
+$OptionSets = ""
 
 $InputGlob = "*"
 

@@ -429,8 +429,6 @@ int main(
 	 "libevt_io_handle_clear",
 	 evt_test_io_handle_clear );
 
-	/* TODO: add tests for libevt_io_handle_read_file_header */
-
 	/* TODO: add tests for libevt_io_handle_read_records */
 
 	/* TODO: add tests for libevt_io_handle_end_of_file_record_scan */
