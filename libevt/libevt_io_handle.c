@@ -633,7 +633,8 @@ int libevt_io_handle_end_of_file_record_scan(
 		{
 			break;
 		}
-		if( (size64_t) file_offset >= io_handle->file_size )
+		if( ( scan_has_wrapped == 0 )
+		 && ( (size64_t) file_offset >= io_handle->file_size ) )
 		{
 			if( libbfio_handle_seek_offset(
 			     file_io_handle,
