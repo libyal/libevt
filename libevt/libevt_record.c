@@ -385,7 +385,7 @@ int libevt_record_get_creation_time(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to creation time.",
+		 "%s: unable to retrieve creation time from record values.",
 		 function );
 
 		result = -1;
@@ -458,7 +458,7 @@ int libevt_record_get_written_time(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to written time.",
+		 "%s: unable to retrieve written time from record values.",
 		 function );
 
 		result = -1;
