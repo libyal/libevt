@@ -556,76 +556,79 @@ int libevt_io_handle_end_of_file_record_scan(
 		}
 		file_offset += read_count;
 
-		for( scan_block_offset = 0;
-		     scan_block_offset < read_size;
-		     scan_block_offset += 4 )
+		if( read_size >= 4 )
 		{
-			if( scan_state == LIBEVT_RECOVER_SCAN_STATE_START )
+			for( scan_block_offset = 0;
+			     scan_block_offset < ( read_size - 4 );
+			     scan_block_offset += 4 )
 			{
-				if( memory_compare(
-				     &( scan_block[ scan_block_offset ] ),
-				     evt_end_of_file_record_signature1,
-				     4 ) == 0 )
+				if( scan_state == LIBEVT_RECOVER_SCAN_STATE_START )
 				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1;
+					if( memory_compare(
+					     &( scan_block[ scan_block_offset ] ),
+					     evt_end_of_file_record_signature1,
+					     4 ) == 0 )
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1;
+					}
 				}
-			}
-			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1 )
-			{
-				if( memory_compare(
-				     &( scan_block[ scan_block_offset ] ),
-				     evt_end_of_file_record_signature2,
-				     4 ) == 0 )
+				else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE1 )
 				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2;
+					if( memory_compare(
+					     &( scan_block[ scan_block_offset ] ),
+					     evt_end_of_file_record_signature2,
+					     4 ) == 0 )
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2;
+					}
+					else
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+					}
 				}
-				else
+				else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2 )
 				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+					if( memory_compare(
+					     &( scan_block[ scan_block_offset ] ),
+					     evt_end_of_file_record_signature3,
+					     4 ) == 0 )
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3;
+					}
+					else
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+					}
 				}
-			}
-			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE2 )
-			{
-				if( memory_compare(
-				     &( scan_block[ scan_block_offset ] ),
-				     evt_end_of_file_record_signature3,
-				     4 ) == 0 )
+				else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3 )
 				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3;
-				}
-				else
-				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
-				}
-			}
-			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE3 )
-			{
-				if( memory_compare(
-				     &( scan_block[ scan_block_offset ] ),
-				     evt_end_of_file_record_signature4,
-				     4 ) == 0 )
-				{
-					*end_of_file_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 16 );
+					if( memory_compare(
+					     &( scan_block[ scan_block_offset ] ),
+					     evt_end_of_file_record_signature4,
+					     4 ) == 0 )
+					{
+						*end_of_file_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 16 );
 
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4;
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4;
+					}
+					else
+					{
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
+					}
 				}
-				else
+				else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4 )
 				{
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_START;
-				}
-			}
-			else if( scan_state == LIBEVT_RECOVER_SCAN_STATE_FOUND_EOF_SIGNATURE4 )
-			{
-				if( memory_compare(
-				     &( scan_block[ scan_block_offset ] ),
-				     evt_file_signature,
-				     4 ) == 0 )
-				{
-					*first_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 4 );
+					if( memory_compare(
+					     &( scan_block[ scan_block_offset ] ),
+					     evt_file_signature,
+					     4 ) == 0 )
+					{
+						*first_record_offset = (uint32_t) ( file_offset - read_count + scan_block_offset - 4 );
 
-					scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE;
+						scan_state = LIBEVT_RECOVER_SCAN_STATE_FOUND_RECORD_SIGNATURE;
 
-					break;
+						break;
+					}
 				}
 			}
 		}
