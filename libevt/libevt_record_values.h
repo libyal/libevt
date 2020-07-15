@@ -71,11 +71,12 @@ int libevt_record_values_free(
      libevt_record_values_t **record_values,
      libcerror_error_t **error );
 
-ssize_t libevt_record_values_read(
+ssize_t libevt_record_values_read_file_io_handle(
          libevt_record_values_t *record_values,
          libbfio_handle_t *file_io_handle,
          libevt_io_handle_t *io_handle,
          off64_t *file_offset,
+         uint8_t *has_wrapped,
          uint8_t strict_mode,
          libcerror_error_t **error );
 

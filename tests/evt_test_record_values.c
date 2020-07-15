@@ -270,14 +270,15 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libevt_record_values_read function
+/* Tests the libevt_record_values_read_file_io_handle function
  * Returns 1 if successful or 0 if not
  */
-int evt_test_record_values_read(
+int evt_test_record_values_read_file_io_handle(
      void )
 {
 	libcerror_error_t *error              = NULL;
 	libevt_record_values_t *record_values = NULL;
+	uint8_t has_wrapped                   = 0;
 	int result                            = 0;
 
 	/* Initialize test
@@ -301,11 +302,12 @@ int evt_test_record_values_read(
 
 	/* Test error cases
 	 */
-	result = libevt_record_values_read(
+	result = libevt_record_values_read_file_io_handle(
 	          NULL,
 	          NULL,
 	          NULL,
 	          NULL,
+	          &has_wrapped,
 	          0,
 	          &error );
 
@@ -321,11 +323,12 @@ int evt_test_record_values_read(
 	libcerror_error_free(
 	 &error );
 
-	result = libevt_record_values_read(
+	result = libevt_record_values_read_file_io_handle(
 	          record_values,
 	          NULL,
 	          NULL,
 	          NULL,
+	          &has_wrapped,
 	          0,
 	          &error );
 
@@ -528,8 +531,8 @@ int main(
 	 evt_test_record_values_free );
 
 	EVT_TEST_RUN(
-	 "libevt_record_values_read",
-	 evt_test_record_values_read );
+	 "libevt_record_values_read_file_io_handle",
+	 evt_test_record_values_read_file_io_handle );
 
 	/* TODO: add tests for libevt_record_values_read_event */
 

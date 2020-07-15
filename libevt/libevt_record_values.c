@@ -163,11 +163,12 @@ int libevt_record_values_free(
 /* Reads a record_values
  * Returns the number of bytes read if successful or -1 on error
  */
-ssize_t libevt_record_values_read(
+ssize_t libevt_record_values_read_file_io_handle(
          libevt_record_values_t *record_values,
          libbfio_handle_t *file_io_handle,
          libevt_io_handle_t *io_handle,
          off64_t *file_offset,
+         uint8_t *has_wrapped,
          uint8_t strict_mode,
          libcerror_error_t **error )
 {
@@ -175,11 +176,12 @@ ssize_t libevt_record_values_read(
 
 	libevt_end_of_file_record_t *end_of_file_record = NULL;
 	uint8_t *record_data                            = NULL;
-	static char *function                           = "libevt_record_values_read";
+	static char *function                           = "libevt_record_values_read_file_io_handle";
 	size_t read_size                                = 0;
 	size_t record_data_offset                       = 0;
 	ssize_t read_count                              = 0;
 	ssize_t total_read_count                        = 0;
+	off64_t safe_file_offset                        = 0;
 	uint32_t record_data_size                       = 0;
 
 	if( record_values == NULL )
@@ -215,7 +217,19 @@ ssize_t libevt_record_values_read(
 
 		return( -1 );
 	}
+	if( has_wrapped == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid has wrapped.",
+		 function );
+
+		return( -1 );
+	}
 	record_values->offset = *file_offset;
+	safe_file_offset      = *file_offset;
 
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
@@ -234,8 +248,8 @@ ssize_t libevt_record_values_read(
 
 		goto on_error;
 	}
-	*file_offset    += read_count;
-	total_read_count = read_count;
+	safe_file_offset += read_count;
+	total_read_count  = read_count;
 
 	byte_stream_copy_to_uint32_little_endian(
 	 record_size_data,
@@ -278,9 +292,10 @@ ssize_t libevt_record_values_read(
 
 	read_size = record_data_size - record_data_offset;
 
-	if( ( (size64_t) *file_offset + read_size ) > io_handle->file_size )
+	if( ( (size64_t) safe_file_offset > io_handle->file_size )
+	 || ( read_size > ( io_handle->file_size - safe_file_offset ) ) )
 	{
-		read_size = (size_t) ( io_handle->file_size - *file_offset );
+		read_size = (size_t) ( io_handle->file_size - safe_file_offset );
 	}
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
@@ -299,12 +314,35 @@ ssize_t libevt_record_values_read(
 
 		goto on_error;
 	}
-	*file_offset       += read_count;
+	safe_file_offset   += read_count;
 	record_data_offset += read_count;
 	total_read_count   += read_count;
 
 	if( record_data_offset < (size_t) record_data_size )
 	{
+		if( *has_wrapped != 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid IO handle - record data has already wrapped.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: record data wrapped at offset: %" PRIi64 " (0x%08" PRIx64 ").\n",
+			 function,
+			 safe_file_offset,
+			 safe_file_offset );
+		}
+#endif
+		*has_wrapped = 1;
+
 		if( libbfio_handle_seek_offset(
 		     file_io_handle,
 		     (off64_t) sizeof( evt_file_header_t ),
@@ -315,13 +353,14 @@ ssize_t libevt_record_values_read(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek file header offset: %" PRIzd ".",
+			 "%s: unable to seek wrapped record data at offset: %" PRIzd " (0x%08" PRIzx ").",
 			 function,
+			 sizeof( evt_file_header_t ),
 			 sizeof( evt_file_header_t ) );
 
 			goto on_error;
 		}
-		*file_offset = (off64_t) sizeof( evt_file_header_t );
+		safe_file_offset = (off64_t) sizeof( evt_file_header_t );
 
 		read_size = (size_t) record_data_size - record_data_offset;
 
@@ -342,7 +381,7 @@ ssize_t libevt_record_values_read(
 
 			goto on_error;
 		}
-		*file_offset     += read_count;
+		safe_file_offset += read_count;
 		total_read_count += read_count;
 	}
 	if( memory_compare(
@@ -448,6 +487,8 @@ ssize_t libevt_record_values_read(
 	memory_free(
 	 record_data );
 
+	*file_offset = safe_file_offset;
+
 	return( total_read_count );
 
 on_error:
@@ -462,6 +503,8 @@ on_error:
 		memory_free(
 		 record_data );
 	}
+	*file_offset = safe_file_offset;
+
 	return( -1 );
 }
 
@@ -1660,6 +1703,7 @@ int libevt_record_values_read_element_data(
 	static char *function                 = "libevt_record_values_read_element_data";
 	off64_t file_offset                   = 0;
 	ssize_t read_count                    = 0;
+	uint8_t has_wrapped                   = 0;
 
 	LIBEVT_UNREFERENCED_PARAMETER( element_size )
 	LIBEVT_UNREFERENCED_PARAMETER( element_file_index )
@@ -1709,11 +1753,12 @@ int libevt_record_values_read_element_data(
 	 */
 	file_offset = element_offset;
 
-	read_count = libevt_record_values_read(
+	read_count = libevt_record_values_read_file_io_handle(
 		      record_values,
 		      file_io_handle,
 		      io_handle,
 		      &file_offset,
+		      &has_wrapped,
 		      0,
 		      error );
 

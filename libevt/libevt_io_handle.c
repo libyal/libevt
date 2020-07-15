@@ -201,8 +201,9 @@ int libevt_io_handle_read_records(
 {
 	libevt_record_values_t *record_values = NULL;
 	static char *function                 = "libevt_io_handle_read_records";
-	off64_t file_offset                   = 0;
 	ssize_t read_count                    = 0;
+	off64_t file_offset                   = 0;
+	off64_t safe_last_record_offset       = 0;
 	uint32_t record_iterator              = 0;
 	uint8_t record_type                   = 0;
 	int element_index                     = 0;
@@ -218,6 +219,18 @@ int libevt_io_handle_read_records(
 
 		return( -1 );
 	}
+	if( ( (off64_t) first_record_offset < (off64_t) sizeof( evt_file_header_t ) )
+	 || ( (size64_t) first_record_offset >= io_handle->file_size ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid first record offset value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	if( last_record_offset == NULL )
 	{
 		libcerror_error_set(
@@ -231,18 +244,6 @@ int libevt_io_handle_read_records(
 	}
 	file_offset = (off64_t) first_record_offset;
 
-	if( ( file_offset < (off64_t) sizeof( evt_file_header_t ) )
-	 || ( (size64_t) file_offset >= io_handle->file_size ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: file offset value out of bounds.",
-		 function );
-
-		goto on_error;
-	}
 	if( libbfio_handle_seek_offset(
 	     file_io_handle,
 	     file_offset,
@@ -285,13 +286,14 @@ int libevt_io_handle_read_records(
 
 			goto on_error;
 		}
-		*last_record_offset = file_offset;
+		safe_last_record_offset = file_offset;
 
-		read_count = libevt_record_values_read(
+		read_count = libevt_record_values_read_file_io_handle(
 		              record_values,
 		              file_io_handle,
 		              io_handle,
 		              &file_offset,
+		              &( io_handle->has_wrapped ),
 		              1,
 		              error );
 
@@ -307,19 +309,6 @@ int libevt_io_handle_read_records(
 
 			goto on_error;
 		}
-		if( *last_record_offset > file_offset )
-		{
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: wrapped at offset: 0x%08" PRIx64 ".\n",
-				 function,
-				 *last_record_offset );
-			}
-#endif
-			io_handle->has_wrapped = 1;
-		}
 		record_type = record_values->type;
 
 		if( record_type == LIBEVT_RECORD_TYPE_EVENT )
@@ -328,7 +317,7 @@ int libevt_io_handle_read_records(
 			     records_list,
 			     &element_index,
 			     0,
-			     *last_record_offset,
+			     safe_last_record_offset,
 			     (size64_t) read_count,
 			     0,
 			     error ) != 1 )
@@ -390,7 +379,7 @@ int libevt_io_handle_read_records(
 
 	if( record_type == LIBEVT_RECORD_TYPE_END_OF_FILE )
 	{
-		if( *last_record_offset != (off64_t) end_of_file_record_offset )
+		if( safe_last_record_offset != (off64_t) end_of_file_record_offset )
 		{
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -398,13 +387,13 @@ int libevt_io_handle_read_records(
 				libcnotify_printf(
 				 "%s: mismatch in end of file record offset ( %" PRIi64 " != %" PRIu32 " ).\n",
 				 function,
-				 *last_record_offset,
+				 safe_last_record_offset,
 				 end_of_file_record_offset );
 			}
 #endif
 			io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 		}
-		*last_record_offset += read_count;
+		safe_last_record_offset += read_count;
 	}
 	if( ( io_handle->has_wrapped != 0 )
 	 && ( ( io_handle->flags & LIBEVT_FILE_FLAG_HAS_WRAPPED ) == 0 ) )
@@ -419,6 +408,8 @@ int libevt_io_handle_read_records(
 #endif
 		io_handle->flags |= LIBEVT_IO_HANDLE_FLAG_IS_CORRUPTED;
 	}
+	*last_record_offset = safe_last_record_offset;
+
 	return( 1 );
 
 on_error:
@@ -428,6 +419,8 @@ on_error:
 		 &record_values,
 		 NULL );
 	}
+	*last_record_offset = safe_last_record_offset;
+
 	return( -1 );
 }
 
@@ -852,11 +845,12 @@ int libevt_io_handle_event_record_scan(
 					goto on_error;
 				}
 			}
-			read_count = libevt_record_values_read(
+			read_count = libevt_record_values_read_file_io_handle(
 				      record_values,
 				      file_io_handle,
 				      io_handle,
 				      &record_offset,
+			              &( io_handle->has_wrapped ),
 				      0,
 				      error );
 
