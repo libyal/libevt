@@ -58,6 +58,7 @@ environment:
     BUILD_ENVIRONMENT: python
     APPVEYOR_BUILD_WORKER_IMAGE: macos
     PYTHON: "/usr/local/bin/python3.8"
+    HOMEBREW_NO_INSTALL_CLEANUP: 1
   - TARGET: cygwin-gcc
     BUILD_ENVIRONMENT: cygwin
     CONFIGURE_OPTIONS: ""
@@ -133,8 +134,8 @@ install:
 - cmd: git clone https://github.com/codecov/codecov-bash.git ..\codecov-bash
 - cmd: if [%BUILD_ENVIRONMENT%]==[msbuild] (
     git clone https://github.com/libyal/vstools.git ..\vstools )
-- sh: if test ${BUILD_ENVIRONMENT} = "python"; then brew update && brew install gettext gnu-sed && brew link --force gettext; fi
-- sh: if test ${BUILD_ENVIRONMENT} = "python"; then brew install python3 || true; fi
+- sh: if test ${BUILD_ENVIRONMENT} = "python"; then brew update; fi
+- sh: if test ${BUILD_ENVIRONMENT} = "python"; then brew install gnu-sed python3 || true; fi
 - ps: If ($env:BUILD_ENVIRONMENT -eq "python") {
     Invoke-Expression "${env:PYTHON} -m pip install -U pip setuptools twine wheel" }
 - cmd: if [%BUILD_ENVIRONMENT%]==[cygwin] (
@@ -202,18 +203,18 @@ after_test:
 
 artifacts:
 - path: \*.nupkg
+- path: dist\*.whl
 
 deploy:
 - provider: NuGet
   skip_symbols: true
   api_key:
-    secure: KCX1SbiZLx5iX4uxBrG6I5QuuNI+hz3DjM9ymJaP2/srQU9yFcKD8ifYuPMfm0wF
+    secure: gCkz3PNGORdxJGl+aegOa7OJ4IQFHC/FqgCzbirMk7nyNFCuZzc1/ne2174eYxsw
   artifact: /.*\.nupkg/
   on:
     branch: master
     appveyor_repo_tag: true
     target: vs2017
-
 
 deploy_script:
 - ps: If ($env:APPVEYOR_REPO_TAG -eq "true" -and $isWindows) {
