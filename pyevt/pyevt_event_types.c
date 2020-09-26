@@ -270,7 +270,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes an event types object
+/* Initializes an event types object
  * Returns 0 if successful or -1 on error
  */
 int pyevt_event_types_init(
