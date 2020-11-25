@@ -2,15 +2,15 @@
 <package >
   <metadata>
     <id>libevt</id>
-    <version>20200926</version>
+    <version>20201125</version>
     <authors>Joachim Metz</authors>
     <owners>joachimmetz</owners>
-    <licenseUrl>https://raw.githubusercontent.com/libyal/libevt/master/COPYING.LESSER</licenseUrl>
+    <license type="expression">LGPL-3.0-or-later</license>
     <projectUrl>https://github.com/libyal/libevt</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <title>libevt</title>
     <description>Library to access the Windows Event Log (EVT) format</description>
-    <releaseNotes>Release of libevt 20200926</releaseNotes>
+    <releaseNotes>Release of libevt 20201125</releaseNotes>
     <copyright>Copyright (C) 2011-2020</copyright>
     <tags>native</tags>
   </metadata>
