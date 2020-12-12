@@ -228,13 +228,13 @@ ssize_t libevt_record_values_read_file_io_handle(
 
 		return( -1 );
 	}
-	record_values->offset = *file_offset;
-	safe_file_offset      = *file_offset;
+	safe_file_offset = *file_offset;
 
-	read_count = libbfio_handle_read_buffer(
+	read_count = libbfio_handle_read_buffer_at_offset(
 	              file_io_handle,
 	              record_size_data,
 	              sizeof( uint32_t ),
+	              safe_file_offset,
 	              error );
 
 	if( read_count != (ssize_t) sizeof( uint32_t ) )
@@ -243,11 +243,15 @@ ssize_t libevt_record_values_read_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read record size data.",
-		 function );
+		 "%s: unable to read record size data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+		 function,
+		 safe_file_offset,
+		 safe_file_offset );
 
 		goto on_error;
 	}
+	record_values->offset = safe_file_offset;
+
 	safe_file_offset += read_count;
 	total_read_count  = read_count;
 
@@ -343,31 +347,15 @@ ssize_t libevt_record_values_read_file_io_handle(
 #endif
 		*has_wrapped = 1;
 
-		if( libbfio_handle_seek_offset(
-		     file_io_handle,
-		     (off64_t) sizeof( evt_file_header_t ),
-		     SEEK_SET,
-		     error ) == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek wrapped record data at offset: %" PRIzd " (0x%08" PRIzx ").",
-			 function,
-			 sizeof( evt_file_header_t ),
-			 sizeof( evt_file_header_t ) );
-
-			goto on_error;
-		}
 		safe_file_offset = (off64_t) sizeof( evt_file_header_t );
 
 		read_size = (size_t) record_data_size - record_data_offset;
 
-		read_count = libbfio_handle_read_buffer(
+		read_count = libbfio_handle_read_buffer_at_offset(
 		              file_io_handle,
 		              &( record_data[ record_data_offset ] ),
 		              read_size,
+		              safe_file_offset,
 		              error );
 
 		if( read_count != (ssize_t) read_size )
@@ -376,8 +364,10 @@ ssize_t libevt_record_values_read_file_io_handle(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read record data.",
-			 function );
+			 "%s: unable to read record data at offset: %" PRIzd " (0x%08" PRIzx ").",
+			 function,
+			 safe_file_offset,
+			 safe_file_offset );
 
 			goto on_error;
 		}
@@ -1720,22 +1710,6 @@ int libevt_record_values_read_element_data(
 		 element_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     element_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek record offset: %" PRIi64 ".",
-		 function,
-		 element_offset );
-
-		goto on_error;
-	}
 	if( libevt_record_values_initialize(
 	     &record_values,
 	     error ) != 1 )

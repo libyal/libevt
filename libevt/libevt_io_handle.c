@@ -244,22 +244,6 @@ int libevt_io_handle_read_records(
 	}
 	file_offset = (off64_t) first_record_offset;
 
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek record offset: %" PRIi64 ".",
-		 function,
-		 file_offset );
-
-		goto on_error;
-	}
 	do
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -303,9 +287,11 @@ int libevt_io_handle_read_records(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read record: %" PRIu32 ".",
+			 "%s: unable to read record: %" PRIu32 " at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
-			 record_iterator );
+			 record_iterator,
+			 safe_last_record_offset,
+			 safe_last_record_offset );
 
 			goto on_error;
 		}
@@ -503,22 +489,6 @@ int libevt_io_handle_end_of_file_record_scan(
 	}
 	initial_file_offset = file_offset;
 
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek scan block offset: %" PRIi64 ".",
-		 function,
-		 file_offset );
-
-		goto on_error;
-	}
 	do
 	{
 		if( ( (size64_t) file_offset + scan_block_size ) > io_handle->file_size )
@@ -529,10 +499,11 @@ int libevt_io_handle_end_of_file_record_scan(
 		{
 			read_size = scan_block_size;
 		}
-		read_count = libbfio_handle_read_buffer(
+		read_count = libbfio_handle_read_buffer_at_offset(
 			      file_io_handle,
 			      scan_block,
 			      read_size,
+			      file_offset,
 			      error );
 
 		if( read_count != (ssize_t) read_size )
@@ -541,8 +512,9 @@ int libevt_io_handle_end_of_file_record_scan(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read scan block at offset: %" PRIi64 ".",
+			 "%s: unable to read scan block at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
+			 file_offset,
 			 file_offset );
 
 			goto on_error;
@@ -632,22 +604,6 @@ int libevt_io_handle_end_of_file_record_scan(
 		if( ( scan_has_wrapped == 0 )
 		 && ( (size64_t) file_offset >= io_handle->file_size ) )
 		{
-			if( libbfio_handle_seek_offset(
-			     file_io_handle,
-			     (off64_t) sizeof( evt_file_header_t ),
-			     SEEK_SET,
-			     error ) == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_SEEK_FAILED,
-				 "%s: unable to seek scan block offset: %" PRIzd ".",
-				 function,
-				 sizeof( evt_file_header_t ) );
-
-				goto on_error;
-			}
 			file_offset = (off64_t) sizeof( evt_file_header_t );
 
 			scan_has_wrapped = 1;
@@ -746,22 +702,6 @@ int libevt_io_handle_event_record_scan(
 	}
 	while( size >= 4 )
 	{
-		if( libbfio_handle_seek_offset(
-		     file_io_handle,
-		     file_offset,
-		     SEEK_SET,
-		     error ) == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek scan block offset: %" PRIi64 ".",
-			 function,
-			 file_offset );
-
-			goto on_error;
-		}
 		if( scan_block_size > size )
 		{
 			read_size = (size_t) size;
@@ -770,10 +710,11 @@ int libevt_io_handle_event_record_scan(
 		{
 			read_size = scan_block_size;
 		}
-		read_count = libbfio_handle_read_buffer(
+		read_count = libbfio_handle_read_buffer_at_offset(
 			      file_io_handle,
 			      scan_block,
 			      read_size,
+			      file_offset,
 			      error );
 
 		if( read_count != (ssize_t) read_size )
@@ -782,8 +723,9 @@ int libevt_io_handle_event_record_scan(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read scan block at offset: %" PRIi64 ".",
+			 "%s: unable to read scan block at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 			 function,
+			 file_offset,
 			 file_offset );
 
 			goto on_error;
@@ -803,32 +745,6 @@ int libevt_io_handle_event_record_scan(
 			}
 			record_offset = file_offset + scan_block_offset - 4;
 
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: reading recovered record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-				 function,
-				 record_offset,
-				 record_offset );
-			}
-#endif
-			if( libbfio_handle_seek_offset(
-			     file_io_handle,
-			     record_offset,
-			     SEEK_SET,
-			     error ) == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_SEEK_FAILED,
-				 "%s: unable to seek record offset: %" PRIi64 ".",
-				 function,
-				 record_offset );
-
-				goto on_error;
-			}
 			if( record_values == NULL )
 			{
 				if( libevt_record_values_initialize(
@@ -845,6 +761,16 @@ int libevt_io_handle_event_record_scan(
 					goto on_error;
 				}
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: reading recovered record at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 function,
+				 record_offset,
+				 record_offset );
+			}
+#endif
 			read_count = libevt_record_values_read_file_io_handle(
 				      record_values,
 				      file_io_handle,
