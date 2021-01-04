@@ -1,7 +1,7 @@
 /*
  * The item definition of a Windows Event Log (EVT)
  *
- * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2021, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
