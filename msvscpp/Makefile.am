@@ -10,6 +10,9 @@ MSVSCPP_FILES = \
 	evt_test_record_values/evt_test_record_values.vcproj \
 	evt_test_strings_array/evt_test_strings_array.vcproj \
 	evt_test_support/evt_test_support.vcproj \
+	evt_test_tools_info_handle/evt_test_tools_info_handle.vcproj \
+	evt_test_tools_output/evt_test_tools_output.vcproj \
+	evt_test_tools_signal/evt_test_tools_signal.vcproj \
 	evtexport/evtexport.vcproj \
 	evtinfo/evtinfo.vcproj \
 	libbfio/libbfio.vcproj \

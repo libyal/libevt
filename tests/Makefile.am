@@ -27,6 +27,7 @@ endif
 
 TESTS = \
 	test_library.sh \
+	test_tools.sh \
 	test_evtinfo.sh \
 	test_evtexport.sh \
 	$(TESTS_PYEVT)
@@ -39,7 +40,8 @@ check_SCRIPTS = \
 	test_library.sh \
 	test_manpage.sh \
 	test_python_module.sh \
-	test_runner.sh
+	test_runner.sh \
+	test_tools.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -55,7 +57,10 @@ check_PROGRAMS = \
 	evt_test_record \
 	evt_test_record_values \
 	evt_test_strings_array \
-	evt_test_support
+	evt_test_support \
+	evt_test_tools_info_handle \
+	evt_test_tools_output \
+	evt_test_tools_signal
 
 evt_test_end_of_file_record_SOURCES = \
 	evt_test_end_of_file_record.c \
@@ -223,6 +228,43 @@ evt_test_support_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_info_handle_SOURCES = \
+	../evttools/evtinput.c ../evttools/evtinput.h \
+	../evttools/info_handle.c ../evttools/info_handle.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_info_handle.c \
+	evt_test_unused.h
+
+evt_test_tools_info_handle_LDADD = \
+	@LIBFDATETIME_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_output_SOURCES = \
+	../evttools/evttools_output.c ../evttools/evttools_output.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_tools_output.c \
+	evt_test_unused.h
+
+evt_test_tools_output_LDADD = \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_signal_SOURCES = \
+	../evttools/evttools_signal.c ../evttools/evttools_signal.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_tools_signal.c \
+	evt_test_unused.h
+
+evt_test_tools_signal_LDADD = \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@
 
