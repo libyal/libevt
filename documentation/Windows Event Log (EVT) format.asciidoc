@@ -12,9 +12,8 @@ The Windows Event Log (EVT) format is used by Microsoft Windows to store system
 log information. This specification is based on public available information and
 was enhanced by analyzing test data.
 
-This document is intended as a working document for the Windows Event Log (EVT)
-specification. Which should allow existing Open Source forensic tooling to be
-able to process this file type.
+This document is intended as a working document of the data format specification
+for the libevt project.
 
 [preface]
 == Document information
@@ -31,7 +30,7 @@ able to process this file type.
 == License
 
 ....
-Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2021, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -59,6 +58,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.12 | J.B. Metz | March 2015 | Additional information regarding message files.
 | 0.0.13 | J.B. Metz | April 2019 | Textual and formatting changes.
 | 0.0.14 | Kyle Sabo | May 2019 | Additional information about unused fields.
+| 0.0.15 | J.B. Metz | August 2021 | Small changes.
 |===
 
 :numbered:
@@ -227,7 +227,7 @@ Offsets beyond the record data should be ignored.
 [NOTE]
 The event flags field is a copy of the 4 bytes of data passed in the Flags field
 of the ElfrReportEvent RPC call, see `[MS-EVEN]`. These flags are written directly
-to the file, and it is left up to the event reader to interpret them. `MS-EVEN`
+to the file, and it is left up to the event reader to interpret them. `[MS-EVEN]`
 suggests a shared meaning for bit 0x8000 as "the last string is valid XML", but
 the Event Log service does not validate this when writing the strings. Most, if
 not all, events are written using the ReportEvent Win32 API wrapper around the

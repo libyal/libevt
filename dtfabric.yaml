@@ -31,11 +31,24 @@ attributes:
   size: 4
   units: bytes
 ---
+name: posix_time
+type: integer
+attributes:
+  format: signed
+  size: 4
+  units: bytes
+---
 name: wchar16
 type: character
 attributes:
   size: 2
   units: bytes
+---
+name: utf16_string
+type: string
+encoding: utf-16-le
+element_data_type: wchar16
+elements_terminator: "\x00\x00"
 ---
 name: file_header
 type: structure
@@ -88,9 +101,9 @@ members:
 - name: record_number
   data_type: uint32
 - name: creation_time
-  data_type: uint32
+  data_type: posix_time
 - name: last_written_time
-  data_type: uint32
+  data_type: posix_time
 - name: event_identifier
   data_type: uint32
 - name: event_type
@@ -129,7 +142,9 @@ members:
   elements_data_size: event_record.user_security_identifier_size
   condition: event_record.user_security_identifier_offset != 0
 - name: event_strings
-# TODO: add strings array?
+  type: sequence
+  element_data_type: utf16_string
+  number_of_elements: event_record.number_of_strings
 - name: event_data
   type: stream
   element_data_type: byte
@@ -148,17 +163,25 @@ members:
   data_type: uint32
   description: "(record) size"
 - name: signature1
-  data_type: uint32
-  value: 0x11111111
+  type: stream
+  element_data_type: byte
+  elements_data_size: 4
+  value: "\x11\x11\x11\x11"
 - name: signature2
-  data_type: uint32
-  value: 0x22222222
+  type: stream
+  element_data_type: byte
+  elements_data_size: 4
+  value: "\x22\x22\x22\x22"
 - name: signature3
-  data_type: uint32
-  value: 0x33333333
+  type: stream
+  element_data_type: byte
+  elements_data_size: 4
+  value: "\x33\x33\x33\x33"
 - name: signature4
-  data_type: uint32
-  value: 0x44444444
+  type: stream
+  element_data_type: byte
+  elements_data_size: 4
+  value: "\x44\x44\x44\x44"
 - name: first_record_offset
   data_type: uint32
   description: "first (oldest) record offset"
