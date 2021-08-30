@@ -360,6 +360,15 @@ void pyevt_file_free(
 
 		return;
 	}
+	if( pyevt_file->file_io_handle != NULL )
+	{
+		if( pyevt_file_close(
+		     pyevt_file,
+		     NULL ) == NULL )
+		{
+			return;
+		}
+	}
 	if( pyevt_file->file != NULL )
 	{
 		Py_BEGIN_ALLOW_THREADS

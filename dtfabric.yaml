@@ -1,7 +1,7 @@
 name: evt
 type: format
 description: Windows Event Log (EVT) format
-urls: ["https://github.com/libyal/libevt/blob/master/documentation/Windows%20Event%20Log%20(EVT)%20format.asciidoc"]
+urls: ["https://github.com/libyal/libevt/blob/main/documentation/Windows%20Event%20Log%20(EVT)%20format.asciidoc"]
 metadata:
   authors: ['Joachim Metz <joachim.metz@gmail.com>']
   year: 2011
