@@ -45,6 +45,7 @@ evtexport_SOURCES = \
 	evttools_libcsplit.h \
 	evttools_libfcache.h \
 	evttools_libfdatetime.h \
+	evttools_libfwevt.h \
 	evttools_libfwnt.h \
 	evttools_libevt.h \
 	evttools_libexe.h \

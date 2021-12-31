@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="evt_test_tools_info_handle"
-	ProjectGUID="{56155A42-B080-4F5F-BB12-76B7FE7D5A5E}"
-	RootNamespace="evt_test_tools_info_handle"
+	Name="evt_test_tools_resource_file"
+	ProjectGUID="{68B30650-2119-4DCB-8C9D-4B34A4B3BCA3}"
+	RootNamespace="evt_test_tools_resource_file"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,11 +176,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtinput.c"
+				RelativePath="..\..\evttools\message_string.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\info_handle.c"
+				RelativePath="..\..\evttools\resource_file.c"
 				>
 			</File>
 			<File
@@ -188,7 +188,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\evt_test_tools_info_handle.c"
+				RelativePath="..\..\tests\evt_test_tools_resource_file.c"
 				>
 			</File>
 		</Filter>
@@ -198,11 +198,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtinput.h"
+				RelativePath="..\..\evttools\message_string.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\evttools\info_handle.h"
+				RelativePath="..\..\evttools\resource_file.h"
 				>
 			</File>
 			<File

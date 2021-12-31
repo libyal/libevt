@@ -290,6 +290,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\evttools\evttools_libfwevt.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\evttools\evttools_libfwnt.h"
 				>
 			</File>

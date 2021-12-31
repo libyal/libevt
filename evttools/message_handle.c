@@ -41,8 +41,8 @@
 #include "evttools_libcsplit.h"
 #include "evttools_libevt.h"
 #include "evttools_libfcache.h"
+#include "evttools_libfwevt.h"
 #include "evttools_libregf.h"
-#include "evttools_libwrc.h"
 #include "evttools_system_split_string.h"
 #include "evttools_wide_string.h"
 #include "message_handle.h"
@@ -3893,13 +3893,13 @@ int message_handle_get_resource_file_by_provider_identifier(
      resource_file_t **resource_file,
      libcerror_error_t **error )
 {
-	libwrc_wevt_provider_t *provider                      = NULL;
-	system_character_t *resource_filename_string_segment  = NULL;
+	libfwevt_provider_t *provider                         = NULL;
 	system_character_t *resource_file_path                = NULL;
+	system_character_t *resource_filename_string_segment  = NULL;
 	system_split_string_t *resource_filename_split_string = NULL;
 	static char *function                                 = "message_handle_get_resource_file_by_provider_identifier";
-	size_t resource_filename_string_segment_size          = 0;
 	size_t resource_file_path_size                        = 0;
+	size_t resource_filename_string_segment_size          = 0;
 	int resource_filename_number_of_segments              = 0;
 	int resource_filename_segment_index                   = 0;
 	int result                                            = 0;
@@ -4069,7 +4069,7 @@ int message_handle_get_resource_file_by_provider_identifier(
 			}
 			else if( result != 0 )
 			{
-				if( libwrc_wevt_provider_free(
+				if( libfwevt_provider_free(
 				     &provider,
 				     error ) != 1 )
 				{

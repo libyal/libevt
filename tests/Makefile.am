@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBCSPLIT_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCDIRECTORY_CPPFLAGS@ \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
@@ -18,7 +19,11 @@ AM_CPPFLAGS = \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFGUID_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
+	@LIBFWEVT_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
+	@LIBEXE_CPPFLAGS@ \
+	@LIBREGF_CPPFLAGS@ \
+	@LIBWRC_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
@@ -60,8 +65,13 @@ check_PROGRAMS = \
 	evt_test_record_values \
 	evt_test_strings_array \
 	evt_test_support \
-	evt_test_tools_info_handle \
-	evt_test_tools_output \
+        evt_test_tools_info_handle \
+        evt_test_tools_message_handle \
+        evt_test_tools_message_string \
+        evt_test_tools_output \
+        evt_test_tools_path_handle \
+        evt_test_tools_registry_file \
+        evt_test_tools_resource_file \
 	evt_test_tools_signal
 
 evt_test_end_of_file_record_SOURCES = \
@@ -248,6 +258,63 @@ evt_test_tools_info_handle_LDADD = \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@
 
+evt_test_tools_message_handle_SOURCES = \
+	../evttools/message_handle.c ../evttools/message_handle.h \
+	../evttools/message_string.c ../evttools/message_string.h \
+	../evttools/resource_file.c ../evttools/resource_file.h \
+	../evttools/path_handle.c ../evttools/path_handle.h \
+	../evttools/registry_file.c ../evttools/registry_file.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_message_handle.c \
+	evt_test_unused.h
+
+evt_test_tools_message_handle_LDADD = \
+	@LIBWRC_LIBADD@ \
+	@LIBREGF_LIBADD@ \
+	@LIBEXE_LIBADD@ \
+	@LIBFWEVT_LIBADD@ \
+	@LIBFVALUE_LIBADD@ \
+	@LIBFDATA_LIBADD@ \
+	@LIBFCACHE_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBCDIRECTORY_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_message_string_SOURCES = \
+	../evttools/message_string.c ../evttools/message_string.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_message_string.c \
+	evt_test_unused.h
+
+evt_test_tools_message_string_LDADD = \
+	@LIBWRC_LIBADD@ \
+	@LIBEXE_LIBADD@ \
+	@LIBFWEVT_LIBADD@ \
+	@LIBFVALUE_LIBADD@ \
+	@LIBFDATA_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
 evt_test_tools_output_SOURCES = \
 	../evttools/evttools_output.c ../evttools/evttools_output.h \
 	evt_test_libcerror.h \
@@ -256,6 +323,73 @@ evt_test_tools_output_SOURCES = \
 	evt_test_unused.h
 
 evt_test_tools_output_LDADD = \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_path_handle_SOURCES = \
+	../evttools/path_handle.c ../evttools/path_handle.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_path_handle.c \
+	evt_test_unused.h
+
+evt_test_tools_path_handle_LDADD = \
+	@LIBCDIRECTORY_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_registry_file_SOURCES = \
+	../evttools/registry_file.c ../evttools/registry_file.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_registry_file.c \
+	evt_test_unused.h
+
+evt_test_tools_registry_file_LDADD = \
+	@LIBREGF_LIBADD@ \
+	@LIBFDATA_LIBADD@ \
+	@LIBFCACHE_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBCDIRECTORY_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libevt/libevt.la \
+	@LIBCERROR_LIBADD@
+
+evt_test_tools_resource_file_SOURCES = \
+	../evttools/message_string.c ../evttools/message_string.h \
+	../evttools/resource_file.c ../evttools/resource_file.h \
+	evt_test_libcerror.h \
+	evt_test_macros.h \
+	evt_test_memory.c evt_test_memory.h \
+	evt_test_tools_resource_file.c \
+	evt_test_unused.h
+
+evt_test_tools_resource_file_LDADD = \
+	@LIBWRC_LIBADD@ \
+	@LIBEXE_LIBADD@ \
+	@LIBFWEVT_LIBADD@ \
+	@LIBFVALUE_LIBADD@ \
+	@LIBFDATA_LIBADD@ \
+	@LIBFCACHE_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@
 

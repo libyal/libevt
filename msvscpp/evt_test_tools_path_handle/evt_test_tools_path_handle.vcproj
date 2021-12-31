@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="evt_test_tools_info_handle"
-	ProjectGUID="{56155A42-B080-4F5F-BB12-76B7FE7D5A5E}"
-	RootNamespace="evt_test_tools_info_handle"
+	Name="evt_test_tools_path_handle"
+	ProjectGUID="{134D484D-4929-4EF2-8B3B-804D54C910D4}"
+	RootNamespace="evt_test_tools_path_handle"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,11 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtinput.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\info_handle.c"
+				RelativePath="..\..\evttools\path_handle.c"
 				>
 			</File>
 			<File
@@ -188,7 +184,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\evt_test_tools_info_handle.c"
+				RelativePath="..\..\tests\evt_test_tools_path_handle.c"
 				>
 			</File>
 		</Filter>
@@ -198,11 +194,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\evttools\evtinput.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\evttools\info_handle.h"
+				RelativePath="..\..\evttools\path_handle.h"
 				>
 			</File>
 			<File
