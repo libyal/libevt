@@ -104,7 +104,6 @@ evt_test_event_record_SOURCES = \
 	evt_test_unused.h
 
 evt_test_event_record_LDADD = \
-	@LIBFWNT_LIBADD@ \
 	../libevt/libevt.la \
 	@LIBCERROR_LIBADD@
 
@@ -276,6 +275,9 @@ evt_test_tools_message_handle_LDADD = \
 	@LIBEXE_LIBADD@ \
 	@LIBFWEVT_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \
+	@LIBFWNT_LIBADD@ \
+	@LIBFGUID_LIBADD@ \
+	@LIBFDATETIME_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
 	@LIBFCACHE_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
@@ -303,6 +305,9 @@ evt_test_tools_message_string_LDADD = \
 	@LIBEXE_LIBADD@ \
 	@LIBFWEVT_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \
+	@LIBFWNT_LIBADD@ \
+	@LIBFGUID_LIBADD@ \
+	@LIBFDATETIME_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
@@ -380,6 +385,9 @@ evt_test_tools_resource_file_LDADD = \
 	@LIBEXE_LIBADD@ \
 	@LIBFWEVT_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \
+	@LIBFWNT_LIBADD@ \
+	@LIBFGUID_LIBADD@ \
+	@LIBFDATETIME_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
 	@LIBFCACHE_LIBADD@ \
 	@LIBBFIO_LIBADD@ \

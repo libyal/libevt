@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>libevt</id>
-    <version>20211231</version>
+    <version>20220101</version>
     <authors>Joachim Metz</authors>
     <owners>joachimmetz</owners>
     <license type="expression">LGPL-3.0-or-later</license>
@@ -10,8 +10,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <title>libevt</title>
     <description>Library to access the Windows Event Log (EVT) format</description>
-    <releaseNotes>Release of libevt 20211231</releaseNotes>
-    <copyright>Copyright (C) 2011-2021</copyright>
+    <releaseNotes>Release of libevt 20220101</releaseNotes>
+    <copyright>Copyright (C) 2011-2022</copyright>
     <tags>native</tags>
   </metadata>
   <files>
