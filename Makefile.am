@@ -44,7 +44,6 @@ DPKG_FILES = \
 	dpkg/rules \
 	dpkg/libevt.install \
 	dpkg/libevt-dev.install \
-	dpkg/libevt-python.install \
 	dpkg/libevt-python3.install \
 	dpkg/libevt-tools.install \
 	dpkg/source/format
