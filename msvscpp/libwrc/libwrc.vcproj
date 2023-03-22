@@ -39,8 +39,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwevt;..\..\libfwnt"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWEVT;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBWRC"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBWRC"
 				RuntimeLibrary="2"
 				WarningLevel="4"
 				CompileAs="1"
@@ -101,8 +101,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwevt;..\..\libfwnt"
-				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWEVT;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBWRC"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata;..\..\libfdatetime;..\..\libfguid;..\..\libfvalue;..\..\libfwnt"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;HAVE_LOCAL_LIBFDATETIME;HAVE_LOCAL_LIBFGUID;HAVE_LOCAL_LIBFVALUE;HAVE_LOCAL_LIBFWNT;HAVE_LOCAL_LIBWRC"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
@@ -175,10 +175,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_manifest.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_manifest_resource.c"
 				>
 			</File>
@@ -187,19 +183,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_message_table.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_message_table_resource.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_message_table_values.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_mui.c"
 				>
 			</File>
 			<File
@@ -223,15 +211,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_resource_values.c"
+				RelativePath="..\..\libwrc\libwrc_resource_node_entry.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libwrc\libwrc_resource_node_header.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libwrc\libwrc_resource_node_tree.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_stream.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_string.c"
 				>
 			</File>
 			<File
@@ -251,59 +243,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_version.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_version_information_resource.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_version_values.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_channel.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_event.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_keyword.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_level.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_map.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_opcode.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_provider.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_task.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_definition.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_values.c"
 				>
 			</File>
 		</Filter>
@@ -385,19 +329,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_libfwevt.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_libfwnt.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_libuna.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_manifest.h"
 				>
 			</File>
 			<File
@@ -409,19 +345,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_message_table.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_message_table_resource.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_message_table_values.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_mui.h"
 				>
 			</File>
 			<File
@@ -445,15 +373,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_resource_values.h"
+				RelativePath="..\..\libwrc\libwrc_resource_node_entry.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libwrc\libwrc_resource_node_header.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libwrc\libwrc_resource_node_tree.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_stream.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_string.h"
 				>
 			</File>
 			<File
@@ -481,59 +413,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libwrc\libwrc_version.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libwrc\libwrc_version_information_resource.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libwrc\libwrc_version_values.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_channel.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_event.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_keyword.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_level.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_map.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_opcode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_provider.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_task.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_definition.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libwrc\libwrc_wevt_template_values.h"
 				>
 			</File>
 			<File
