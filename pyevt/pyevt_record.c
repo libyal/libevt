@@ -999,7 +999,6 @@ PyObject *pyevt_record_get_source_name(
 {
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyevt_record_get_source_name";
 	char *utf8_string        = NULL;
 	size_t utf8_string_size  = 0;
@@ -1087,7 +1086,7 @@ PyObject *pyevt_record_get_source_name(
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
+	                 NULL );
 
 	if( string_object == NULL )
 	{
@@ -1121,7 +1120,6 @@ PyObject *pyevt_record_get_computer_name(
 {
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyevt_record_get_computer_name";
 	char *utf8_string        = NULL;
 	size_t utf8_string_size  = 0;
@@ -1209,7 +1207,7 @@ PyObject *pyevt_record_get_computer_name(
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
+	                 NULL );
 
 	if( string_object == NULL )
 	{
@@ -1243,7 +1241,6 @@ PyObject *pyevt_record_get_user_security_identifier(
 {
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyevt_record_get_user_security_identifier";
 	char *utf8_string        = NULL;
 	size_t utf8_string_size  = 0;
@@ -1331,7 +1328,7 @@ PyObject *pyevt_record_get_user_security_identifier(
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
+	                 NULL );
 
 	if( string_object == NULL )
 	{
@@ -1422,7 +1419,6 @@ PyObject *pyevt_record_get_string_by_index(
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
 	uint8_t *utf8_string     = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyevt_record_get_string_by_index";
 	size_t utf8_string_size  = 0;
 	int result               = 0;
@@ -1511,7 +1507,7 @@ PyObject *pyevt_record_get_string_by_index(
 	string_object = PyUnicode_DecodeUTF8(
 	                 (char *) utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
+	                 NULL );
 
 	if( string_object == NULL )
 	{
