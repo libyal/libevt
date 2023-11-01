@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libevt.h
-	/bin/rm -f libevt/definitions.h
-	/bin/rm -f libevt/features.h
-	/bin/rm -f libevt/types.h
-	/bin/rm -f Makefile
+	-rm -f libevt.h
+	-rm -f libevt/definitions.h
+	-rm -f libevt/features.h
+	-rm -f libevt/types.h
+	-rm -f Makefile
 
