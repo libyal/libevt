@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libevt],
- [20231101],
+ [20231121],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -122,7 +122,7 @@ dnl Check if libevt Python bindings (pyevt) required headers and functions are a
 AX_PYTHON_CHECK_ENABLE
 
 AS_IF(
-  [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno],
+  [test "x${ac_cv_enable_python}" != xno],
   [dnl Headers included in pyevt/pyevt_error.c
   AC_CHECK_HEADERS([stdarg.h varargs.h])
 
@@ -209,8 +209,6 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libevt/Makefile])
 AC_CONFIG_FILES([pyevt/Makefile])
-AC_CONFIG_FILES([pyevt-python2/Makefile])
-AC_CONFIG_FILES([pyevt-python3/Makefile])
 AC_CONFIG_FILES([libfwevt/Makefile])
 AC_CONFIG_FILES([libexe/Makefile])
 AC_CONFIG_FILES([libregf/Makefile])

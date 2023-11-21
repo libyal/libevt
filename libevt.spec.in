@@ -32,7 +32,7 @@ Header files and libraries for developing applications for libevt.
 Summary: Python 3 bindings for libevt
 Group: System Environment/Libraries
 Requires: libevt = %{version}-%{release} python3
-BuildRequires: python3-devel
+BuildRequires: python3-devel python3-setuptools
 
 %description -n libevt-python3
 Python 3 bindings for libevt
@@ -50,7 +50,7 @@ Several tools for reading Windows Event Log (EVT) files
 %setup -q
 
 %build
-%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python3
+%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python
 make %{?_smp_mflags}
 
 %install

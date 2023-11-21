@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20230926
+# Version: 20231119
 
 # Generic auto-generated build files
 *~
@@ -127,7 +127,6 @@ stamp-h[1-9]
 /libevt.spec
 /libevt/libevt.rc
 /libevt/libevt_definitions.h
-/pyevt-python[23]/*.[ch]
 /setup.cfg
 /evttools/*.exe
 /evttools/evtexport

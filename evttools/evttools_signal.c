@@ -40,7 +40,7 @@ void (*evttools_signal_signal_handler)( evttools_signal_t ) = NULL;
 /* Signal handler for Ctrl+C or Ctrl+Break signals
  */
 BOOL WINAPI evttools_signal_handler(
-             unsigned long signal )
+             evttools_signal_t signal )
 {
 	static char *function = "evttools_signal_handler";
 
@@ -112,7 +112,7 @@ int evttools_signal_attach(
 	evttools_signal_signal_handler = signal_handler;
 
 	if( SetConsoleCtrlHandler(
-	     evttools_signal_handler,
+	     (PHANDLER_ROUTINE) evttools_signal_handler,
 	     TRUE ) == 0 )
 	{
 		libcerror_error_set(
@@ -179,7 +179,7 @@ int evttools_signal_detach(
 	static char *function = "evttools_signal_detach";
 
 	if( SetConsoleCtrlHandler(
-	     evttools_signal_handler,
+	     (PHANDLER_ROUTINE) evttools_signal_handler,
 	     FALSE ) == 0 )
 	{
 		libcerror_error_set(

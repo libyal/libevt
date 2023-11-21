@@ -27,8 +27,6 @@ SUBDIRS = \
 	libcdirectory \
 	evttools \
 	pyevt \
-	pyevt-python2 \
-	pyevt-python3 \
 	po \
 	manuals \
 	tests \
