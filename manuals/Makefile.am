@@ -8,9 +8,7 @@ EXTRA_DIST = \
 	evtinfo.1 \
 	libevt.3
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 

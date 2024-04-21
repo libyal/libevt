@@ -15,13 +15,11 @@ EXTRA_DIST = \
 	libevt/features.h.in \
 	libevt/types.h.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libevt.h \
+	libevt/definitions.h \
+	libevt/features.h \
+	libevt/types.h \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libevt.h
-	-rm -f libevt/definitions.h
-	-rm -f libevt/features.h
-	-rm -f libevt/types.h
-	-rm -f Makefile
 
