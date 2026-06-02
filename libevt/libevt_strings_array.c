@@ -344,6 +344,17 @@ int libevt_strings_array_read_data(
 		if( ( strings_array->strings_data[ data_offset ] == 0 )
 		 && ( strings_array->strings_data[ data_offset + 1 ] == 0 ) )
 		{
+			if( string_index >= number_of_strings )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid string index value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 			strings_array->strings[ string_index ]      = &( strings_array->strings_data[ string_offset ] );
 			strings_array->string_sizes[ string_index ] = ( data_offset + 2 ) - string_offset;
 

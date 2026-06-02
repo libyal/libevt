@@ -24,6 +24,19 @@
 
 #include <common.h>
 
+#if !defined( __CYGWIN__ ) && !defined( _WIN32 ) && defined( __has_attribute )
+#if __has_attribute( visibility )
+#define LIBEVT_INTERNAL	__attribute__((visibility("hidden"))) extern
+
+#else
+#define LIBEVT_INTERNAL	extern
+
+#endif /* __has_attribute( visibility ) */
+#else
+#define LIBEVT_INTERNAL	extern
+
+#endif /* !defined( __CYGWIN__ ) && !defined( _WIN32 ) && defined( __has_attribute ) */
+
 /* Define HAVE_LOCAL_LIBEVT for local use of libevt
  */
 #if !defined( HAVE_LOCAL_LIBEVT )
@@ -32,7 +45,7 @@
 
 #else
 #define LIBEVT_EXTERN		/* extern */
-#define LIBEVT_EXTERN_VARIABLE	extern
+#define LIBEVT_EXTERN_VARIABLE	LIBEVT_INTERNAL
 
 #endif /* !defined( HAVE_LOCAL_LIBEVT ) */
 

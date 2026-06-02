@@ -900,7 +900,9 @@ int libevt_event_record_read_data(
 		}
 		event_record->data_size = event_data_size;
 
+#if defined( HAVE_DEBUG_OUTPUT )
 		data_offset += event_data_size;
+#endif
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( data_offset < maximum_data_size )

@@ -27,6 +27,10 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBEVT_DLL_IMPORT@
 
+AM_TESTS_ENVIRONMENT = \
+	export PYTHON="@PYTHON@"; \
+	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
+
 if HAVE_PYTHON_TESTS
 TESTS_PYEVT = \
 	test_python_module.sh
@@ -329,7 +333,8 @@ evt_test_tools_output_SOURCES = \
 
 evt_test_tools_output_LDADD = \
 	../libevt/libevt.la \
-	@LIBCERROR_LIBADD@
+	@LIBCERROR_LIBADD@ \
+	@LIBINTL@
 
 evt_test_tools_path_handle_SOURCES = \
 	../evttools/path_handle.c ../evttools/path_handle.h \
