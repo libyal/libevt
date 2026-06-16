@@ -30,6 +30,7 @@
 #include "evttools_libclocale.h"
 #include "evttools_libevt.h"
 #include "evttools_libfdatetime.h"
+#include "evttools_unused.h"
 #include "export_handle.h"
 #include "log_handle.h"
 #include "message_handle.h"
@@ -1023,7 +1024,7 @@ int export_handle_export_record_event_category(
      libevt_record_t *record,
      const system_character_t *event_source,
      size_t event_source_length,
-     log_handle_t *log_handle,
+     log_handle_t *log_handle EVTTOOLS_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
 	system_character_t *message_filename = NULL;
@@ -1033,6 +1034,8 @@ int export_handle_export_record_event_category(
 	size_t message_string_index          = 0;
 	uint16_t event_category              = 0;
 	int result                           = 0;
+
+	EVTTOOLS_UNREFERENCED_PARAMETER( log_handle )
 
 	if( export_handle == NULL )
 	{
@@ -1161,7 +1164,7 @@ int export_handle_export_record_event_message(
      const system_character_t *event_source,
      size_t event_source_length,
      uint32_t event_identifier,
-     log_handle_t *log_handle,
+     log_handle_t *log_handle EVTTOOLS_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
 	system_character_t *message_filename = NULL;
@@ -1173,6 +1176,8 @@ int export_handle_export_record_event_message(
 	int number_of_strings                = 0;
 	int result                           = 0;
 	int value_string_index               = 0;
+
+	EVTTOOLS_UNREFERENCED_PARAMETER( log_handle )
 
 	if( export_handle == NULL )
 	{
