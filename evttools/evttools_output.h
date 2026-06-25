@@ -36,14 +36,14 @@ int evttools_output_initialize(
      int stdio_mode,
      libcerror_error_t **error );
 
-void evtoutput_copyright_fprint(
+void evttools_output_copyright_fprint(
       FILE *stream );
 
-void evtoutput_version_fprint(
+void evttools_output_version_fprint(
       FILE *stream,
       const char *program );
 
-void evtoutput_version_detailed_fprint(
+void evttools_output_version_detailed_fprint(
       FILE *stream,
       const char *program );
 

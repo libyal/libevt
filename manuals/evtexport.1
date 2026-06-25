@@ -1,9 +1,9 @@
-.Dd April 13, 2019
-.Dt evtexport
-.Os libevt
+.Dd June 25, 2026
+.Dt EVTEXPORT 1
+.Os
 .Sh NAME
 .Nm evtexport
-.Nd exports items stored in a Windows Event Log (EVT)
+.Nd exports items stored in a Windows Event Log (EVT) file
 .Sh SYNOPSIS
 .Nm evtexport
 .Op Fl c Ar codepage
@@ -18,7 +18,7 @@
 .Ar source
 .Sh DESCRIPTION
 .Nm evtexport
-is a utility to export items stored in a Windows Event Log (EVT)
+is a utility to export items stored in a Windows Event Log (EVT) file
 .Pp
 .Nm evtexport
 is part of the
@@ -33,13 +33,18 @@ is the source file.
 The options are as follows:
 .Bl -tag -width Ds
 .It Fl c Ar codepage
-specify the codepage of ASCII strings, options: ascii, windows-874, windows-932, windows-936, windows-949, windows-950, windows-1250, windows-1251, windows-1252 (default), windows-1253, windows-1254, windows-1255, windows-1256, windows-1257 or windows-1258
+codepage of ASCII strings, options: ascii, windows-874, windows-932, \
+windows-936, windows-949, windows-950, windows-1250, windows-1251, windows-1252 \
+(default), windows-1253, windows-1254, windows-1255, windows-1256, windows-1257 \
+or windows-1258
 .It Fl h
 shows this help
 .It Fl l Ar log_file
 specify the file in which to log information about the exported items
 .It Fl m Ar mode
-export mode, option: all, items (default), recovered 'all' exports the (allocated) items and recovered items, 'items' exports the (allocated) items and 'recovered' exports the recovered items
+export mode, option: all, items (default), recovered 'all' exports the \
+(allocated) items and recovered items, 'items' exports the (allocated) \
+items and 'recovered' exports the recovered items
 .It Fl p Ar message_files_path
 search PATH for the resource files (default is the current working directory)
 .It Fl r Ar registy_files_path
@@ -51,7 +56,8 @@ This option overrides the path provided by \-r
 filename of the SOFTWARE (Windows) Registry file
 This option overrides the path provided by \-r
 .It Fl t Ar event_log_type
-event log type, options: application, security, system if not specified the event log type is determined based on the filename.
+event log type, options: application, security, system if not specified the \
+event log type is determined based on the filename.
 .It Fl v
 verbose output to stderr
 .It Fl V
@@ -63,22 +69,34 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# evtexport evtexport -p c/ -r c/Windows/System32/config/ c/Windows/System32/config/AppEvent.Evt
-evtexport 20120910
-
-.Dl ...
-
+# evtexport evtexport AppEvent.Evt
+evtexport 20260625
+.sp
+Event number			: 898
+Creation time			: Oct 09, 2011 11:53:41 UTC
+Written time			: Oct 09, 2011 11:53:41 UTC
+Event type			: Information event (4)
+Computer name			: HOSTNAME
+Source name			: Windows Search Service
+Event category			: 1
+Event identifier		: 0x400003eb (1073742827)
+Number of strings		: 0
+.sp
 .Ed
 .Sh DIAGNOSTICS
-Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Errors, verbose and debug output are printed to stderr when verbose output \
+\-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
-.Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libevt/
-.Sh AUTHOR
-These man pages were written by Joachim Metz.
-.Sh COPYRIGHT
-Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>.
-This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO
 .Xr evtinfo 1
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
+.Sh BUGS
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libevt/issues
+.Sh COPYRIGHT
+Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>.
+.sp
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.

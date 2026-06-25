@@ -1,5 +1,5 @@
 /*
- * Extracts items from a Windows Event Log (EVT) file
+ * Extracts items from a Windows Event Log (EVT) file.
  *
  * Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -55,51 +55,6 @@
 export_handle_t *evtexport_export_handle = NULL;
 int evtexport_abort                      = 0;
 
-/* Prints the executable usage information
- */
-void usage_fprint(
-      FILE *stream )
-{
-	if( stream == NULL )
-	{
-		return;
-	}
-	fprintf( stream, "Use evtexport to export items stored in a Windows Event\n"
-	                 "Log (EVT) file.\n\n" );
-
-	fprintf( stream, "Usage: evtexport [ -c codepage ] [ -l log_file ] [ -m mode ]\n"
-	                 "                 [ -p resource_files_path ] [ -r registy_files_path ]\n"
-	                 "                 [ -s system_file ] [ -S software_file ]\n"
-	                 "                 [ -t event_log_type ] [ -hvV ] source\n\n" );
-
-	fprintf( stream, "\tsource: the source file\n\n" );
-
-	fprintf( stream, "\t-c:     codepage of ASCII strings, options: ascii, windows-874,\n"
-	                 "\t        windows-932, windows-936, windows-949, windows-950,\n"
-	                 "\t        windows-1250, windows-1251, windows-1252 (default),\n"
-	                 "\t        windows-1253, windows-1254, windows-1255, windows-1256\n"
-	                 "\t        windows-1257 or windows-1258\n" );
-	fprintf( stream, "\t-h:     shows this help\n" );
-	fprintf( stream, "\t-l:     logs information about the exported items\n" );
-	fprintf( stream, "\t-m:     export mode, option: all, items (default), recovered\n"
-	                 "\t        'all' exports the (allocated) items and recovered items,\n"
-	                 "\t        'items' exports the (allocated) items and 'recovered' exports\n"
-	                 "\t        the recovered items\n" );
-	fprintf( stream, "\t-p:     search PATH for the resource files (default is the current\n"
-	                 "\t        working directory)\n" );
-	fprintf( stream, "\t-r:     name of the directory containing the SOFTWARE and SYSTEM\n"
-	                 "\t        (Windows) Registry file\n" );
-	fprintf( stream, "\t-s:     filename of the SYSTEM (Windows) Registry file.\n"
-	                 "\t        This option overrides the path provided by -r\n" );
-	fprintf( stream, "\t-S:     filename of the SOFTWARE (Windows) Registry file.\n"
-	                 "\t        This option overrides the path provided by -r\n" );
-	fprintf( stream, "\t-t:     event log type, options: application, security, system\n"
-	                 "\t        if not specified the event log type is determined based\n"
-	                 "\t        on the filename.\n" );
-	fprintf( stream, "\t-v:     verbose output to stderr\n" );
-	fprintf( stream, "\t-V:     print version\n" );
-}
-
 /* Signal handler for evtexport
  */
 void evtexport_signal_handler(
@@ -152,6 +107,25 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
+	const char *description = \
+		"Use evtexport to export items stored in a Windows Event Log (EVT) file.";
+
+	evttools_option_t options[ ] = {
+		{ 'c', "codepage", "codepage of ASCII strings, options: ascii, windows-874, windows-932, windows-936, windows-949, windows-950, windows-1250, windows-1251, windows-1252 (default), windows-1253, windows-1254, windows-1255, windows-1256, windows-1257 or windows-1258" },
+		{ 'h', NULL, "shows this help" },
+		{ 'l', "log_file", "logs information about the exported items" },
+		{ 'm', "mode", "export mode, option: all, items (default), recovered. 'all' exports the (allocated) items and recovered items, 'items' exports the (allocated) items and 'recovered' exports the recovered items" },
+		{ 'p', "resource_files_path", "search PATH for the resource files (default is the current working directory)" },
+		{ 'r', "registy_files_path", "name of the directory containing the SOFTWARE and SYSTEM (Windows) Registry file" },
+		{ 's', "system_file", "filename of the SYSTEM (Windows) Registry file. This option overrides the path provided by -r" },
+		{ 'S', "software_file", "filename of the SOFTWARE (Windows) Registry file. This option overrides the path provided by -r" },
+		{ 't', "event_log_type", "event log type, options: application, security, system. if not specified the event log type is determined based on the filename." },
+		{ 'v', NULL, "verbose output to stderr" },
+		{ 'V', NULL, "print version" },
+		{ 0, "source", "the source file" },
+	};
+	system_character_t options_string[ 32 ];
+
 	libcerror_error_t *error                              = NULL;
 	log_handle_t *log_handle                              = NULL;
 	system_character_t *option_ascii_codepage             = NULL;
@@ -166,6 +140,7 @@ int main( int argc, char * const argv[] )
 	system_character_t *source                            = NULL;
 	char *program                                         = "evtexport";
 	system_integer_t option                               = 0;
+	int number_of_options                                 = (int) ( sizeof( options ) / sizeof( evttools_option_t ) );
 	int result                                            = 0;
 	int verbose                                           = 0;
 
@@ -200,14 +175,26 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	evtoutput_version_fprint(
+	evttools_output_version_fprint(
 	 stdout,
 	 program );
 
+	if( evttools_getopt_get_options_string(
+	     options,
+	     number_of_options,
+	     options_string,
+	     32 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to determine options string.\n" );
+
+		goto on_error;
+	}
 	while( ( option = evttools_getopt(
 	                   argc,
 	                   argv,
-	                   _SYSTEM_STRING( "c:hl:m:p:r:s:S:t:vV" ) ) ) != (system_integer_t) -1 )
+	                   options_string ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -218,8 +205,12 @@ int main( int argc, char * const argv[] )
 				 "Invalid argument: %" PRIs_SYSTEM "\n",
 				 argv[ optind - 1 ] );
 
-				usage_fprint(
-				 stdout );
+				evttools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				return( EXIT_FAILURE );
 
@@ -229,8 +220,12 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'h':
-				usage_fprint(
-				 stdout );
+				evttools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				return( EXIT_SUCCESS );
 
@@ -275,7 +270,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'V':
-				evtoutput_copyright_fprint(
+				evttools_output_copyright_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );
@@ -287,8 +282,12 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Missing source file.\n" );
 
-		usage_fprint(
-		 stdout );
+		evttools_getopt_usage_fprint(
+		 stdout,
+		 program,
+		 description,
+		 options,
+		 number_of_options );
 
 		return( EXIT_FAILURE );
 	}

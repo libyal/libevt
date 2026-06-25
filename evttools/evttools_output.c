@@ -93,7 +93,7 @@ int evttools_output_initialize(
 
 /* Prints the copyright information
  */
-void evtoutput_copyright_fprint(
+void evttools_output_copyright_fprint(
       FILE *stream )
 {
 	if( stream == NULL )
@@ -118,7 +118,7 @@ void evtoutput_copyright_fprint(
 
 /* Prints the version information
  */
-void evtoutput_version_fprint(
+void evttools_output_version_fprint(
       FILE *stream,
       const char *program )
 {
@@ -139,7 +139,7 @@ void evtoutput_version_fprint(
 
 /* Prints the detailed version information
  */
-void evtoutput_version_detailed_fprint(
+void evttools_output_version_detailed_fprint(
       FILE *stream,
       const char *program )
 {
