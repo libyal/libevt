@@ -30,7 +30,6 @@
 #include "evttools_libcerror.h"
 #include "evttools_libcpath.h"
 #include "evttools_libcsplit.h"
-#include "evttools_libevt.h"
 #include "evttools_libfcache.h"
 #include "evttools_libfwevt.h"
 #include "evttools_libregf.h"
@@ -149,7 +148,7 @@ int message_handle_initialize(
 		goto on_error;
 	}
 	( *message_handle )->ascii_codepage                = LIBREGF_CODEPAGE_WINDOWS_1252;
-	( *message_handle )->preferred_language_identifier = 0x00000409UL;
+	( *message_handle )->preferred_language_identifier = 0;
 
 	return( 1 );
 
