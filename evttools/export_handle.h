@@ -211,6 +211,7 @@ int export_handle_print_value_string(
      size_t parameter_filename_length,
      system_character_t *string,
      size_t string_length,
+     system_character_t *last_character,
      libcerror_error_t **error );
 
 /* File export functions

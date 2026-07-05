@@ -30,7 +30,7 @@ for the libevt project.
 == License
 
 ....
-Copyright (C) 2011-2021, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -59,6 +59,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.13 | J.B. Metz | April 2019 | Textual and formatting changes.
 | 0.0.14 | Kyle Sabo | May 2019 | Additional information about unused fields.
 | 0.0.15 | J.B. Metz | August 2021 | Small changes.
+| 0.0.16 | J.B. Metz | July 2021 | Additional information about parameter expansion.
 |===
 
 :numbered:
@@ -376,9 +377,11 @@ This computer has been successfully joined to %1 '%2'.
 The placeholder values %1 and %2 represent the first and second string in the
 event.
 
-[NOTE]
+The placeholder %0 has a special meaning indicating the end-of-string anything
+after this should be ignored.
+
 The event message strings are language specific. An event message file can
-therefore contain event message strings for multiple languages.
+contain event message strings for multiple languages.
 
 ===== Parameter expansion
 
@@ -403,6 +406,11 @@ kernel32.dll, which is expanded to:
 ....
 The service did not respond to the start or control request in a timely fashion.
 ....
+
+[NOTE]
+Note that in the Windows XML Event Log (EVTX) format a string can contain
+multiple parameter placeholders. It has not yet been observed for the Windows
+Event Viewer Log (EVT) format, but is assumed to be supported by the format.
 
 ==== Event category
 
