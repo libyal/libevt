@@ -476,7 +476,6 @@ test_tools: \
 	test_tools.at
 
 EXTRA_DIST = \
-	$(check_AUTOTESTS:=.at) \
 	$(check_SCRIPTS) \
 	generate_test_inputs.sh \
 	package.m4 \
