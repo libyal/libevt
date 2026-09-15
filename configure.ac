@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libevt],
-  [20260719],
+  [20260915],
   [https://github.com/libyal/libevt/issues])
 
 AC_CONFIG_SRCDIR(
