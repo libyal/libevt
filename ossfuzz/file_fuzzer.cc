@@ -31,6 +31,14 @@ extern "C" {
 
 #if !defined( LIBEVT_HAVE_BFIO )
 
+/* Determines if a file contains an EVT file signature using a Basic File IO (bfio) handle
+ * Returns 1 if true, 0 if not or -1 on error
+ */
+LIBEVT_EXTERN \
+int libevt_check_file_signature_file_io_handle(
+     libbfio_handle_t *file_io_handle,
+     libevt_error_t **error );
+
 /* Opens a file using a Basic File IO (bfio) handle
  * Returns 1 if successful or -1 on error
  */
@@ -49,6 +57,14 @@ int LLVMFuzzerTestOneInput(
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	libevt_file_t *file              = NULL;
+	libevt_record_t *record          = NULL;
+	uint32_t flags                   = 0;
+	uint32_t major_format_version    = 0;
+	uint32_t minor_format_version    = 0;
+	int ascii_codepage               = 0;
+	int number_of_records            = 0;
+	int number_of_recovered_records  = 0;
+	int result                       = 0;
 
 	if( libbfio_memory_range_initialize(
 	     &file_io_handle,
@@ -64,11 +80,37 @@ int LLVMFuzzerTestOneInput(
 	{
 		goto on_error_libbfio;
 	}
+	libevt_set_codepage(
+	 LIBEVT_CODEPAGE_WINDOWS_1252,
+	 NULL );
+
 	if( libevt_file_initialize(
 	     &file,
 	     NULL ) != 1 )
 	{
 		goto on_error_libbfio;
+	}
+	libevt_get_codepage(
+	 &ascii_codepage,
+	 NULL );
+
+	libevt_check_file_signature_file_io_handle(
+	 file_io_handle,
+	 NULL );
+
+	if( libevt_file_set_ascii_codepage(
+	     file,
+	     LIBEVT_CODEPAGE_WINDOWS_1252,
+	     NULL ) != 1 )
+	{
+		goto on_error_libevt;
+	}
+	if( libevt_file_get_ascii_codepage(
+	     file,
+	     &ascii_codepage,
+	     NULL ) != 1 )
+	{
+		goto on_error_libevt;
 	}
 	if( libevt_file_open_file_io_handle(
 	     file,
@@ -77,6 +119,59 @@ int LLVMFuzzerTestOneInput(
 	     NULL ) != 1 )
 	{
 		goto on_error_libevt;
+	}
+	libevt_file_is_corrupted(
+	 file,
+	 NULL );
+
+	libevt_file_get_format_version(
+	 file,
+	 &major_format_version,
+	 &minor_format_version,
+	 NULL );
+
+	libevt_file_get_flags(
+	 file,
+	 &flags,
+	 NULL );
+
+	result = libevt_file_get_number_of_records(
+	          file,
+	          &number_of_records,
+	          NULL );
+       
+	if( ( result == 1 )
+	 && ( number_of_records > 0 ) )
+	{
+		if( libevt_file_get_record_by_index(
+		     file,
+		     0,
+		     &record,
+		     NULL ) == 1 )
+		{
+			libevt_record_free(
+			 &record,
+			 NULL );
+		}
+	}
+	result = libevt_file_get_number_of_recovered_records(
+	          file,
+	          &number_of_recovered_records,
+	          NULL );
+       
+	if( ( result == 1 )
+	 && ( number_of_recovered_records > 0 ) )
+	{
+		if( libevt_file_get_recovered_record_by_index(
+		     file,
+		     0,
+		     &record,
+		     NULL ) == 1 )
+		{
+			libevt_record_free(
+			 &record,
+			 NULL );
+		}
 	}
 	libevt_file_close(
 	 file,
@@ -96,4 +191,3 @@ on_error_libbfio:
 }
 
 } /* extern "C" */
-
